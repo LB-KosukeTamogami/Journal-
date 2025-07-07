@@ -288,63 +288,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildCreateDiaryCard() {
-    return AppCard(
-      backgroundColor: AppTheme.primaryBlue,
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const DiaryCreationScreen(),
-          ),
-        );
-      },
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.edit_note_rounded,
-              color: Colors.white,
-              size: 28,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '今日の日記を書く',
-                  style: AppTheme.body1.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '英語で今日の出来事を記録しましょう',
-                  style: AppTheme.body2.copyWith(
-                    color: Colors.white.withOpacity(0.8),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Icon(
-            Icons.arrow_forward_ios,
-            color: Colors.white.withOpacity(0.6),
-            size: 16,
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildLilyMessageCard() {
     return Container(
