@@ -2,14 +2,12 @@
   "version": 2,
   "buildCommand": null,
   "outputDirectory": "journal_learning_app/build/web",
+  "installCommand": null,
   "framework": null,
-  "routes": [
+  "rewrites": [
     {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/.*",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
