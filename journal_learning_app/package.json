@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Journal-based English Learning App",
   "scripts": {
-    "vercel-build": "bash vercel-build.sh",
+    "vercel-build": "./vercel-build.sh",
     "build": "flutter build web --release --web-renderer html"
   },
   "devDependencies": {},
