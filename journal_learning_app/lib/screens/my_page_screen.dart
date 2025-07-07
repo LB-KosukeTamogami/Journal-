@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import '../widgets/glass_container.dart';
+import 'dart:ui';
 
 class MyPageScreen extends StatefulWidget {
   const MyPageScreen({super.key});

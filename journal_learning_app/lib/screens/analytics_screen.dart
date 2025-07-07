@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../widgets/glass_container.dart';
+import 'dart:ui';
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
@@ -15,14 +17,21 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Analytics'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
+        title: const Text(
+          'Analytics',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 100, 16, 100),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -86,38 +95,60 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black26,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
                   ),
                 ),
-                SegmentedButton<String>(
-                  segments: const [
-                    ButtonSegment(value: '週間', label: Text('週間')),
-                    ButtonSegment(value: '月間', label: Text('月間')),
-                    ButtonSegment(value: '年間', label: Text('年間')),
-                  ],
-                  selected: {_selectedPeriod},
-                  onSelectionChanged: (Set<String> newSelection) {
-                    setState(() {
-                      _selectedPeriod = newSelection.first;
-                    });
-                  },
+                GlassContainer(
+                  padding: const EdgeInsets.all(4),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (final period in ['週間', '月間', '年間'])
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedPeriod = period;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            margin: const EdgeInsets.symmetric(horizontal: 2),
+                            decoration: BoxDecoration(
+                              gradient: _selectedPeriod == period
+                                  ? const LinearGradient(
+                                      colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                                    )
+                                  : null,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              period,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: _selectedPeriod == period
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            Container(
+            GlassContainer(
               height: 200,
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
               child: LineChart(
                 LineChartData(
                   gridData: FlGridData(
@@ -125,7 +156,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     drawVerticalLine: false,
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: Colors.grey[300]!,
+                        color: Colors.white.withOpacity(0.3),
                         strokeWidth: 1,
                       );
                     },
@@ -150,7 +181,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                               days[value.toInt()],
                               style: const TextStyle(
                                 fontSize: 12,
-                                color: Colors.grey,
+                                color: Colors.white,
                               ),
                             );
                           }
@@ -168,7 +199,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             value.toInt().toString(),
                             style: const TextStyle(
                               fontSize: 12,
-                              color: Colors.grey,
+                              color: Colors.white,
                             ),
                           );
                         },
@@ -192,7 +223,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         FlSpot(6, 3),
                       ],
                       isCurved: true,
-                      color: Theme.of(context).primaryColor,
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                      ),
                       barWidth: 3,
                       isStrokeCapRound: true,
                       dotData: FlDotData(
@@ -202,13 +235,20 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             radius: 4,
                             color: Colors.white,
                             strokeWidth: 2,
-                            strokeColor: Theme.of(context).primaryColor,
+                            strokeColor: const Color(0xFF667eea),
                           );
                         },
                       ),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF667eea).withOpacity(0.3),
+                            const Color(0xFF764ba2).withOpacity(0.1),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
                       ),
                     ),
                   ],
@@ -224,6 +264,14 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                color: Colors.white,
+                shadows: [
+                  Shadow(
+                    color: Colors.black26,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
@@ -245,55 +293,51 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       children: words.map((word) {
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: _getRankColor(word['rank'] as int).withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    '#${word['rank']}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: _getRankColor(word['rank'] as int),
+          child: GlassContainer(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: _getRankColor(word['rank'] as int).withOpacity(0.3),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: _getRankColor(word['rank'] as int).withOpacity(0.5),
+                      width: 1,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '#${word['rank']}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: _getRankColor(word['rank'] as int),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  word['word'] as String,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    word['word'] as String,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
-              Text(
-                '${word['count']}回',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
+                Text(
+                  '${word['count']}回',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white.withOpacity(0.7),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ).animate().fadeIn(
           delay: Duration(milliseconds: 600 + ((word['rank'] as int) - 1) * 100),
@@ -333,35 +377,35 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GlassContainer(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(
-                icon,
-                color: color,
-                size: 24,
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 24,
+                ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: color.withOpacity(0.3),
+                    width: 1,
+                  ),
                 ),
                 child: Text(
                   unit,
@@ -380,6 +424,7 @@ class _StatCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 4),
@@ -387,7 +432,7 @@ class _StatCard extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey[600],
+              color: Colors.white.withOpacity(0.7),
             ),
           ),
         ],
