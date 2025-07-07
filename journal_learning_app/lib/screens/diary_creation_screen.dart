@@ -215,56 +215,6 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     return shouldPop ?? false;
   }
 
-  void _showWordDetail(String word, String translation) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(word, style: AppTheme.headline3),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('意味:', style: AppTheme.caption),
-            const SizedBox(height: 4),
-            Text(translation, style: AppTheme.body1),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  final newWord = Word(
-                    id: const Uuid().v4(),
-                    english: _detectedLanguage == 'en' ? word : translation,
-                    japanese: _detectedLanguage == 'ja' ? word : translation,
-                    createdAt: DateTime.now(),
-                    diaryEntryId: widget.existingEntry?.id,
-                  );
-                  
-                  setState(() {
-                    _selectedWords.add(newWord);
-                  });
-                  
-                  Navigator.pop(context);
-                  _showSnackBar('単語帳に追加しました', isError: false);
-                },
-                icon: const Icon(Icons.add),
-                label: const Text('単語帳に追加'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryBlue,
-                ),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('閉じる', style: AppTheme.body2),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {

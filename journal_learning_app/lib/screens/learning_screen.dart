@@ -3,7 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 import '../models/word.dart';
 import '../services/storage_service.dart';
-import 'flashcard_session_screen.dart';
+import 'flashcard_session_screen.dart' hide AppCard;
 
 class LearningScreen extends StatefulWidget {
   const LearningScreen({super.key});
@@ -78,23 +78,23 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                   fontWeight: FontWeight.w600,
                 ),
                 unselectedLabelStyle: AppTheme.body2,
-                tabs: const [
+                tabs: [
                   Tab(
                     child: Container(
                       width: double.infinity,
-                      child: Center(child: Text('すべて')),
+                      child: const Center(child: Text('すべて')),
                     ),
                   ),
                   Tab(
                     child: Container(
                       width: double.infinity,
-                      child: Center(child: Text('学習中')),
+                      child: const Center(child: Text('学習中')),
                     ),
                   ),
                   Tab(
                     child: Container(
                       width: double.infinity,
-                      child: Center(child: Text('習得済み')),
+                      child: const Center(child: Text('習得済み')),
                     ),
                   ),
                 ],

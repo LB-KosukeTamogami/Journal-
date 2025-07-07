@@ -131,7 +131,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     ],
                   ),
                 ),
-                GlassContainer(
+                AppCard(
                   padding: const EdgeInsets.all(4),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -172,10 +172,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            GlassContainer(
+            SizedBox(
               height: 200,
-              padding: const EdgeInsets.all(16),
-              child: LineChart(
+              child: AppCard(
+                padding: const EdgeInsets.all(16),
+                child: LineChart(
                 LineChartData(
                   gridData: FlGridData(
                     show: true,
@@ -280,6 +281,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   ],
                 ),
               ),
+            ),
             ).animate().fadeIn(delay: 500.ms),
             
             const SizedBox(height: 32),
