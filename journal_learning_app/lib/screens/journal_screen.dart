@@ -90,7 +90,7 @@ class _JournalScreenState extends State<JournalScreen> {
         title: const Text(
           'Journal',
           style: TextStyle(
-            color: Colors.white,
+            color: Color(0xFF2C3E50),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -106,16 +106,16 @@ class _JournalScreenState extends State<JournalScreen> {
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Color(0xFF546E7A).withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.3),
+                    color: Color(0xFF546E7A).withOpacity(0.3),
                     width: 1,
                   ),
                 ),
                 child: const Icon(
                   Icons.chat_bubble_outline,
-                  color: Colors.white,
+                  color: Color(0xFF2C3E50),
                   size: 20,
                 ),
               ),
@@ -145,8 +145,8 @@ class _JournalScreenState extends State<JournalScreen> {
               startingDayOfWeek: StartingDayOfWeek.monday,
               calendarStyle: CalendarStyle(
                 outsideDaysVisible: false,
-                defaultTextStyle: const TextStyle(color: Colors.white),
-                weekendTextStyle: const TextStyle(color: Colors.white70),
+                defaultTextStyle: const TextStyle(color: Color(0xFF2C3E50)),
+                weekendTextStyle: const TextStyle(color: Color(0xFF546E7A)),
                 selectedDecoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF667eea), Color(0xFF764ba2)],
@@ -167,7 +167,7 @@ class _JournalScreenState extends State<JournalScreen> {
                 formatButtonVisible: false,
                 titleCentered: true,
                 titleTextStyle: TextStyle(
-                  color: Colors.white,
+                  color: Color(0xFF2C3E50),
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -201,7 +201,7 @@ class _JournalScreenState extends State<JournalScreen> {
           // 選択された日の日記リスト
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: Colors.white))
+                ? const Center(child: CircularProgressIndicator(color: Color(0xFF4A90E2)))
                 : _selectedDay == null
                     ? const Center(
                         child: Text(
@@ -247,14 +247,14 @@ class _JournalScreenState extends State<JournalScreen> {
             Icon(
               Icons.note_add,
               size: 64,
-              color: Colors.white.withOpacity(0.6),
+              color: Color(0xFF546E7A).withOpacity(0.6),
             ),
             const SizedBox(height: 16),
             Text(
               '${DateFormat('M月d日').format(_selectedDay!)}の日記はまだありません',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.white.withOpacity(0.8),
+                color: Color(0xFF546E7A).withOpacity(0.8),
               ),
             ),
             const SizedBox(height: 8),
@@ -266,7 +266,7 @@ class _JournalScreenState extends State<JournalScreen> {
               child: const Text(
                 '日記を書く',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Color(0xFF2C3E50),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -300,7 +300,7 @@ class _JournalScreenState extends State<JournalScreen> {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Color(0xFF2C3E50),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -310,7 +310,7 @@ class _JournalScreenState extends State<JournalScreen> {
                       DateFormat('HH:mm').format(journal.createdAt),
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white.withOpacity(0.7),
+                        color: Color(0xFF546E7A).withOpacity(0.7),
                       ),
                     ),
                   ],
@@ -322,7 +322,7 @@ class _JournalScreenState extends State<JournalScreen> {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.white.withOpacity(0.8),
+                    color: Color(0xFF546E7A).withOpacity(0.8),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -331,14 +331,14 @@ class _JournalScreenState extends State<JournalScreen> {
                     Icon(
                       Icons.edit,
                       size: 16,
-                      color: Colors.white.withOpacity(0.6),
+                      color: Color(0xFF546E7A).withOpacity(0.6),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       '${journal.wordCount} words',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.white.withOpacity(0.6),
+                        color: Color(0xFF546E7A).withOpacity(0.6),
                       ),
                     ),
                   ],
@@ -371,10 +371,10 @@ class _JournalScreenState extends State<JournalScreen> {
             filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Color(0xFF546E7A).withOpacity(0.15),
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Color(0xFF546E7A).withOpacity(0.2),
                   width: 1,
                 ),
               ),
@@ -387,7 +387,7 @@ class _JournalScreenState extends State<JournalScreen> {
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.5),
+                        color: Color(0xFF546E7A).withOpacity(0.5),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -397,7 +397,7 @@ class _JournalScreenState extends State<JournalScreen> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Color(0xFF2C3E50),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -438,13 +438,13 @@ class _JournalScreenState extends State<JournalScreen> {
                                     '日記を書く',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.white,
+                                      color: Color(0xFF2C3E50),
                                     ),
                                   ),
                                   Text(
                                     '自分で日記を書きます',
                                     style: TextStyle(
-                                      color: Colors.white70,
+                                      color: Color(0xFF546E7A),
                                       fontSize: 12,
                                     ),
                                   ),
@@ -486,13 +486,13 @@ class _JournalScreenState extends State<JournalScreen> {
                                     '会話ジャーナル',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.white,
+                                      color: Color(0xFF2C3E50),
                                     ),
                                   ),
                                   Text(
                                     'AIとの会話で日記を作成',
                                     style: TextStyle(
-                                      color: Colors.white70,
+                                      color: Color(0xFF546E7A),
                                       fontSize: 12,
                                     ),
                                   ),

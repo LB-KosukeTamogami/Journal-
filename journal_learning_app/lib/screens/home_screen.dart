@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     child: const Icon(
                       Icons.waving_hand,
-                      color: Colors.white,
+                      color: Color(0xFF2C3E50),
                       size: 24,
                     ),
                   ),
@@ -166,17 +166,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 60,
                     height: 60,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Color(0xFF546E7A).withOpacity(0.2),
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.3),
+                        color: Color(0xFF546E7A).withOpacity(0.3),
                         width: 2,
                       ),
                     ),
                     child: const Icon(
                       Icons.sentiment_very_satisfied,
                       size: 32,
-                      color: Colors.white,
+                      color: Color(0xFF2C3E50),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -187,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         const Text(
                           'Lily より 💫',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Color(0xFF2C3E50),
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -200,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ? '$_currentStreak日連続で頑張っています！' 
                                 : '今日も一緒に英語を学びましょう！',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.95),
+                            color: Color(0xFF2C3E50).withOpacity(0.95),
                             fontSize: 14,
                             height: 1.4,
                           ),
@@ -234,13 +234,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 24,
                     height: 24,
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Colors.white, Colors.white70],
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF546E7A), Color(0xFF546E7A).withOpacity(0.7)],
                       ),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.white.withOpacity(0.3),
+                          color: Color(0xFF546E7A).withOpacity(0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -284,10 +284,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Color(0xFF546E7A).withOpacity(0.2),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.3),
+                        color: Color(0xFF546E7A).withOpacity(0.3),
                         width: 1,
                       ),
                     ),
@@ -448,7 +448,7 @@ class _MissionCard extends StatelessWidget {
                   ),
                   child: const Icon(
                     Icons.check,
-                    color: Colors.white,
+                    color: Color(0xFF2C3E50),
                     size: 16,
                   ),
                 ),

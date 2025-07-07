@@ -65,7 +65,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
         title: const Text(
           'Learning',
           style: TextStyle(
-            color: Colors.white,
+            color: Color(0xFF2C3E50),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -79,8 +79,8 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
               padding: const EdgeInsets.all(4),
               child: TabBar(
                 controller: _tabController,
-                labelColor: Colors.white,
-                unselectedLabelColor: Colors.white60,
+                labelColor: Color(0xFF2C3E50),
+                unselectedLabelColor: Color(0xFF546E7A),
                 indicator: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF667eea), Color(0xFF764ba2)],
@@ -117,12 +117,12 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.play_arrow, color: Colors.white),
+            Icon(Icons.play_arrow, color: Color(0xFF2C3E50)),
             SizedBox(width: 8),
             Text(
               '学習を開始',
               style: TextStyle(
-                color: Colors.white,
+                color: Color(0xFF2C3E50),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -141,14 +141,14 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
             Icon(
               Icons.school_outlined,
               size: 64,
-              color: Colors.white.withOpacity(0.6),
+              color: Color(0xFF546E7A).withOpacity(0.6),
             ),
             const SizedBox(height: 16),
             Text(
               'カードがありません',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.white.withOpacity(0.8),
+                color: Color(0xFF546E7A).withOpacity(0.8),
               ),
             ),
           ],
@@ -191,10 +191,10 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
             filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Color(0xFF546E7A).withOpacity(0.15),
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Color(0xFF546E7A).withOpacity(0.2),
                   width: 1,
                 ),
               ),
@@ -208,7 +208,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.5),
+                        color: Color(0xFF546E7A).withOpacity(0.5),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -222,16 +222,16 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Color(0xFF2C3E50),
                         ),
                       ),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Color(0xFF546E7A).withOpacity(0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: IconButton(
-                          icon: const Icon(Icons.volume_up, color: Colors.white),
+                          icon: const Icon(Icons.volume_up, color: Color(0xFF2C3E50)),
                           onPressed: () {
                             // TODO: TTS実装
                           },
@@ -244,7 +244,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                     card['meaning'],
                     style: TextStyle(
                       fontSize: 18,
-                      color: Colors.white.withOpacity(0.9),
+                      color: Color(0xFF2C3E50).withOpacity(0.9),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -266,7 +266,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white.withOpacity(0.9),
+                                color: Color(0xFF2C3E50).withOpacity(0.9),
                               ),
                             ),
                           ],
@@ -276,7 +276,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                           card['example'],
                           style: const TextStyle(
                             fontSize: 16,
-                            color: Colors.white,
+                            color: Color(0xFF2C3E50),
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -284,7 +284,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                           card['exampleJp'],
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.white.withOpacity(0.7),
+                            color: Color(0xFF546E7A).withOpacity(0.7),
                           ),
                         ),
                       ],
@@ -303,11 +303,11 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.mic, color: Colors.white, size: 20),
+                              Icon(Icons.mic, color: Color(0xFF2C3E50), size: 20),
                               SizedBox(width: 8),
                               Text(
                                 'シャドウイング',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(color: Color(0xFF2C3E50)),
                               ),
                             ],
                           ),
@@ -332,14 +332,14 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                               children: [
                                 Icon(
                                   card['learned'] ? Icons.close : Icons.check,
-                                  color: Colors.white,
+                                  color: Color(0xFF2C3E50),
                                   size: 20,
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
                                   card['learned'] ? '未習得に戻す' : '習得済みにする',
                                   style: const TextStyle(
-                                    color: Colors.white,
+                                    color: Color(0xFF2C3E50),
                                     fontSize: 12,
                                   ),
                                 ),
@@ -426,7 +426,7 @@ class _FlashcardItem extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Color(0xFF2C3E50),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -434,7 +434,7 @@ class _FlashcardItem extends StatelessWidget {
                     card['meaning'],
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white.withOpacity(0.7),
+                      color: Color(0xFF546E7A).withOpacity(0.7),
                     ),
                   ),
                 ],
@@ -445,12 +445,12 @@ class _FlashcardItem extends StatelessWidget {
               decoration: BoxDecoration(
                 color: card['learned'] 
                     ? Colors.green.withOpacity(0.2)
-                    : Colors.white.withOpacity(0.1),
+                    : Color(0xFF546E7A).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: card['learned'] 
                       ? Colors.green.withOpacity(0.5)
-                      : Colors.white.withOpacity(0.3),
+                      : Color(0xFF546E7A).withOpacity(0.3),
                   width: 1,
                 ),
               ),
@@ -461,7 +461,7 @@ class _FlashcardItem extends StatelessWidget {
                   padding: const EdgeInsets.all(4),
                   child: Icon(
                     card['learned'] ? Icons.check_circle : Icons.circle_outlined,
-                    color: card['learned'] ? Colors.green : Colors.white70,
+                    color: card['learned'] ? Colors.green : Color(0xFF546E7A),
                     size: 24,
                   ),
                 ),

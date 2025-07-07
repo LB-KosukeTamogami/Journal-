@@ -23,7 +23,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         title: const Text(
           'Analytics',
           style: TextStyle(
-            color: Colors.white,
+            color: Color(0xFF2C3E50),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -95,7 +95,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Color(0xFF2C3E50),
                     shadows: [
                       Shadow(
                         color: Colors.black26,
@@ -131,7 +131,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             child: Text(
                               period,
                               style: TextStyle(
-                                color: Colors.white,
+                                color: Color(0xFF2C3E50),
                                 fontWeight: _selectedPeriod == period
                                     ? FontWeight.bold
                                     : FontWeight.normal,
@@ -156,7 +156,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     drawVerticalLine: false,
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: Colors.white.withOpacity(0.3),
+                        color: Color(0xFF546E7A).withOpacity(0.3),
                         strokeWidth: 1,
                       );
                     },
@@ -181,7 +181,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                               days[value.toInt()],
                               style: const TextStyle(
                                 fontSize: 12,
-                                color: Colors.white,
+                                color: Color(0xFF2C3E50),
                               ),
                             );
                           }
@@ -199,7 +199,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             value.toInt().toString(),
                             style: const TextStyle(
                               fontSize: 12,
-                              color: Colors.white,
+                              color: Color(0xFF2C3E50),
                             ),
                           );
                         },
@@ -233,7 +233,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         getDotPainter: (spot, percent, barData, index) {
                           return FlDotCirclePainter(
                             radius: 4,
-                            color: Colors.white,
+                            color: Color(0xFF2C3E50),
                             strokeWidth: 2,
                             strokeColor: const Color(0xFF667eea),
                           );
@@ -264,7 +264,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Color(0xFF2C3E50),
                 shadows: [
                   Shadow(
                     color: Colors.black26,
@@ -325,7 +325,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
-                      color: Colors.white,
+                      color: Color(0xFF2C3E50),
                     ),
                   ),
                 ),
@@ -333,7 +333,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   '${word['count']}回',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white.withOpacity(0.7),
+                    color: Color(0xFF546E7A).withOpacity(0.7),
                   ),
                 ),
               ],
@@ -424,7 +424,7 @@ class _StatCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Color(0xFF2C3E50),
             ),
           ),
           const SizedBox(height: 4),
@@ -432,7 +432,7 @@ class _StatCard extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.white.withOpacity(0.7),
+              color: Color(0xFF546E7A).withOpacity(0.7),
             ),
           ),
         ],
