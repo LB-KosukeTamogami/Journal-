@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "description": "Journal-based English Learning App",
   "scripts": {
-    "build": "if command -v flutter >/dev/null 2>&1; then flutter build web --release; else curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.16.0-stable.tar.xz | tar xJ && export PATH=\"$PATH:`pwd`/flutter/bin\" && flutter build web --release; fi",
-    "vercel-build": "if command -v flutter >/dev/null 2>&1; then flutter build web --release; else curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.16.0-stable.tar.xz | tar xJ && export PATH=\"$PATH:`pwd`/flutter/bin\" && flutter doctor && flutter build web --release; fi"
+    "install-flutter": "if [ ! -d 'flutter' ]; then curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.16.0-stable.tar.xz | tar xJ; fi",
+    "vercel-build": "npm run install-flutter && export PATH=\"$PATH:`pwd`/flutter/bin\" && flutter --version && flutter pub get && flutter build web --release --web-renderer html",
+    "build": "flutter build web --release --web-renderer html"
   },
   "devDependencies": {},
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   }
 }
