@@ -342,51 +342,6 @@ class _JournalScreenState extends State<JournalScreen> {
                 padding: const EdgeInsets.all(16),
                 onTap: () {
                   Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const DiaryCreationScreen(),
-                    ),
-                  ).then((_) => _loadEntries());
-                },
-                child: Row(
-                          children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryBlue.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.edit_note,
-                        color: AppTheme.primaryBlue,
-                      ),
-                    ),
-                            const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '日記を書く',
-                            style: AppTheme.body1.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                          Text(
-                            '自分で日記を書きます',
-                            style: AppTheme.caption,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              AppCard(
-                padding: const EdgeInsets.all(16),
-                onTap: () {
-                  Navigator.pop(context);
                   // TODO: 会話ジャーナル画面への遷移
                 },
                 child: Row(

@@ -104,11 +104,11 @@ class LilyService {
 
   /// 状況に応じたメッセージを自動選択
   static String getContextualMessage({
-    int streakDays = 0,
-    int completedMissions = 0,
+    required int streakDays,
+    required int completedMissions, 
+    required List<DiaryEntry> recentEntries,
     bool isFirstVisit = false,
     bool justCompletedMission = false,
-    List<DiaryEntry> recentEntries = const [],
   }) {
     if (isFirstVisit) {
       return 'はじめまして！私はLilyです😊 一緒に英語学習を楽しみましょう！';

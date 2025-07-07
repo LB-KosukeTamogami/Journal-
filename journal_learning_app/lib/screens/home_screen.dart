@@ -373,10 +373,11 @@ class _HomeScreenState extends State<HomeScreen> {
               color: AppTheme.info.withOpacity(0.2),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              Icons.tips_and_updates,
-              color: AppTheme.info,
-              size: 20,
+            child: Center(
+              child: Text(
+                '🌸',
+                style: TextStyle(fontSize: 20),
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -385,7 +386,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Lily からのアドバイス',
+                  'Lily からのメッセージ',
                   style: AppTheme.body2.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppTheme.info,

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
+import '../models/word.dart';
+import '../services/storage_service.dart';
+import 'flashcard_session_screen.dart';
 
 class LearningScreen extends StatefulWidget {
   const LearningScreen({super.key});
@@ -11,42 +14,28 @@ class LearningScreen extends StatefulWidget {
 
 class _LearningScreenState extends State<LearningScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
-  // サンプルの暗記カードデータ
-  final List<Map<String, dynamic>> _flashcards = [
-    {
-      'id': '1',
-      'word': 'accomplish',
-      'meaning': '達成する、成し遂げる',
-      'example': 'I want to accomplish my goals this year.',
-      'exampleJp': '今年は目標を達成したいです。',
-      'learned': false,
-      'difficulty': 'medium',
-    },
-    {
-      'id': '2',
-      'word': 'grateful',
-      'meaning': '感謝している',
-      'example': 'I am grateful for your help.',
-      'exampleJp': 'あなたの助けに感謝しています。',
-      'learned': false,
-      'difficulty': 'easy',
-    },
-    {
-      'id': '3',
-      'word': 'persevere',
-      'meaning': '忍耐する、頑張り抜く',
-      'example': 'We must persevere through difficult times.',
-      'exampleJp': '困難な時期を乗り越えなければなりません。',
-      'learned': true,
-      'difficulty': 'hard',
-    },
-  ];
+  List<Word> _allWords = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _loadWords();
+  }
+
+  Future<void> _loadWords() async {
+    try {
+      final words = await StorageService.getWords();
+      setState(() {
+        _allWords = words;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -94,14 +83,18 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           ),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildCardList(_flashcards),
-          _buildCardList(_flashcards.where((card) => !card['learned']).toList()),
-          _buildCardList(_flashcards.where((card) => card['learned']).toList()),
-        ],
-      ),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(color: AppTheme.primaryBlue),
+            )
+          : TabBarView(
+              controller: _tabController,
+              children: [
+                _buildCardList(_allWords),
+                _buildCardList(_allWords.where((word) => !word.isMastered).toList()),
+                _buildCardList(_allWords.where((word) => word.isMastered).toList()),
+              ],
+            ),
       floatingActionButton: Container(
         decoration: BoxDecoration(
           boxShadow: AppTheme.buttonShadow,
@@ -119,8 +112,8 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     );
   }
 
-  Widget _buildCardList(List<Map<String, dynamic>> cards) {
-    if (cards.isEmpty) {
+  Widget _buildCardList(List<Word> words) {
+    if (words.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -135,6 +128,11 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
               'カードがありません',
               style: AppTheme.body1.copyWith(color: AppTheme.textSecondary),
             ),
+            const SizedBox(height: 8),
+            Text(
+              '日記を書いて単語を登録しましょう',
+              style: AppTheme.body2.copyWith(color: AppTheme.textTertiary),
+            ),
           ],
         ),
       );
@@ -142,16 +140,15 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: cards.length,
+      itemCount: words.length,
       itemBuilder: (context, index) {
-        final card = cards[index];
+        final word = words[index];
         return _FlashcardItem(
-          card: card,
-          onTap: () => _showCardDetail(card),
-          onToggleLearned: () {
-            setState(() {
-              card['learned'] = !card['learned'];
-            });
+          word: word,
+          onTap: () => _showCardDetail(word),
+          onToggleLearned: () async {
+            await StorageService.updateWordReview(word.id, mastered: !word.isMastered);
+            _loadWords();
           },
         ).animate().fadeIn(
           delay: Duration(milliseconds: index * 50),
@@ -161,7 +158,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     );
   }
 
-  void _showCardDetail(Map<String, dynamic> card) {
+  void _showCardDetail(Word word) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -198,7 +195,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  card['word'],
+                  word.english,
                   style: AppTheme.headline2,
                 ),
                 Container(
@@ -217,7 +214,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
             ),
             const SizedBox(height: 8),
             Text(
-              card['meaning'],
+              word.japanese,
               style: AppTheme.body1.copyWith(fontSize: 18),
             ),
             const SizedBox(height: 20),
@@ -245,15 +242,24 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    card['example'],
-                    style: AppTheme.body1,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    card['exampleJp'],
-                    style: AppTheme.body2,
-                  ),
+                  if (word.example != null) ...[
+                    Text(
+                      word.example!,
+                      style: AppTheme.body1,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '例文',
+                      style: AppTheme.body2,
+                    ),
+                  ] else
+                    Text(
+                      '例文なし',
+                      style: AppTheme.body2.copyWith(
+                        color: AppTheme.textTertiary,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -281,14 +287,13 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                       const SizedBox(width: 12),
                       Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        card['learned'] = !card['learned'];
-                      });
+                    onPressed: () async {
+                      await StorageService.updateWordReview(word.id, mastered: !word.isMastered);
                       Navigator.pop(context);
+                      _loadWords();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: card['learned'] 
+                      backgroundColor: word.isMastered 
                           ? AppTheme.warning
                           : AppTheme.success,
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -297,11 +302,11 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                       ),
                     ),
                     icon: Icon(
-                      card['learned'] ? Icons.close : Icons.check,
+                      word.isMastered ? Icons.close : Icons.check,
                       size: 20,
                     ),
                     label: Text(
-                      card['learned'] ? '未習得に戻す' : '習得済みにする',
+                      word.isMastered ? '未習得に戻す' : '習得済みにする',
                       style: const TextStyle(fontSize: 12),
                     ),
                   ),
@@ -316,7 +321,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
   }
 
   void _startFlashcardSession() {
-    final unlearned = _flashcards.where((card) => !card['learned']).toList();
+    final unlearned = _allWords.where((word) => !word.isMastered).toList();
     if (unlearned.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -326,17 +331,23 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
       );
       return;
     }
-    // TODO: フラッシュカード学習画面への遷移
+    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FlashcardSessionScreen(words: unlearned),
+      ),
+    ).then((_) => _loadWords());
   }
 }
 
 class _FlashcardItem extends StatelessWidget {
-  final Map<String, dynamic> card;
+  final Word word;
   final VoidCallback onTap;
   final VoidCallback onToggleLearned;
 
   const _FlashcardItem({
-    required this.card,
+    required this.word,
     required this.onTap,
     required this.onToggleLearned,
   });
@@ -354,16 +365,16 @@ class _FlashcardItem extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: _getDifficultyColor(card['difficulty']).withOpacity(0.1),
+                color: AppTheme.primaryBlue.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Center(
                 child: Text(
-                  card['word'][0].toUpperCase(),
+                  word.english[0].toUpperCase(),
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: _getDifficultyColor(card['difficulty']),
+                    color: AppTheme.primaryBlue,
                   ),
                 ),
               ),
@@ -374,7 +385,7 @@ class _FlashcardItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    card['word'],
+                    word.english,
                     style: AppTheme.body1.copyWith(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -382,7 +393,7 @@ class _FlashcardItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    card['meaning'],
+                    word.japanese,
                     style: AppTheme.body2,
                   ),
                 ],
@@ -391,8 +402,8 @@ class _FlashcardItem extends StatelessWidget {
             IconButton(
               onPressed: onToggleLearned,
               icon: Icon(
-                card['learned'] ? Icons.check_circle : Icons.circle_outlined,
-                color: card['learned'] ? AppTheme.success : AppTheme.textTertiary,
+                word.isMastered ? Icons.check_circle : Icons.circle_outlined,
+                color: word.isMastered ? AppTheme.success : AppTheme.textTertiary,
                 size: 24,
               ),
             ),
@@ -402,16 +413,4 @@ class _FlashcardItem extends StatelessWidget {
     );
   }
 
-  Color _getDifficultyColor(String difficulty) {
-    switch (difficulty) {
-      case 'easy':
-        return AppTheme.success;
-      case 'medium':
-        return AppTheme.warning;
-      case 'hard':
-        return AppTheme.error;
-      default:
-        return AppTheme.textTertiary;
-    }
-  }
 }

@@ -584,4 +584,117 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
       TextSpan(children: spans),
     );
   }
+
+  void _showWordDetail(String english, String japanese) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.backgroundPrimary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            Icon(
+              Icons.translate,
+              color: AppTheme.primaryBlue,
+              size: 24,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              '単語の意味',
+              style: AppTheme.headline3,
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppTheme.backgroundSecondary,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'English',
+                    style: AppTheme.caption.copyWith(
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    english,
+                    style: AppTheme.headline3.copyWith(
+                      color: AppTheme.primaryBlue,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    '日本語',
+                    style: AppTheme.caption.copyWith(
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    japanese,
+                    style: AppTheme.headline3,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  final word = Word(
+                    id: const Uuid().v4(),
+                    english: english,
+                    japanese: japanese,
+                    createdAt: DateTime.now(),
+                  );
+                  
+                  setState(() {
+                    _selectedWords.add(word);
+                  });
+                  
+                  Navigator.pop(context);
+                  
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('単語帳に追加しました'),
+                      backgroundColor: AppTheme.success,
+                      behavior: SnackBarBehavior.floating,
+                      margin: const EdgeInsets.all(16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.add),
+                label: const Text('単語帳に追加'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryBlue,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('閉じる', style: AppTheme.body2),
+          ),
+        ],
+      ),
+    );
+  }
 }
