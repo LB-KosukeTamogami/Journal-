@@ -126,13 +126,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ).animate().fadeIn(duration: 300.ms).slideX(begin: -0.1, end: 0),
               ),
 
-              // 今日の日記作成ボタン
-              SliverToBoxAdapter(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  child: _buildCreateDiaryCard(),
-                ).animate().fadeIn(delay: 100.ms, duration: 300.ms).slideX(begin: -0.1, end: 0),
-              ),
 
               // Lilyからのメッセージ
               if (_lilyMessage.isNotEmpty)
