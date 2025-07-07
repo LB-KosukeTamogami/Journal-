@@ -7,6 +7,7 @@ import '../services/translation_service.dart';
 import '../services/mission_service.dart';
 import '../theme/app_theme.dart';
 import '../models/word.dart';
+import 'diary_review_screen.dart';
 
 class DiaryCreationScreen extends StatefulWidget {
   final DiaryEntry? existingEntry;
@@ -160,11 +161,22 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
       );
 
       if (mounted) {
-        Navigator.pop(context, entry);
-        _showSnackBar(
-          widget.existingEntry != null ? '日記を更新しました' : '日記を作成しました',
-          isError: false,
-        );
+        // 編集の場合は通常通り戻る
+        if (widget.existingEntry != null) {
+          Navigator.pop(context, entry);
+          _showSnackBar('日記を更新しました', isError: false);
+        } else {
+          // 新規作成の場合はレビュー画面に遷移
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DiaryReviewScreen(
+                entry: entry,
+                detectedLanguage: _detectedLanguage,
+              ),
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -254,25 +266,33 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
           ),
           actions: [
             if (_hasChanges)
-              TextButton(
-                onPressed: _isLoading ? null : _saveDiary,
-                child: _isLoading
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            AppTheme.primaryBlue,
+              Container(
+                margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _saveDiary,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryBlue,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: _isLoading
+                      ? SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
+                        )
+                      : Text(
+                          '保存',
+                          style: AppTheme.button.copyWith(fontSize: 14),
                         ),
-                      )
-                    : Text(
-                        '保存',
-                        style: AppTheme.button.copyWith(
-                          color: AppTheme.primaryBlue,
-                        ),
-                      ),
+                ),
               ),
           ],
         ),
