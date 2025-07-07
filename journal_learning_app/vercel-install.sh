@@ -19,7 +19,7 @@ tar xf flutter.tar.xz
 export PATH="$HOME/.flutter/flutter/bin:$PATH"
 
 # Return to the original directory
-cd $VERCEL_PATH0/journal_learning_app
+cd /vercel/path0/journal_learning_app
 
 # Disable analytics
 flutter config --no-analytics || true

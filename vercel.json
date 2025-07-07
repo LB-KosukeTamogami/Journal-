@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "cd journal_learning_app && ./vercel-install.sh",
+  "buildCommand": "./journal_learning_app/vercel-install.sh",
   "outputDirectory": "journal_learning_app/build/web",
   "installCommand": "echo 'No install needed'",
   "framework": null,
