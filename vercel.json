@@ -1,13 +1,3 @@
 {
-  "version": 2,
-  "buildCommand": null,
-  "outputDirectory": "journal_learning_app/build/web",
-  "installCommand": null,
-  "framework": null,
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
+  "outputDirectory": "journal_learning_app/build/web"
 }
