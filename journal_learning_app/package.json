@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Journal-based English Learning App",
   "scripts": {
-    "vercel-build": "./build.sh",
+    "vercel-build": "./vercel-install.sh",
     "build": "./build.sh"
   },
   "devDependencies": {},

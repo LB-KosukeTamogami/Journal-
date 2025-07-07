@@ -32,8 +32,7 @@ migrate_working_dir/
 .pub/
 # /build/
 # Vercelデプロイのためビルドファイルをコミット
-/build/*
-!/build/web/
+# GitHubActionsでビルドしてコミットする
 
 # Symbolication related
 app.*.symbols

@@ -1,0 +1,24 @@
+# Flutter source files
+lib/
+test/
+android/
+ios/
+linux/
+macos/
+windows/
+web/icons/
+web/manifest.json
+web/favicon.png
+.dart_tool/
+.idea/
+.vscode/
+.metadata
+analysis_options.yaml
+pubspec.yaml
+pubspec.lock
+README.md
+
+# Build scripts that won't be needed
+build.sh
+vercel-build.sh
+vercel-install.sh

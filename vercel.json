@@ -1,8 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "cd journal_learning_app && npm run vercel-build",
+  "buildCommand": false,
   "outputDirectory": "journal_learning_app/build/web",
-  "installCommand": "cd journal_learning_app && npm install",
   "framework": null,
   "routes": [
     {
