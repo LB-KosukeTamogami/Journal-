@@ -93,7 +93,6 @@ coverage/
 **/android/**/GeneratedPluginRegistrant.java
 
 # Web related
-lib/generated_plugin_registrant.dart
 
 # Flutter SDK downloads
 flutter_macos.zip
