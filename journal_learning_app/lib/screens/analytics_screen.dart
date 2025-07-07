@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../widgets/glass_container.dart';
 import '../theme/app_theme.dart';
-import 'dart:ui';
+import '../services/storage_service.dart';
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
@@ -14,74 +13,100 @@ class AnalyticsScreen extends StatefulWidget {
 
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
   String _selectedPeriod = '週間';
+  Map<String, int> _analyticsData = {};
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAnalyticsData();
+  }
+
+  Future<void> _loadAnalyticsData() async {
+    try {
+      final data = await StorageService.getAnalyticsData();
+      setState(() {
+        _analyticsData = data;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  String _formatWordCount(int count) {
+    if (count >= 1000) {
+      return '${(count / 1000).toStringAsFixed(1)}k';
+    }
+    return count.toString();
+  }
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      extendBodyBehindAppBar: true,
+      backgroundColor: AppTheme.backgroundSecondary,
       appBar: AppBar(
-        title: const Text(
-          'Analytics',
-          style: TextStyle(
-            color: Color(0xFF2C3E50),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Colors.transparent,
+        title: Text('Analytics', style: AppTheme.headline3),
+        backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 100, 16, 100),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 統計カード
-            Row(
-              children: [
-                Expanded(
-                  child: _StatCard(
-                    title: '連続記録',
-                    value: '7',
-                    unit: '日',
-                    icon: Icons.local_fire_department,
-                    color: Colors.orange,
-                  ).animate().fadeIn().scale(delay: 100.ms),
-                ),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(color: AppTheme.primaryBlue),
+            )
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 統計カード
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _StatCard(
+                          title: '連続記録',
+                          value: (_analyticsData['currentStreak'] ?? 0).toString(),
+                          unit: '日',
+                          icon: Icons.local_fire_department,
+                          color: AppTheme.warning,
+                        ).animate().fadeIn().scale(delay: 100.ms),
+                      ),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: _StatCard(
-                    title: '総日記数',
-                    value: '42',
-                    unit: '件',
-                    icon: Icons.book,
-                    color: Colors.blue,
-                  ).animate().fadeIn().scale(delay: 200.ms),
-                ),
+                      Expanded(
+                        child: _StatCard(
+                          title: '総日記数',
+                          value: (_analyticsData['totalEntries'] ?? 0).toString(),
+                          unit: '件',
+                          icon: Icons.book,
+                          color: AppTheme.primaryBlue,
+                        ).animate().fadeIn().scale(delay: 200.ms),
+                      ),
               ],
             ),
             const SizedBox(height: 12),
             Row(
               children: [
-                Expanded(
-                  child: _StatCard(
-                    title: '総単語数',
-                    value: '3,256',
-                    unit: '語',
-                    icon: Icons.text_fields,
-                    color: Colors.green,
-                  ).animate().fadeIn().scale(delay: 300.ms),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _StatCard(
-                    title: '習得単語',
-                    value: '128',
-                    unit: '個',
-                    icon: Icons.school,
-                    color: Colors.purple,
-                  ).animate().fadeIn().scale(delay: 400.ms),
-                ),
+                      Expanded(
+                        child: _StatCard(
+                          title: '総単語数',
+                          value: _formatWordCount(_analyticsData['totalWords'] ?? 0),
+                          unit: '語',
+                          icon: Icons.text_fields,
+                          color: AppTheme.success,
+                        ).animate().fadeIn().scale(delay: 300.ms),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _StatCard(
+                          title: '習得単語',
+                          value: (_analyticsData['learnedWords'] ?? 0).toString(),
+                          unit: '個',
+                          icon: Icons.school,
+                          color: AppTheme.info,
+                        ).animate().fadeIn().scale(delay: 400.ms),
+                      ),
               ],
             ),
             
@@ -294,7 +319,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       children: words.map((word) {
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
-          child: GlassContainer(
+          child: AppCard(
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
@@ -378,7 +403,7 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassContainer(
+    return AppCard(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -389,7 +414,7 @@ class _StatCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
+                  color: color.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -401,8 +426,8 @@ class _StatCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(8),
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: color.withOpacity(0.3),
                     width: 1,
@@ -410,10 +435,9 @@ class _StatCard extends StatelessWidget {
                 ),
                 child: Text(
                   unit,
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: AppTheme.caption.copyWith(
                     color: color,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -422,21 +446,66 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2C3E50),
+            style: AppTheme.headline1.copyWith(
+              fontSize: 28,
+              color: AppTheme.textPrimary,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             title,
-            style: TextStyle(
-              fontSize: 14,
-              color: Color(0xFF546E7A).withOpacity(0.7),
+            style: AppTheme.body2.copyWith(
+              color: AppTheme.textSecondary,
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class AppCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsets? padding;
+  final Color? backgroundColor;
+  final VoidCallback? onTap;
+
+  const AppCard({
+    super.key,
+    required this.child,
+    this.padding,
+    this.backgroundColor,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor ?? AppTheme.backgroundPrimary,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+        border: Border.all(
+          color: AppTheme.borderColor,
+          width: 1,
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: padding ?? const EdgeInsets.all(16),
+            child: child,
+          ),
+        ),
       ),
     );
   }

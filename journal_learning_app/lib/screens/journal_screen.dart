@@ -337,45 +337,13 @@ class _JournalScreenState extends State<JournalScreen> {
                 '新しい日記を作成',
                 style: AppTheme.headline2,
               ),
-              const SizedBox(height: 20),
-              AppCard(
-                padding: const EdgeInsets.all(16),
-                onTap: () {
-                  Navigator.pop(context);
-                  // TODO: 会話ジャーナル画面への遷移
-                },
-                child: Row(
-                          children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: AppTheme.warning.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.chat,
-                        color: AppTheme.warning,
-                      ),
-                    ),
-                            const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '会話ジャーナル',
-                            style: AppTheme.body1.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                          Text(
-                            'AIとの会話で日記を作成',
-                            style: AppTheme.caption,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 16),
+              Text(
+                '右下のボタンから日記を作成できます',
+                style: AppTheme.body2.copyWith(
+                  color: AppTheme.textSecondary,
                 ),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
             ],

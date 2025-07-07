@@ -72,11 +72,31 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                   color: AppTheme.primaryBlue,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                indicatorPadding: const EdgeInsets.all(2),
+                indicatorPadding: EdgeInsets.zero,
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelStyle: AppTheme.body2.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                unselectedLabelStyle: AppTheme.body2,
                 tabs: const [
-                  Tab(text: 'すべて'),
-                  Tab(text: '学習中'),
-                  Tab(text: '習得済み'),
+                  Tab(
+                    child: Container(
+                      width: double.infinity,
+                      child: Center(child: Text('すべて')),
+                    ),
+                  ),
+                  Tab(
+                    child: Container(
+                      width: double.infinity,
+                      child: Center(child: Text('学習中')),
+                    ),
+                  ),
+                  Tab(
+                    child: Container(
+                      width: double.infinity,
+                      child: Center(child: Text('習得済み')),
+                    ),
+                  ),
                 ],
               ),
             ),
