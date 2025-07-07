@@ -93,7 +93,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.success,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
