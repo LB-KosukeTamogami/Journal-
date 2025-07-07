@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Journal英語学習アプリ</title>
+  <script>
+    // 404エラー時にindex.htmlへリダイレクト
+    const path = window.location.pathname;
+    const base = '/Journal-/';
+    if (path.startsWith(base)) {
+      window.location.replace(base);
+    } else {
+      window.location.replace('/');
+    }
+  </script>
+</head>
+<body>
+  <p>Redirecting...</p>
+</body>
+</html>
