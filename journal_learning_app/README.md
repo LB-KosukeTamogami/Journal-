@@ -7,7 +7,21 @@
 このアプリケーションはGitHub Pagesで自動デプロイされます。
 
 ### デプロイURL：
+
+#### Vercel (推奨):
+https://journal-fawn-three.vercel.app/
+
+#### GitHub Pages:
 https://lb-kosuketamogami.github.io/Journal-/
+
+### Vercelデプロイ手順：
+
+1. Vercelでプロジェクトをインポート
+2. リポジトリを選択: `LB-KosukeTamogami/Journal-`
+3. Framework Presetは "Other" を選択
+4. Build Commandを空欄に設定
+5. Output Directoryを `journal_learning_app/build/web` に設定
+6. Deploy
 
 ### GitHub Pages設定手順：
 1. GitHubリポジトリの Settings > Pages に移動

@@ -1,0 +1,28 @@
+# Flutter source files
+journal_learning_app/lib/
+journal_learning_app/test/
+journal_learning_app/android/
+journal_learning_app/ios/
+journal_learning_app/linux/
+journal_learning_app/macos/
+journal_learning_app/windows/
+journal_learning_app/.dart_tool/
+journal_learning_app/.idea/
+journal_learning_app/pubspec.*
+
+# Build artifacts
+journal_learning_app/build/
+!journal_learning_app/build/web/
+
+# Git and GitHub
+.git/
+.github/
+.gitignore
+
+# Documentation
+*.md
+LICENSE
+
+# Misc
+.DS_Store
+*.zip
