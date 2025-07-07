@@ -5,8 +5,7 @@ import '../models/mission.dart';
 import '../services/mission_service.dart';
 import '../services/storage_service.dart';
 import '../services/lily_service.dart';
-import '../widgets/glass_container.dart';
-import 'dart:ui';
+import '../theme/app_theme.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentStreak = 0;
   int _totalDays = 0;
   String _lilyMessage = '';
+  DateTime _today = DateTime.now();
 
   @override
   void initState() {
@@ -70,17 +70,19 @@ class _HomeScreenState extends State<HomeScreen> {
       final index = _missions.indexWhere((m) => m.id == mission.id);
       if (index != -1) {
         _missions[index] = updatedMission;
-        // Lilyのお祝いメッセージを表示
         _lilyMessage = LilyService.getMissionCompleteMessage();
       }
     });
     
-    // スナックバーでもお祝い
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(LilyService.getMissionCompleteMessage()),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 3),
+        backgroundColor: AppTheme.success,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
     );
   }
@@ -88,241 +90,331 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 16),
-            
-            // Welcome Header
-            GlassContainer(
-              padding: const EdgeInsets.all(20),
-              margin: const EdgeInsets.only(bottom: 24),
-              child: Row(
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+      backgroundColor: AppTheme.backgroundSecondary,
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: _loadData,
+          color: AppTheme.primaryBlue,
+          child: CustomScrollView(
+            slivers: [
+              // Header
+              SliverToBoxAdapter(
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _getGreeting(),
+                        style: AppTheme.headline1,
                       ),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.blue.withOpacity(0.3),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.waving_hand,
-                      color: Color(0xFF2C3E50),
-                      size: 24,
-                    ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${_today.month}月${_today.day}日 ${_getDayOfWeek()}曜日',
+                        style: AppTheme.body2,
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'おかえりなさい！',
-                          style: TextStyle(
-                            color: Color(0xFF2C3E50),
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '今日も素晴らしい学習の時間にしましょう ✨',
-                          style: TextStyle(
-                            color: Color(0xFF546E7A),
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.3, end: 0),
 
-            // Lilyからのメッセージカード
-            GlassContainer(
-              padding: const EdgeInsets.all(20),
-              margin: const EdgeInsets.only(bottom: 24),
-              gradient: [
-                Color(0xFF4A90E2).withOpacity(0.15),
-                Color(0xFF5E9ED6).withOpacity(0.1),
-              ],
-              child: Row(
-                children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Color(0xFF546E7A).withOpacity(0.2),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Color(0xFF546E7A).withOpacity(0.3),
-                        width: 2,
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.sentiment_very_satisfied,
-                      size: 32,
-                      color: Color(0xFF2C3E50),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Lily より 💫',
-                          style: TextStyle(
-                            color: Color(0xFF2C3E50),
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _lilyMessage.isNotEmpty 
-                            ? _lilyMessage
-                            : _currentStreak > 0 
-                                ? '$_currentStreak日連続で頑張っています！' 
-                                : '今日も一緒に英語を学びましょう！',
-                          style: TextStyle(
-                            color: Color(0xFF2C3E50).withOpacity(0.95),
-                            fontSize: 14,
-                            height: 1.4,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              // 連続記録カード
+              SliverToBoxAdapter(
+                child: Container(
+                  margin: const EdgeInsets.all(20),
+                  child: _buildStreakCard(),
+                ).animate().fadeIn(duration: 300.ms).slideX(begin: -0.1, end: 0),
               ),
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // 日記作成ボタン
-            AnimatedGlassCard(
-              width: double.infinity,
-              height: 56,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const DiaryCreationScreen(),
-                  ),
-                );
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFF546E7A), Color(0xFF546E7A).withOpacity(0.7)],
-                      ),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0xFF546E7A).withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.add_circle_outline,
-                      color: Color(0xFF4A90E2),
-                      size: 18,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Text(
-                    '新しい日記を書く',
-                    style: TextStyle(
-                      color: Color(0xFF4A90E2),
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+
+              // 今日の日記作成ボタン
+              SliverToBoxAdapter(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  child: _buildCreateDiaryCard(),
+                ).animate().fadeIn(delay: 100.ms, duration: 300.ms).slideX(begin: -0.1, end: 0),
               ),
-            ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.3, end: 0),
-            
-            const SizedBox(height: 32),
-            
-            // 今日のミッション
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  '今日のミッション',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2C3E50),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {},
+
+              // Lilyからのメッセージ
+              if (_lilyMessage.isNotEmpty)
+                SliverToBoxAdapter(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Color(0xFF546E7A).withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: Color(0xFF546E7A).withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: const Text(
-                      'すべて見る',
-                      style: TextStyle(
-                        color: Color(0xFF4A90E2),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                    margin: const EdgeInsets.all(20),
+                    child: _buildLilyMessageCard(),
+                  ).animate().fadeIn(delay: 200.ms, duration: 300.ms).slideX(begin: -0.1, end: 0),
+                ),
+
+              // ミッションセクション
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+                  child: Text(
+                    '今日のミッション',
+                    style: AppTheme.headline3,
+                  ),
+                ),
+              ),
+
+              // ミッションリスト
+              if (_isLoading)
+                SliverToBoxAdapter(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: CircularProgressIndicator(
+                        color: AppTheme.primaryBlue,
                       ),
                     ),
                   ),
+                )
+              else if (_missions.isEmpty)
+                SliverToBoxAdapter(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.check_circle_outline,
+                            size: 64,
+                            color: AppTheme.textTertiary,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            '今日のミッションはありません',
+                            style: AppTheme.body2,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              else
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final mission = _missions[index];
+                      return Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 6,
+                        ),
+                        child: _MissionCard(
+                          mission: mission,
+                          onToggle: () => _toggleMission(mission),
+                        ),
+                      ).animate().fadeIn(
+                        delay: Duration(milliseconds: 300 + index * 50),
+                        duration: 300.ms,
+                      ).slideX(begin: -0.1, end: 0);
+                    },
+                    childCount: _missions.length,
+                  ),
                 ),
-              ],
-            ),
-            
-            const SizedBox(height: 16),
-            
-            // ミッションリスト
-            if (_isLoading)
-              const Center(child: CircularProgressIndicator(color: Color(0xFF4A90E2)))
-            else
-              ..._missions.map((mission) => Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: _MissionCard(
-                  mission: mission,
-                  onToggle: () => _toggleMission(mission),
-                ),
-              ).animate().fadeIn(
-                delay: Duration(milliseconds: 300 + _missions.indexOf(mission) * 100),
-              ).slideX(begin: 0.2, end: 0)),
-          ],
+
+              // Bottom padding
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 20),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  Widget _buildStreakCard() {
+    return AppCard(
+      child: Row(
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppTheme.primaryBlue,
+                  AppTheme.primaryBlueLight,
+                ],
+              ),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.local_fire_department,
+              color: Colors.white,
+              size: 32,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '連続記録',
+                  style: AppTheme.body2,
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(
+                      '$_currentStreak',
+                      style: AppTheme.headline2.copyWith(
+                        color: AppTheme.primaryBlue,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '日',
+                      style: AppTheme.body2,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '総学習日数',
+                style: AppTheme.caption,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '$_totalDays日',
+                style: AppTheme.body1.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCreateDiaryCard() {
+    return AppCard(
+      backgroundColor: AppTheme.primaryBlue,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const DiaryCreationScreen(),
+          ),
+        );
+      },
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.edit_note_rounded,
+              color: Colors.white,
+              size: 28,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '今日の日記を書く',
+                  style: AppTheme.body1.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '英語で今日の出来事を記録しましょう',
+                  style: AppTheme.body2.copyWith(
+                    color: Colors.white.withOpacity(0.8),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            color: Colors.white.withOpacity(0.6),
+            size: 16,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLilyMessageCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.info.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppTheme.info.withOpacity(0.2),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppTheme.info.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.tips_and_updates,
+              color: AppTheme.info,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Lily からのアドバイス',
+                  style: AppTheme.body2.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.info,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _lilyMessage,
+                  style: AppTheme.body2,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getGreeting() {
+    final hour = _today.hour;
+    if (hour < 5) return 'こんばんは';
+    if (hour < 10) return 'おはようございます';
+    if (hour < 17) return 'こんにちは';
+    return 'こんばんは';
+  }
+
+  String _getDayOfWeek() {
+    const days = ['日', '月', '火', '水', '木', '金', '土'];
+    return days[_today.weekday % 7];
   }
 }
 
@@ -338,168 +430,102 @@ class _MissionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool completed = mission.isCompleted;
-    final String difficulty = _getDifficultyFromType(mission.type);
     final IconData icon = _getIconFromType(mission.type);
+    final Color color = _getColorFromType(mission.type);
     
-    return GlassContainer(
-      opacity: completed ? 0.05 : 0.1,
-      child: InkWell(
-        onTap: completed ? null : onToggle,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: completed 
-                    ? Colors.green.withOpacity(0.2)
-                    : _getDifficultyColor(difficulty).withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  icon,
-                  color: completed 
-                    ? Colors.green
-                    : _getDifficultyColor(difficulty),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      mission.title,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: completed ? Colors.grey[400] : Color(0xFF2C3E50),
-                        decoration: completed ? TextDecoration.lineThrough : null,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      mission.description,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF546E7A),
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: _getDifficultyColor(difficulty).withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: _getDifficultyColor(difficulty).withOpacity(0.3),
-                              width: 1,
-                            ),
-                          ),
-                          child: Text(
-                            difficulty,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: _getDifficultyColor(difficulty),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                        if (completed)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: Colors.green.withOpacity(0.3),
-                                width: 1,
-                              ),
-                            ),
-                            child: Text(
-                              '+${mission.experiencePoints}XP',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.green,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              if (completed)
-                Container(
-                  width: 24,
-                  height: 24,
-                  decoration: const BoxDecoration(
-                    color: Colors.green,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.check,
-                    color: Color(0xFF2C3E50),
-                    size: 16,
-                  ),
-                ),
-            ],
+    return AppCard(
+      onTap: completed ? null : onToggle,
+      backgroundColor: completed ? AppTheme.backgroundTertiary : AppTheme.backgroundPrimary,
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: completed 
+                ? AppTheme.success.withOpacity(0.1)
+                : color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              completed ? Icons.check_circle : icon,
+              color: completed ? AppTheme.success : color,
+              size: 24,
+            ),
           ),
-        ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  mission.title,
+                  style: AppTheme.body1.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: completed ? AppTheme.textTertiary : AppTheme.textPrimary,
+                    decoration: completed ? TextDecoration.lineThrough : null,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  mission.description,
+                  style: AppTheme.body2.copyWith(
+                    color: completed ? AppTheme.textTertiary : AppTheme.textSecondary,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          if (!completed) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryBlue.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                '+${mission.experiencePoints}XP',
+                style: AppTheme.caption.copyWith(
+                  color: AppTheme.primaryBlue,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ],
       ),
     );
-  }
-
-  String _getDifficultyFromType(MissionType type) {
-    // 簡易的な実装 - 実際のアプリではより詳細な分類が必要
-    switch (type) {
-      case MissionType.dailyDiary:
-        return '初級';
-      case MissionType.wordLearning:
-        return '中級';
-      case MissionType.streak:
-        return '上級';
-      case MissionType.review:
-        return '中級';
-      case MissionType.conversation:
-        return '上級';
-    }
   }
 
   IconData _getIconFromType(MissionType type) {
     switch (type) {
       case MissionType.dailyDiary:
-        return Icons.edit;
+        return Icons.edit_note;
       case MissionType.wordLearning:
-        return Icons.school;
+        return Icons.translate;
       case MissionType.streak:
         return Icons.local_fire_department;
       case MissionType.review:
         return Icons.refresh;
       case MissionType.conversation:
-        return Icons.chat;
+        return Icons.chat_bubble_outline;
     }
   }
 
-  Color _getDifficultyColor(String difficulty) {
-    switch (difficulty) {
-      case '初級':
-        return Colors.blue;
-      case '中級':
-        return Colors.orange;
-      case '上級':
-        return Colors.red;
-      default:
-        return Colors.grey;
+  Color _getColorFromType(MissionType type) {
+    switch (type) {
+      case MissionType.dailyDiary:
+        return AppTheme.primaryBlue;
+      case MissionType.wordLearning:
+        return AppTheme.info;
+      case MissionType.streak:
+        return AppTheme.warning;
+      case MissionType.review:
+        return AppTheme.success;
+      case MissionType.conversation:
+        return const Color(0xFF8B5CF6);
     }
   }
 }

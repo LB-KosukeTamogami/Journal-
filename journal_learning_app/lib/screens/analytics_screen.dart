@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../widgets/glass_container.dart';
+import '../theme/app_theme.dart';
 import 'dart:ui';
 
 class AnalyticsScreen extends StatefulWidget {
@@ -311,8 +312,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   child: Center(
                     child: Text(
                       '#${word['rank']}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
+                      style: AppTheme.body2.copyWith(
+                        fontWeight: FontWeight.w600,
                         color: _getRankColor(word['rank'] as int),
                       ),
                     ),

@@ -5,8 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'diary_creation_screen.dart';
 import '../models/diary_entry.dart';
 import '../services/storage_service.dart';
-import '../widgets/glass_container.dart';
-import 'dart:ui';
+import '../theme/app_theme.dart';
 
 class JournalScreen extends StatefulWidget {
   const JournalScreen({super.key});
@@ -84,38 +83,28 @@ class _JournalScreenState extends State<JournalScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      extendBodyBehindAppBar: true,
+      backgroundColor: AppTheme.backgroundSecondary,
       appBar: AppBar(
-        title: const Text(
-          'Journal',
-          style: TextStyle(
-            color: Color(0xFF2C3E50),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Colors.transparent,
+        title: Text('Journal', style: AppTheme.headline3),
+        backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 16),
-            child: GestureDetector(
+            child: InkWell(
               onTap: () {
                 // TODO: 会話ジャーナルへの遷移
               },
+              borderRadius: BorderRadius.circular(12),
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Color(0xFF546E7A).withOpacity(0.2),
+                  color: AppTheme.primaryBlue.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Color(0xFF546E7A).withOpacity(0.3),
-                    width: 1,
-                  ),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.chat_bubble_outline,
-                  color: Color(0xFF2C3E50),
+                  color: AppTheme.primaryBlue,
                   size: 20,
                 ),
               ),
@@ -125,13 +114,10 @@ class _JournalScreenState extends State<JournalScreen> {
       ),
       body: Column(
         children: [
-          // AppBar padding
-          const SizedBox(height: 100),
-          
           // カレンダー
           Container(
             margin: const EdgeInsets.all(16),
-            child: GlassContainer(
+            child: AppCard(
               padding: const EdgeInsets.all(16),
               child: TableCalendar<Map<String, dynamic>>(
               firstDay: DateTime.utc(2020, 1, 1),
@@ -145,34 +131,29 @@ class _JournalScreenState extends State<JournalScreen> {
               startingDayOfWeek: StartingDayOfWeek.monday,
               calendarStyle: CalendarStyle(
                 outsideDaysVisible: false,
-                defaultTextStyle: const TextStyle(color: Color(0xFF2C3E50)),
-                weekendTextStyle: const TextStyle(color: Color(0xFF546E7A)),
+                defaultTextStyle: TextStyle(color: AppTheme.textPrimary),
+                weekendTextStyle: TextStyle(color: AppTheme.textSecondary),
                 selectedDecoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-                  ),
+                  color: AppTheme.primaryBlue,
                   shape: BoxShape.circle,
                 ),
                 todayDecoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
+                  color: AppTheme.primaryBlue.withOpacity(0.3),
                   shape: BoxShape.circle,
+                  border: Border.all(color: AppTheme.primaryBlue, width: 2),
                 ),
                 markerDecoration: BoxDecoration(
-                  color: const Color(0xFF667eea),
+                  color: AppTheme.primaryBlue,
                   shape: BoxShape.circle,
                 ),
                 markersMaxCount: 1,
               ),
-              headerStyle: const HeaderStyle(
+              headerStyle: HeaderStyle(
                 formatButtonVisible: false,
                 titleCentered: true,
-                titleTextStyle: TextStyle(
-                  color: Color(0xFF2C3E50),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-                leftChevronIcon: Icon(Icons.chevron_left, color: Colors.white),
-                rightChevronIcon: Icon(Icons.chevron_right, color: Colors.white),
+                titleTextStyle: AppTheme.headline3,
+                leftChevronIcon: Icon(Icons.chevron_left, color: AppTheme.textPrimary),
+                rightChevronIcon: Icon(Icons.chevron_right, color: AppTheme.textPrimary),
               ),
               onDaySelected: (selectedDay, focusedDay) {
                 if (!isSameDay(_selectedDay, selectedDay)) {
@@ -193,7 +174,7 @@ class _JournalScreenState extends State<JournalScreen> {
                 _focusedDay = focusedDay;
               },
             ),
-            ).animate().fadeIn(duration: 600.ms).slideY(begin: -0.2, end: 0),
+            ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1, end: 0),
           ),
           
           const SizedBox(height: 16),
@@ -201,36 +182,30 @@ class _JournalScreenState extends State<JournalScreen> {
           // 選択された日の日記リスト
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: Color(0xFF4A90E2)))
+                ? Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue))
                 : _selectedDay == null
-                    ? const Center(
+                    ? Center(
                         child: Text(
                           '日付を選択してください',
-                          style: TextStyle(color: Colors.white),
+                          style: AppTheme.body1.copyWith(color: AppTheme.textSecondary),
                         ),
                       )
                     : _buildJournalList(),
           ),
         ],
       ),
-      floatingActionButton: AnimatedGlassCard(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        onTap: () {
-          _showJournalDialog(context);
-        },
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.add, color: Colors.white),
-            SizedBox(width: 8),
-            Text(
-              '新規作成',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          boxShadow: AppTheme.buttonShadow,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            _showJournalDialog(context);
+          },
+          backgroundColor: AppTheme.primaryBlue,
+          icon: const Icon(Icons.add, color: Colors.white),
+          label: Text('新規作成', style: AppTheme.button),
         ),
       ),
     );
@@ -247,29 +222,21 @@ class _JournalScreenState extends State<JournalScreen> {
             Icon(
               Icons.note_add,
               size: 64,
-              color: Color(0xFF546E7A).withOpacity(0.6),
+              color: AppTheme.textTertiary,
             ),
             const SizedBox(height: 16),
             Text(
               '${DateFormat('M月d日').format(_selectedDay!)}の日記はまだありません',
-              style: TextStyle(
-                fontSize: 16,
-                color: Color(0xFF546E7A).withOpacity(0.8),
-              ),
+              style: AppTheme.body1.copyWith(color: AppTheme.textSecondary),
             ),
-            const SizedBox(height: 8),
-            AnimatedGlassCard(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              onTap: () {
+            const SizedBox(height: 24),
+            PrimaryButton(
+              text: '日記を書く',
+              onPressed: () {
                 _showJournalDialog(context);
               },
-              child: const Text(
-                '日記を書く',
-                style: TextStyle(
-                  color: Color(0xFF2C3E50),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              icon: Icons.edit,
+              fullWidth: false,
             ),
           ],
         ),
@@ -283,7 +250,7 @@ class _JournalScreenState extends State<JournalScreen> {
         final journal = journals[index];
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
-          child: AnimatedGlassCard(
+          child: AppCard(
             onTap: () {
               _showDiaryDetail(context, journal);
             },
@@ -297,21 +264,14 @@ class _JournalScreenState extends State<JournalScreen> {
                     Expanded(
                       child: Text(
                         journal.title,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2C3E50),
-                        ),
+                        style: AppTheme.headline3,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     Text(
                       DateFormat('HH:mm').format(journal.createdAt),
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF546E7A).withOpacity(0.7),
-                      ),
+                      style: AppTheme.caption,
                     ),
                   ],
                 ),
@@ -320,10 +280,7 @@ class _JournalScreenState extends State<JournalScreen> {
                   journal.content,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFF546E7A).withOpacity(0.8),
-                  ),
+                  style: AppTheme.body2,
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -331,23 +288,21 @@ class _JournalScreenState extends State<JournalScreen> {
                     Icon(
                       Icons.edit,
                       size: 16,
-                      color: Color(0xFF546E7A).withOpacity(0.6),
+                      color: AppTheme.textTertiary,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       '${journal.wordCount} words',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF546E7A).withOpacity(0.6),
-                      ),
+                      style: AppTheme.caption,
                     ),
                   ],
                 ),
               ],
             ),
           ).animate().fadeIn(
-            delay: Duration(milliseconds: 100 * index),
-          ).slideX(begin: 0.2, end: 0),
+            delay: Duration(milliseconds: 50 * index),
+            duration: 300.ms,
+          ).slideX(begin: 0.1, end: 0),
         );
       },
     );
@@ -359,155 +314,125 @@ class _JournalScreenState extends State<JournalScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        decoration: BoxDecoration(
+          color: AppTheme.backgroundPrimary,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, -5),
+            ),
+          ],
         ),
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color(0xFF546E7A).withOpacity(0.15),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                border: Border.all(
-                  color: Color(0xFF546E7A).withOpacity(0.2),
-                  width: 1,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppTheme.textTertiary,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
+              const SizedBox(height: 20),
+              Text(
+                '新しい日記を作成',
+                style: AppTheme.headline2,
+              ),
+              const SizedBox(height: 20),
+              AppCard(
+                padding: const EdgeInsets.all(16),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DiaryCreationScreen(),
+                    ),
+                  ).then((_) => _loadEntries());
+                },
+                child: Row(
+                          children: [
                     Container(
-                      width: 40,
-                      height: 4,
+                      width: 48,
+                      height: 48,
                       decoration: BoxDecoration(
-                        color: Color(0xFF546E7A).withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(2),
+                        color: AppTheme.primaryBlue.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.edit_note,
+                        color: AppTheme.primaryBlue,
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      '新しい日記を作成',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2C3E50),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    GlassContainer(
-                      padding: const EdgeInsets.all(16),
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const DiaryCreationScreen(),
-                            ),
-                          ).then((_) => _loadEntries());
-                        },
-                        borderRadius: BorderRadius.circular(16),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF667eea).withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(
-                                Icons.edit_note,
-                                color: Color(0xFF667eea),
-                              ),
-                            ),
                             const SizedBox(width: 16),
-                            const Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '日記を書く',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF2C3E50),
-                                    ),
-                                  ),
-                                  Text(
-                                    '自分で日記を書きます',
-                                    style: TextStyle(
-                                      color: Color(0xFF546E7A),
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '日記を書く',
+                            style: AppTheme.body1.copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          Text(
+                            '自分で日記を書きます',
+                            style: AppTheme.caption,
+                          ),
+                        ],
                       ),
                     ),
-                    GlassContainer(
-                      padding: const EdgeInsets.all(16),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                          // TODO: 会話ジャーナル画面への遷移
-                        },
-                        borderRadius: BorderRadius.circular(16),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: Colors.orange.withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(
-                                Icons.chat,
-                                color: Colors.orange,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            const Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '会話ジャーナル',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF2C3E50),
-                                    ),
-                                  ),
-                                  Text(
-                                    'AIとの会話で日記を作成',
-                                    style: TextStyle(
-                                      color: Color(0xFF546E7A),
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
                   ],
                 ),
               ),
-            ),
+              const SizedBox(height: 12),
+              AppCard(
+                padding: const EdgeInsets.all(16),
+                onTap: () {
+                  Navigator.pop(context);
+                  // TODO: 会話ジャーナル画面への遷移
+                },
+                child: Row(
+                          children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: AppTheme.warning.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.chat,
+                        color: AppTheme.warning,
+                      ),
+                    ),
+                            const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '会話ジャーナル',
+                            style: AppTheme.body1.copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          Text(
+                            'AIとの会話で日記を作成',
+                            style: AppTheme.caption,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
           ),
         ),
       ),
@@ -518,9 +443,13 @@ class _JournalScreenState extends State<JournalScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.backgroundPrimary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
         title: Text(
           journal.title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: AppTheme.headline3,
         ),
         content: SingleChildScrollView(
           child: Column(
@@ -529,15 +458,12 @@ class _JournalScreenState extends State<JournalScreen> {
             children: [
               Text(
                 '作成日: ${DateFormat('yyyy/MM/dd').format(journal.createdAt)}',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 12,
-                ),
+                style: AppTheme.caption,
               ),
               const SizedBox(height: 12),
               Text(
                 journal.content,
-                style: const TextStyle(fontSize: 14, height: 1.5),
+                style: AppTheme.body2.copyWith(height: 1.5),
               ),
             ],
           ),
@@ -545,6 +471,9 @@ class _JournalScreenState extends State<JournalScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              foregroundColor: AppTheme.textSecondary,
+            ),
             child: const Text('閉じる'),
           ),
           TextButton(
@@ -557,6 +486,9 @@ class _JournalScreenState extends State<JournalScreen> {
                 ),
               ).then((_) => _loadEntries());
             },
+            style: TextButton.styleFrom(
+              foregroundColor: AppTheme.primaryBlue,
+            ),
             child: const Text('編集'),
           ),
         ],

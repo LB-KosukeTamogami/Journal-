@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../widgets/glass_container.dart';
-import 'dart:ui';
+import '../theme/app_theme.dart';
 
 class LearningScreen extends StatefulWidget {
   const LearningScreen({super.key});
@@ -59,35 +58,32 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      extendBodyBehindAppBar: true,
+      backgroundColor: AppTheme.backgroundSecondary,
       appBar: AppBar(
-        title: const Text(
-          'Learning',
-          style: TextStyle(
-            color: Color(0xFF2C3E50),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Colors.transparent,
+        title: Text('Learning', style: AppTheme.headline3),
+        backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50),
+          preferredSize: const Size.fromHeight(60),
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
-            child: GlassContainer(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppTheme.backgroundPrimary,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppTheme.borderColor),
+              ),
               padding: const EdgeInsets.all(4),
               child: TabBar(
                 controller: _tabController,
-                labelColor: Color(0xFF2C3E50),
-                unselectedLabelColor: Color(0xFF546E7A),
+                labelColor: Colors.white,
+                unselectedLabelColor: AppTheme.textSecondary,
                 indicator: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
+                  color: AppTheme.primaryBlue,
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                indicatorPadding: const EdgeInsets.all(4),
+                indicatorPadding: const EdgeInsets.all(2),
                 tabs: const [
                   Tab(text: 'すべて'),
                   Tab(text: '学習中'),
@@ -98,35 +94,26 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 140),
-        child: TabBarView(
-          controller: _tabController,
-          children: [
-            _buildCardList(_flashcards),
-            _buildCardList(_flashcards.where((card) => !card['learned']).toList()),
-            _buildCardList(_flashcards.where((card) => card['learned']).toList()),
-          ],
-        ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildCardList(_flashcards),
+          _buildCardList(_flashcards.where((card) => !card['learned']).toList()),
+          _buildCardList(_flashcards.where((card) => card['learned']).toList()),
+        ],
       ),
-      floatingActionButton: AnimatedGlassCard(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        onTap: () {
-          _startFlashcardSession();
-        },
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.play_arrow, color: Color(0xFF2C3E50)),
-            SizedBox(width: 8),
-            Text(
-              '学習を開始',
-              style: TextStyle(
-                color: Color(0xFF2C3E50),
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          boxShadow: AppTheme.buttonShadow,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            _startFlashcardSession();
+          },
+          backgroundColor: AppTheme.primaryBlue,
+          icon: const Icon(Icons.play_arrow, color: Colors.white),
+          label: Text('学習を開始', style: AppTheme.button),
         ),
       ),
     );
@@ -141,15 +128,12 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
             Icon(
               Icons.school_outlined,
               size: 64,
-              color: Color(0xFF546E7A).withOpacity(0.6),
+              color: AppTheme.textTertiary,
             ),
             const SizedBox(height: 16),
             Text(
               'カードがありません',
-              style: TextStyle(
-                fontSize: 16,
-                color: Color(0xFF546E7A).withOpacity(0.8),
-              ),
+              style: AppTheme.body1.copyWith(color: AppTheme.textSecondary),
             ),
           ],
         ),
@@ -170,8 +154,9 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
             });
           },
         ).animate().fadeIn(
-          delay: Duration(milliseconds: index * 100),
-        ).slideX(begin: 0.2, end: 0);
+          delay: Duration(milliseconds: index * 50),
+          duration: 300.ms,
+        ).slideX(begin: 0.1, end: 0);
       },
     );
   }
@@ -182,179 +167,149 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: ClipRRect(
+        decoration: BoxDecoration(
+          color: AppTheme.backgroundPrimary,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color(0xFF546E7A).withOpacity(0.15),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                border: Border.all(
-                  color: Color(0xFF546E7A).withOpacity(0.2),
-                  width: 1,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppTheme.textTertiary,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              padding: const EdgeInsets.all(20),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  card['word'],
+                  style: AppTheme.headline2,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryBlue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: IconButton(
+                    icon: Icon(Icons.volume_up, color: AppTheme.primaryBlue),
+                    onPressed: () {
+                      // TODO: TTS実装
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              card['meaning'],
+              style: AppTheme.body1.copyWith(fontSize: 18),
+            ),
+            const SizedBox(height: 20),
+            AppCard(
+              padding: const EdgeInsets.all(16),
+              backgroundColor: AppTheme.backgroundTertiary,
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Color(0xFF546E7A).withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        card['word'],
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2C3E50),
-                        ),
+                      Icon(
+                        Icons.format_quote,
+                        size: 16,
+                        color: AppTheme.primaryBlue,
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Color(0xFF546E7A).withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.volume_up, color: Color(0xFF2C3E50)),
-                          onPressed: () {
-                            // TODO: TTS実装
-                          },
+                      const SizedBox(width: 4),
+                      Text(
+                        '例文',
+                        style: AppTheme.body2.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.primaryBlue,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    card['meaning'],
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Color(0xFF2C3E50).withOpacity(0.9),
-                    ),
+                    card['example'],
+                    style: AppTheme.body1,
                   ),
-                  const SizedBox(height: 20),
-                  GlassContainer(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.format_quote,
-                              size: 16,
-                              color: Colors.white.withOpacity(0.8),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '例文',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF2C3E50).withOpacity(0.9),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          card['example'],
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFF2C3E50),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          card['exampleJp'],
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF546E7A).withOpacity(0.7),
-                          ),
-                        ),
-                      ],
-                    ),
+                  const SizedBox(height: 4),
+                  Text(
+                    card['exampleJp'],
+                    style: AppTheme.body2,
                   ),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: AnimatedGlassCard(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          onTap: () {
-                            Navigator.pop(context);
-                            // TODO: シャドウイング機能
-                          },
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.mic, color: Color(0xFF2C3E50), size: 20),
-                              SizedBox(width: 8),
-                              Text(
-                                'シャドウイング',
-                                style: TextStyle(color: Color(0xFF2C3E50)),
-                              ),
-                            ],
-                          ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      // TODO: シャドウイング機能
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppTheme.primaryBlue,
+                      side: BorderSide(color: AppTheme.primaryBlue),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    icon: const Icon(Icons.mic, size: 20),
+                    label: const Text('シャドウイング'),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: LiquidContainer(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          colors: card['learned'] 
-                              ? [Colors.orange, Colors.red]
-                              : [Colors.green, Colors.teal],
-                          child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                card['learned'] = !card['learned'];
-                              });
-                              Navigator.pop(context);
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  card['learned'] ? Icons.close : Icons.check,
-                                  color: Color(0xFF2C3E50),
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  card['learned'] ? '未習得に戻す' : '習得済みにする',
-                                  style: const TextStyle(
-                                    color: Color(0xFF2C3E50),
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        card['learned'] = !card['learned'];
+                      });
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: card['learned'] 
+                          ? AppTheme.warning
+                          : AppTheme.success,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    ],
+                    ),
+                    icon: Icon(
+                      card['learned'] ? Icons.close : Icons.check,
+                      size: 20,
+                    ),
+                    label: Text(
+                      card['learned'] ? '未習得に戻す' : '習得済みにする',
+                      style: const TextStyle(fontSize: 12),
+                    ),
                   ),
-                  const SizedBox(height: 20),
-                ],
-              ),
+                ),
+              ],
             ),
-          ),
+            const SizedBox(height: 20),
+          ],
         ),
       ),
     );
@@ -364,8 +319,9 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     final unlearned = _flashcards.where((card) => !card['learned']).toList();
     if (unlearned.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('学習するカードがありません'),
+        SnackBar(
+          content: Text('学習するカードがありません', style: AppTheme.body2.copyWith(color: Colors.white)),
+          backgroundColor: AppTheme.textSecondary,
         ),
       );
       return;
@@ -389,7 +345,7 @@ class _FlashcardItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      child: AnimatedGlassCard(
+      child: AppCard(
         onTap: onTap,
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -398,12 +354,8 @@ class _FlashcardItem extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: _getDifficultyColor(card['difficulty']).withOpacity(0.3),
+                color: _getDifficultyColor(card['difficulty']).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: _getDifficultyColor(card['difficulty']).withOpacity(0.5),
-                  width: 1,
-                ),
               ),
               child: Center(
                 child: Text(
@@ -423,48 +375,25 @@ class _FlashcardItem extends StatelessWidget {
                 children: [
                   Text(
                     card['word'],
-                    style: const TextStyle(
+                    style: AppTheme.body1.copyWith(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2C3E50),
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     card['meaning'],
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF546E7A).withOpacity(0.7),
-                    ),
+                    style: AppTheme.body2,
                   ),
                 ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: card['learned'] 
-                    ? Colors.green.withOpacity(0.2)
-                    : Color(0xFF546E7A).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: card['learned'] 
-                      ? Colors.green.withOpacity(0.5)
-                      : Color(0xFF546E7A).withOpacity(0.3),
-                  width: 1,
-                ),
-              ),
-              child: InkWell(
-                onTap: onToggleLearned,
-                borderRadius: BorderRadius.circular(8),
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Icon(
-                    card['learned'] ? Icons.check_circle : Icons.circle_outlined,
-                    color: card['learned'] ? Colors.green : Color(0xFF546E7A),
-                    size: 24,
-                  ),
-                ),
+            IconButton(
+              onPressed: onToggleLearned,
+              icon: Icon(
+                card['learned'] ? Icons.check_circle : Icons.circle_outlined,
+                color: card['learned'] ? AppTheme.success : AppTheme.textTertiary,
+                size: 24,
               ),
             ),
           ],
@@ -476,13 +405,13 @@ class _FlashcardItem extends StatelessWidget {
   Color _getDifficultyColor(String difficulty) {
     switch (difficulty) {
       case 'easy':
-        return Colors.green;
+        return AppTheme.success;
       case 'medium':
-        return Colors.orange;
+        return AppTheme.warning;
       case 'hard':
-        return Colors.red;
+        return AppTheme.error;
       default:
-        return Colors.grey;
+        return AppTheme.textTertiary;
     }
   }
 }

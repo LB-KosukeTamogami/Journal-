@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'screens/home_screen.dart';
 import 'screens/journal_screen.dart';
 import 'screens/learning_screen.dart';
 import 'screens/analytics_screen.dart';
 import 'screens/my_page_screen.dart';
 import 'services/storage_service.dart';
-import 'widgets/glass_container.dart';
-import 'dart:ui';
+import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,41 +21,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Journal英語学習',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        primaryColor: const Color(0xFF4A90E2),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF4A90E2),
-          brightness: Brightness.light,
-        ),
-        textTheme: GoogleFonts.notoSansTextTheme(
-          Theme.of(context).textTheme,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          ),
-        ),
-        cardTheme: CardThemeData(
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        appBarTheme: const AppBarTheme(
-          elevation: 0,
-          centerTitle: true,
-        ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          selectedItemColor: Color(0xFF4A90E2),
-          unselectedItemColor: Colors.grey,
-          showUnselectedLabels: true,
-          type: BottomNavigationBarType.fixed,
-        ),
-      ),
+      theme: AppTheme.lightTheme,
+      debugShowCheckedModeBanner: false,
       home: const MainNavigationScreen(),
     );
   }
@@ -81,74 +46,48 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     const MyPageScreen(),
   ];
 
+  final List<NavigationItem> _navItems = [
+    NavigationItem(icon: Icons.home_rounded, label: 'ホーム'),
+    NavigationItem(icon: Icons.book_rounded, label: 'ジャーナル'),
+    NavigationItem(icon: Icons.school_rounded, label: '学習'),
+    NavigationItem(icon: Icons.bar_chart_rounded, label: '分析'),
+    NavigationItem(icon: Icons.person_rounded, label: 'マイページ'),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
-      extendBodyBehindAppBar: true,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFE3F2FD),  // Light blue
-              Color(0xFFF3E5F5),  // Light purple
-              Color(0xFFE8F5E9),  // Light green
-              Color(0xFFFFF3E0),  // Light orange
-            ],
-            stops: [0.0, 0.3, 0.6, 1.0],
-          ),
-        ),
-        child: SafeArea(
-          child: IndexedStack(
-            index: _selectedIndex,
-            children: _screens,
-          ),
-        ),
+      backgroundColor: AppTheme.backgroundSecondary,
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _screens,
       ),
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.only(
-          left: 16,
-          right: 16,
-          bottom: 16,
+        decoration: BoxDecoration(
+          color: AppTheme.backgroundPrimary,
+          border: Border(
+            top: BorderSide(color: AppTheme.borderColor),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
+          ],
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-            child: Container(
-              height: 70,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.7),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.8),
-                  width: 1.5,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    blurRadius: 30,
-                    offset: const Offset(0, 10),
-                  ),
-                  BoxShadow(
-                    color: Colors.white.withOpacity(0.5),
-                    blurRadius: 20,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildNavItem(0, Icons.home_rounded, 'Home'),
-                  _buildNavItem(1, Icons.edit_note_rounded, 'Journal'),
-                  _buildNavItem(2, Icons.school_rounded, 'Learning'),
-                  _buildNavItem(3, Icons.analytics_rounded, 'Analytics'),
-                  _buildNavItem(4, Icons.person_rounded, 'My Page'),
-                ],
-              ),
+        child: SafeArea(
+          top: false,
+          child: Container(
+            height: 64,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: _navItems.asMap().entries.map((entry) {
+                final index = entry.key;
+                final item = entry.value;
+                return _buildNavItem(index, item);
+              }).toList(),
             ),
           ),
         ),
@@ -156,60 +95,66 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon, String label) {
+  Widget _buildNavItem(int index, NavigationItem item) {
     final isSelected = _selectedIndex == index;
     
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? Color(0xFF4A90E2).withOpacity(0.2)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? Color(0xFF4A90E2).withOpacity(0.3)
-                    : Colors.transparent,
-                shape: BoxShape.circle,
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          HapticFeedback.selectionClick();
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? AppTheme.primaryBlue.withOpacity(0.1)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Icon(
+                  item.icon,
+                  color: isSelected
+                      ? AppTheme.primaryBlue
+                      : AppTheme.textTertiary,
+                  size: 24,
+                ),
               ),
-              child: Icon(
-                icon,
-                color: isSelected
-                    ? Color(0xFF4A90E2)
-                    : Colors.grey.shade600,
-                size: isSelected ? 22 : 20,
+              const SizedBox(height: 4),
+              Text(
+                item.label,
+                style: AppTheme.caption.copyWith(
+                  color: isSelected
+                      ? AppTheme.primaryBlue
+                      : AppTheme.textTertiary,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-            ),
-            const SizedBox(height: 2),
-            AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 200),
-              style: GoogleFonts.notoSans(
-                color: isSelected
-                    ? Color(0xFF4A90E2)
-                    : Colors.grey.shade600,
-                fontSize: isSelected ? 10 : 9,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-              ),
-              child: Text(label),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+class NavigationItem {
+  final IconData icon;
+  final String label;
+
+  const NavigationItem({
+    required this.icon,
+    required this.label,
+  });
 }
