@@ -1,12 +1,13 @@
 {
+  "version": 2,
+  "buildCommand": "cd journal_learning_app && ./vercel-install.sh",
+  "outputDirectory": "journal_learning_app/build/web",
+  "installCommand": "echo 'No install needed'",
+  "framework": null,
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/journal_learning_app/build/web/index.html"
-    },
-    {
       "source": "/(.*)",
-      "destination": "/journal_learning_app/build/web/$1"
+      "destination": "/index.html"
     }
   ]
 }
