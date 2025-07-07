@@ -1,6 +1,7 @@
 import 'dart:math';
 import '../models/mission.dart';
 import '../models/diary_entry.dart';
+import '../models/word.dart';
 import 'storage_service.dart';
 import 'package:uuid/uuid.dart';
 
@@ -160,7 +161,7 @@ class MissionService {
             }
             progress = emotionCount;
           } else if (mission.title.contains('新しい単語')) {
-            progress = entry.newWords.length;
+            progress = entry.learnedWords.length;
           }
         }
         break;
@@ -245,5 +246,81 @@ class MissionService {
       'progress': total > 0 ? completed / total : 0.0,
       'experienceEarned': totalExp,
     };
+  }
+
+  /// 日記保存時にミッションを自動判定する
+  static Future<void> checkAndUpdateMissions({
+    required DiaryEntry entry,
+    required List<Word> newWords,
+  }) async {
+    final todaysMissions = await getTodaysMissions();
+    
+    for (final mission in todaysMissions) {
+      if (mission.isCompleted) continue;
+      
+      int progress = mission.currentValue;
+      bool shouldUpdate = false;
+      
+      switch (mission.type) {
+        case MissionType.dailyDiary:
+          // 日記作成ミッション
+          if (mission.title.contains('3文')) {
+            final sentences = entry.content.split(RegExp(r'[.!?]')).where((s) => s.trim().isNotEmpty).length;
+            progress = sentences;
+            shouldUpdate = true;
+          } else if (mission.title.contains('過去形')) {
+            final pastTensePattern = RegExp(r'\b(was|were|went|did|had|ate|came|saw|took|made|got|gave|found|thought|said|told|felt|became|left|brought|began|kept|held|wrote|stood|heard|meant|set|met|ran|paid|sat|spoke|lay|led|read|grew|lost|fell|drew|knew|threw|blew|flew|swept|wept|slept)\b', caseSensitive: false);
+            final matches = pastTensePattern.allMatches(entry.content);
+            progress = matches.length;
+            shouldUpdate = true;
+          } else if (mission.title.contains('感情')) {
+            final emotionPattern = RegExp(r'\b(happy|sad|excited|angry|surprised|worried|pleased|disappointed|frustrated|anxious|proud|grateful|confused|tired|energetic|calm|nervous|confident)\b', caseSensitive: false);
+            final matches = emotionPattern.allMatches(entry.content);
+            progress = matches.length;
+            shouldUpdate = true;
+          } else {
+            // その他の日記ミッションは完了扱い
+            progress = mission.targetValue;
+            shouldUpdate = true;
+          }
+          break;
+          
+        case MissionType.wordLearning:
+          // 単語学習ミッション
+          if (mission.title.contains('新しい単語')) {
+            progress = newWords.length;
+            shouldUpdate = true;
+          }
+          break;
+          
+        case MissionType.streak:
+          // 連続記録ミッション
+          final streak = await StorageService.getDiaryStreak();
+          progress = streak;
+          shouldUpdate = true;
+          break;
+          
+        case MissionType.conversation:
+          // 会話ミッション（100文字以上で完了）
+          if (entry.wordCount >= 100) {
+            progress = mission.targetValue;
+            shouldUpdate = true;
+          }
+          break;
+          
+        case MissionType.review:
+          // 復習ミッションは学習画面で判定
+          break;
+      }
+      
+      if (shouldUpdate) {
+        final updatedMission = mission.copyWith(
+          currentValue: progress,
+          isCompleted: progress >= mission.targetValue,
+          completedAt: progress >= mission.targetValue ? DateTime.now() : null,
+        );
+        await StorageService.saveMission(updatedMission);
+      }
+    }
   }
 }

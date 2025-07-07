@@ -229,15 +229,6 @@ class _JournalScreenState extends State<JournalScreen> {
               '${DateFormat('M月d日').format(_selectedDay!)}の日記はまだありません',
               style: AppTheme.body1.copyWith(color: AppTheme.textSecondary),
             ),
-            const SizedBox(height: 24),
-            PrimaryButton(
-              text: '日記を書く',
-              onPressed: () {
-                _showJournalDialog(context);
-              },
-              icon: Icons.edit,
-              fullWidth: false,
-            ),
           ],
         ),
       );

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:uuid/uuid.dart';
+import 'dart:async';
 import '../models/diary_entry.dart';
 import '../services/storage_service.dart';
 import '../services/translation_service.dart';
+import '../services/mission_service.dart';
+import '../theme/app_theme.dart';
+import '../models/word.dart';
 
 class DiaryCreationScreen extends StatefulWidget {
   final DiaryEntry? existingEntry;
@@ -24,9 +27,11 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
   final _contentFocusNode = FocusNode();
   bool _isLoading = false;
   bool _hasChanges = false;
-  bool _isTranslating = false;
+  String _translatedTitle = '';
   String _translatedContent = '';
-  Map<String, String> _wordSuggestions = {};
+  Timer? _translationTimer;
+  List<Word> _selectedWords = [];
+  String _detectedLanguage = '';
 
   @override
   void initState() {
@@ -34,144 +39,16 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     if (widget.existingEntry != null) {
       _titleController.text = widget.existingEntry!.title;
       _contentController.text = widget.existingEntry!.content;
+      _performAutoTranslation();
     }
     
     _titleController.addListener(_onTextChanged);
     _contentController.addListener(_onTextChanged);
-    _contentController.addListener(_updateWordSuggestions);
-  }
-
-  void _updateWordSuggestions() {
-    final text = _contentController.text;
-    if (text.isNotEmpty) {
-      setState(() {
-        _wordSuggestions = TranslationService.suggestTranslations(text);
-      });
-    }
-  }
-
-  Future<void> _translateContent() async {
-    final content = _contentController.text.trim();
-    if (content.isEmpty) {
-      _showSnackBar('翻訳するテキストを入力してください', isError: true);
-      return;
-    }
-
-    setState(() {
-      _isTranslating = true;
-    });
-
-    try {
-      final sourceLanguage = TranslationService.detectLanguage(content);
-      final targetLanguage = sourceLanguage == 'ja' ? 'en' : 'ja';
-      
-      final result = await TranslationService.translate(
-        content,
-        targetLanguage: targetLanguage,
-      );
-
-      if (result.success) {
-        setState(() {
-          _translatedContent = result.translatedText;
-        });
-        
-        _showTranslationDialog(result);
-      } else {
-        _showSnackBar(result.error ?? '翻訳に失敗しました', isError: true);
-      }
-    } catch (e) {
-      _showSnackBar('翻訳中にエラーが発生しました', isError: true);
-    } finally {
-      setState(() {
-        _isTranslating = false;
-      });
-    }
-  }
-
-  void _showTranslationDialog(TranslationResult result) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          '翻訳結果',
-          style: GoogleFonts.notoSans(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '元のテキスト:',
-              style: GoogleFonts.notoSans(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              result.originalText,
-              style: GoogleFonts.notoSans(fontSize: 14),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              '翻訳:',
-              style: GoogleFonts.notoSans(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              result.translatedText,
-              style: GoogleFonts.notoSans(fontSize: 14),
-            ),
-            if (result.isPartialTranslation)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  '※ 部分的な翻訳です',
-                  style: GoogleFonts.notoSans(
-                    fontSize: 12,
-                    color: Colors.orange[700],
-                  ),
-                ),
-              ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              '閉じる',
-              style: GoogleFonts.notoSans(color: Colors.grey[600]),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // 翻訳結果をクリップボードにコピー（将来実装）
-              _showSnackBar('翻訳結果をコピーしました', isError: false);
-            },
-            child: Text(
-              'コピー',
-              style: GoogleFonts.notoSans(
-                color: const Color(0xFF6366F1),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
   void dispose() {
+    _translationTimer?.cancel();
     _titleController.dispose();
     _contentController.dispose();
     _titleFocusNode.dispose();
@@ -184,6 +61,54 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
       setState(() {
         _hasChanges = true;
       });
+    }
+    
+    // 自動翻訳のためのタイマーをリセット
+    _translationTimer?.cancel();
+    _translationTimer = Timer(const Duration(milliseconds: 1000), () {
+      _performAutoTranslation();
+    });
+  }
+
+  Future<void> _performAutoTranslation() async {
+    final title = _titleController.text.trim();
+    final content = _contentController.text.trim();
+    
+    if (title.isEmpty && content.isEmpty) {
+      setState(() {
+        _translatedTitle = '';
+        _translatedContent = '';
+        _detectedLanguage = '';
+      });
+      return;
+    }
+
+    // 言語を検出
+    final textToDetect = content.isNotEmpty ? content : title;
+    final detectedLang = TranslationService.detectLanguage(textToDetect);
+    
+    setState(() {
+      _detectedLanguage = detectedLang;
+    });
+
+    // タイトルの翻訳
+    if (title.isNotEmpty) {
+      final titleResult = await TranslationService.autoTranslate(title);
+      if (titleResult.success) {
+        setState(() {
+          _translatedTitle = titleResult.translatedText;
+        });
+      }
+    }
+
+    // 内容の翻訳
+    if (content.isNotEmpty) {
+      final contentResult = await TranslationService.autoTranslate(content);
+      if (contentResult.success) {
+        setState(() {
+          _translatedContent = contentResult.translatedText;
+        });
+      }
     }
   }
 
@@ -203,13 +128,28 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
         id: widget.existingEntry?.id ?? const Uuid().v4(),
         title: _titleController.text.trim(),
         content: _contentController.text.trim(),
+        translatedTitle: _translatedTitle,
+        translatedContent: _translatedContent,
+        originalLanguage: _detectedLanguage,
         createdAt: widget.existingEntry?.createdAt ?? now,
         updatedAt: now,
         wordCount: _contentController.text.trim().split(' ').length,
         isCompleted: true,
+        learnedWords: _selectedWords.map((w) => w.id).toList(),
       );
 
       await StorageService.saveDiaryEntry(entry);
+      
+      // 保存した単語も保存
+      for (final word in _selectedWords) {
+        await StorageService.saveWord(word);
+      }
+
+      // ミッションの自動判定
+      await MissionService.checkAndUpdateMissions(
+        entry: entry,
+        newWords: _selectedWords,
+      );
 
       if (mounted) {
         Navigator.pop(context, entry);
@@ -235,8 +175,12 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? Colors.red : Colors.green,
-        duration: const Duration(seconds: 2),
+        backgroundColor: isError ? AppTheme.error : AppTheme.success,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
     );
   }
@@ -247,35 +191,21 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     final shouldPop = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(
-          '変更を破棄しますか？',
-          style: GoogleFonts.notoSans(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: Text('変更を破棄しますか？', style: AppTheme.headline3),
         content: Text(
           '保存されていない変更があります。このページを離れますか？',
-          style: GoogleFonts.notoSans(fontSize: 14),
+          style: AppTheme.body2,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'キャンセル',
-              style: GoogleFonts.notoSans(
-                color: Colors.grey[600],
-              ),
-            ),
+            child: Text('キャンセル', style: AppTheme.body2),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: Text(
               '破棄',
-              style: GoogleFonts.notoSans(
-                color: Colors.red,
-                fontWeight: FontWeight.w600,
-              ),
+              style: AppTheme.body2.copyWith(color: AppTheme.error),
             ),
           ),
         ],
@@ -283,6 +213,57 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     );
 
     return shouldPop ?? false;
+  }
+
+  void _showWordDetail(String word, String translation) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(word, style: AppTheme.headline3),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('意味:', style: AppTheme.caption),
+            const SizedBox(height: 4),
+            Text(translation, style: AppTheme.body1),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  final newWord = Word(
+                    id: const Uuid().v4(),
+                    english: _detectedLanguage == 'en' ? word : translation,
+                    japanese: _detectedLanguage == 'ja' ? word : translation,
+                    createdAt: DateTime.now(),
+                    diaryEntryId: widget.existingEntry?.id,
+                  );
+                  
+                  setState(() {
+                    _selectedWords.add(newWord);
+                  });
+                  
+                  Navigator.pop(context);
+                  _showSnackBar('単語帳に追加しました', isError: false);
+                },
+                icon: const Icon(Icons.add),
+                label: const Text('単語帳に追加'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryBlue,
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('閉じる', style: AppTheme.body2),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -297,20 +278,16 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.backgroundPrimary,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: AppTheme.backgroundPrimary,
           elevation: 0,
           title: Text(
             widget.existingEntry != null ? '日記を編集' : '新しい日記',
-            style: GoogleFonts.notoSans(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+            style: AppTheme.headline3,
           ),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+            icon: Icon(Icons.arrow_back_ios, color: AppTheme.textPrimary),
             onPressed: () async {
               if (await _onWillPop()) {
                 Navigator.pop(context);
@@ -318,207 +295,293 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
             },
           ),
           actions: [
-            IconButton(
-              onPressed: _isTranslating ? null : _translateContent,
-              icon: _isTranslating
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Color(0xFF6366F1),
-                        ),
-                      ),
-                    )
-                  : const Icon(Icons.translate, color: Color(0xFF6366F1)),
-              tooltip: '翻訳',
-            ),
             if (_hasChanges)
               TextButton(
                 onPressed: _isLoading ? null : _saveDiary,
                 child: _isLoading
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            Color(0xFF6366F1),
+                            AppTheme.primaryBlue,
                           ),
                         ),
                       )
                     : Text(
                         '保存',
-                        style: GoogleFonts.notoSans(
-                          color: const Color(0xFF6366F1),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
+                        style: AppTheme.button.copyWith(
+                          color: AppTheme.primaryBlue,
                         ),
                       ),
               ),
           ],
         ),
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey[200]!),
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: TextField(
-                    controller: _titleController,
-                    focusNode: _titleFocusNode,
-                    decoration: InputDecoration(
-                      hintText: '日記のタイトルを入力...',
-                      hintStyle: GoogleFonts.notoSans(
-                        color: Colors.grey[500],
-                        fontSize: 16,
-                      ),
-                      border: InputBorder.none,
-                    ),
-                    style: GoogleFonts.notoSans(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
-                    textInputAction: TextInputAction.next,
-                    onSubmitted: (_) => _contentFocusNode.requestFocus(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[50],
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey[200]!),
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    child: TextField(
-                      controller: _contentController,
-                      focusNode: _contentFocusNode,
-                      decoration: InputDecoration(
-                        hintText: '今日の出来事や感想を英語で書いてみましょう...',
-                        hintStyle: GoogleFonts.notoSans(
-                          color: Colors.grey[500],
-                          fontSize: 16,
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // タイトル入力
+                      AppCard(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
                         ),
-                        border: InputBorder.none,
+                        child: TextField(
+                          controller: _titleController,
+                          focusNode: _titleFocusNode,
+                          decoration: InputDecoration(
+                            hintText: '日記のタイトルを入力...',
+                            hintStyle: AppTheme.body2.copyWith(
+                              color: AppTheme.textTertiary,
+                            ),
+                            border: InputBorder.none,
+                          ),
+                          style: AppTheme.headline3,
+                          textInputAction: TextInputAction.next,
+                          onSubmitted: (_) => _contentFocusNode.requestFocus(),
+                        ),
                       ),
-                      style: GoogleFonts.notoSans(
-                        fontSize: 16,
-                        color: Colors.black,
-                        height: 1.6,
-                      ),
-                      maxLines: null,
-                      expands: true,
-                      textAlignVertical: TextAlignVertical.top,
-                      textInputAction: TextInputAction.newline,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                if (_wordSuggestions.isNotEmpty) ...[
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.blue[50],
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.blue[200]!),
-                    ),
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.lightbulb_outline, 
-                                 color: Colors.blue[700], size: 18),
-                            const SizedBox(width: 8),
-                            Text(
-                              '単語の翻訳候補',
-                              style: GoogleFonts.notoSans(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.blue[700],
+                      
+                      if (_translatedTitle.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.info.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.translate,
+                                size: 16,
+                                color: AppTheme.info,
                               ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _translatedTitle,
+                                  style: AppTheme.body2.copyWith(
+                                    color: AppTheme.info,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      
+                      const SizedBox(height: 20),
+                      
+                      // 内容入力
+                      AppCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextField(
+                              controller: _contentController,
+                              focusNode: _contentFocusNode,
+                              decoration: InputDecoration(
+                                hintText: _detectedLanguage == 'ja' 
+                                  ? '今日の出来事や感想を書いてみましょう...'
+                                  : 'Write about your day and thoughts...',
+                                hintStyle: AppTheme.body2.copyWith(
+                                  color: AppTheme.textTertiary,
+                                ),
+                                border: InputBorder.none,
+                              ),
+                              style: AppTheme.body1,
+                              maxLines: 10,
+                              textInputAction: TextInputAction.newline,
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 4,
-                          children: _wordSuggestions.entries.map((entry) {
-                            return Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.blue[100],
-                                borderRadius: BorderRadius.circular(16),
+                      ),
+                      
+                      if (_translatedContent.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        AppCard(
+                          backgroundColor: AppTheme.backgroundTertiary,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.translate,
+                                    size: 18,
+                                    color: AppTheme.textSecondary,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '翻訳',
+                                    style: AppTheme.body2.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  if (_detectedLanguage.isNotEmpty)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppTheme.primaryBlue.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        _detectedLanguage == 'ja' ? '日本語 → 英語' : 'English → 日本語',
+                                        style: AppTheme.caption.copyWith(
+                                          color: AppTheme.primaryBlue,
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
-                              child: Text(
-                                '${entry.key} → ${entry.value}',
-                                style: GoogleFonts.notoSans(
-                                  fontSize: 12,
-                                  color: Colors.blue[800],
-                                ),
-                              ),
-                            );
-                          }).toList(),
+                              const SizedBox(height: 12),
+                              _buildTranslatedText(_translatedContent),
+                            ],
+                          ),
                         ),
                       ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: _isLoading ? null : _saveDiary,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6366F1),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: _isLoading
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.white,
+                      
+                      if (_selectedWords.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        AppCard(
+                          backgroundColor: AppTheme.success.withOpacity(0.1),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.bookmark,
+                                    size: 18,
+                                    color: AppTheme.success,
                                   ),
-                                ),
-                              )
-                            : Text(
-                                widget.existingEntry != null ? '更新する' : '保存する',
-                                style: GoogleFonts.notoSans(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '登録した単語 (${_selectedWords.length})',
+                                    style: AppTheme.body2.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.success,
+                                    ),
+                                  ),
+                                ],
                               ),
-                      ),
-                    ),
-                  ],
+                              const SizedBox(height: 8),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: _selectedWords.map((word) {
+                                  return Chip(
+                                    label: Text(
+                                      '${word.english} - ${word.japanese}',
+                                      style: AppTheme.caption,
+                                    ),
+                                    deleteIcon: const Icon(Icons.close, size: 16),
+                                    onDeleted: () {
+                                      setState(() {
+                                        _selectedWords.remove(word);
+                                      });
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-              ],
-            ),
+              ),
+              
+              // 保存ボタン
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppTheme.backgroundPrimary,
+                  border: Border(
+                    top: BorderSide(color: AppTheme.borderColor),
+                  ),
+                ),
+                child: PrimaryButton(
+                  text: widget.existingEntry != null ? '更新する' : '保存する',
+                  onPressed: _saveDiary,
+                  isLoading: _isLoading,
+                  icon: Icons.save,
+                ),
+              ),
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTranslatedText(String text) {
+    final words = text.split(' ');
+    final spans = <InlineSpan>[];
+    
+    for (int i = 0; i < words.length; i++) {
+      final word = words[i];
+      final cleanWord = word.replaceAll(RegExp(r'[^\w\s]'), '');
+      
+      // 単語の翻訳候補を取得
+      final suggestions = TranslationService.suggestTranslations(cleanWord);
+      final hasTranslation = suggestions.isNotEmpty;
+      
+      spans.add(
+        WidgetSpan(
+          child: GestureDetector(
+            onTap: hasTranslation
+                ? () {
+                    final translation = suggestions[cleanWord.toLowerCase()] ?? '';
+                    _showWordDetail(cleanWord, translation);
+                  }
+                : null,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              decoration: BoxDecoration(
+                border: hasTranslation
+                    ? Border(
+                        bottom: BorderSide(
+                          color: AppTheme.primaryBlue.withOpacity(0.3),
+                          width: 1,
+                        ),
+                      )
+                    : null,
+              ),
+              child: Text(
+                word,
+                style: AppTheme.body1.copyWith(
+                  color: hasTranslation ? AppTheme.primaryBlue : AppTheme.textPrimary,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      
+      if (i < words.length - 1) {
+        spans.add(const TextSpan(text: ' '));
+      }
+    }
+    
+    return Text.rich(
+      TextSpan(children: spans),
     );
   }
 }

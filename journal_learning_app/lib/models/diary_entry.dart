@@ -2,8 +2,10 @@ class DiaryEntry {
   final String id;
   final String title;
   final String content;
-  final String englishContent;
-  final List<String> newWords;
+  final String? translatedTitle;
+  final String? translatedContent;
+  final String? originalLanguage;
+  final List<String> learnedWords;
   final DateTime createdAt;
   final DateTime updatedAt;
   final bool isCompleted;
@@ -13,8 +15,10 @@ class DiaryEntry {
     required this.id,
     required this.title,
     required this.content,
-    this.englishContent = '',
-    this.newWords = const [],
+    this.translatedTitle,
+    this.translatedContent,
+    this.originalLanguage,
+    this.learnedWords = const [],
     required this.createdAt,
     required this.updatedAt,
     this.isCompleted = false,
@@ -26,8 +30,10 @@ class DiaryEntry {
       'id': id,
       'title': title,
       'content': content,
-      'englishContent': englishContent,
-      'newWords': newWords,
+      'translatedTitle': translatedTitle,
+      'translatedContent': translatedContent,
+      'originalLanguage': originalLanguage,
+      'learnedWords': learnedWords,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       'isCompleted': isCompleted,
@@ -40,8 +46,10 @@ class DiaryEntry {
       id: json['id'],
       title: json['title'],
       content: json['content'],
-      englishContent: json['englishContent'] ?? '',
-      newWords: List<String>.from(json['newWords'] ?? []),
+      translatedTitle: json['translatedTitle'],
+      translatedContent: json['translatedContent'],
+      originalLanguage: json['originalLanguage'],
+      learnedWords: List<String>.from(json['learnedWords'] ?? []),
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
       isCompleted: json['isCompleted'] ?? false,
@@ -52,8 +60,10 @@ class DiaryEntry {
   DiaryEntry copyWith({
     String? title,
     String? content,
-    String? englishContent,
-    List<String>? newWords,
+    String? translatedTitle,
+    String? translatedContent,
+    String? originalLanguage,
+    List<String>? learnedWords,
     DateTime? updatedAt,
     bool? isCompleted,
     int? wordCount,
@@ -62,8 +72,10 @@ class DiaryEntry {
       id: id,
       title: title ?? this.title,
       content: content ?? this.content,
-      englishContent: englishContent ?? this.englishContent,
-      newWords: newWords ?? this.newWords,
+      translatedTitle: translatedTitle ?? this.translatedTitle,
+      translatedContent: translatedContent ?? this.translatedContent,
+      originalLanguage: originalLanguage ?? this.originalLanguage,
+      learnedWords: learnedWords ?? this.learnedWords,
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isCompleted: isCompleted ?? this.isCompleted,

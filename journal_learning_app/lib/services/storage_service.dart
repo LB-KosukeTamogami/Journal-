@@ -4,12 +4,14 @@ import '../models/diary_entry.dart';
 import '../models/user_profile.dart';
 import '../models/mission.dart';
 import '../models/flashcard.dart';
+import '../models/word.dart';
 
 class StorageService {
   static const String _diaryEntriesKey = 'diary_entries';
   static const String _userProfileKey = 'user_profile';
   static const String _missionsKey = 'missions';
   static const String _flashcardsKey = 'flashcards';
+  static const String _wordsKey = 'words';
 
   static SharedPreferences? _prefs;
 
@@ -166,5 +168,64 @@ class StorageService {
       'learnedWords': learnedWords,
       'currentStreak': streak,
     };
+  }
+
+  // 単語関連のメソッド
+  static Future<List<Word>> getWords() async {
+    final jsonString = prefs.getString(_wordsKey);
+    if (jsonString == null) return [];
+
+    final List<dynamic> jsonList = json.decode(jsonString);
+    return jsonList.map((json) => Word.fromJson(json)).toList();
+  }
+
+  static Future<void> saveWord(Word word) async {
+    final words = await getWords();
+    
+    final existingIndex = words.indexWhere((w) => w.id == word.id);
+    if (existingIndex != -1) {
+      words[existingIndex] = word;
+    } else {
+      words.add(word);
+    }
+    
+    final jsonString = json.encode(words.map((w) => w.toJson()).toList());
+    await prefs.setString(_wordsKey, jsonString);
+  }
+
+  static Future<void> saveWords(List<Word> words) async {
+    final jsonString = json.encode(words.map((w) => w.toJson()).toList());
+    await prefs.setString(_wordsKey, jsonString);
+  }
+
+  static Future<void> deleteWord(String id) async {
+    final words = await getWords();
+    words.removeWhere((w) => w.id == id);
+    
+    final jsonString = json.encode(words.map((w) => w.toJson()).toList());
+    await prefs.setString(_wordsKey, jsonString);
+  }
+
+  static Future<List<Word>> getWordsByDiaryEntry(String diaryEntryId) async {
+    final words = await getWords();
+    return words.where((w) => w.diaryEntryId == diaryEntryId).toList();
+  }
+
+  static Future<void> updateWordReview(String wordId, {required bool mastered}) async {
+    final words = await getWords();
+    final index = words.indexWhere((w) => w.id == wordId);
+    
+    if (index != -1) {
+      final word = words[index];
+      final updatedWord = word.copyWith(
+        reviewCount: word.reviewCount + 1,
+        lastReviewedAt: DateTime.now(),
+        isMastered: mastered,
+      );
+      words[index] = updatedWord;
+      
+      final jsonString = json.encode(words.map((w) => w.toJson()).toList());
+      await prefs.setString(_wordsKey, jsonString);
+    }
   }
 }

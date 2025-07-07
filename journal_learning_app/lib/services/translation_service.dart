@@ -226,6 +226,30 @@ class TranslationService {
     }
   }
 
+  /// 自動翻訳（言語を自動検出して反対の言語に翻訳）
+  static Future<TranslationResult> autoTranslate(String text) async {
+    if (text.trim().isEmpty) {
+      return TranslationResult(
+        originalText: text,
+        translatedText: '',
+        targetLanguage: 'en',
+        success: false,
+        error: 'テキストが空です',
+      );
+    }
+
+    // 言語を自動検出
+    final detectedLanguage = detectLanguage(text);
+    final targetLanguage = detectedLanguage == 'ja' ? 'en' : 'ja';
+    
+    // 翻訳実行
+    return await translate(
+      text,
+      targetLanguage: targetLanguage,
+      useOnlineService: false, // 現在はオフラインのみ
+    );
+  }
+
   /// 翻訳履歴を保存（将来実装）
   static Future<void> saveTranslationHistory(TranslationResult result) async {
     // TODO: 翻訳履歴をローカルストレージに保存
