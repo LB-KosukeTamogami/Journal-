@@ -22,7 +22,7 @@ class GlassContainer extends StatelessWidget {
     this.padding,
     this.margin,
     this.borderRadius = 16.0,
-    this.opacity = 0.1,
+    this.opacity = 0.5,
     this.color,
     this.gradient,
     this.blur = 10.0,
@@ -53,7 +53,7 @@ class GlassContainer extends StatelessWidget {
               borderRadius: BorderRadius.circular(borderRadius),
               border: border ??
                   Border.all(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withOpacity(0.6),
                     width: 1.0,
                   ),
             ),
@@ -82,8 +82,8 @@ class LiquidContainer extends StatefulWidget {
     this.padding,
     this.margin,
     this.colors = const [
-      Color(0xFF667eea),
-      Color(0xFF764ba2),
+      Color(0xFF81C784),
+      Color(0xFF64B5F6),
     ],
     this.animationDuration = const Duration(seconds: 3),
   }) : super(key: key);
@@ -177,7 +177,7 @@ class NeumorphicContainer extends StatelessWidget {
     this.padding,
     this.margin,
     this.borderRadius = 16.0,
-    this.backgroundColor = const Color(0xFFf0f0f3),
+    this.backgroundColor = const Color(0xFFF5F5F5),
     this.isPressed = false,
   }) : super(key: key);
 

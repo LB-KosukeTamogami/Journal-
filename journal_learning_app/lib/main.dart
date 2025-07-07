@@ -87,17 +87,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       extendBody: true,
       extendBodyBehindAppBar: true,
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF667eea),
-              Color(0xFF764ba2),
-              Color(0xFF6B73FF),
-              Color(0xFF9A9CE1),
+              Color(0xFFE3F2FD),  // Light blue
+              Color(0xFFF3E5F5),  // Light purple
+              Color(0xFFE8F5E9),  // Light green
+              Color(0xFFFFF3E0),  // Light orange
             ],
-            stops: [0.0, 0.4, 0.7, 1.0],
+            stops: [0.0, 0.3, 0.6, 1.0],
           ),
         ),
         child: SafeArea(
@@ -120,17 +120,22 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             child: Container(
               height: 70,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withOpacity(0.7),
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
-                  width: 1.0,
+                  color: Colors.white.withOpacity(0.8),
+                  width: 1.5,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 30,
+                    offset: const Offset(0, 10),
+                  ),
+                  BoxShadow(
+                    color: Colors.white.withOpacity(0.5),
                     blurRadius: 20,
-                    offset: const Offset(0, 5),
+                    offset: const Offset(0, -5),
                   ),
                 ],
               ),
@@ -166,7 +171,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? Colors.white.withOpacity(0.2)
+              ? Color(0xFF4A90E2).withOpacity(0.2)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
@@ -178,15 +183,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? Colors.white.withOpacity(0.3)
+                    ? Color(0xFF4A90E2).withOpacity(0.3)
                     : Colors.transparent,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
                 color: isSelected
-                    ? Colors.white
-                    : Colors.white.withOpacity(0.6),
+                    ? Color(0xFF4A90E2)
+                    : Colors.grey.shade600,
                 size: isSelected ? 22 : 20,
               ),
             ),
@@ -195,8 +200,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               duration: const Duration(milliseconds: 200),
               style: GoogleFonts.notoSans(
                 color: isSelected
-                    ? Colors.white
-                    : Colors.white.withOpacity(0.6),
+                    ? Color(0xFF4A90E2)
+                    : Colors.grey.shade600,
                 fontSize: isSelected ? 10 : 9,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
               ),
