@@ -342,33 +342,6 @@ class _JournalScreenState extends State<JournalScreen> {
                 '新しい日記を作成',
                 style: AppTheme.headline2,
               ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const DiaryCreationScreen(),
-                      ),
-                    ).then((_) => _loadEntries());
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryBlue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text(
-                    '日記を書く',
-                    style: AppTheme.button,
-                  ),
-                ),
-              ),
               const SizedBox(height: 20),
             ],
           ),
