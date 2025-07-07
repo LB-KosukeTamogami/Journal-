@@ -44,6 +44,8 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     
     _titleController.addListener(_onTextChanged);
     _contentController.addListener(_onTextChanged);
+    _titleFocusNode.addListener(_onFocusChanged);
+    _contentFocusNode.addListener(_onFocusChanged);
   }
 
   @override
@@ -67,6 +69,12 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     _translationTimer?.cancel();
     _translationTimer = Timer(const Duration(milliseconds: 1000), () {
       _performAutoTranslation();
+    });
+  }
+
+  void _onFocusChanged() {
+    setState(() {
+      // フォーカス状態が変わったらUIを更新
     });
   }
 
@@ -278,10 +286,15 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // タイトル入力
-                      AppCard(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
+                      Container(
+                        decoration: BoxDecoration(
+                          color: AppTheme.backgroundSecondary,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _titleFocusNode.hasFocus 
+                              ? AppTheme.primaryBlue.withOpacity(0.3)
+                              : AppTheme.borderColor.withOpacity(0.1),
+                          ),
                         ),
                         child: TextField(
                           controller: _titleController,
@@ -292,6 +305,10 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                               color: AppTheme.textTertiary,
                             ),
                             border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 16,
+                            ),
                           ),
                           style: AppTheme.headline3,
                           textInputAction: TextInputAction.next,
@@ -334,27 +351,32 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       const SizedBox(height: 20),
                       
                       // 内容入力
-                      AppCard(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextField(
-                              controller: _contentController,
-                              focusNode: _contentFocusNode,
-                              decoration: InputDecoration(
-                                hintText: _detectedLanguage == 'ja' 
-                                  ? '今日の出来事や感想を書いてみましょう...'
-                                  : 'Write about your day and thoughts...',
-                                hintStyle: AppTheme.body2.copyWith(
-                                  color: AppTheme.textTertiary,
-                                ),
-                                border: InputBorder.none,
-                              ),
-                              style: AppTheme.body1,
-                              maxLines: 10,
-                              textInputAction: TextInputAction.newline,
+                      Container(
+                        decoration: BoxDecoration(
+                          color: AppTheme.backgroundSecondary,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _contentFocusNode.hasFocus 
+                              ? AppTheme.primaryBlue.withOpacity(0.3)
+                              : AppTheme.borderColor.withOpacity(0.1),
+                          ),
+                        ),
+                        child: TextField(
+                          controller: _contentController,
+                          focusNode: _contentFocusNode,
+                          decoration: InputDecoration(
+                            hintText: _detectedLanguage == 'ja' 
+                              ? '今日の出来事や感想を書いてみましょう...'
+                              : 'Write about your day and thoughts...',
+                            hintStyle: AppTheme.body2.copyWith(
+                              color: AppTheme.textTertiary,
                             ),
-                          ],
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.all(16),
+                          ),
+                          style: AppTheme.body1,
+                          maxLines: 10,
+                          textInputAction: TextInputAction.newline,
                         ),
                       ),
                       

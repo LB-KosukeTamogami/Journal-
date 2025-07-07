@@ -331,70 +331,125 @@ class _JournalScreenState extends State<JournalScreen> {
                 '新しい日記を作成',
                 style: AppTheme.headline2,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
               
-              // 日記作成ボタン
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const DiaryCreationScreen(),
-                      ),
-                    ).then((_) => _loadEntries());
-                  },
-                  icon: const Icon(Icons.edit_note_rounded, color: Colors.white),
-                  label: Text(
-                    '日記を書く',
-                    style: AppTheme.button,
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryBlue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+              // 日記作成カード
+              AppCard(
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DiaryCreationScreen(),
                     ),
-                  ),
+                  ).then((_) => _loadEntries());
+                },
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryBlue.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.edit_note_rounded,
+                        color: AppTheme.primaryBlue,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '日記を書く',
+                            style: AppTheme.body1.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '今日の出来事を記録しましょう',
+                            style: AppTheme.body2.copyWith(
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      color: AppTheme.textTertiary,
+                      size: 16,
+                    ),
+                  ],
                 ),
               ),
               
               const SizedBox(height: 12),
               
-              // 会話ジャーナルボタン
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    // TODO: 会話ジャーナル機能の実装
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('会話ジャーナル機能は準備中です'),
-                        backgroundColor: AppTheme.info,
-                        behavior: SnackBarBehavior.floating,
-                        margin: const EdgeInsets.all(16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+              // 会話ジャーナルカード
+              AppCard(
+                onTap: () {
+                  Navigator.pop(context);
+                  // TODO: 会話ジャーナル機能の実装
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('会話ジャーナル機能は準備中です'),
+                      backgroundColor: AppTheme.info,
+                      behavior: SnackBarBehavior.floating,
+                      margin: const EdgeInsets.all(16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    );
-                  },
-                  icon: Icon(Icons.chat_bubble_outline, color: AppTheme.primaryBlue),
-                  label: Text(
-                    '会話ジャーナル',
-                    style: AppTheme.button.copyWith(color: AppTheme.primaryBlue),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AppTheme.primaryBlue),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
                     ),
-                  ),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: AppTheme.info.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.chat_bubble_outline,
+                        color: AppTheme.info,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '会話ジャーナル',
+                            style: AppTheme.body1.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '会話を通じて英語を学びましょう',
+                            style: AppTheme.body2.copyWith(
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      color: AppTheme.textTertiary,
+                      size: 16,
+                    ),
+                  ],
                 ),
               ),
               
