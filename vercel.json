@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": false,
+  "buildCommand": null,
   "outputDirectory": "journal_learning_app/build/web",
   "framework": null,
   "routes": [
