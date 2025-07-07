@@ -132,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Text(
                           'おかえりなさい！',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Color(0xFF2C3E50),
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
@@ -141,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Text(
                           '今日も素晴らしい学習の時間にしましょう ✨',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
+                            color: Color(0xFF546E7A),
                             fontSize: 14,
                           ),
                         ),
@@ -153,13 +153,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.3, end: 0),
 
             // Lilyからのメッセージカード
-            LiquidContainer(
+            GlassContainer(
               padding: const EdgeInsets.all(20),
               margin: const EdgeInsets.only(bottom: 24),
-              colors: const [
-                Color(0xFF667eea),
-                Color(0xFF764ba2),
-                Color(0xFF6B73FF),
+              gradient: [
+                Color(0xFF4A90E2).withOpacity(0.15),
+                Color(0xFF5E9ED6).withOpacity(0.1),
               ],
               child: Row(
                 children: [
@@ -211,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-            ).animate().fadeIn(duration: 800.ms).slideY(begin: -0.2, end: 0),
+            ),
             
             const SizedBox(height: 24),
             
@@ -249,7 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     child: const Icon(
                       Icons.add_circle_outline,
-                      color: Colors.white,
+                      color: Color(0xFF4A90E2),
                       size: 18,
                     ),
                   ),
@@ -257,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const Text(
                     '新しい日記を書く',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFF4A90E2),
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -277,14 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black26,
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
+                    color: Color(0xFF2C3E50),
                   ),
                 ),
                 GestureDetector(
@@ -302,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: const Text(
                       'すべて見る',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Color(0xFF4A90E2),
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -316,7 +308,7 @@ class _HomeScreenState extends State<HomeScreen> {
             
             // ミッションリスト
             if (_isLoading)
-              const Center(child: CircularProgressIndicator(color: Colors.white))
+              const Center(child: CircularProgressIndicator(color: Color(0xFF4A90E2)))
             else
               ..._missions.map((mission) => Container(
                 margin: const EdgeInsets.only(bottom: 12),
@@ -384,7 +376,7 @@ class _MissionCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
-                        color: completed ? Colors.grey[300] : Colors.white,
+                        color: completed ? Colors.grey[400] : Color(0xFF2C3E50),
                         decoration: completed ? TextDecoration.lineThrough : null,
                       ),
                     ),
@@ -393,7 +385,7 @@ class _MissionCard extends StatelessWidget {
                       mission.description,
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.white.withOpacity(0.7),
+                        color: Color(0xFF546E7A),
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
