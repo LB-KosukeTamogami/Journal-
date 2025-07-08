@@ -34,9 +34,6 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
-      setState(() {});
-    });
     _loadTranslationData();
   }
   
@@ -124,59 +121,34 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 color: AppTheme.backgroundSecondary,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => _tabController.animateTo(0),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeInOut,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: BoxDecoration(
-                          color: _tabController.index == 0
-                              ? AppTheme.primaryBlue
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '日記',
-                            style: AppTheme.body1.copyWith(
-                              color: _tabController.index == 0
-                                  ? Colors.white
-                                  : AppTheme.textSecondary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
+              padding: const EdgeInsets.all(4),
+              child: TabBar(
+                controller: _tabController,
+                labelColor: Colors.white,
+                unselectedLabelColor: AppTheme.textSecondary,
+                indicator: BoxDecoration(
+                  color: AppTheme.primaryBlue,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                indicatorPadding: EdgeInsets.zero,
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelStyle: AppTheme.body1.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                unselectedLabelStyle: AppTheme.body1,
+                dividerColor: Colors.transparent,
+                tabs: [
+                  Tab(
+                    child: Container(
+                      width: double.infinity,
+                      child: const Center(child: Text('日記')),
                     ),
                   ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => _tabController.animateTo(1),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeInOut,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: BoxDecoration(
-                          color: _tabController.index == 1
-                              ? AppTheme.primaryBlue
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Center(
-                          child: Text(
-                            widget.entry.originalLanguage == 'ja' ? '翻訳' : '添削',
-                            style: AppTheme.body1.copyWith(
-                              color: _tabController.index == 1
-                                  ? Colors.white
-                                  : AppTheme.textSecondary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
+                  Tab(
+                    child: Container(
+                      width: double.infinity,
+                      child: Center(
+                        child: Text(widget.entry.originalLanguage == 'ja' ? '翻訳' : '添削'),
                       ),
                     ),
                   ),
@@ -186,22 +158,15 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           ),
         ),
       ),
-      body: Column(
-        children: [
-          // タブビュー
-          Expanded(
-            child: _isLoading
-                ? Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue))
-                : TabBarView(
-                    controller: _tabController,
-                    children: [
-                      _buildDiaryTab(),
-                      _buildTranslationTab(),
-                    ],
-                  ),
-          ),
-        ],
-      ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue))
+          : TabBarView(
+              controller: _tabController,
+              children: [
+                _buildDiaryTab(),
+                _buildTranslationTab(),
+              ],
+            ),
     );
   }
   
