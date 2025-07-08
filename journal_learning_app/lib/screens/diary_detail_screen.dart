@@ -64,7 +64,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     } catch (e) {
       setState(() {
         _correctedContent = widget.entry.content;
-        _translatedContent = widget.entry.translatedContent ?? '';
+        _translatedContent = widget.entry.translatedContent ?? '翻訳を読み込めませんでした';
         _isLoading = false;
       });
     }
@@ -148,7 +148,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     child: Container(
                       width: double.infinity,
                       child: Center(
-                        child: Text(widget.entry.originalLanguage == 'ja' ? '翻訳' : '添削'),
+                        child: Text(TranslationService.detectLanguage(widget.entry.content) == 'ja' ? '翻訳' : '添削'),
                       ),
                     ),
                   ),
@@ -230,7 +230,11 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        widget.entry.originalLanguage == 'ja' ? widget.entry.content : _translatedContent,
+                        TranslationService.detectLanguage(widget.entry.content) == 'ja' 
+                            ? widget.entry.content 
+                            : _translatedContent.isNotEmpty 
+                                ? _translatedContent 
+                                : '翻訳を読み込み中...',
                         style: AppTheme.body2.copyWith(
                           color: AppTheme.textSecondary,
                           height: 1.5,
@@ -254,13 +258,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 Row(
                   children: [
                     Icon(
-                      widget.entry.originalLanguage == 'ja' ? Icons.translate : Icons.check_circle,
+                      TranslationService.detectLanguage(widget.entry.content) == 'ja' ? Icons.translate : Icons.check_circle,
                       color: AppTheme.success,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      widget.entry.originalLanguage == 'ja' ? '英語翻訳' : '添削後',
+                      TranslationService.detectLanguage(widget.entry.content) == 'ja' ? '英語翻訳' : '添削後',
                       style: AppTheme.body1.copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppTheme.success,
@@ -270,8 +274,8 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 ),
                 const SizedBox(height: 12),
                 _buildInteractiveText(
-                  widget.entry.originalLanguage == 'ja' ? _translatedContent : _correctedContent,
-                  widget.entry.originalLanguage == 'ja' ? 'en' : widget.entry.originalLanguage,
+                  TranslationService.detectLanguage(widget.entry.content) == 'ja' ? _translatedContent : _correctedContent,
+                  TranslationService.detectLanguage(widget.entry.content) == 'ja' ? 'en' : 'en',
                 ),
                 const SizedBox(height: 12),
                 // 添削後の和訳
@@ -303,7 +307,9 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        _translatedContent,
+                        _translatedContent.isNotEmpty 
+                            ? _translatedContent 
+                            : '翻訳を読み込み中...',
                         style: AppTheme.body2.copyWith(
                           color: AppTheme.textSecondary,
                           height: 1.5,
@@ -386,13 +392,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 Row(
                   children: [
                     Icon(
-                      widget.entry.originalLanguage == 'ja' ? Icons.translate : Icons.check_circle,
+                      TranslationService.detectLanguage(widget.entry.content) == 'ja' ? Icons.translate : Icons.check_circle,
                       color: AppTheme.success,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      widget.entry.originalLanguage == 'ja' ? '英語翻訳' : '添削結果',
+                      TranslationService.detectLanguage(widget.entry.content) == 'ja' ? '英語翻訳' : '添削結果',
                       style: AppTheme.body1.copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppTheme.success,
@@ -402,15 +408,15 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 ),
                 const SizedBox(height: 12),
                 _buildInteractiveText(
-                  widget.entry.originalLanguage == 'ja' ? _translatedContent : _correctedContent,
-                  widget.entry.originalLanguage == 'ja' ? 'en' : widget.entry.originalLanguage,
+                  TranslationService.detectLanguage(widget.entry.content) == 'ja' ? _translatedContent : _correctedContent,
+                  TranslationService.detectLanguage(widget.entry.content) == 'ja' ? 'en' : 'en',
                 ),
               ],
             ),
           ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
           
           // 修正箇所（英語の場合のみ）
-          if (widget.entry.originalLanguage != 'ja' && _corrections.isNotEmpty) ...[
+          if (TranslationService.detectLanguage(widget.entry.content) != 'ja' && _corrections.isNotEmpty) ...[
             const SizedBox(height: 16),
             AppCard(
               backgroundColor: AppTheme.warning.withOpacity(0.1),
