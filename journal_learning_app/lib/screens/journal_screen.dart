@@ -3,6 +3,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'diary_creation_screen.dart';
+import 'diary_detail_screen.dart';
 import '../models/diary_entry.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
@@ -462,59 +463,15 @@ class _JournalScreenState extends State<JournalScreen> {
   }
 
   void _showDiaryDetail(BuildContext context, DiaryEntry journal) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.backgroundPrimary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Text(
-          journal.title,
-          style: AppTheme.headline3,
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                '作成日: ${DateFormat('yyyy/MM/dd').format(journal.createdAt)}',
-                style: AppTheme.caption,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                journal.content,
-                style: AppTheme.body2.copyWith(height: 1.5),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            style: TextButton.styleFrom(
-              foregroundColor: AppTheme.textSecondary,
-            ),
-            child: const Text('閉じる'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DiaryCreationScreen(existingEntry: journal),
-                ),
-              ).then((_) => _loadEntries());
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: AppTheme.primaryBlue,
-            ),
-            child: const Text('編集'),
-          ),
-        ],
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DiaryDetailScreen(entry: journal),
       ),
-    );
+    ).then((updated) {
+      if (updated != null) {
+        _loadEntries();
+      }
+    });
   }
 }
