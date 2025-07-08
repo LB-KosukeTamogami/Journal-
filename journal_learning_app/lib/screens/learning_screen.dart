@@ -259,7 +259,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
             await StorageService.updateWordReview(word.id, masteryLevel: newLevel);
             _loadWords();
           },
-          onDelete: () => _deleteWord(word),
         ).animate().fadeIn(
           delay: Duration(milliseconds: index * 50),
           duration: 300.ms,
@@ -425,6 +424,30 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                 ),
               ],
             ),
+            const SizedBox(height: 12),
+            // 削除ボタン
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _deleteWord(word);
+                },
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppTheme.error,
+                  side: BorderSide(color: AppTheme.error),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                icon: Icon(Icons.delete_outline, size: 20, color: AppTheme.error),
+                label: Text(
+                  '削除',
+                  style: AppTheme.body2.copyWith(color: AppTheme.error),
+                ),
+              ),
+            ),
             const SizedBox(height: 20),
           ],
         ),
@@ -522,13 +545,11 @@ class _FlashcardItem extends StatelessWidget {
   final Word word;
   final VoidCallback onTap;
   final VoidCallback onToggleLearned;
-  final VoidCallback onDelete;
 
   const _FlashcardItem({
     required this.word,
     required this.onTap,
     required this.onToggleLearned,
-    required this.onDelete,
   });
 
   @override
@@ -628,26 +649,13 @@ class _FlashcardItem extends StatelessWidget {
                 ],
               ),
             ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  onPressed: onDelete,
-                  icon: Icon(
-                    Icons.delete_outline,
-                    color: AppTheme.error,
-                    size: 20,
-                  ),
-                ),
-                IconButton(
-                  onPressed: onToggleLearned,
-                  icon: Icon(
-                    word.isMastered ? Icons.check_circle : Icons.circle_outlined,
-                    color: word.isMastered ? AppTheme.success : AppTheme.textTertiary,
-                    size: 24,
-                  ),
-                ),
-              ],
+            IconButton(
+              onPressed: onToggleLearned,
+              icon: Icon(
+                word.isMastered ? Icons.check_circle : Icons.circle_outlined,
+                color: word.isMastered ? AppTheme.success : AppTheme.textTertiary,
+                size: 24,
+              ),
             ),
           ],
         ),
