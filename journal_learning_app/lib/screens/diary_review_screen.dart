@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:uuid/uuid.dart';
 import '../models/diary_entry.dart';
+import '../models/word.dart';
 import '../theme/app_theme.dart';
 import '../services/translation_service.dart';
 import '../services/groq_service.dart';
+import '../services/storage_service.dart';
 
 class DiaryReviewScreen extends StatefulWidget {
   final DiaryEntry entry;
@@ -160,19 +163,39 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
       child: ElevatedButton.icon(
         onPressed: () async {
           // 重要フレーズを単語カードとして保存
+          int addedCount = 0;
           for (final phrase in _learnedPhrases) {
-            // TODO: 単語カードに追加する処理
+            // フレーズを解析して英語と日本語に分離
+            final match = RegExp(r'^(.+?)\s*\((.+?)\)$').firstMatch(phrase);
+            if (match != null) {
+              final english = match.group(1)?.trim() ?? '';
+              final japanese = match.group(2)?.trim() ?? '';
+              
+              if (english.isNotEmpty && japanese.isNotEmpty) {
+                final word = Word(
+                  id: const Uuid().v4(),
+                  english: english,
+                  japanese: japanese,
+                  createdAt: DateTime.now(),
+                  masteryLevel: 0,
+                );
+                await StorageService.saveWord(word);
+                addedCount++;
+              }
+            }
           }
           
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '${_learnedPhrases.length}個のフレーズを学習カードに追加しました',
-                style: AppTheme.body2.copyWith(color: Colors.white),
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  '$addedCount個のフレーズを学習カードに追加しました',
+                  style: AppTheme.body2.copyWith(color: Colors.white),
+                ),
+                backgroundColor: AppTheme.success,
               ),
-              backgroundColor: AppTheme.success,
-            ),
-          );
+            );
+          }
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryBlue,
@@ -379,7 +402,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                _learnedPhrases.isNotEmpty ? '重要フレーズ' : '学習ポイント',
+                '学習ポイント',
                 style: AppTheme.body1.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppTheme.info,

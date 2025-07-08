@@ -31,8 +31,8 @@ Please respond in the following JSON format:
   "original": "original text",
   "corrected": "corrected text",
   "translation": "translated text in target language",
-  "improvements": ["improvement point 1", "improvement point 2"],
-  "learned_phrases": ["important phrase 1", "important phrase 2"]
+  "improvements": ["improvement point 1 in Japanese", "improvement point 2 in Japanese"],
+  "learned_phrases": ["phrase 1 (with Japanese explanation)", "phrase 2 (with Japanese explanation)"]
 }
 
 Important guidelines:
@@ -40,6 +40,9 @@ Important guidelines:
 - If input is in Japanese, translate to English completely
 - Do not mix languages in the translation
 - Keep the translation pure and natural
+- Write ALL improvements in Japanese (e.g., "過去形の使い方に注意が必要です")
+- For learned_phrases, show the English phrase followed by Japanese explanation
+  Example: "go to school (学校に行く)"
 ''';
 
       final response = await http.post(

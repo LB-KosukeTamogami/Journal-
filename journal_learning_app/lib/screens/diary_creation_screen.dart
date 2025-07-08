@@ -28,9 +28,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
   final _contentFocusNode = FocusNode();
   bool _isLoading = false;
   bool _hasChanges = false;
-  String _translatedTitle = '';
-  String _translatedContent = '';
-  Timer? _translationTimer;
+  // リアルタイム翻訳機能を削除
   List<Word> _selectedWords = [];
   String _detectedLanguage = '';
 
@@ -40,18 +38,15 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     if (widget.existingEntry != null) {
       _titleController.text = widget.existingEntry!.title;
       _contentController.text = widget.existingEntry!.content;
-      _performAutoTranslation();
+      _detectLanguage();
     }
     
     _titleController.addListener(_onTextChanged);
     _contentController.addListener(_onTextChanged);
-    _titleFocusNode.addListener(_onFocusChanged);
-    _contentFocusNode.addListener(_onFocusChanged);
   }
 
   @override
   void dispose() {
-    _translationTimer?.cancel();
     _titleController.dispose();
     _contentController.dispose();
     _titleFocusNode.dispose();
@@ -66,59 +61,25 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
       });
     }
     
-    // 自動翻訳のためのタイマーをリセット
-    _translationTimer?.cancel();
-    _translationTimer = Timer(const Duration(milliseconds: 1000), () {
-      _performAutoTranslation();
-    });
+    // 言語検出のみ実行
+    _detectLanguage();
   }
 
-  void _onFocusChanged() {
-    setState(() {
-      // フォーカス状態が変わったらUIを更新
-    });
-  }
 
-  Future<void> _performAutoTranslation() async {
-    final title = _titleController.text.trim();
+  void _detectLanguage() {
     final content = _contentController.text.trim();
-    
-    if (title.isEmpty && content.isEmpty) {
+    if (content.isEmpty) {
       setState(() {
-        _translatedTitle = '';
-        _translatedContent = '';
         _detectedLanguage = '';
       });
       return;
     }
 
     // 言語を検出
-    final textToDetect = content.isNotEmpty ? content : title;
-    final detectedLang = TranslationService.detectLanguage(textToDetect);
-    
+    final detectedLang = TranslationService.detectLanguage(content);
     setState(() {
       _detectedLanguage = detectedLang;
     });
-
-    // タイトルの翻訳
-    if (title.isNotEmpty) {
-      final titleResult = await TranslationService.autoTranslate(title);
-      if (titleResult.success) {
-        setState(() {
-          _translatedTitle = titleResult.translatedText;
-        });
-      }
-    }
-
-    // 内容の翻訳
-    if (content.isNotEmpty) {
-      final contentResult = await TranslationService.autoTranslate(content);
-      if (contentResult.success) {
-        setState(() {
-          _translatedContent = contentResult.translatedText;
-        });
-      }
-    }
   }
 
   Future<void> _saveDiary() async {
@@ -137,8 +98,8 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
         id: widget.existingEntry?.id ?? const Uuid().v4(),
         title: _titleController.text.trim(),
         content: _contentController.text.trim(),
-        translatedTitle: _translatedTitle,
-        translatedContent: _translatedContent,
+        translatedTitle: '',
+        translatedContent: '',
         originalLanguage: _detectedLanguage,
         createdAt: widget.existingEntry?.createdAt ?? now,
         updatedAt: now,
@@ -336,7 +297,8 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                         ),
                       ),
                       
-                      if (_translatedTitle.isNotEmpty) ...[
+                      // リアルタイム翻訳を削除
+                      /*if (_translatedTitle.isNotEmpty) ...[
                         const SizedBox(height: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -366,7 +328,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                             ],
                           ),
                         ),
-                      ],
+                      ],*/
                       
                       const SizedBox(height: 20),
                       
@@ -400,7 +362,8 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                         ),
                       ),
                       
-                      if (_translatedContent.isNotEmpty) ...[
+                      // リアルタイム翻訳を削除
+                      /*if (_translatedContent.isNotEmpty) ...[
                         const SizedBox(height: 16),
                         AppCard(
                           backgroundColor: AppTheme.backgroundTertiary,
@@ -446,7 +409,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                             ],
                           ),
                         ),
-                      ],
+                      ],*/
                       
                       if (_selectedWords.isNotEmpty) ...[
                         const SizedBox(height: 16),
