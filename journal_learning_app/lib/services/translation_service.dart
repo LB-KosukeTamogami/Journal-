@@ -4,22 +4,40 @@ import 'package:http/http.dart' as http;
 class TranslationService {
   // 簡易的な翻訳マッピング（オフライン用）
   static const Map<String, String> _simpleTranslations = {
+    // フレーズ（長いものから先に定義）
+    'go to school': '学校に行く',
+    'go to': '〜に行く',
+    'nice to meet you': 'はじめまして',
+    'what is your name': 'お名前は何ですか',
+    'how are you': '元気ですか',
+    'i am fine': '元気です',
+    'my name is': '私の名前は',
+    'good morning': 'おはようございます',
+    'good evening': 'こんばんは',
+    'thank you': 'ありがとう',
+    
     // 基本的な単語
+    'i': '私',
+    'you': 'あなた',
+    'he': '彼',
+    'she': '彼女',
+    'it': 'それ',
+    'we': '私たち',
+    'they': '彼ら',
+    'this': 'これ',
+    'that': 'あれ',
     'hello': 'こんにちは',
     'goodbye': 'さようなら',
-    'thank you': 'ありがとう',
     'please': 'お願いします',
     'yes': 'はい',
     'no': 'いいえ',
-    'good morning': 'おはようございます',
-    'good evening': 'こんばんは',
-    'how are you': '元気ですか',
-    'i am fine': '元気です',
-    'what is your name': 'お名前は何ですか',
-    'my name is': '私の名前は',
-    'nice to meet you': 'はじめまして',
     'excuse me': 'すみません',
     'sorry': 'ごめんなさい',
+    'was': 'でした',
+    'very': 'とても',
+    'day': '日',
+    'go': '行く',
+    'to': '〜へ',
     
     // 日常会話
     'today': '今日',
@@ -213,6 +231,74 @@ class TranslationService {
     
     return suggestions;
   }
+  
+  /// フレーズと単語を認識して位置情報とともに返す
+  static List<PhraseInfo> detectPhrasesAndWords(String text) {
+    final result = <PhraseInfo>[];
+    final lowerText = text.toLowerCase();
+    final processedIndices = <int>{};
+    
+    // フレーズから検索（長いものから）
+    final sortedPhrases = _simpleTranslations.keys.where((key) => key.contains(' ')).toList()
+      ..sort((a, b) => b.split(' ').length.compareTo(a.split(' ').length));
+    
+    for (final phrase in sortedPhrases) {
+      int index = 0;
+      while ((index = lowerText.indexOf(phrase, index)) != -1) {
+        // すでに処理済みの位置でないかチェック
+        bool isOverlapping = false;
+        for (int i = index; i < index + phrase.length; i++) {
+          if (processedIndices.contains(i)) {
+            isOverlapping = true;
+            break;
+          }
+        }
+        
+        if (!isOverlapping) {
+          result.add(PhraseInfo(
+            text: text.substring(index, index + phrase.length),
+            translation: _simpleTranslations[phrase] ?? '',
+            startIndex: index,
+            endIndex: index + phrase.length,
+            isPhrase: true,
+          ));
+          
+          // 処理済みとしてマーク
+          for (int i = index; i < index + phrase.length; i++) {
+            processedIndices.add(i);
+          }
+        }
+        index++;
+      }
+    }
+    
+    // 単語を処理
+    final words = text.split(RegExp(r'(\s+|[^\w\s]+)'));
+    int currentIndex = 0;
+    
+    for (final word in words) {
+      final cleanWord = word.replaceAll(RegExp(r'[^\w\s]'), '');
+      
+      if (cleanWord.isNotEmpty && !processedIndices.contains(currentIndex)) {
+        final translation = _simpleTranslations[cleanWord.toLowerCase()];
+        
+        result.add(PhraseInfo(
+          text: word,
+          translation: translation ?? '',
+          startIndex: currentIndex,
+          endIndex: currentIndex + word.length,
+          isPhrase: false,
+        ));
+      }
+      
+      currentIndex += word.length;
+    }
+    
+    // 開始位置でソート
+    result.sort((a, b) => a.startIndex.compareTo(b.startIndex));
+    
+    return result;
+  }
 
   /// 言語を自動検出（簡易的）
   static String detectLanguage(String text) {
@@ -260,6 +346,22 @@ class TranslationService {
     // TODO: 翻訳履歴をローカルストレージから取得
     return [];
   }
+}
+
+class PhraseInfo {
+  final String text;
+  final String translation;
+  final int startIndex;
+  final int endIndex;
+  final bool isPhrase;
+
+  PhraseInfo({
+    required this.text,
+    required this.translation,
+    required this.startIndex,
+    required this.endIndex,
+    required this.isPhrase,
+  });
 }
 
 class TranslationResult {

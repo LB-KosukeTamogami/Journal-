@@ -303,9 +303,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        widget.entry.originalLanguage == 'ja' 
-                            ? _correctedContent
-                            : _translatedContent,
+                        _translatedContent,
                         style: AppTheme.body2.copyWith(
                           color: AppTheme.textSecondary,
                           height: 1.5,
@@ -544,45 +542,47 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   }
   
   Widget _buildInteractiveText(String text, String? language) {
-    final words = text.split(' ');
+    final phraseInfos = TranslationService.detectPhrasesAndWords(text);
     final spans = <InlineSpan>[];
+    int lastEnd = 0;
     
-    for (int i = 0; i < words.length; i++) {
-      final word = words[i];
-      final cleanWord = word.replaceAll(RegExp(r'[^\w\s]'), '');
+    for (final info in phraseInfos) {
+      // 前のテキストとの間にスペースがある場合
+      if (lastEnd < info.startIndex) {
+        spans.add(TextSpan(
+          text: text.substring(lastEnd, info.startIndex),
+          style: AppTheme.body1.copyWith(height: 1.6),
+        ));
+      }
       
-      // 単語の翻訳候補を取得
-      final suggestions = TranslationService.suggestTranslations(cleanWord);
-      final hasTranslation = suggestions.isNotEmpty && cleanWord.isNotEmpty;
-      
-      // 全ての単語をクリック可能にする（空でない場合）
-      final isClickable = cleanWord.isNotEmpty;
+      final hasTranslation = info.translation.isNotEmpty;
+      final isClickable = info.text.trim().isNotEmpty;
       
       spans.add(
         WidgetSpan(
           child: GestureDetector(
             onTap: isClickable
                 ? () {
-                    String translation = '';
-                    if (hasTranslation) {
-                      translation = suggestions[cleanWord.toLowerCase()] ?? '';
-                    }
-                    _showWordDetail(cleanWord, translation, canAddToCards: hasTranslation);
+                    _showWordDetail(info.text, info.translation, canAddToCards: hasTranslation);
                   }
                 : null,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               decoration: BoxDecoration(
                 color: isClickable
-                    ? AppTheme.primaryBlue.withOpacity(hasTranslation ? 0.08 : 0.04)
+                    ? (info.isPhrase 
+                        ? AppTheme.success.withOpacity(hasTranslation ? 0.1 : 0.05)
+                        : AppTheme.primaryBlue.withOpacity(hasTranslation ? 0.08 : 0.04))
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
-                word,
+                info.text,
                 style: AppTheme.body1.copyWith(
                   color: isClickable 
-                      ? (hasTranslation ? AppTheme.primaryBlue : AppTheme.textPrimary)
+                      ? (hasTranslation 
+                          ? (info.isPhrase ? AppTheme.success : AppTheme.primaryBlue)
+                          : AppTheme.textPrimary)
                       : AppTheme.textPrimary,
                   height: 1.6,
                   fontWeight: hasTranslation ? FontWeight.w500 : FontWeight.normal,
@@ -593,9 +593,15 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         ),
       );
       
-      if (i < words.length - 1) {
-        spans.add(const TextSpan(text: ' '));
-      }
+      lastEnd = info.endIndex;
+    }
+    
+    // 最後の部分
+    if (lastEnd < text.length) {
+      spans.add(TextSpan(
+        text: text.substring(lastEnd),
+        style: AppTheme.body1.copyWith(height: 1.6),
+      ));
     }
     
     return Text.rich(
