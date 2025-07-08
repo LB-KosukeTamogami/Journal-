@@ -34,6 +34,9 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
     _loadTranslationData();
   }
   
@@ -111,24 +114,76 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             },
           ),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: Container(
+            color: AppTheme.backgroundPrimary,
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppTheme.backgroundSecondary,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => _tabController.animateTo(0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: _tabController.index == 0
+                              ? AppTheme.primaryBlue
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '日記',
+                            style: AppTheme.body1.copyWith(
+                              color: _tabController.index == 0
+                                  ? Colors.white
+                                  : AppTheme.textSecondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => _tabController.animateTo(1),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: _tabController.index == 1
+                              ? AppTheme.primaryBlue
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: Text(
+                            widget.entry.originalLanguage == 'ja' ? '翻訳' : '添削',
+                            style: AppTheme.body1.copyWith(
+                              color: _tabController.index == 1
+                                  ? Colors.white
+                                  : AppTheme.textSecondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
       body: Column(
         children: [
-          // タブバー
-          Container(
-            color: AppTheme.backgroundPrimary,
-            child: TabBar(
-              controller: _tabController,
-              labelColor: AppTheme.primaryBlue,
-              unselectedLabelColor: AppTheme.textSecondary,
-              indicatorColor: AppTheme.primaryBlue,
-              tabs: [
-                Tab(text: '日記'),
-                Tab(text: widget.entry.originalLanguage == 'ja' ? '翻訳' : '添削'),
-              ],
-            ),
-          ),
-          
           // タブビュー
           Expanded(
             child: _isLoading
@@ -175,7 +230,46 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   ],
                 ),
                 const SizedBox(height: 12),
-                _buildInteractiveText(widget.entry.content),
+                _buildInteractiveText(widget.entry.content, widget.entry.originalLanguage),
+                const SizedBox(height: 12),
+                // 元の文章の和訳
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppTheme.backgroundTertiary,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.translate,
+                            size: 16,
+                            color: AppTheme.textSecondary,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '日本語訳',
+                            style: AppTheme.caption.copyWith(
+                              color: AppTheme.textSecondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        widget.entry.originalLanguage == 'ja' ? widget.entry.content : _translatedContent,
+                        style: AppTheme.body2.copyWith(
+                          color: AppTheme.textSecondary,
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
@@ -206,11 +300,49 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   ],
                 ),
                 const SizedBox(height: 12),
-                Text(
+                _buildInteractiveText(
                   widget.entry.originalLanguage == 'ja' ? _translatedContent : _correctedContent,
-                  style: AppTheme.body1.copyWith(
-                    height: 1.6,
-                    color: AppTheme.success,
+                  widget.entry.originalLanguage == 'ja' ? 'en' : widget.entry.originalLanguage,
+                ),
+                const SizedBox(height: 12),
+                // 添削後の和訳
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppTheme.backgroundTertiary,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.translate,
+                            size: 16,
+                            color: AppTheme.textSecondary,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '日本語訳',
+                            style: AppTheme.caption.copyWith(
+                              color: AppTheme.textSecondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        widget.entry.originalLanguage == 'ja' 
+                            ? _correctedContent
+                            : _translatedContent,
+                        style: AppTheme.body2.copyWith(
+                          color: AppTheme.textSecondary,
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -302,12 +434,9 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   ],
                 ),
                 const SizedBox(height: 12),
-                Text(
+                _buildInteractiveText(
                   widget.entry.originalLanguage == 'ja' ? _translatedContent : _correctedContent,
-                  style: AppTheme.body1.copyWith(
-                    height: 1.6,
-                    color: AppTheme.textPrimary,
-                  ),
+                  widget.entry.originalLanguage == 'ja' ? 'en' : widget.entry.originalLanguage,
                 ),
               ],
             ),
@@ -445,7 +574,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     );
   }
   
-  Widget _buildInteractiveText(String text) {
+  Widget _buildInteractiveText(String text, String? language) {
     final words = text.split(' ');
     final spans = <InlineSpan>[];
     
@@ -455,7 +584,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       
       // 単語の翻訳候補を取得
       final suggestions = TranslationService.suggestTranslations(cleanWord);
-      final hasTranslation = suggestions.isNotEmpty;
+      final hasTranslation = suggestions.isNotEmpty && cleanWord.isNotEmpty;
       
       spans.add(
         WidgetSpan(
@@ -467,22 +596,19 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   }
                 : null,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               decoration: BoxDecoration(
-                border: hasTranslation
-                    ? Border(
-                        bottom: BorderSide(
-                          color: AppTheme.primaryBlue.withOpacity(0.3),
-                          width: 1,
-                        ),
-                      )
-                    : null,
+                color: hasTranslation
+                    ? AppTheme.primaryBlue.withOpacity(0.08)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
                 word,
                 style: AppTheme.body1.copyWith(
                   color: hasTranslation ? AppTheme.primaryBlue : AppTheme.textPrimary,
                   height: 1.6,
+                  fontWeight: hasTranslation ? FontWeight.w500 : FontWeight.normal,
                 ),
               ),
             ),

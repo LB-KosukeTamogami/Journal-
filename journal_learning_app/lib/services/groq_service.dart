@@ -80,14 +80,25 @@ Important guidelines:
         
         // 日本語テキストの検証と修正
         if (result['improvements'] != null) {
-          result['improvements'] = (result['improvements'] as List).map((item) {
+          final List<String> cleanedImprovements = [];
+          for (final item in result['improvements'] as List) {
+            final text = item.toString();
             // 文字化けチェック
-            if (_isCorruptedJapanese(item.toString())) {
-              // デフォルトの改善点を返す
-              return _getDefaultImprovement();
+            if (_isCorruptedJapanese(text)) {
+              // デフォルトの改善点リストから選択
+              final defaults = [
+                '過去形と現在形の使い分けに注意しましょう',
+                '冠詞（a/an/the）の使い方を確認しましょう',
+                '前置詞の選択を見直しましょう',
+                '動詞の時制を統一しましょう',
+                '語順に注意して文を構成しましょう',
+              ];
+              cleanedImprovements.add(defaults[cleanedImprovements.length % defaults.length]);
+            } else {
+              cleanedImprovements.add(text);
             }
-            return item;
-          }).toList();
+          }
+          result['improvements'] = cleanedImprovements;
         }
         
         return result;
@@ -163,9 +174,8 @@ Important guidelines:
   static bool _isCorruptedJapanese(String text) {
     // 一般的な文字化けパターンをチェック
     final corruptedPatterns = [
-      '過当形', '幸相', '注昔', '必裂',
+      '過当形', '幸相', '注昔', '必裂', '琀科', '朝形',
       RegExp(r'[\u0000-\u001F]'), // 制御文字
-      RegExp(r'[^\u0020-\u007E\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\uFF00-\uFFEF]'), // 日本語以外の特殊文字
     ];
     
     for (final pattern in corruptedPatterns) {
@@ -180,13 +190,7 @@ Important guidelines:
   }
   
   static String _getDefaultImprovement() {
-    final defaults = [
-      '時制の使い方に注意しましょう',
-      '冠詞の使用法を確認しましょう',
-      '前置詞の選択に気をつけましょう',
-      '動詞の活用を見直しましょう',
-      '語順に注意が必要です',
-    ];
-    return defaults[DateTime.now().millisecond % defaults.length];
+    // 固定のデフォルト改善点を返す
+    return '文法の基本を確認しましょう';
   }
 }
