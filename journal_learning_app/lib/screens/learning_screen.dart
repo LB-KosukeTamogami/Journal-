@@ -78,6 +78,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                   fontWeight: FontWeight.w600,
                 ),
                 unselectedLabelStyle: AppTheme.body2,
+                dividerColor: Colors.transparent,
                 tabs: [
                   Tab(
                     child: Container(

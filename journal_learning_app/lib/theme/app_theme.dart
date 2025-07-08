@@ -48,49 +48,49 @@ class AppTheme {
   ];
   
   // Text Styles
-  static TextStyle headline1 = GoogleFonts.inter(
+  static TextStyle headline1 = GoogleFonts.notoSansJp(
     fontSize: 32,
     fontWeight: FontWeight.w700,
     color: textPrimary,
     height: 1.2,
   );
   
-  static TextStyle headline2 = GoogleFonts.inter(
+  static TextStyle headline2 = GoogleFonts.notoSansJp(
     fontSize: 24,
     fontWeight: FontWeight.w600,
     color: textPrimary,
     height: 1.3,
   );
   
-  static TextStyle headline3 = GoogleFonts.inter(
+  static TextStyle headline3 = GoogleFonts.notoSansJp(
     fontSize: 20,
     fontWeight: FontWeight.w600,
     color: textPrimary,
     height: 1.3,
   );
   
-  static TextStyle body1 = GoogleFonts.inter(
+  static TextStyle body1 = GoogleFonts.notoSansJp(
     fontSize: 16,
     fontWeight: FontWeight.w400,
     color: textPrimary,
     height: 1.5,
   );
   
-  static TextStyle body2 = GoogleFonts.inter(
+  static TextStyle body2 = GoogleFonts.notoSansJp(
     fontSize: 14,
     fontWeight: FontWeight.w400,
     color: textSecondary,
     height: 1.5,
   );
   
-  static TextStyle caption = GoogleFonts.inter(
+  static TextStyle caption = GoogleFonts.notoSansJp(
     fontSize: 12,
     fontWeight: FontWeight.w400,
     color: textTertiary,
     height: 1.4,
   );
   
-  static TextStyle button = GoogleFonts.inter(
+  static TextStyle button = GoogleFonts.notoSansJp(
     fontSize: 16,
     fontWeight: FontWeight.w600,
     color: Colors.white,

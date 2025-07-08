@@ -137,7 +137,7 @@ class _FlashcardSessionScreenState extends State<FlashcardSessionScreen> {
                     padding: const EdgeInsets.all(32),
                     child: Container(
                       width: double.infinity,
-                      height: 200,
+                      constraints: const BoxConstraints(minHeight: 200),
                       child: _isFlipped
                           ? Transform(
                               alignment: Alignment.center,
