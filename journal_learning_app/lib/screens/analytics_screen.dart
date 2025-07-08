@@ -191,55 +191,44 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                   '投稿頻度',
                   style: AppTheme.headline3,
                 ),
-                IntrinsicWidth(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppTheme.backgroundTertiary,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppTheme.borderColor),
+                Container(
+                  constraints: const BoxConstraints(maxWidth: 200),
+                  decoration: BoxDecoration(
+                    color: AppTheme.backgroundTertiary,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppTheme.borderColor),
+                  ),
+                  padding: const EdgeInsets.all(4),
+                  child: TabBar(
+                    controller: _tabController,
+                    labelColor: Colors.white,
+                    unselectedLabelColor: AppTheme.textSecondary,
+                    indicator: BoxDecoration(
+                      color: AppTheme.primaryBlue,
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    padding: const EdgeInsets.all(4),
-                    child: TabBar(
-                      controller: _tabController,
-                      labelColor: Colors.white,
-                      unselectedLabelColor: AppTheme.textSecondary,
-                      indicator: BoxDecoration(
-                        color: AppTheme.primaryBlue,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      indicatorPadding: EdgeInsets.zero,
-                      indicatorSize: TabBarIndicatorSize.tab,
-                      labelStyle: AppTheme.body2.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                      unselectedLabelStyle: AppTheme.body2,
-                      dividerColor: Colors.transparent,
-                      isScrollable: true,
-                      labelPadding: EdgeInsets.zero,
-                      tabs: [
-                        Tab(
-                          height: 32,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: const Text('週間'),
-                          ),
-                        ),
-                        Tab(
-                          height: 32,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: const Text('月間'),
-                          ),
-                        ),
-                        Tab(
-                          height: 32,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: const Text('年間'),
-                          ),
-                        ),
-                      ],
+                    indicatorPadding: EdgeInsets.zero,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    labelStyle: AppTheme.body2.copyWith(
+                      fontWeight: FontWeight.w600,
                     ),
+                    unselectedLabelStyle: AppTheme.body2,
+                    dividerColor: Colors.transparent,
+                    isScrollable: false,
+                    tabs: const [
+                      Tab(
+                        height: 32,
+                        child: Text('週間'),
+                      ),
+                      Tab(
+                        height: 32,
+                        child: Text('月間'),
+                      ),
+                      Tab(
+                        height: 32,
+                        child: Text('年間'),
+                      ),
+                    ],
                   ),
                 ),
               ],
