@@ -48,19 +48,33 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       // 言語を検出
       final detectedLang = TranslationService.detectLanguage(widget.entry.content);
       
-      // Groq APIで添削と翻訳を実行
-      final result = await GroqService.correctAndTranslate(
-        widget.entry.content,
-        targetLanguage: detectedLang == 'ja' ? 'en' : 'ja',
-      );
+      // 自動翻訳を実行
+      final translationResult = await TranslationService.autoTranslate(widget.entry.content);
       
-      setState(() {
-        _correctedContent = result['corrected'] ?? widget.entry.content;
-        _translatedContent = result['translation'] ?? '';
-        _corrections = List<String>.from(result['improvements'] ?? []);
-        _learnedPhrases = List<String>.from(result['learned_phrases'] ?? []);
-        _isLoading = false;
-      });
+      // Groq APIで添削と翻訳を実行（フォールバック）
+      try {
+        final result = await GroqService.correctAndTranslate(
+          widget.entry.content,
+          targetLanguage: detectedLang == 'ja' ? 'en' : 'ja',
+        );
+        
+        setState(() {
+          _correctedContent = result['corrected'] ?? widget.entry.content;
+          _translatedContent = translationResult.success ? translationResult.translatedText : (result['translation'] ?? '');
+          _corrections = List<String>.from(result['improvements'] ?? []);
+          _learnedPhrases = List<String>.from(result['learned_phrases'] ?? []);
+          _isLoading = false;
+        });
+      } catch (groqError) {
+        // Groq API失敗時は翻訳サービスの結果のみ使用
+        setState(() {
+          _correctedContent = widget.entry.content;
+          _translatedContent = translationResult.success ? translationResult.translatedText : '翻訳を読み込めませんでした';
+          _corrections = [];
+          _learnedPhrases = [];
+          _isLoading = false;
+        });
+      }
     } catch (e) {
       setState(() {
         _correctedContent = widget.entry.content;
