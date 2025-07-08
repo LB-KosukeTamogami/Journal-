@@ -129,7 +129,9 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   Expanded(
                     child: GestureDetector(
                       onTap: () => _tabController.animateTo(0),
-                      child: Container(
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeInOut,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           color: _tabController.index == 0
@@ -154,7 +156,9 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   Expanded(
                     child: GestureDetector(
                       onTap: () => _tabController.animateTo(1),
-                      child: Container(
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeInOut,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           color: _tabController.index == 1
@@ -586,27 +590,35 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       final suggestions = TranslationService.suggestTranslations(cleanWord);
       final hasTranslation = suggestions.isNotEmpty && cleanWord.isNotEmpty;
       
+      // 全ての単語をクリック可能にする（空でない場合）
+      final isClickable = cleanWord.isNotEmpty;
+      
       spans.add(
         WidgetSpan(
           child: GestureDetector(
-            onTap: hasTranslation
+            onTap: isClickable
                 ? () {
-                    final translation = suggestions[cleanWord.toLowerCase()] ?? '';
-                    _showWordDetail(cleanWord, translation);
+                    String translation = '';
+                    if (hasTranslation) {
+                      translation = suggestions[cleanWord.toLowerCase()] ?? '';
+                    }
+                    _showWordDetail(cleanWord, translation, canAddToCards: hasTranslation);
                   }
                 : null,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               decoration: BoxDecoration(
-                color: hasTranslation
-                    ? AppTheme.primaryBlue.withOpacity(0.08)
+                color: isClickable
+                    ? AppTheme.primaryBlue.withOpacity(hasTranslation ? 0.08 : 0.04)
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
                 word,
                 style: AppTheme.body1.copyWith(
-                  color: hasTranslation ? AppTheme.primaryBlue : AppTheme.textPrimary,
+                  color: isClickable 
+                      ? (hasTranslation ? AppTheme.primaryBlue : AppTheme.textPrimary)
+                      : AppTheme.textPrimary,
                   height: 1.6,
                   fontWeight: hasTranslation ? FontWeight.w500 : FontWeight.normal,
                 ),
@@ -626,7 +638,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     );
   }
   
-  void _showWordDetail(String english, String japanese) {
+  void _showWordDetail(String english, String japanese, {bool canAddToCards = true}) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -643,7 +655,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             ),
             const SizedBox(width: 8),
             Text(
-              '単語の意味',
+              '単語の詳細',
               style: AppTheme.headline3,
             ),
           ],
@@ -674,37 +686,50 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       color: AppTheme.primaryBlue,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    '日本語',
-                    style: AppTheme.caption.copyWith(
-                      color: AppTheme.textSecondary,
+                  if (japanese.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      '日本語',
+                      style: AppTheme.caption.copyWith(
+                        color: AppTheme.textSecondary,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    japanese,
-                    style: AppTheme.headline3,
-                  ),
+                    const SizedBox(height: 4),
+                    Text(
+                      japanese,
+                      style: AppTheme.headline3,
+                    ),
+                  ] else ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      '翻訳がありません',
+                      style: AppTheme.body2.copyWith(
+                        color: AppTheme.textTertiary,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  _addWordToCards(english, japanese);
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.add),
-                label: const Text('単語帳に追加'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryBlue,
-                  foregroundColor: Colors.white,
+            if (canAddToCards && japanese.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    _addWordToCards(english, japanese);
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.add),
+                  label: const Text('単語帳に追加'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryBlue,
+                    foregroundColor: Colors.white,
+                  ),
                 ),
               ),
-            ),
+            ],
           ],
         ),
         actions: [

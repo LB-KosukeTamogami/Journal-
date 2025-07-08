@@ -14,39 +14,30 @@ class GroqService {
   }) async {
     try {
       final prompt = '''
-You are a language learning assistant. Please process the following text:
-
-1. Detect the language of the input text
-2. If there are grammatical errors, correct them
-3. Improve the text to make it more natural
-4. Translate the text to the target language (if already in target language, translate to the other language)
-5. Provide brief explanations of grammatical improvements
+You are a language learning assistant. Process the following text:
 
 Input text: "$content"
 Target language: $targetLanguage
 
-Please respond in the following JSON format:
+Respond in JSON format:
 {
-  "detected_language": "detected language code (en for English, ja for Japanese)",
+  "detected_language": "en" or "ja",
   "original": "original text",
   "corrected": "corrected text",
-  "translation": "translated text in target language",
-  "improvements": ["improvement point 1 in Japanese", "improvement point 2 in Japanese"],
-  "learned_phrases": ["phrase 1 (with Japanese explanation)", "phrase 2 (with Japanese explanation)"]
+  "translation": "translated text",
+  "improvements": ["improvement 1", "improvement 2"],
+  "learned_phrases": ["phrase 1", "phrase 2"]
 }
 
-Important guidelines:
-- If input is in English, translate to Japanese completely
-- If input is in Japanese, translate to English completely
-- Do not mix languages in the translation
-- Keep the translation pure and natural
-- Write ALL improvements in proper Japanese. Examples:
-  - "過去形の使い方に注意しましょう" (Be careful with past tense usage)
-  - "冠詞の使用法に注意が必要です" (Need to pay attention to article usage)
-  - "時制の一致に気をつけましょう" (Be careful with tense agreement)
-- For learned_phrases, show the English phrase followed by Japanese explanation
-  Example: "go to school (学校に行く)"
-- IMPORTANT: Use proper Japanese characters, not corrupted text
+For improvements, provide simple Japanese explanations:
+- Use basic Japanese only
+- Example: "past tense error" → "過去形の誤り"
+- Example: "article missing" → "冠詞が必要"
+- Example: "word order issue" → "語順の問題"
+
+For learned_phrases, format as "English phrase (Japanese meaning)":
+- Example: "go to school (学校に行く)"
+- Example: "have fun (楽しむ)"
 ''';
 
       final response = await http.post(
@@ -79,21 +70,23 @@ Important guidelines:
         final result = jsonDecode(content);
         
         // 日本語テキストの検証と修正
-        if (result['improvements'] != null) {
+        if (result['improvements'] != null && result['improvements'] is List) {
+          final defaultImprovements = [
+            '過去形の使い方に注意',
+            '冠詞の使用を確認',
+            '前置詞の選択を見直す',
+            '動詞の時制を統一',
+            '語順に注意',
+          ];
+          
           final List<String> cleanedImprovements = [];
-          for (final item in result['improvements'] as List) {
-            final text = item.toString();
-            // 文字化けチェック
-            if (_isCorruptedJapanese(text)) {
-              // デフォルトの改善点リストから選択
-              final defaults = [
-                '過去形と現在形の使い分けに注意しましょう',
-                '冠詞（a/an/the）の使い方を確認しましょう',
-                '前置詞の選択を見直しましょう',
-                '動詞の時制を統一しましょう',
-                '語順に注意して文を構成しましょう',
-              ];
-              cleanedImprovements.add(defaults[cleanedImprovements.length % defaults.length]);
+          final improvements = result['improvements'] as List;
+          
+          for (int i = 0; i < improvements.length; i++) {
+            final text = improvements[i]?.toString() ?? '';
+            // 空文字列、文字化け、英語のみの場合はデフォルトを使用
+            if (text.isEmpty || _isCorruptedJapanese(text) || !_containsJapanese(text)) {
+              cleanedImprovements.add(defaultImprovements[i % defaultImprovements.length]);
             } else {
               cleanedImprovements.add(text);
             }
@@ -192,5 +185,10 @@ Important guidelines:
   static String _getDefaultImprovement() {
     // 固定のデフォルト改善点を返す
     return '文法の基本を確認しましょう';
+  }
+  
+  static bool _containsJapanese(String text) {
+    // 日本語文字が含まれているかチェック
+    return RegExp(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]').hasMatch(text);
   }
 }

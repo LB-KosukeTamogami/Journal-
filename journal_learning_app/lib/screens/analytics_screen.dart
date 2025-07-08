@@ -137,7 +137,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                               _selectedPeriod = period;
                             });
                           },
-                          child: Container(
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.easeInOut,
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             margin: const EdgeInsets.symmetric(horizontal: 2),
                             decoration: BoxDecoration(
