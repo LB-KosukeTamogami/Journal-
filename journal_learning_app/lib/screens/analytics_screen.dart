@@ -51,48 +51,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         title: Text('分析', style: AppTheme.headline3),
         backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            child: PopupMenuButton<String>(
-              onSelected: (value) {
-                setState(() {
-                  _selectedPeriod = value;
-                });
-              },
-              itemBuilder: (context) => [
-                PopupMenuItem(value: '週間', child: Text('週間')),
-                PopupMenuItem(value: '月間', child: Text('月間')),
-                PopupMenuItem(value: '年間', child: Text('年間')),
-              ],
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryBlue.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      _selectedPeriod,
-                      style: AppTheme.body2.copyWith(
-                        color: AppTheme.primaryBlue,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Icon(
-                      Icons.arrow_drop_down,
-                      color: AppTheme.primaryBlue,
-                      size: 20,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
       body: _isLoading
           ? Center(
@@ -162,7 +120,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   '投稿頻度',
                   style: AppTheme.headline3,
                 ),
-                AppCard(
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.backgroundTertiary,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppTheme.borderColor),
+                  ),
                   padding: const EdgeInsets.all(4),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -178,21 +141,20 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             margin: const EdgeInsets.symmetric(horizontal: 2),
                             decoration: BoxDecoration(
-                              gradient: _selectedPeriod == period
-                                  ? const LinearGradient(
-                                      colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-                                    )
-                                  : null,
-                              borderRadius: BorderRadius.circular(12),
+                              color: _selectedPeriod == period
+                                  ? AppTheme.primaryBlue
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               period,
-                              style: TextStyle(
-                                color: Color(0xFF2C3E50),
+                              style: AppTheme.body2.copyWith(
+                                color: _selectedPeriod == period
+                                    ? Colors.white
+                                    : AppTheme.textSecondary,
                                 fontWeight: _selectedPeriod == period
-                                    ? FontWeight.bold
+                                    ? FontWeight.w600
                                     : FontWeight.normal,
-                                fontSize: 12,
                               ),
                             ),
                           ),
@@ -214,7 +176,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     drawVerticalLine: false,
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: Color(0xFF546E7A).withOpacity(0.3),
+                        color: AppTheme.borderColor,
                         strokeWidth: 1,
                       );
                     },
@@ -237,9 +199,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                           if (value.toInt() >= 0 && value.toInt() < days.length) {
                             return Text(
                               days[value.toInt()],
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFF2C3E50),
+                              style: AppTheme.caption.copyWith(
+                                color: AppTheme.textSecondary,
                               ),
                             );
                           }
@@ -255,9 +216,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         getTitlesWidget: (value, meta) {
                           return Text(
                             value.toInt().toString(),
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Color(0xFF2C3E50),
+                            style: AppTheme.caption.copyWith(
+                              color: AppTheme.textSecondary,
                             ),
                           );
                         },
