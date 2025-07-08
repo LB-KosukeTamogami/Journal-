@@ -16,7 +16,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
   late TabController _tabController;
   List<Word> _allWords = [];
   bool _isLoading = true;
-  Set<int> _selectedMasteryLevels = {0, 1, 2}; // Default: show all levels
+  Set<int> _selectedMasteryLevels = {0, 1}; // Default: show × and △ only
 
   @override
   void initState() {
@@ -157,23 +157,14 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                   children: [
                     _buildFilterChip(
                       label: '×',
-                      sublabel: '未習得',
                       value: 0,
                       color: AppTheme.error,
                     ),
                     const SizedBox(width: 8),
                     _buildFilterChip(
                       label: '△',
-                      sublabel: 'うろ覚え',
                       value: 1,
                       color: AppTheme.warning,
-                    ),
-                    const SizedBox(width: 8),
-                    _buildFilterChip(
-                      label: '○',
-                      sublabel: '習得済み',
-                      value: 2,
-                      color: AppTheme.success,
                     ),
                   ],
                 ),
@@ -190,7 +181,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
 
   Widget _buildFilterChip({
     required String label,
-    required String sublabel,
     required int value,
     required Color color,
   }) {
@@ -208,33 +198,22 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? color.withOpacity(0.15) : AppTheme.backgroundTertiary,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected ? color : AppTheme.borderColor,
             width: isSelected ? 2 : 1,
           ),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: AppTheme.body1.copyWith(
-                color: isSelected ? color : AppTheme.textTertiary,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              ),
-            ),
-            Text(
-              sublabel,
-              style: AppTheme.caption.copyWith(
-                color: isSelected ? color : AppTheme.textTertiary,
-                fontSize: 10,
-              ),
-            ),
-          ],
+        child: Text(
+          label,
+          style: AppTheme.body1.copyWith(
+            color: isSelected ? color : AppTheme.textTertiary,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            fontSize: 16,
+          ),
         ),
       ),
     );
