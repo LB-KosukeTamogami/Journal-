@@ -114,7 +114,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
               children: [
                 _buildCardList(_allWords),
                 _buildLearningTab(),
-                _buildCardList(_allWords.where((word) => word.isMastered).toList()),
+                _buildCardList(_allWords.where((word) => word.masteryLevel == 2).toList()),
               ],
             ),
       floatingActionButton: Container(
@@ -135,7 +135,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
   }
 
   Widget _buildLearningTab() {
-    final learningWords = _allWords.where((word) => !word.isMastered).toList();
+    final learningWords = _allWords.where((word) => word.masteryLevel < 2).toList();
     final filteredWords = learningWords.where((word) => 
       _selectedMasteryLevels.contains(word.masteryLevel)
     ).toList();
@@ -437,13 +437,13 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     
     if (_tabController.index == 1) {
       // Learning tab with filters
-      final learningWords = _allWords.where((word) => !word.isMastered).toList();
+      final learningWords = _allWords.where((word) => word.masteryLevel < 2).toList();
       sessionWords = learningWords.where((word) => 
         _selectedMasteryLevels.contains(word.masteryLevel)
       ).toList();
     } else if (_tabController.index == 2) {
       // Mastered tab
-      sessionWords = _allWords.where((word) => word.isMastered).toList();
+      sessionWords = _allWords.where((word) => word.masteryLevel == 2).toList();
     } else {
       // All tab
       sessionWords = _allWords;

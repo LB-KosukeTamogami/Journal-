@@ -238,32 +238,40 @@ class StorageService {
 
     // サンプル単語データ
     final sampleWords = <Word>[
+      // 単語
       Word(
         id: 'sample_1',
         english: 'amazing',
         japanese: '素晴らしい',
+        example: 'The view from the mountain was amazing.',
         diaryEntryId: 'sample_diary_1',
         createdAt: DateTime.now().subtract(const Duration(days: 3)),
         reviewCount: 2,
         isMastered: false,
+        masteryLevel: 1, // △
       ),
       Word(
         id: 'sample_2',
         english: 'journey',
         japanese: '旅',
+        example: 'Life is a journey, not a destination.',
         diaryEntryId: 'sample_diary_1',
         createdAt: DateTime.now().subtract(const Duration(days: 3)),
         reviewCount: 1,
         isMastered: false,
+        masteryLevel: 0, // ×
       ),
+      // フレーズ
       Word(
         id: 'sample_3',
-        english: 'discover',
-        japanese: '発見する',
+        english: 'look forward to',
+        japanese: '〜を楽しみにする',
+        example: 'I look forward to hearing from you.',
         diaryEntryId: 'sample_diary_2',
         createdAt: DateTime.now().subtract(const Duration(days: 2)),
         reviewCount: 3,
         isMastered: true,
+        masteryLevel: 2, // ○
       ),
       Word(
         id: 'sample_4',
@@ -273,15 +281,19 @@ class StorageService {
         createdAt: DateTime.now().subtract(const Duration(days: 2)),
         reviewCount: 0,
         isMastered: false,
+        masteryLevel: 0, // ×
       ),
+      // 慣用句
       Word(
         id: 'sample_5',
-        english: 'experience',
-        japanese: '経験',
+        english: 'break the ice',
+        japanese: '緊張をほぐす、打ち解ける',
+        example: 'He told a joke to break the ice.',
         diaryEntryId: 'sample_diary_3',
         createdAt: DateTime.now().subtract(const Duration(days: 1)),
-        reviewCount: 1,
-        isMastered: false,
+        reviewCount: 5,
+        isMastered: true,
+        masteryLevel: 2, // ○
       ),
       Word(
         id: 'sample_6',
@@ -289,17 +301,21 @@ class StorageService {
         japanese: '感謝する',
         diaryEntryId: 'sample_diary_3',
         createdAt: DateTime.now().subtract(const Duration(days: 1)),
-        reviewCount: 0,
+        reviewCount: 1,
         isMastered: false,
+        masteryLevel: 1, // △
       ),
+      // フレーズ
       Word(
         id: 'sample_7',
-        english: 'challenging',
-        japanese: '挑戦的な',
+        english: 'make the most of',
+        japanese: '〜を最大限に活用する',
+        example: 'We should make the most of this opportunity.',
         diaryEntryId: 'sample_diary_4',
         createdAt: DateTime.now(),
-        reviewCount: 0,
-        isMastered: false,
+        reviewCount: 4,
+        isMastered: true,
+        masteryLevel: 2, // ○
       ),
       Word(
         id: 'sample_8',
@@ -309,6 +325,30 @@ class StorageService {
         createdAt: DateTime.now(),
         reviewCount: 0,
         isMastered: false,
+        masteryLevel: 0, // ×
+      ),
+      // 追加のフレーズと慣用句
+      Word(
+        id: 'sample_9',
+        english: 'once in a blue moon',
+        japanese: 'めったに〜ない',
+        example: 'I only eat junk food once in a blue moon.',
+        diaryEntryId: 'sample_diary_1',
+        createdAt: DateTime.now().subtract(const Duration(days: 3)),
+        reviewCount: 2,
+        isMastered: false,
+        masteryLevel: 1, // △
+      ),
+      Word(
+        id: 'sample_10',
+        english: 'take it easy',
+        japanese: 'のんびりする、無理をしない',
+        example: 'You should take it easy this weekend.',
+        diaryEntryId: 'sample_diary_2',
+        createdAt: DateTime.now().subtract(const Duration(days: 2)),
+        reviewCount: 6,
+        isMastered: true,
+        masteryLevel: 2, // ○
       ),
     ];
 
