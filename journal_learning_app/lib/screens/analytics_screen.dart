@@ -181,6 +181,26 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                       );
                     },
                   ),
+                  lineTouchData: LineTouchData(
+                    touchTooltipData: LineTouchTooltipData(
+                      tooltipBgColor: AppTheme.textPrimary,
+                      tooltipRoundedRadius: 8,
+                      tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
+                        return touchedBarSpots.map((barSpot) {
+                          return LineTooltipItem(
+                            '${barSpot.y.toInt()}件',
+                            AppTheme.body2.copyWith(
+                              color: AppTheme.backgroundPrimary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          );
+                        }).toList();
+                      },
+                    ),
+                    touchCallback: (FlTouchEvent event, LineTouchResponse? touchResponse) {},
+                    handleBuiltInTouches: true,
+                  ),
                   titlesData: FlTitlesData(
                     show: true,
                     rightTitles: const AxisTitles(
@@ -385,48 +405,37 @@ class _StatCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              icon,
+              color: color,
+              size: 24,
+            ),
+          ),
+          const SizedBox(height: 12),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  icon,
+              Text(
+                value,
+                style: AppTheme.headline2.copyWith(
                   color: color,
-                  size: 24,
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: color.withOpacity(0.3),
-                    width: 1,
-                  ),
-                ),
-                child: Text(
-                  unit,
-                  style: AppTheme.caption.copyWith(
-                    color: color,
-                    fontWeight: FontWeight.w600,
-                  ),
+              const SizedBox(width: 4),
+              Text(
+                unit,
+                style: AppTheme.body2.copyWith(
+                  color: AppTheme.textSecondary,
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: AppTheme.headline1.copyWith(
-              fontSize: 28,
-              color: AppTheme.textPrimary,
-            ),
           ),
           const SizedBox(height: 4),
           Text(
