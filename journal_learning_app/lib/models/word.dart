@@ -8,6 +8,7 @@ class Word {
   final int reviewCount;
   final DateTime? lastReviewedAt;
   final bool isMastered;
+  final int masteryLevel; // 0 = unknown, 1 = partial, 2 = mastered
 
   Word({
     required this.id,
@@ -19,6 +20,7 @@ class Word {
     this.reviewCount = 0,
     this.lastReviewedAt,
     this.isMastered = false,
+    this.masteryLevel = 0,
   });
 
   Map<String, dynamic> toJson() {
@@ -32,6 +34,7 @@ class Word {
       'reviewCount': reviewCount,
       'lastReviewedAt': lastReviewedAt?.toIso8601String(),
       'isMastered': isMastered,
+      'masteryLevel': masteryLevel,
     };
   }
 
@@ -48,6 +51,7 @@ class Word {
           ? DateTime.parse(json['lastReviewedAt']) 
           : null,
       isMastered: json['isMastered'] ?? false,
+      masteryLevel: json['masteryLevel'] ?? 0,
     );
   }
 
@@ -59,6 +63,7 @@ class Word {
     int? reviewCount,
     DateTime? lastReviewedAt,
     bool? isMastered,
+    int? masteryLevel,
   }) {
     return Word(
       id: id,
@@ -70,6 +75,7 @@ class Word {
       reviewCount: reviewCount ?? this.reviewCount,
       lastReviewedAt: lastReviewedAt ?? this.lastReviewedAt,
       isMastered: isMastered ?? this.isMastered,
+      masteryLevel: masteryLevel ?? this.masteryLevel,
     );
   }
 }

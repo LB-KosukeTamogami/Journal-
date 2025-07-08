@@ -212,7 +212,7 @@ class StorageService {
     return words.where((w) => w.diaryEntryId == diaryEntryId).toList();
   }
 
-  static Future<void> updateWordReview(String wordId, {required bool mastered}) async {
+  static Future<void> updateWordReview(String wordId, {required int masteryLevel}) async {
     final words = await getWords();
     final index = words.indexWhere((w) => w.id == wordId);
     
@@ -221,7 +221,8 @@ class StorageService {
       final updatedWord = word.copyWith(
         reviewCount: word.reviewCount + 1,
         lastReviewedAt: DateTime.now(),
-        isMastered: mastered,
+        isMastered: masteryLevel == 2, // Keep backward compatibility
+        masteryLevel: masteryLevel,
       );
       words[index] = updatedWord;
       

@@ -168,7 +168,9 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           word: word,
           onTap: () => _showCardDetail(word),
           onToggleLearned: () async {
-            await StorageService.updateWordReview(word.id, mastered: !word.isMastered);
+            // Toggle between mastered (2) and not mastered (0)
+            final newLevel = word.masteryLevel == 2 ? 0 : 2;
+            await StorageService.updateWordReview(word.id, masteryLevel: newLevel);
             _loadWords();
           },
         ).animate().fadeIn(
@@ -309,7 +311,9 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                       Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () async {
-                      await StorageService.updateWordReview(word.id, mastered: !word.isMastered);
+                      // Toggle between mastered (2) and not mastered (0)
+                      final newLevel = word.masteryLevel == 2 ? 0 : 2;
+                      await StorageService.updateWordReview(word.id, masteryLevel: newLevel);
                       Navigator.pop(context);
                       _loadWords();
                     },

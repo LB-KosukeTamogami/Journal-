@@ -20,7 +20,9 @@ class _FlashcardSessionScreenState extends State<FlashcardSessionScreen> {
   int _currentIndex = 0;
   bool _isFlipped = false;
   bool _showResult = false;
-  int _correctCount = 0;
+  int _masteredCount = 0;
+  int _partialCount = 0;
+  int _unknownCount = 0;
   int _totalCount = 0;
 
   void _flipCard() {
@@ -29,19 +31,34 @@ class _FlashcardSessionScreenState extends State<FlashcardSessionScreen> {
     });
   }
 
-  void _nextCard({required bool isCorrect}) {
-    if (_currentIndex < widget.words.length - 1) {
-      setState(() {
+  void _nextCard({required int masteryLevel}) {
+    // masteryLevel: 2 = ○ (mastered), 1 = △ (partial), 0 = × (unknown)
+    
+    // Update word mastery in storage
+    final currentWord = widget.words[_currentIndex];
+    _updateWordMastery(currentWord, masteryLevel);
+    
+    setState(() {
+      _totalCount++;
+      switch (masteryLevel) {
+        case 2:
+          _masteredCount++;
+          break;
+        case 1:
+          _partialCount++;
+          break;
+        case 0:
+          _unknownCount++;
+          break;
+      }
+      
+      if (_currentIndex < widget.words.length - 1) {
         _currentIndex++;
         _isFlipped = false;
-        _totalCount++;
-        if (isCorrect) {
-          _correctCount++;
-        }
-      });
-    } else {
-      _finishReview();
-    }
+      } else {
+        _finishReview();
+      }
+    });
   }
 
   void _finishReview() {
@@ -55,13 +72,15 @@ class _FlashcardSessionScreenState extends State<FlashcardSessionScreen> {
       _currentIndex = 0;
       _isFlipped = false;
       _showResult = false;
-      _correctCount = 0;
+      _masteredCount = 0;
+      _partialCount = 0;
+      _unknownCount = 0;
       _totalCount = 0;
     });
   }
 
-  void _markWordMastered(Word word) async {
-    await StorageService.updateWordReview(word.id, mastered: true);
+  void _updateWordMastery(Word word, int masteryLevel) async {
+    await StorageService.updateWordReview(word.id, masteryLevel: masteryLevel);
   }
 
   @override
@@ -102,12 +121,19 @@ class _FlashcardSessionScreenState extends State<FlashcardSessionScreen> {
                       color: AppTheme.textSecondary,
                     ),
                   ),
-                  Text(
-                    '正解率: ${_totalCount > 0 ? ((_correctCount / _totalCount) * 100).toStringAsFixed(0) : 0}%',
-                    style: AppTheme.body2.copyWith(
-                      color: AppTheme.textSecondary,
+                  if (_totalCount > 0)
+                    Row(
+                      children: [
+                        Text('○', style: AppTheme.body2.copyWith(color: AppTheme.success)),
+                        Text(':$_masteredCount ', style: AppTheme.caption),
+                        const SizedBox(width: 8),
+                        Text('△', style: AppTheme.body2.copyWith(color: AppTheme.warning)),
+                        Text(':$_partialCount ', style: AppTheme.caption),
+                        const SizedBox(width: 8),
+                        Text('×', style: AppTheme.body2.copyWith(color: AppTheme.error)),
+                        Text(':$_unknownCount', style: AppTheme.caption),
+                      ],
                     ),
-                  ),
                 ],
               ),
               const SizedBox(height: 8),
@@ -169,37 +195,56 @@ class _FlashcardSessionScreenState extends State<FlashcardSessionScreen> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () => _nextCard(isCorrect: false),
+                        onPressed: () => _nextCard(masteryLevel: 0),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.error,
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.close),
-                            const SizedBox(width: 8),
-                            Text('不正解', style: AppTheme.button),
+                            Text('×', style: AppTheme.headline3.copyWith(color: Colors.white)),
+                            const SizedBox(height: 4),
+                            Text('未習得', style: AppTheme.caption.copyWith(color: Colors.white)),
                           ],
                         ),
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () => _nextCard(isCorrect: true),
+                        onPressed: () => _nextCard(masteryLevel: 1),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.warning,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('△', style: AppTheme.headline3.copyWith(color: Colors.white)),
+                            const SizedBox(height: 4),
+                            Text('うろ覚え', style: AppTheme.caption.copyWith(color: Colors.white)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => _nextCard(masteryLevel: 2),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.success,
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.check),
-                            const SizedBox(width: 8),
-                            Text('正解', style: AppTheme.button),
+                            Text('○', style: AppTheme.headline3.copyWith(color: Colors.white)),
+                            const SizedBox(height: 4),
+                            Text('習得済み', style: AppTheme.caption.copyWith(color: Colors.white)),
                           ],
                         ),
                       ),
@@ -297,8 +342,8 @@ class _FlashcardSessionScreenState extends State<FlashcardSessionScreen> {
   }
 
   Widget _buildResultScreen() {
-    final accuracy = _totalCount > 0 ? (_correctCount / _totalCount) * 100 : 0;
-    final isGoodResult = accuracy >= 80;
+    final masteryRate = _totalCount > 0 ? (_masteredCount / _totalCount) * 100 : 0;
+    final isGoodResult = masteryRate >= 60;
 
     return Center(
       child: Padding(
@@ -328,21 +373,63 @@ class _FlashcardSessionScreenState extends State<FlashcardSessionScreen> {
                       Text('${widget.words.length}個', style: AppTheme.body1),
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('正解数', style: AppTheme.body1),
-                      Text('$_correctCount個', style: AppTheme.body1),
-                    ],
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppTheme.backgroundSecondary,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Text('○ ', style: AppTheme.headline3.copyWith(color: AppTheme.success)),
+                                Text('習得済み', style: AppTheme.body2),
+                              ],
+                            ),
+                            Text('$_masteredCount個', style: AppTheme.body1.copyWith(fontWeight: FontWeight.w600)),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Text('△ ', style: AppTheme.headline3.copyWith(color: AppTheme.warning)),
+                                Text('うろ覚え', style: AppTheme.body2),
+                              ],
+                            ),
+                            Text('$_partialCount個', style: AppTheme.body1.copyWith(fontWeight: FontWeight.w600)),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Text('× ', style: AppTheme.headline3.copyWith(color: AppTheme.error)),
+                                Text('未習得', style: AppTheme.body2),
+                              ],
+                            ),
+                            Text('$_unknownCount個', style: AppTheme.body1.copyWith(fontWeight: FontWeight.w600)),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('正解率', style: AppTheme.body1),
+                      Text('習得率', style: AppTheme.body1),
                       Text(
-                        '${accuracy.toStringAsFixed(0)}%',
+                        '${masteryRate.toStringAsFixed(0)}%',
                         style: AppTheme.body1.copyWith(
                           color: isGoodResult ? AppTheme.success : AppTheme.error,
                           fontWeight: FontWeight.bold,
