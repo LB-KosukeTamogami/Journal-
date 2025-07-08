@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../models/diary_entry.dart';
 import '../theme/app_theme.dart';
 import '../services/translation_service.dart';
+import '../services/groq_service.dart';
 
 class DiaryReviewScreen extends StatefulWidget {
   final DiaryEntry entry;
@@ -22,7 +23,9 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   String _translatedContent = '';
   String _correctedContent = '';
   List<String> _corrections = [];
+  List<String> _learnedPhrases = [];
   bool _isLoading = true;
+  String _detectedLanguage = '';
 
   @override
   void initState() {
@@ -31,43 +34,41 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   }
 
   Future<void> _processContent() async {
-    if (widget.detectedLanguage == 'ja') {
-      // 日本語の場合は英語に翻訳
-      final result = await TranslationService.autoTranslate(widget.entry.content);
-      if (result.success) {
+    try {
+      // Groq APIで添削と翻訳を実行
+      final result = await GroqService.correctAndTranslate(
+        widget.entry.content,
+        targetLanguage: widget.detectedLanguage == 'ja' ? 'en' : 'ja',
+      );
+
+      setState(() {
+        _detectedLanguage = result['detected_language'] ?? widget.detectedLanguage;
+        _correctedContent = result['corrected'] ?? widget.entry.content;
+        _translatedContent = result['translation'] ?? '';
+        _corrections = List<String>.from(result['improvements'] ?? []);
+        _learnedPhrases = List<String>.from(result['learned_phrases'] ?? []);
+        _isLoading = false;
+      });
+    } catch (e) {
+      // エラー時はフォールバック
+      if (widget.detectedLanguage == 'ja') {
+        // 従来の翻訳サービスを使用
+        final result = await TranslationService.autoTranslate(widget.entry.content);
+        if (result.success) {
+          setState(() {
+            _translatedContent = result.translatedText;
+            _correctedContent = widget.entry.content;
+            _isLoading = false;
+          });
+        }
+      } else {
         setState(() {
-          _translatedContent = result.translatedText;
+          _correctedContent = widget.entry.content;
+          _translatedContent = widget.entry.content;
           _isLoading = false;
         });
       }
-    } else {
-      // 英語の場合は添削を生成（模擬的）
-      _generateCorrections();
     }
-  }
-
-  void _generateCorrections() {
-    // 模擬的な添削機能
-    final content = widget.entry.content;
-    final corrections = <String>[];
-    String corrected = content;
-
-    // 簡単な文法チェック例
-    if (content.contains('I go to school yesterday')) {
-      corrections.add('"I go to school yesterday" → "I went to school yesterday" (過去形を使用)');
-      corrected = corrected.replaceAll('I go to school yesterday', 'I went to school yesterday');
-    }
-    
-    if (content.contains('I have many friends in school')) {
-      corrections.add('"I have many friends in school" → "I have many friends at school" (前置詞の使い分け)');
-      corrected = corrected.replaceAll('I have many friends in school', 'I have many friends at school');
-    }
-
-    setState(() {
-      _correctedContent = corrected;
-      _corrections = corrections;
-      _isLoading = false;
-    });
   }
 
   @override
@@ -141,10 +142,50 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                   
                   // 学習ポイント
                   _buildLearningPointsSection(),
+                  
+                  const SizedBox(height: 20),
+                  
+                  // 単語を学習カードに追加するボタン
+                  if (_learnedPhrases.isNotEmpty)
+                    _buildAddToCardsButton(),
                 ],
               ),
             ),
     );
+  }
+  
+  Widget _buildAddToCardsButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () async {
+          // 重要フレーズを単語カードとして保存
+          for (final phrase in _learnedPhrases) {
+            // TODO: 単語カードに追加する処理
+          }
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '${_learnedPhrases.length}個のフレーズを学習カードに追加しました',
+                style: AppTheme.body2.copyWith(color: Colors.white),
+              ),
+              backgroundColor: AppTheme.success,
+            ),
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppTheme.primaryBlue,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        icon: const Icon(Icons.add_card),
+        label: Text('学習カードに追加', style: AppTheme.button),
+      ),
+    ).animate().fadeIn(delay: 800.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
   Widget _buildOriginalSection() {
@@ -309,17 +350,20 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   }
 
   Widget _buildLearningPointsSection() {
-    final points = widget.detectedLanguage == 'ja' 
-        ? [
-            '自然な英語表現を学びました',
-            '日記を続けることで語彙力が向上します',
-            '翻訳結果を参考に英語で考える練習をしましょう',
-          ]
-        : [
-            '文法の基本をしっかり身につけましょう',
-            '過去形と現在形の使い分けを意識しましょう',
-            '前置詞の使い方に注意して練習しましょう',
-          ];
+    // 学習したフレーズがある場合はそれを表示、なければデフォルト
+    final points = _learnedPhrases.isNotEmpty 
+        ? _learnedPhrases
+        : widget.detectedLanguage == 'ja' 
+            ? [
+                '自然な英語表現を学びました',
+                '日記を続けることで語彙力が向上します',
+                '翻訳結果を参考に英語で考える練習をしましょう',
+              ]
+            : [
+                '文法の基本をしっかり身につけましょう',
+                '過去形と現在形の使い分けを意識しましょう',
+                '前置詞の使い方に注意して練習しましょう',
+              ];
 
     return AppCard(
       backgroundColor: AppTheme.info.withOpacity(0.1),
@@ -335,7 +379,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                '学習ポイント',
+                _learnedPhrases.isNotEmpty ? '重要フレーズ' : '学習ポイント',
                 style: AppTheme.body1.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppTheme.info,

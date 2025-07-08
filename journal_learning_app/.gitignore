@@ -98,3 +98,8 @@ coverage/
 flutter_macos.zip
 flutter/
 flutter.tar.xz
+
+# Environment variables
+.env
+.env.local
+.env.*.local
