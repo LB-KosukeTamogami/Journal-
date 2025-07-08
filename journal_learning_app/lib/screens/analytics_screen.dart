@@ -48,9 +48,51 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     return Scaffold(
       backgroundColor: AppTheme.backgroundSecondary,
       appBar: AppBar(
-        title: Text('Analytics', style: AppTheme.headline3),
+        title: Text('分析', style: AppTheme.headline3),
         backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            child: PopupMenuButton<String>(
+              onSelected: (value) {
+                setState(() {
+                  _selectedPeriod = value;
+                });
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem(value: '週間', child: Text('週間')),
+                PopupMenuItem(value: '月間', child: Text('月間')),
+                PopupMenuItem(value: '年間', child: Text('年間')),
+              ],
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryBlue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _selectedPeriod,
+                      style: AppTheme.body2.copyWith(
+                        color: AppTheme.primaryBlue,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.arrow_drop_down,
+                      color: AppTheme.primaryBlue,
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: _isLoading
           ? Center(
@@ -116,20 +158,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   '投稿頻度',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2C3E50),
-                    shadows: [
-                      Shadow(
-                        color: Colors.black26,
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
+                  style: AppTheme.headline3,
                 ),
                 AppCard(
                   padding: const EdgeInsets.all(4),
@@ -250,8 +281,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         FlSpot(6, 3),
                       ],
                       isCurved: true,
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                      gradient: LinearGradient(
+                        colors: [AppTheme.primaryBlue, AppTheme.primaryBlueLight],
                       ),
                       barWidth: 3,
                       isStrokeCapRound: true,
@@ -260,9 +291,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         getDotPainter: (spot, percent, barData, index) {
                           return FlDotCirclePainter(
                             radius: 4,
-                            color: Color(0xFF2C3E50),
+                            color: AppTheme.backgroundPrimary,
                             strokeWidth: 2,
-                            strokeColor: const Color(0xFF667eea),
+                            strokeColor: AppTheme.primaryBlue,
                           );
                         },
                       ),
@@ -270,8 +301,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         show: true,
                         gradient: LinearGradient(
                           colors: [
-                            const Color(0xFF667eea).withOpacity(0.3),
-                            const Color(0xFF764ba2).withOpacity(0.1),
+                            AppTheme.primaryBlue.withOpacity(0.3),
+                            AppTheme.primaryBlue.withOpacity(0.1),
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -287,20 +318,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             const SizedBox(height: 32),
             
             // 頻出単語・フレーズ
-            const Text(
-              '頻出単語・フレーズ TOP3',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2C3E50),
-                shadows: [
-                  Shadow(
-                    color: Colors.black26,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
+            Text(
+              '頻出単語 TOP3',
+              style: AppTheme.headline3,
             ),
             const SizedBox(height: 16),
             _buildWordRanking(),
@@ -350,19 +370,14 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 Expanded(
                   child: Text(
                     word['word'] as String,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF2C3E50),
+                    style: AppTheme.body1.copyWith(
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
                 Text(
                   '${word['count']}回',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFF546E7A).withOpacity(0.7),
-                  ),
+                  style: AppTheme.body2,
                 ),
               ],
             ),
@@ -466,49 +481,3 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-class AppCard extends StatelessWidget {
-  final Widget child;
-  final EdgeInsets? padding;
-  final Color? backgroundColor;
-  final VoidCallback? onTap;
-
-  const AppCard({
-    super.key,
-    required this.child,
-    this.padding,
-    this.backgroundColor,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: backgroundColor ?? AppTheme.backgroundPrimary,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-        border: Border.all(
-          color: AppTheme.borderColor,
-          width: 1,
-        ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: padding ?? const EdgeInsets.all(16),
-            child: child,
-          ),
-        ),
-      ),
-    );
-  }
-}
