@@ -191,44 +191,46 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                   '投稿頻度',
                   style: AppTheme.headline3,
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppTheme.backgroundTertiary,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.borderColor),
-                  ),
-                  padding: const EdgeInsets.all(4),
-                  child: TabBar(
-                    controller: _tabController,
-                    labelColor: Colors.white,
-                    unselectedLabelColor: AppTheme.textSecondary,
-                    indicator: BoxDecoration(
-                      color: AppTheme.primaryBlue,
-                      borderRadius: BorderRadius.circular(8),
+                IntrinsicWidth(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppTheme.backgroundTertiary,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppTheme.borderColor),
                     ),
-                    indicatorPadding: EdgeInsets.zero,
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    labelStyle: AppTheme.body2.copyWith(
-                      fontWeight: FontWeight.w600,
+                    padding: const EdgeInsets.all(4),
+                    child: TabBar(
+                      controller: _tabController,
+                      labelColor: Colors.white,
+                      unselectedLabelColor: AppTheme.textSecondary,
+                      indicator: BoxDecoration(
+                        color: AppTheme.primaryBlue,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      indicatorPadding: EdgeInsets.zero,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      labelStyle: AppTheme.body2.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      unselectedLabelStyle: AppTheme.body2,
+                      dividerColor: Colors.transparent,
+                      isScrollable: true,
+                      labelPadding: const EdgeInsets.symmetric(horizontal: 16),
+                      tabs: const [
+                        Tab(
+                          height: 32,
+                          child: Text('週間'),
+                        ),
+                        Tab(
+                          height: 32,
+                          child: Text('月間'),
+                        ),
+                        Tab(
+                          height: 32,
+                          child: Text('年間'),
+                        ),
+                      ],
                     ),
-                    unselectedLabelStyle: AppTheme.body2,
-                    dividerColor: Colors.transparent,
-                    isScrollable: true,
-                    labelPadding: const EdgeInsets.symmetric(horizontal: 16),
-                    tabs: const [
-                      Tab(
-                        height: 32,
-                        child: Text('週間'),
-                      ),
-                      Tab(
-                        height: 32,
-                        child: Text('月間'),
-                      ),
-                      Tab(
-                        height: 32,
-                        child: Text('年間'),
-                      ),
-                    ],
                   ),
                 ),
               ],
