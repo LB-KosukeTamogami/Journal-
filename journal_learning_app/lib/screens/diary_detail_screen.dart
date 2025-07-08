@@ -262,80 +262,87 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           
           const SizedBox(height: 16),
           
-          // 翻訳/添削結果
-          AppCard(
-            backgroundColor: AppTheme.success.withOpacity(0.05),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      TranslationService.detectLanguage(widget.entry.content) == 'ja' ? Icons.translate : Icons.check_circle,
-                      color: AppTheme.success,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      TranslationService.detectLanguage(widget.entry.content) == 'ja' ? '英語翻訳' : '添削後',
-                      style: AppTheme.body1.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.success,
+          // 翻訳セクション（独立配置）
+          if (_translatedContent.isNotEmpty)
+            AppCard(
+              backgroundColor: AppTheme.info.withOpacity(0.05),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.translate,
+                        color: AppTheme.info,
+                        size: 20,
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                _buildInteractiveText(
-                  TranslationService.detectLanguage(widget.entry.content) == 'ja' ? _translatedContent : _correctedContent,
-                  TranslationService.detectLanguage(widget.entry.content) == 'ja' ? 'en' : 'en',
-                ),
-                // 添削後の和訳（英語の場合のみ表示）
-                if (TranslationService.detectLanguage(widget.entry.content) == 'en') ...[
+                      const SizedBox(width: 8),
+                      Text(
+                        TranslationService.detectLanguage(widget.entry.content) == 'ja' 
+                            ? '英語翻訳' 
+                            : '日本語翻訳',
+                        style: AppTheme.body1.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.info,
+                        ),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 12),
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppTheme.backgroundTertiary,
-                      borderRadius: BorderRadius.circular(8),
+                      color: AppTheme.backgroundPrimary,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppTheme.info.withOpacity(0.2),
+                        width: 1,
+                      ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.translate,
-                              size: 16,
-                              color: AppTheme.textSecondary,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              '日本語訳',
-                              style: AppTheme.caption.copyWith(
-                                color: AppTheme.textSecondary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _translatedContent.isNotEmpty 
-                              ? _translatedContent 
-                              : '翻訳を読み込み中...',
-                          style: AppTheme.body2.copyWith(
-                            color: AppTheme.textSecondary,
-                            height: 1.5,
-                          ),
-                        ),
-                      ],
+                    child: Text(
+                      _translatedContent,
+                      style: AppTheme.body1.copyWith(
+                        height: 1.6,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ],
-              ],
-            ),
-          ).animate().fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+              ),
+            ).animate().fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+          
+          const SizedBox(height: 16),
+          
+          // 添削セクション（英語の場合のみ）
+          if (TranslationService.detectLanguage(widget.entry.content) == 'en' && _correctedContent != widget.entry.content)
+            AppCard(
+              backgroundColor: AppTheme.success.withOpacity(0.05),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.check_circle,
+                        color: AppTheme.success,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '添削後',
+                        style: AppTheme.body1.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.success,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  _buildInteractiveText(_correctedContent, 'en'),
+                ],
+              ),
+            ).animate().fadeIn(delay: 300.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
           
           // 統計情報
           const SizedBox(height: 16),
@@ -343,19 +350,19 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             children: [
               Expanded(
                 child: AppCard(
-                  backgroundColor: AppTheme.info.withOpacity(0.05),
+                  backgroundColor: AppTheme.primaryBlue.withOpacity(0.05),
                   child: Row(
                     children: [
                       Icon(
                         Icons.text_fields,
-                        color: AppTheme.info,
+                        color: AppTheme.primaryBlue,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         '${widget.entry.wordCount} words',
                         style: AppTheme.body2.copyWith(
-                          color: AppTheme.info,
+                          color: AppTheme.primaryBlue,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -387,7 +394,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 ),
               ),
             ],
-          ).animate().fadeIn(delay: 400.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+          ).animate().fadeIn(delay: 500.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
         ],
       ),
     );
@@ -422,9 +429,24 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   ],
                 ),
                 const SizedBox(height: 12),
-                _buildInteractiveText(
-                  TranslationService.detectLanguage(widget.entry.content) == 'ja' ? _translatedContent : _correctedContent,
-                  TranslationService.detectLanguage(widget.entry.content) == 'ja' ? 'en' : 'en',
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppTheme.backgroundPrimary,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppTheme.success.withOpacity(0.2),
+                      width: 1,
+                    ),
+                  ),
+                  child: Text(
+                    TranslationService.detectLanguage(widget.entry.content) == 'ja' ? _translatedContent : _correctedContent,
+                    style: AppTheme.body1.copyWith(
+                      height: 1.6,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ],
             ),

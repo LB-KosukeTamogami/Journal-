@@ -221,7 +221,7 @@ class TranslationService {
     }
   }
 
-  /// オフライン翻訳（簡易的な実装）
+  /// オフライン翻訳（改善された実装）
   static TranslationResult _translateOffline(String text, String targetLanguage) {
     final lowerText = text.toLowerCase().trim();
     
@@ -236,7 +236,107 @@ class TranslationService {
       );
     }
 
-    // 部分一致を試す
+    // 言語によって異なる翻訳戦略を使用
+    if (targetLanguage == 'ja') {
+      return _translateToJapanese(text, lowerText);
+    } else {
+      return _translateToEnglish(text, lowerText);
+    }
+  }
+
+  /// 英語から日本語への流暢な翻訳
+  static TranslationResult _translateToJapanese(String originalText, String lowerText) {
+    // 文の構造を分析して流暢な日本語に翻訳
+    String translatedText = _analyzeAndTranslateToJapanese(lowerText);
+    
+    if (translatedText != lowerText) {
+      return TranslationResult(
+        originalText: originalText,
+        translatedText: translatedText,
+        targetLanguage: 'ja',
+        success: true,
+      );
+    }
+
+    // フォールバック: 単語レベルの翻訳
+    return _wordLevelTranslation(originalText, lowerText, 'ja');
+  }
+
+  /// 日本語から英語への翻訳
+  static TranslationResult _translateToEnglish(String originalText, String lowerText) {
+    // 単語レベルの翻訳（英語はそのまま）
+    return _wordLevelTranslation(originalText, lowerText, 'en');
+  }
+
+  /// 英語文を自然な日本語に翻訳
+  static String _analyzeAndTranslateToJapanese(String text) {
+    // パターンマッチングで一般的な英語表現を自然な日本語に変換
+    
+    // I went to [場所] パターン
+    if (text.contains('i went to')) {
+      final match = RegExp(r'i went to (\w+)').firstMatch(text);
+      if (match != null) {
+        final place = match.group(1)!;
+        final placeTranslation = _simpleTranslations[place] ?? place;
+        return '${placeTranslation}に行きました';
+      }
+    }
+    
+    // I had [食べ物] パターン
+    if (text.contains('i had')) {
+      final match = RegExp(r'i had (\w+)').firstMatch(text);
+      if (match != null) {
+        final food = match.group(1)!;
+        final foodTranslation = _simpleTranslations[food] ?? food;
+        return '${foodTranslation}を食べました';
+      }
+    }
+    
+    // It was [形容詞] パターン
+    if (text.contains('it was')) {
+      final match = RegExp(r'it was (\w+)').firstMatch(text);
+      if (match != null) {
+        final adjective = match.group(1)!;
+        final adjectiveTranslation = _simpleTranslations[adjective] ?? adjective;
+        return 'それは${adjectiveTranslation}でした';
+      }
+    }
+    
+    // I like [対象] パターン
+    if (text.contains('i like')) {
+      final match = RegExp(r'i like (\w+)').firstMatch(text);
+      if (match != null) {
+        final object = match.group(1)!;
+        final objectTranslation = _simpleTranslations[object] ?? object;
+        return '${objectTranslation}が好きです';
+      }
+    }
+    
+    // Very [形容詞] パターン
+    if (text.contains('very')) {
+      final match = RegExp(r'very (\w+)').firstMatch(text);
+      if (match != null) {
+        final adjective = match.group(1)!;
+        final adjectiveTranslation = _simpleTranslations[adjective] ?? adjective;
+        return 'とても${adjectiveTranslation}';
+      }
+    }
+    
+    // Today I [動詞] パターン
+    if (text.startsWith('today i')) {
+      final match = RegExp(r'today i (\w+)').firstMatch(text);
+      if (match != null) {
+        final verb = match.group(1)!;
+        final verbTranslation = _simpleTranslations[verb] ?? verb;
+        return '今日は${verbTranslation}';
+      }
+    }
+    
+    return text; // 変換できない場合は元のテキストを返す
+  }
+
+  /// 単語レベルの翻訳（フォールバック）
+  static TranslationResult _wordLevelTranslation(String originalText, String lowerText, String targetLanguage) {
     final words = lowerText.split(' ');
     final translatedWords = <String>[];
     bool hasTranslation = false;
@@ -253,9 +353,15 @@ class TranslationService {
     }
 
     if (hasTranslation) {
+      String result = translatedWords.join(' ');
+      // 日本語の場合はスペースを削除
+      if (targetLanguage == 'ja') {
+        result = result.replaceAll(' ', '');
+      }
+      
       return TranslationResult(
-        originalText: text,
-        translatedText: translatedWords.join(' '),
+        originalText: originalText,
+        translatedText: result,
         targetLanguage: targetLanguage,
         success: true,
         isPartialTranslation: true,
@@ -264,8 +370,8 @@ class TranslationService {
 
     // 翻訳できない場合
     return TranslationResult(
-      originalText: text,
-      translatedText: text,
+      originalText: originalText,
+      translatedText: originalText,
       targetLanguage: targetLanguage,
       success: false,
       error: '翻訳できませんでした',
