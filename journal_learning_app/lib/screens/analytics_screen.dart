@@ -11,15 +11,27 @@ class AnalyticsScreen extends StatefulWidget {
   State<AnalyticsScreen> createState() => _AnalyticsScreenState();
 }
 
-class _AnalyticsScreenState extends State<AnalyticsScreen> {
-  String _selectedPeriod = '週間';
+class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   Map<String, int> _analyticsData = {};
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        setState(() {});
+      }
+    });
     _loadAnalyticsData();
+  }
+  
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadAnalyticsData() async {
@@ -41,6 +53,65 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       return '${(count / 1000).toStringAsFixed(1)}k';
     }
     return count.toString();
+  }
+  
+  double _getMaxX() {
+    if (_tabController.index == 0) {
+      return 6; // 週間: 0-6 (7日間)
+    } else if (_tabController.index == 1) {
+      return 3; // 月間: 0-3 (4週間)
+    } else {
+      return 11; // 年間: 0-11 (12ヶ月)
+    }
+  }
+  
+  double _getMaxY() {
+    if (_tabController.index == 0) {
+      return 5; // 週間: 最大5件/日
+    } else if (_tabController.index == 1) {
+      return 25; // 月間: 最大25件/週
+    } else {
+      return 80; // 年間: 最大80件/月
+    }
+  }
+  
+  List<FlSpot> _getSpots() {
+    if (_tabController.index == 0) {
+      // 週間データ
+      return const [
+        FlSpot(0, 2),
+        FlSpot(1, 3),
+        FlSpot(2, 1),
+        FlSpot(3, 4),
+        FlSpot(4, 3),
+        FlSpot(5, 2),
+        FlSpot(6, 3),
+      ];
+    } else if (_tabController.index == 1) {
+      // 月間データ
+      return const [
+        FlSpot(0, 15),
+        FlSpot(1, 18),
+        FlSpot(2, 12),
+        FlSpot(3, 20),
+      ];
+    } else {
+      // 年間データ
+      return const [
+        FlSpot(0, 45),
+        FlSpot(1, 52),
+        FlSpot(2, 48),
+        FlSpot(3, 55),
+        FlSpot(4, 60),
+        FlSpot(5, 58),
+        FlSpot(6, 62),
+        FlSpot(7, 65),
+        FlSpot(8, 63),
+        FlSpot(9, 68),
+        FlSpot(10, 70),
+        FlSpot(11, 72),
+      ];
+    }
   }
   
   @override
@@ -127,40 +198,36 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     border: Border.all(color: AppTheme.borderColor),
                   ),
                   padding: const EdgeInsets.all(4),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      for (final period in ['週間', '月間', '年間'])
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedPeriod = period;
-                            });
-                          },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.easeInOut,
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            margin: const EdgeInsets.symmetric(horizontal: 2),
-                            decoration: BoxDecoration(
-                              color: _selectedPeriod == period
-                                  ? AppTheme.primaryBlue
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              period,
-                              style: AppTheme.body2.copyWith(
-                                color: _selectedPeriod == period
-                                    ? Colors.white
-                                    : AppTheme.textSecondary,
-                                fontWeight: _selectedPeriod == period
-                                    ? FontWeight.w600
-                                    : FontWeight.normal,
-                              ),
-                            ),
-                          ),
-                        ),
+                  child: TabBar(
+                    controller: _tabController,
+                    labelColor: Colors.white,
+                    unselectedLabelColor: AppTheme.textSecondary,
+                    indicator: BoxDecoration(
+                      color: AppTheme.primaryBlue,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    indicatorPadding: EdgeInsets.zero,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    labelStyle: AppTheme.body2.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                    unselectedLabelStyle: AppTheme.body2,
+                    dividerColor: Colors.transparent,
+                    isScrollable: true,
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 16),
+                    tabs: const [
+                      Tab(
+                        height: 32,
+                        child: Text('週間'),
+                      ),
+                      Tab(
+                        height: 32,
+                        child: Text('月間'),
+                      ),
+                      Tab(
+                        height: 32,
+                        child: Text('年間'),
+                      ),
                     ],
                   ),
                 ),
@@ -217,10 +284,21 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         reservedSize: 30,
                         interval: 1,
                         getTitlesWidget: (value, meta) {
-                          const days = ['月', '火', '水', '木', '金', '土', '日'];
-                          if (value.toInt() >= 0 && value.toInt() < days.length) {
+                          List<String> labels;
+                          if (_tabController.index == 0) {
+                            // 週間
+                            labels = ['月', '火', '水', '木', '金', '土', '日'];
+                          } else if (_tabController.index == 1) {
+                            // 月間
+                            labels = ['1週', '2週', '3週', '4週'];
+                          } else {
+                            // 年間
+                            labels = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+                          }
+                          
+                          if (value.toInt() >= 0 && value.toInt() < labels.length) {
                             return Text(
-                              days[value.toInt()],
+                              labels[value.toInt()],
                               style: AppTheme.caption.copyWith(
                                 color: AppTheme.textSecondary,
                               ),
@@ -233,7 +311,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        interval: 1,
+                        interval: _tabController.index == 0 ? 1 : (_tabController.index == 1 ? 5 : 20),
                         reservedSize: 40,
                         getTitlesWidget: (value, meta) {
                           return Text(
@@ -248,20 +326,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   ),
                   borderData: FlBorderData(show: false),
                   minX: 0,
-                  maxX: 6,
+                  maxX: _getMaxX(),
                   minY: 0,
-                  maxY: 5,
+                  maxY: _getMaxY(),
                   lineBarsData: [
                     LineChartBarData(
-                      spots: const [
-                        FlSpot(0, 2),
-                        FlSpot(1, 3),
-                        FlSpot(2, 1),
-                        FlSpot(3, 4),
-                        FlSpot(4, 3),
-                        FlSpot(5, 2),
-                        FlSpot(6, 3),
-                      ],
+                      spots: _getSpots(),
                       isCurved: true,
                       gradient: LinearGradient(
                         colors: [AppTheme.primaryBlue, AppTheme.primaryBlueLight],
