@@ -232,6 +232,11 @@ class TranslationService {
     return suggestions;
   }
   
+  /// 正規表現の特殊文字をエスケープ
+  static String _escapeRegExp(String str) {
+    return str.replaceAllMapped(RegExp(r'[.*+?^${}()|[\]\\]'), (match) => '\\${match.group(0)}');
+  }
+  
   /// フレーズと単語を認識して位置情報とともに返す
   static List<PhraseInfo> detectPhrasesAndWords(String text) {
     final result = <PhraseInfo>[];
@@ -243,11 +248,17 @@ class TranslationService {
       ..sort((a, b) => b.split(' ').length.compareTo(a.split(' ').length));
     
     for (final phrase in sortedPhrases) {
-      int index = 0;
-      while ((index = lowerText.indexOf(phrase, index)) != -1) {
+      // 単語境界を考慮した正規表現パターンを作成
+      final pattern = RegExp('\\b${_escapeRegExp(phrase)}\\b');
+      final matches = pattern.allMatches(lowerText);
+      
+      for (final match in matches) {
+        final start = match.start;
+        final end = match.end;
+        
         // すでに処理済みの位置でないかチェック
         bool isOverlapping = false;
-        for (int i = index; i < index + phrase.length; i++) {
+        for (int i = start; i < end; i++) {
           if (processedIndices.contains(i)) {
             isOverlapping = true;
             break;
@@ -256,42 +267,62 @@ class TranslationService {
         
         if (!isOverlapping) {
           result.add(PhraseInfo(
-            text: text.substring(index, index + phrase.length),
+            text: text.substring(start, end),
             translation: _simpleTranslations[phrase] ?? '',
-            startIndex: index,
-            endIndex: index + phrase.length,
+            startIndex: start,
+            endIndex: end,
             isPhrase: true,
           ));
           
           // 処理済みとしてマーク
-          for (int i = index; i < index + phrase.length; i++) {
+          for (int i = start; i < end; i++) {
             processedIndices.add(i);
           }
         }
-        index++;
       }
     }
     
-    // 単語を処理
-    final words = text.split(RegExp(r'(\s+|[^\w\s]+)'));
-    int currentIndex = 0;
+    // 単語境界で分割（記号や空白を保持）
+    final wordPattern = RegExp(r'(\b\w+\b|\W+)');
+    final matches = wordPattern.allMatches(text);
     
-    for (final word in words) {
-      final cleanWord = word.replaceAll(RegExp(r'[^\w\s]'), '');
+    for (final match in matches) {
+      final word = match.group(0)!;
+      final start = match.start;
+      final end = match.end;
       
-      if (cleanWord.isNotEmpty && !processedIndices.contains(currentIndex)) {
-        final translation = _simpleTranslations[cleanWord.toLowerCase()];
-        
-        result.add(PhraseInfo(
-          text: word,
-          translation: translation ?? '',
-          startIndex: currentIndex,
-          endIndex: currentIndex + word.length,
-          isPhrase: false,
-        ));
+      // すでに処理済みの位置かチェック
+      bool isProcessed = false;
+      for (int i = start; i < end; i++) {
+        if (processedIndices.contains(i)) {
+          isProcessed = true;
+          break;
+        }
       }
       
-      currentIndex += word.length;
+      if (!isProcessed) {
+        final cleanWord = word.replaceAll(RegExp(r'[^\w]'), '');
+        if (cleanWord.isNotEmpty) {
+          final translation = _simpleTranslations[cleanWord.toLowerCase()];
+          
+          result.add(PhraseInfo(
+            text: word,
+            translation: translation ?? '',
+            startIndex: start,
+            endIndex: end,
+            isPhrase: false,
+          ));
+        } else {
+          // 記号やスペースもそのまま追加
+          result.add(PhraseInfo(
+            text: word,
+            translation: '',
+            startIndex: start,
+            endIndex: end,
+            isPhrase: false,
+          ));
+        }
+      }
     }
     
     // 開始位置でソート

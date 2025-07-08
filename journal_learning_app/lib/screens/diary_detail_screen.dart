@@ -544,64 +544,47 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   Widget _buildInteractiveText(String text, String? language) {
     final phraseInfos = TranslationService.detectPhrasesAndWords(text);
     final spans = <InlineSpan>[];
-    int lastEnd = 0;
     
     for (final info in phraseInfos) {
-      // 前のテキストとの間にスペースがある場合
-      if (lastEnd < info.startIndex) {
-        spans.add(TextSpan(
-          text: text.substring(lastEnd, info.startIndex),
-          style: AppTheme.body1.copyWith(height: 1.6),
-        ));
-      }
-      
       final hasTranslation = info.translation.isNotEmpty;
-      final isClickable = info.text.trim().isNotEmpty;
+      final isWord = info.text.trim().isNotEmpty && RegExp(r'\w').hasMatch(info.text);
       
-      spans.add(
-        WidgetSpan(
-          child: GestureDetector(
-            onTap: isClickable
-                ? () {
-                    _showWordDetail(info.text, info.translation, canAddToCards: hasTranslation);
-                  }
-                : null,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              decoration: BoxDecoration(
-                color: isClickable
-                    ? (info.isPhrase 
-                        ? AppTheme.success.withOpacity(hasTranslation ? 0.1 : 0.05)
-                        : AppTheme.primaryBlue.withOpacity(hasTranslation ? 0.08 : 0.04))
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                info.text,
-                style: AppTheme.body1.copyWith(
-                  color: isClickable 
-                      ? (hasTranslation 
-                          ? (info.isPhrase ? AppTheme.success : AppTheme.primaryBlue)
-                          : AppTheme.textPrimary)
-                      : AppTheme.textPrimary,
-                  height: 1.6,
-                  fontWeight: hasTranslation ? FontWeight.w500 : FontWeight.normal,
+      if (isWord) {
+        spans.add(
+          WidgetSpan(
+            child: GestureDetector(
+              onTap: () {
+                _showWordDetail(info.text.trim(), info.translation, canAddToCards: hasTranslation);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                decoration: BoxDecoration(
+                  color: info.isPhrase 
+                      ? AppTheme.success.withOpacity(hasTranslation ? 0.1 : 0.05)
+                      : AppTheme.primaryBlue.withOpacity(hasTranslation ? 0.08 : 0.04),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  info.text,
+                  style: AppTheme.body1.copyWith(
+                    color: hasTranslation 
+                        ? (info.isPhrase ? AppTheme.success : AppTheme.primaryBlue)
+                        : AppTheme.textPrimary,
+                    height: 1.6,
+                    fontWeight: hasTranslation ? FontWeight.w500 : FontWeight.normal,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      );
-      
-      lastEnd = info.endIndex;
-    }
-    
-    // 最後の部分
-    if (lastEnd < text.length) {
-      spans.add(TextSpan(
-        text: text.substring(lastEnd),
-        style: AppTheme.body1.copyWith(height: 1.6),
-      ));
+        );
+      } else {
+        // スペースや記号はそのまま表示
+        spans.add(TextSpan(
+          text: info.text,
+          style: AppTheme.body1.copyWith(height: 1.6),
+        ));
+      }
     }
     
     return Text.rich(
