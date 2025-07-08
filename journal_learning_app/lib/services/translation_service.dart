@@ -270,13 +270,18 @@ class TranslationService {
 
   /// 英語文を自然な日本語に翻訳
   static String _analyzeAndTranslateToJapanese(String text) {
+    // 長いテキストの場合は文ごとに分割して処理
+    if (text.length > 200) {
+      return _translateLongText(text);
+    }
+    
     // パターンマッチングで一般的な英語表現を自然な日本語に変換
     
     // I went to [場所] パターン
     if (text.contains('i went to')) {
-      final match = RegExp(r'i went to (\w+)').firstMatch(text);
+      final match = RegExp(r'i went to ([\w\s]+)').firstMatch(text);
       if (match != null) {
-        final place = match.group(1)!;
+        final place = match.group(1)!.trim();
         final placeTranslation = _simpleTranslations[place] ?? place;
         return '${placeTranslation}に行きました';
       }
@@ -284,9 +289,9 @@ class TranslationService {
     
     // I had [食べ物] パターン
     if (text.contains('i had')) {
-      final match = RegExp(r'i had (\w+)').firstMatch(text);
+      final match = RegExp(r'i had ([\w\s]+)').firstMatch(text);
       if (match != null) {
-        final food = match.group(1)!;
+        final food = match.group(1)!.trim();
         final foodTranslation = _simpleTranslations[food] ?? food;
         return '${foodTranslation}を食べました';
       }
@@ -294,9 +299,9 @@ class TranslationService {
     
     // It was [形容詞] パターン
     if (text.contains('it was')) {
-      final match = RegExp(r'it was (\w+)').firstMatch(text);
+      final match = RegExp(r'it was ([\w\s]+)').firstMatch(text);
       if (match != null) {
-        final adjective = match.group(1)!;
+        final adjective = match.group(1)!.trim();
         final adjectiveTranslation = _simpleTranslations[adjective] ?? adjective;
         return 'それは${adjectiveTranslation}でした';
       }
@@ -304,9 +309,9 @@ class TranslationService {
     
     // I like [対象] パターン
     if (text.contains('i like')) {
-      final match = RegExp(r'i like (\w+)').firstMatch(text);
+      final match = RegExp(r'i like ([\w\s]+)').firstMatch(text);
       if (match != null) {
-        final object = match.group(1)!;
+        final object = match.group(1)!.trim();
         final objectTranslation = _simpleTranslations[object] ?? object;
         return '${objectTranslation}が好きです';
       }
@@ -314,9 +319,9 @@ class TranslationService {
     
     // Very [形容詞] パターン
     if (text.contains('very')) {
-      final match = RegExp(r'very (\w+)').firstMatch(text);
+      final match = RegExp(r'very ([\w\s]+)').firstMatch(text);
       if (match != null) {
-        final adjective = match.group(1)!;
+        final adjective = match.group(1)!.trim();
         final adjectiveTranslation = _simpleTranslations[adjective] ?? adjective;
         return 'とても${adjectiveTranslation}';
       }
@@ -324,15 +329,57 @@ class TranslationService {
     
     // Today I [動詞] パターン
     if (text.startsWith('today i')) {
-      final match = RegExp(r'today i (\w+)').firstMatch(text);
+      final match = RegExp(r'today i ([\w\s]+)').firstMatch(text);
       if (match != null) {
-        final verb = match.group(1)!;
+        final verb = match.group(1)!.trim();
         final verbTranslation = _simpleTranslations[verb] ?? verb;
         return '今日は${verbTranslation}';
       }
     }
     
     return text; // 変換できない場合は元のテキストを返す
+  }
+  
+  /// 長いテキストを文ごとに分割して翻訳
+  static String _translateLongText(String text) {
+    // 文を区切り文字で分割
+    final sentences = text.split(RegExp(r'[.!?]\s*')).where((s) => s.trim().isNotEmpty).toList();
+    final translatedSentences = <String>[];
+    
+    for (final sentence in sentences) {
+      final trimmedSentence = sentence.trim().toLowerCase();
+      if (trimmedSentence.isEmpty) continue;
+      
+      // 文ごとに翻訳を試みる
+      final translated = _analyzeAndTranslateToJapanese(trimmedSentence);
+      if (translated != trimmedSentence) {
+        translatedSentences.add(translated);
+      } else {
+        // パターンマッチしない場合は単語レベルで翻訳
+        final wordTranslated = _translateWordsInSentence(trimmedSentence);
+        translatedSentences.add(wordTranslated);
+      }
+    }
+    
+    return translatedSentences.join('。');
+  }
+  
+  /// 文中の単語を翻訳
+  static String _translateWordsInSentence(String sentence) {
+    final words = sentence.split(' ');
+    final translatedWords = <String>[];
+    
+    for (final word in words) {
+      final cleanWord = word.replaceAll(RegExp(r'[^\w]'), '').toLowerCase();
+      final translation = _simpleTranslations[cleanWord];
+      if (translation != null) {
+        translatedWords.add(translation);
+      } else if (cleanWord.isNotEmpty) {
+        translatedWords.add(cleanWord);
+      }
+    }
+    
+    return translatedWords.join(' ');
   }
 
   /// 単語レベルの翻訳（フォールバック）
