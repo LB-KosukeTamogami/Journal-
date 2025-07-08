@@ -28871,7 +28871,7 @@ if(a===2)return b+31
 s=B.d.hi(30.6*a-91.4)
 r=c?1:0
 return s+b+59+r},
-aOR(){return"YOUR_API_KEY_HERE"},
+aOR(){return"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"},
 a7L(a,b){var s="auto"
 return A.aRn(a,b)},
 aRn(a,b){var s=0,r=A.R(t.P),q,p=2,o=[],n,m,l,k,j,i,h,g,f,e,d
@@ -28883,7 +28883,7 @@ i=A.hY("https://api.groq.com/openai/v1/chat/completions",0,null)
 h=t.N
 g=A.al(["Authorization","Bearer "+A.aOR(),"Content-Type","application/json"],h,h)
 s=7
-return A.L(A.b_O(i,B.aG.W8(A.al(["model","llama-3.1-70b-versatile","messages",A.b([A.al(["role","system","content","You are a helpful language learning assistant that always responds in valid JSON format."],h,h),A.al(["role","user","content",n],h,h)],t.m0),"temperature",0.7,"max_tokens",1000,"response_format",A.al(["type","json_object"],h,h)],h,t.K),null),g),$async$a7L)
+return A.L(A.b_O(i,B.aG.W8(A.al(["model","llama-3.3-70b-versatile","messages",A.b([A.al(["role","system","content","You are a helpful language learning assistant that always responds in valid JSON format."],h,h),A.al(["role","user","content",n],h,h)],t.m0),"temperature",0.7,"max_tokens",1000,"response_format",A.al(["type","json_object"],h,h)],h,t.K),null),g),$async$a7L)
 case 7:m=a0
 if(m.b===200){i=m
 l=B.aG.I0(A.aKM(A.aJR(i.e)).ej(i.w),null)

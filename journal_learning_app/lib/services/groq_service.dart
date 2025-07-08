@@ -5,7 +5,7 @@ import '../config/api_config.dart';
 
 class GroqService {
   static const String _baseUrl = 'https://api.groq.com/openai/v1/chat/completions';
-  static const String _model = 'llama-3.1-70b-versatile';
+  static const String _model = 'llama-3.3-70b-versatile';
 
   static Future<Map<String, dynamic>> correctAndTranslate(
     String content, {
