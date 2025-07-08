@@ -402,11 +402,10 @@ class _StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppCard(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
@@ -414,34 +413,42 @@ class _StatCard extends StatelessWidget {
             child: Icon(
               icon,
               color: color,
-              size: 24,
+              size: 28,
             ),
           ),
-          const SizedBox(height: 12),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                value,
-                style: AppTheme.headline2.copyWith(
-                  color: color,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTheme.caption.copyWith(
+                    color: AppTheme.textSecondary,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 4),
-              Text(
-                unit,
-                style: AppTheme.body2.copyWith(
-                  color: AppTheme.textSecondary,
+                const SizedBox(height: 2),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(
+                      value,
+                      style: AppTheme.headline3.copyWith(
+                        color: AppTheme.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      unit,
+                      style: AppTheme.body2.copyWith(
+                        color: AppTheme.textSecondary,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: AppTheme.body2.copyWith(
-              color: AppTheme.textSecondary,
+              ],
             ),
           ),
         ],
