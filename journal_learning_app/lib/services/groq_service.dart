@@ -14,27 +14,32 @@ class GroqService {
   }) async {
     try {
       final prompt = '''
-あなたは言語学習を支援するAIアシスタントです。
-以下のテキストについて、次の処理を行ってください：
+You are a language learning assistant. Please process the following text:
 
-1. 言語を自動検出してください
-2. 文法的な誤りがあれば修正してください
-3. より自然な表現に改善してください
-4. 指定された言語に翻訳してください（既に指定言語の場合は他の言語に翻訳）
-5. 文法的な改善点を簡潔に説明してください
+1. Detect the language of the input text
+2. If there are grammatical errors, correct them
+3. Improve the text to make it more natural
+4. Translate the text to the target language (if already in target language, translate to the other language)
+5. Provide brief explanations of grammatical improvements
 
-テキスト: "$content"
-ターゲット言語: $targetLanguage
+Input text: "$content"
+Target language: $targetLanguage
 
-以下のJSON形式で回答してください：
+Please respond in the following JSON format:
 {
-  "detected_language": "検出された言語コード",
-  "original": "元のテキスト",
-  "corrected": "修正されたテキスト",
-  "translation": "翻訳されたテキスト",
-  "improvements": ["改善点1", "改善点2"],
-  "learned_phrases": ["重要なフレーズ1", "重要なフレーズ2"]
+  "detected_language": "detected language code (en for English, ja for Japanese)",
+  "original": "original text",
+  "corrected": "corrected text",
+  "translation": "translated text in target language",
+  "improvements": ["improvement point 1", "improvement point 2"],
+  "learned_phrases": ["important phrase 1", "important phrase 2"]
 }
+
+Important guidelines:
+- If input is in English, translate to Japanese completely
+- If input is in Japanese, translate to English completely
+- Do not mix languages in the translation
+- Keep the translation pure and natural
 ''';
 
       final response = await http.post(
