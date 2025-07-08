@@ -19,17 +19,26 @@ You are a language learning assistant. Process the following text:
 Input text: "$content"
 Target language: $targetLanguage
 
+Analyze the text and provide:
+1. If input is Japanese: translate to English
+2. If input is English: correct grammar errors and translate to Japanese
+
 Respond in JSON format:
 {
   "detected_language": "en" or "ja",
   "original": "original text",
-  "corrected": "corrected text",
-  "translation": "translated text",
+  "corrected": "corrected version of original text (same language)",
+  "translation": "translated text to target language",
   "improvements": ["improvement 1", "improvement 2"],
   "learned_phrases": ["phrase 1", "phrase 2"]
 }
 
-For improvements, provide simple Japanese explanations:
+Important rules:
+- If detected_language is "ja", then translation should be in English
+- If detected_language is "en", then translation should be in Japanese
+- corrected should always be in the same language as original
+
+For improvements (only for English input), provide simple Japanese explanations:
 - Use basic Japanese only
 - Example: "past tense error" → "過去形の誤り"
 - Example: "article missing" → "冠詞が必要"

@@ -201,48 +201,47 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 const SizedBox(height: 12),
                 _buildInteractiveText(widget.entry.content, widget.entry.originalLanguage),
                 const SizedBox(height: 12),
-                // 元の文章の和訳
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.backgroundTertiary,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.translate,
-                            size: 16,
-                            color: AppTheme.textSecondary,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '日本語訳',
-                            style: AppTheme.caption.copyWith(
+                // 元の文章の和訳（英語の場合のみ表示）
+                if (TranslationService.detectLanguage(widget.entry.content) == 'en')
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppTheme.backgroundTertiary,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.translate,
+                              size: 16,
                               color: AppTheme.textSecondary,
-                              fontWeight: FontWeight.w600,
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        TranslationService.detectLanguage(widget.entry.content) == 'ja' 
-                            ? widget.entry.content 
-                            : _translatedContent.isNotEmpty 
-                                ? _translatedContent 
-                                : '翻訳を読み込み中...',
-                        style: AppTheme.body2.copyWith(
-                          color: AppTheme.textSecondary,
-                          height: 1.5,
+                            const SizedBox(width: 6),
+                            Text(
+                              '日本語訳',
+                              style: AppTheme.caption.copyWith(
+                                color: AppTheme.textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        Text(
+                          _translatedContent.isNotEmpty 
+                              ? _translatedContent 
+                              : '翻訳を読み込み中...',
+                          style: AppTheme.body2.copyWith(
+                            color: AppTheme.textSecondary,
+                            height: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
               ],
             ),
           ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
@@ -277,47 +276,49 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   TranslationService.detectLanguage(widget.entry.content) == 'ja' ? _translatedContent : _correctedContent,
                   TranslationService.detectLanguage(widget.entry.content) == 'ja' ? 'en' : 'en',
                 ),
-                const SizedBox(height: 12),
-                // 添削後の和訳
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.backgroundTertiary,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.translate,
-                            size: 16,
-                            color: AppTheme.textSecondary,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '日本語訳',
-                            style: AppTheme.caption.copyWith(
+                // 添削後の和訳（英語の場合のみ表示）
+                if (TranslationService.detectLanguage(widget.entry.content) == 'en') ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppTheme.backgroundTertiary,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.translate,
+                              size: 16,
                               color: AppTheme.textSecondary,
-                              fontWeight: FontWeight.w600,
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _translatedContent.isNotEmpty 
-                            ? _translatedContent 
-                            : '翻訳を読み込み中...',
-                        style: AppTheme.body2.copyWith(
-                          color: AppTheme.textSecondary,
-                          height: 1.5,
+                            const SizedBox(width: 6),
+                            Text(
+                              '日本語訳',
+                              style: AppTheme.caption.copyWith(
+                                color: AppTheme.textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        Text(
+                          _translatedContent.isNotEmpty 
+                              ? _translatedContent 
+                              : '翻訳を読み込み中...',
+                          style: AppTheme.body2.copyWith(
+                            color: AppTheme.textSecondary,
+                            height: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ).animate().fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
