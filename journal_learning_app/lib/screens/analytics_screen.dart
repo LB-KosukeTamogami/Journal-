@@ -215,19 +215,28 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                       unselectedLabelStyle: AppTheme.body2,
                       dividerColor: Colors.transparent,
                       isScrollable: true,
-                      labelPadding: const EdgeInsets.symmetric(horizontal: 16),
-                      tabs: const [
+                      labelPadding: EdgeInsets.zero,
+                      tabs: [
                         Tab(
                           height: 32,
-                          child: Text('週間'),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: const Text('週間'),
+                          ),
                         ),
                         Tab(
                           height: 32,
-                          child: Text('月間'),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: const Text('月間'),
+                          ),
                         ),
                         Tab(
                           height: 32,
-                          child: Text('年間'),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: const Text('年間'),
+                          ),
                         ),
                       ],
                     ),
