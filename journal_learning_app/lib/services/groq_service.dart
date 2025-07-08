@@ -14,40 +14,42 @@ class GroqService {
   }) async {
     try {
       final prompt = '''
-You are a language learning assistant. Process the following text:
+You are an expert language translator and teacher specializing in natural, conversational translations between English and Japanese.
 
 Input text: "$content"
-Target language: $targetLanguage
 
-Analyze the text and provide:
-1. If input is Japanese: translate to English
-2. If input is English: correct grammar errors and translate to Japanese
+TASK:
+1. Detect the language (English or Japanese)
+2. If English → Translate to natural, conversational Japanese
+3. If Japanese → Translate to natural English
+4. For English input, also provide grammar corrections
+
+翻訳の重要なルール:
+- 直訳ではなく、自然な表現を使用してください
+- 文脈を考慮して適切な敬語レベルを選んでください
+- 日常会話で実際に使われる表現を優先してください
+
+翻訳例:
+- "I went to school yesterday. It was very fun!" → "昨日学校に行きました。とても楽しかったです！"
+- "I had breakfast" → "朝ごはんを食べました"
+- "It was delicious" → "美味しかったです" or "おいしかった"
+- "I like music" → "音楽が好きです"
 
 Respond in JSON format:
 {
   "detected_language": "en" or "ja",
   "original": "original text",
-  "corrected": "corrected version of original text (same language)",
-  "translation": "translated text to target language",
-  "improvements": ["improvement 1", "improvement 2"],
-  "learned_phrases": ["phrase 1", "phrase 2"]
+  "corrected": "corrected version (for English only, same as original for Japanese)",
+  "translation": "natural translation in target language",
+  "improvements": ["improvement in Japanese"],
+  "learned_phrases": ["useful phrase (translation)"]
 }
 
-Important rules:
-- If detected_language is "ja", then translation should be in English
-- If detected_language is "en", then translation should be in Japanese
-- corrected should always be in the same language as original
-
-For improvements (only for English input), provide simple Japanese explanations:
-- Use basic Japanese only
-- Example: "past tense error" → "過去形の誤り"
-- Example: "article missing" → "冠詞が必要"
-- Example: "word order issue" → "語順の問題"
-
-For learned_phrases, format as "English phrase (Japanese meaning)":
-- Example: "go to school (学校に行く)"
-- Example: "have fun (楽しむ)"
-''';
+IMPORTANT:
+- Provide NATURAL, CONVERSATIONAL translations, NOT word-for-word translations
+- Use appropriate casual/polite forms based on context
+- For "very fun" → "とても楽しい" NOT "とても楽しみ"
+- Ensure all Japanese text uses proper characters (no corrupted text)''';
 
       final response = await http.post(
         Uri.parse(_baseUrl),
@@ -60,14 +62,14 @@ For learned_phrases, format as "English phrase (Japanese meaning)":
           'messages': [
             {
               'role': 'system',
-              'content': 'You are a helpful language learning assistant that always responds in valid JSON format with proper UTF-8 encoding. Ensure all Japanese text is correctly formed.',
+              'content': 'You are a native bilingual speaker of both English and Japanese who specializes in natural, conversational translations. You understand cultural nuances and always provide translations that sound natural to native speakers. Always respond in valid JSON format with proper UTF-8 encoding. Never use corrupted or incorrect Japanese characters.',
             },
             {
               'role': 'user',
               'content': prompt,
             },
           ],
-          'temperature': 0.7,
+          'temperature': 0.3,
           'max_tokens': 1000,
           'response_format': {'type': 'json_object'},
         }),
@@ -77,6 +79,11 @@ For learned_phrases, format as "English phrase (Japanese meaning)":
         final data = jsonDecode(response.body);
         final content = data['choices'][0]['message']['content'];
         final result = jsonDecode(content);
+        
+        // 翻訳結果の後処理
+        if (result['translation'] != null) {
+          result['translation'] = _postProcessTranslation(result['translation'], result['detected_language']);
+        }
         
         // 日本語テキストの検証と修正
         if (result['improvements'] != null && result['improvements'] is List) {
@@ -199,5 +206,33 @@ For learned_phrases, format as "English phrase (Japanese meaning)":
   static bool _containsJapanese(String text) {
     // 日本語文字が含まれているかチェック
     return RegExp(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]').hasMatch(text);
+  }
+  
+  static String _postProcessTranslation(String translation, String sourceLanguage) {
+    // 英語から日本語への翻訳の場合のみ後処理
+    if (sourceLanguage != 'en') return translation;
+    
+    // 一般的な誤訳を修正
+    final corrections = {
+      'とても楽しみ': 'とても楽しい',
+      'とてもおもしろ': 'とても面白い',
+      'とてもおいし': 'とても美味しい',
+      '非常に楽しい': 'とても楽しい',
+      '非常に面白い': 'とても面白い',
+      'は楽しいでした': 'は楽しかったです',
+      '楽しいでした': '楽しかったです',
+      '面白いでした': '面白かったです',
+      '美味しいでした': '美味しかったです',
+    };
+    
+    String result = translation;
+    corrections.forEach((wrong, correct) {
+      result = result.replaceAll(wrong, correct);
+    });
+    
+    // 不自然なスペースを削除
+    result = result.replaceAll(RegExp(r'\s+(?=[\u3002\u3001\uff01\uff1f])'), '');
+    
+    return result;
   }
 }

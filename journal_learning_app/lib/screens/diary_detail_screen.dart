@@ -379,12 +379,14 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   }
   
   Widget _buildTranslationTab() {
+    final isJapanese = TranslationService.detectLanguage(widget.entry.content) == 'ja';
+    
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 添削結果/翻訳結果
+          // 添削結果/翻訳結果 (Before/After形式)
           AppCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -392,13 +394,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 Row(
                   children: [
                     Icon(
-                      TranslationService.detectLanguage(widget.entry.content) == 'ja' ? Icons.translate : Icons.check_circle,
+                      isJapanese ? Icons.translate : Icons.check_circle,
                       color: AppTheme.success,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      TranslationService.detectLanguage(widget.entry.content) == 'ja' ? '英語翻訳' : '添削結果',
+                      isJapanese ? '英語翻訳' : '添削結果',
                       style: AppTheme.body1.copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppTheme.success,
@@ -406,32 +408,196 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
+                
+                // Before セクション
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppTheme.backgroundPrimary,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: AppTheme.success.withOpacity(0.2),
-                      width: 1,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppTheme.error.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'Before',
+                              style: AppTheme.caption.copyWith(
+                                color: AppTheme.error,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '元の文章',
+                            style: AppTheme.caption.copyWith(
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppTheme.backgroundSecondary,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: AppTheme.error.withOpacity(0.2),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          widget.entry.content,
+                          style: AppTheme.body1.copyWith(
+                            height: 1.6,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  child: Text(
-                    TranslationService.detectLanguage(widget.entry.content) == 'ja' ? _translatedContent : _correctedContent,
-                    style: AppTheme.body1.copyWith(
-                      height: 1.6,
-                      fontSize: 16,
-                    ),
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // After セクション
+                Container(
+                  width: double.infinity,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppTheme.success.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'After',
+                              style: AppTheme.caption.copyWith(
+                                color: AppTheme.success,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            isJapanese ? '翻訳文' : '添削後',
+                            style: AppTheme.caption.copyWith(
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppTheme.backgroundPrimary,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: AppTheme.success.withOpacity(0.2),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          isJapanese ? _translatedContent : _correctedContent,
+                          style: AppTheme.body1.copyWith(
+                            height: 1.6,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
           
+          // 添削結果の解説（英語の場合のみ）
+          if (!isJapanese && (_correctedContent != widget.entry.content || _corrections.isNotEmpty)) ...[
+            const SizedBox(height: 16),
+            AppCard(
+              backgroundColor: AppTheme.primaryBlue.withOpacity(0.05),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.auto_fix_high,
+                        color: AppTheme.primaryBlue,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '添削結果の解説',
+                        style: AppTheme.body1.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.primaryBlue,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppTheme.backgroundPrimary,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (_correctedContent != widget.entry.content) ...[
+                          Text(
+                            '文法的により自然な表現に修正しました。',
+                            style: AppTheme.body2.copyWith(
+                              color: AppTheme.textPrimary,
+                              height: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          if (widget.entry.content.contains('go') && _correctedContent.contains('went'))
+                            Text(
+                              '• "go" → "went": 「yesterday」があるため過去形を使用',
+                              style: AppTheme.body2.copyWith(
+                                color: AppTheme.textSecondary,
+                                height: 1.5,
+                              ),
+                            ),
+                          if (widget.entry.content.contains('is') && _correctedContent.contains('was'))
+                            Text(
+                              '• "is" → "was": 過去の出来事なので過去形を使用',
+                              style: AppTheme.body2.copyWith(
+                                color: AppTheme.textSecondary,
+                                height: 1.5,
+                              ),
+                            ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ).animate().fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+          ],
+          
           // 修正箇所（英語の場合のみ）
-          if (TranslationService.detectLanguage(widget.entry.content) != 'ja' && _corrections.isNotEmpty) ...[
+          if (!isJapanese && _corrections.isNotEmpty) ...[
             const SizedBox(height: 16),
             AppCard(
               backgroundColor: AppTheme.warning.withOpacity(0.1),
@@ -447,7 +613,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        '修正箇所',
+                        '重要ポイント',
                         style: AppTheme.body1.copyWith(
                           fontWeight: FontWeight.w600,
                           color: AppTheme.warning,
@@ -481,7 +647,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   )),
                 ],
               ),
-            ).animate().fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+            ).animate().fadeIn(delay: 300.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
           ],
           
           // 学習ポイント

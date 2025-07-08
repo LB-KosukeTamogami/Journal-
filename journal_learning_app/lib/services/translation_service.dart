@@ -270,16 +270,36 @@ class TranslationService {
 
   /// 英語文を自然な日本語に翻訳
   static String _analyzeAndTranslateToJapanese(String text) {
-    // 長いテキストの場合は文ごとに分割して処理
-    if (text.length > 200) {
+    // 複数の文がある場合は文ごとに分割して処理
+    if (text.contains('.') || text.contains('!') || text.contains('?')) {
       return _translateLongText(text);
     }
     
     // パターンマッチングで一般的な英語表現を自然な日本語に変換
     
-    // I went to [場所] パターン
+    // I go to [場所] パターン（現在形）
+    if (text.contains('i go to')) {
+      final match = RegExp(r'i go to (?:my\s+)?([\w\s]+?)(?:\s+yesterday|\s+today|\s+tomorrow)?').firstMatch(text);
+      if (match != null) {
+        final place = match.group(1)!.trim();
+        final placeTranslation = _simpleTranslations[place] ?? place;
+        
+        // 時制を確認
+        if (text.contains('yesterday')) {
+          return '昨日${placeTranslation}に行きました';
+        } else if (text.contains('tomorrow')) {
+          return '明日${placeTranslation}に行きます';
+        } else if (text.contains('today')) {
+          return '今日${placeTranslation}に行きます';
+        } else {
+          return '${placeTranslation}に行きます';
+        }
+      }
+    }
+    
+    // I went to [場所] パターン（過去形）
     if (text.contains('i went to')) {
-      final match = RegExp(r'i went to ([\w\s]+)').firstMatch(text);
+      final match = RegExp(r'i went to (?:my\s+)?([\w\s]+)').firstMatch(text);
       if (match != null) {
         final place = match.group(1)!.trim();
         final placeTranslation = _simpleTranslations[place] ?? place;
@@ -297,13 +317,21 @@ class TranslationService {
       }
     }
     
-    // It was [形容詞] パターン
-    if (text.contains('it was')) {
-      final match = RegExp(r'it was ([\w\s]+)').firstMatch(text);
+    // It is/was [形容詞] パターン
+    if (text.contains('it is') || text.contains('it was')) {
+      final match = RegExp(r'it (?:is|was) ([\w\s]+)').firstMatch(text);
       if (match != null) {
         final adjective = match.group(1)!.trim();
+        
+        // "very fun" のような表現を特別に処理
+        if (adjective == 'very fun') {
+          return text.contains('it was') ? 'とても楽しかったです' : 'とても楽しいです';
+        }
+        
         final adjectiveTranslation = _simpleTranslations[adjective] ?? adjective;
-        return 'それは${adjectiveTranslation}でした';
+        return text.contains('it was') 
+            ? '${adjectiveTranslation}でした' 
+            : '${adjectiveTranslation}です';
       }
     }
     
@@ -317,7 +345,7 @@ class TranslationService {
       }
     }
     
-    // Very [形容詞] パターン
+    // Very [形容詞] パターン（単独）
     if (text.contains('very')) {
       final match = RegExp(r'very ([\w\s]+)').firstMatch(text);
       if (match != null) {
@@ -342,26 +370,140 @@ class TranslationService {
   
   /// 長いテキストを文ごとに分割して翻訳
   static String _translateLongText(String text) {
-    // 文を区切り文字で分割
-    final sentences = text.split(RegExp(r'[.!?]\s*')).where((s) => s.trim().isNotEmpty).toList();
+    // 文を区切り文字で分割（区切り文字も保持）
+    final sentencePattern = RegExp(r'([^.!?]+[.!?])');
+    final matches = sentencePattern.allMatches(text);
+    
+    if (matches.isEmpty) {
+      // 区切り文字がない場合は全体を1文として処理
+      return _translateSingleSentence(text);
+    }
+    
     final translatedSentences = <String>[];
     
-    for (final sentence in sentences) {
+    for (final match in matches) {
+      final sentence = match.group(1)!;
       final trimmedSentence = sentence.trim().toLowerCase();
-      if (trimmedSentence.isEmpty) continue;
+      
+      // 文末の記号を取得
+      final punctuation = trimmedSentence.endsWith('!') ? '！' 
+                        : trimmedSentence.endsWith('?') ? '？' 
+                        : '。';
+      
+      // 記号を除いた文を翻訳
+      final sentenceWithoutPunct = trimmedSentence.replaceAll(RegExp(r'[.!?]\s*$'), '').trim();
+      
+      if (sentenceWithoutPunct.isEmpty) continue;
       
       // 文ごとに翻訳を試みる
-      final translated = _analyzeAndTranslateToJapanese(trimmedSentence);
-      if (translated != trimmedSentence) {
-        translatedSentences.add(translated);
+      final translated = _translateSingleSentence(sentenceWithoutPunct);
+      
+      if (translated != sentenceWithoutPunct) {
+        // 成功した翻訳に適切な句読点を追加
+        translatedSentences.add(translated + punctuation);
       } else {
         // パターンマッチしない場合は単語レベルで翻訳
-        final wordTranslated = _translateWordsInSentence(trimmedSentence);
-        translatedSentences.add(wordTranslated);
+        final wordTranslated = _translateWordsInSentence(sentenceWithoutPunct);
+        translatedSentences.add(wordTranslated + punctuation);
       }
     }
     
-    return translatedSentences.join('。');
+    return translatedSentences.join('');
+  }
+  
+  /// 単一の文を翻訳（再帰呼び出しを防ぐ）
+  static String _translateSingleSentence(String text) {
+    // パターンマッチングで一般的な英語表現を自然な日本語に変換
+    
+    // I go to [場所] パターン（現在形）
+    if (text.contains('i go to')) {
+      final match = RegExp(r'i go to (?:my\s+)?([\w\s]+?)(?:\s+yesterday|\s+today|\s+tomorrow)?').firstMatch(text);
+      if (match != null) {
+        final place = match.group(1)!.trim();
+        final placeTranslation = _simpleTranslations[place] ?? place;
+        
+        // 時制を確認
+        if (text.contains('yesterday')) {
+          return '昨日${placeTranslation}に行きました';
+        } else if (text.contains('tomorrow')) {
+          return '明日${placeTranslation}に行きます';
+        } else if (text.contains('today')) {
+          return '今日${placeTranslation}に行きます';
+        } else {
+          return '${placeTranslation}に行きます';
+        }
+      }
+    }
+    
+    // I went to [場所] パターン（過去形）
+    if (text.contains('i went to')) {
+      final match = RegExp(r'i went to (?:my\s+)?([\w\s]+)').firstMatch(text);
+      if (match != null) {
+        final place = match.group(1)!.trim();
+        final placeTranslation = _simpleTranslations[place] ?? place;
+        return '${placeTranslation}に行きました';
+      }
+    }
+    
+    // I had [食べ物] パターン
+    if (text.contains('i had')) {
+      final match = RegExp(r'i had ([\w\s]+)').firstMatch(text);
+      if (match != null) {
+        final food = match.group(1)!.trim();
+        final foodTranslation = _simpleTranslations[food] ?? food;
+        return '${foodTranslation}を食べました';
+      }
+    }
+    
+    // It is/was [形容詞] パターン
+    if (text.contains('it is') || text.contains('it was')) {
+      final match = RegExp(r'it (?:is|was) ([\w\s]+)').firstMatch(text);
+      if (match != null) {
+        final adjective = match.group(1)!.trim();
+        
+        // "very fun" のような表現を特別に処理
+        if (adjective == 'very fun') {
+          return text.contains('it was') ? 'とても楽しかったです' : 'とても楽しいです';
+        }
+        
+        final adjectiveTranslation = _simpleTranslations[adjective] ?? adjective;
+        return text.contains('it was') 
+            ? '${adjectiveTranslation}でした' 
+            : '${adjectiveTranslation}です';
+      }
+    }
+    
+    // I like [対象] パターン
+    if (text.contains('i like')) {
+      final match = RegExp(r'i like ([\w\s]+)').firstMatch(text);
+      if (match != null) {
+        final object = match.group(1)!.trim();
+        final objectTranslation = _simpleTranslations[object] ?? object;
+        return '${objectTranslation}が好きです';
+      }
+    }
+    
+    // Very [形容詞] パターン（単独）
+    if (text.contains('very')) {
+      final match = RegExp(r'very ([\w\s]+)').firstMatch(text);
+      if (match != null) {
+        final adjective = match.group(1)!.trim();
+        final adjectiveTranslation = _simpleTranslations[adjective] ?? adjective;
+        return 'とても${adjectiveTranslation}';
+      }
+    }
+    
+    // Today I [動詞] パターン
+    if (text.startsWith('today i')) {
+      final match = RegExp(r'today i ([\w\s]+)').firstMatch(text);
+      if (match != null) {
+        final verb = match.group(1)!.trim();
+        final verbTranslation = _simpleTranslations[verb] ?? verb;
+        return '今日は${verbTranslation}';
+      }
+    }
+    
+    return text; // 変換できない場合は元のテキストを返す
   }
   
   /// 文中の単語を翻訳
