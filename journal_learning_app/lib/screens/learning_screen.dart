@@ -16,6 +16,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
   late TabController _tabController;
   List<Word> _allWords = [];
   bool _isLoading = true;
+  Set<int> _selectedMasteryLevels = {0, 1, 2}; // Default: show all levels
 
   @override
   void initState() {
@@ -112,7 +113,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
               controller: _tabController,
               children: [
                 _buildCardList(_allWords),
-                _buildCardList(_allWords.where((word) => !word.isMastered).toList()),
+                _buildLearningTab(),
                 _buildCardList(_allWords.where((word) => word.isMastered).toList()),
               ],
             ),
@@ -128,6 +129,112 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           backgroundColor: AppTheme.primaryBlue,
           icon: const Icon(Icons.play_arrow, color: Colors.white),
           label: Text('学習を開始', style: AppTheme.button),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLearningTab() {
+    final learningWords = _allWords.where((word) => !word.isMastered).toList();
+    final filteredWords = learningWords.where((word) => 
+      _selectedMasteryLevels.contains(word.masteryLevel)
+    ).toList();
+
+    return Column(
+      children: [
+        Container(
+          height: 60,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            children: [
+              Text(
+                '絞り込み:',
+                style: AppTheme.body2.copyWith(color: AppTheme.textSecondary),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Row(
+                  children: [
+                    _buildFilterChip(
+                      label: '×',
+                      sublabel: '未習得',
+                      value: 0,
+                      color: AppTheme.error,
+                    ),
+                    const SizedBox(width: 8),
+                    _buildFilterChip(
+                      label: '△',
+                      sublabel: 'うろ覚え',
+                      value: 1,
+                      color: AppTheme.warning,
+                    ),
+                    const SizedBox(width: 8),
+                    _buildFilterChip(
+                      label: '○',
+                      sublabel: '習得済み',
+                      value: 2,
+                      color: AppTheme.success,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: _buildCardList(filteredWords),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFilterChip({
+    required String label,
+    required String sublabel,
+    required int value,
+    required Color color,
+  }) {
+    final isSelected = _selectedMasteryLevels.contains(value);
+    
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          if (isSelected) {
+            _selectedMasteryLevels.remove(value);
+          } else {
+            _selectedMasteryLevels.add(value);
+          }
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? color.withOpacity(0.15) : AppTheme.backgroundTertiary,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? color : AppTheme.borderColor,
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: AppTheme.body1.copyWith(
+                color: isSelected ? color : AppTheme.textTertiary,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              ),
+            ),
+            Text(
+              sublabel,
+              style: AppTheme.caption.copyWith(
+                color: isSelected ? color : AppTheme.textTertiary,
+                fontSize: 10,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -346,8 +453,24 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
   }
 
   void _startFlashcardSession() {
-    final unlearned = _allWords.where((word) => !word.isMastered).toList();
-    if (unlearned.isEmpty) {
+    // Get words based on current tab and filters
+    List<Word> sessionWords;
+    
+    if (_tabController.index == 1) {
+      // Learning tab with filters
+      final learningWords = _allWords.where((word) => !word.isMastered).toList();
+      sessionWords = learningWords.where((word) => 
+        _selectedMasteryLevels.contains(word.masteryLevel)
+      ).toList();
+    } else if (_tabController.index == 2) {
+      // Mastered tab
+      sessionWords = _allWords.where((word) => word.isMastered).toList();
+    } else {
+      // All tab
+      sessionWords = _allWords;
+    }
+    
+    if (sessionWords.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('学習するカードがありません', style: AppTheme.body2.copyWith(color: Colors.white)),
@@ -360,7 +483,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => FlashcardSessionScreen(words: unlearned),
+        builder: (context) => FlashcardSessionScreen(words: sessionWords),
       ),
     ).then((_) => _loadWords());
   }
@@ -409,12 +532,62 @@ class _FlashcardItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    word.english,
-                    style: AppTheme.body1.copyWith(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        word.english,
+                        style: AppTheme.body1.copyWith(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      if (word.masteryLevel == 0)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppTheme.error.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            '×',
+                            style: AppTheme.caption.copyWith(
+                              color: AppTheme.error,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        )
+                      else if (word.masteryLevel == 1)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppTheme.warning.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            '△',
+                            style: AppTheme.caption.copyWith(
+                              color: AppTheme.warning,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        )
+                      else if (word.masteryLevel == 2)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppTheme.success.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            '○',
+                            style: AppTheme.caption.copyWith(
+                              color: AppTheme.success,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 4),
                   Text(
