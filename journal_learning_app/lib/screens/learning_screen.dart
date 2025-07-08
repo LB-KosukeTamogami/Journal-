@@ -259,6 +259,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
             await StorageService.updateWordReview(word.id, masteryLevel: newLevel);
             _loadWords();
           },
+          onDelete: () => _deleteWord(word),
         ).animate().fadeIn(
           delay: Duration(milliseconds: index * 50),
           duration: 300.ms,
@@ -431,6 +432,55 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     );
   }
 
+  void _deleteWord(Word word) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.backgroundPrimary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Text(
+          '削除の確認',
+          style: AppTheme.headline3,
+        ),
+        content: Text(
+          '「${word.english}」を削除しますか？',
+          style: AppTheme.body1,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'キャンセル',
+              style: AppTheme.body1.copyWith(color: AppTheme.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              await StorageService.deleteWord(word.id);
+              Navigator.pop(context);
+              _loadWords();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    '削除しました',
+                    style: AppTheme.body2.copyWith(color: Colors.white),
+                  ),
+                  backgroundColor: AppTheme.textSecondary,
+                ),
+              );
+            },
+            child: Text(
+              '削除',
+              style: AppTheme.body1.copyWith(color: AppTheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _startFlashcardSession() {
     // Get words based on current tab and filters
     List<Word> sessionWords;
@@ -472,11 +522,13 @@ class _FlashcardItem extends StatelessWidget {
   final Word word;
   final VoidCallback onTap;
   final VoidCallback onToggleLearned;
+  final VoidCallback onDelete;
 
   const _FlashcardItem({
     required this.word,
     required this.onTap,
     required this.onToggleLearned,
+    required this.onDelete,
   });
 
   @override
@@ -576,13 +628,26 @@ class _FlashcardItem extends StatelessWidget {
                 ],
               ),
             ),
-            IconButton(
-              onPressed: onToggleLearned,
-              icon: Icon(
-                word.isMastered ? Icons.check_circle : Icons.circle_outlined,
-                color: word.isMastered ? AppTheme.success : AppTheme.textTertiary,
-                size: 24,
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: onDelete,
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: AppTheme.error,
+                    size: 20,
+                  ),
+                ),
+                IconButton(
+                  onPressed: onToggleLearned,
+                  icon: Icon(
+                    word.isMastered ? Icons.check_circle : Icons.circle_outlined,
+                    color: word.isMastered ? AppTheme.success : AppTheme.textTertiary,
+                    size: 24,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
