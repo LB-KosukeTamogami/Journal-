@@ -123,28 +123,35 @@ class _FlashcardSessionScreenState extends State<FlashcardSessionScreen> {
         // フラッシュカード
         Expanded(
           child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
+            child: Container(
+              margin: const EdgeInsets.all(20),
               child: GestureDetector(
                 onTap: _flipCard,
-                child: AnimatedContainer(
+                child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  transform: Matrix4.identity()
-                    ..setEntry(3, 2, 0.001)
-                    ..rotateY(_isFlipped ? 3.14159 : 0),
+                  transitionBuilder: (Widget child, Animation<double> animation) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: ScaleTransition(
+                        scale: animation,
+                        child: child,
+                      ),
+                    );
+                  },
                   child: AppCard(
+                    key: ValueKey(_isFlipped),
                     padding: const EdgeInsets.all(32),
                     child: Container(
                       width: double.infinity,
                       constraints: const BoxConstraints(minHeight: 200),
-                      child: _isFlipped
-                          ? Transform(
-                              alignment: Alignment.center,
-                              transform: Matrix4.identity()..rotateY(3.14159),
-                              child: _buildCardBack(currentWord),
-                            )
-                          : _buildCardFront(currentWord),
+                      child: AnimatedCrossFade(
+                        duration: const Duration(milliseconds: 300),
+                        firstChild: _buildCardFront(currentWord),
+                        secondChild: _buildCardBack(currentWord),
+                        crossFadeState: _isFlipped
+                            ? CrossFadeState.showSecond
+                            : CrossFadeState.showFirst,
+                      ),
                     ),
                   ),
                 ),
