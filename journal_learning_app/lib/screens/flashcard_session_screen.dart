@@ -143,11 +143,12 @@ class _FlashcardSessionScreenState extends State<FlashcardSessionScreen> {
                     padding: const EdgeInsets.all(32),
                     child: Container(
                       width: double.infinity,
-                      constraints: const BoxConstraints(minHeight: 200),
+                      height: 300,
+                      alignment: Alignment.center,
                       child: AnimatedCrossFade(
                         duration: const Duration(milliseconds: 300),
-                        firstChild: _buildCardFront(currentWord),
-                        secondChild: _buildCardBack(currentWord),
+                        firstChild: Center(child: _buildCardFront(currentWord)),
+                        secondChild: Center(child: _buildCardBack(currentWord)),
                         crossFadeState: _isFlipped
                             ? CrossFadeState.showSecond
                             : CrossFadeState.showFirst,
