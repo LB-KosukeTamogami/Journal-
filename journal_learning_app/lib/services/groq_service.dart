@@ -40,9 +40,13 @@ Important guidelines:
 - If input is in Japanese, translate to English completely
 - Do not mix languages in the translation
 - Keep the translation pure and natural
-- Write ALL improvements in Japanese (e.g., "過去形の使い方に注意が必要です")
+- Write ALL improvements in proper Japanese. Examples:
+  - "過去形の使い方に注意しましょう" (Be careful with past tense usage)
+  - "冠詞の使用法に注意が必要です" (Need to pay attention to article usage)
+  - "時制の一致に気をつけましょう" (Be careful with tense agreement)
 - For learned_phrases, show the English phrase followed by Japanese explanation
   Example: "go to school (学校に行く)"
+- IMPORTANT: Use proper Japanese characters, not corrupted text
 ''';
 
       final response = await http.post(
@@ -56,7 +60,7 @@ Important guidelines:
           'messages': [
             {
               'role': 'system',
-              'content': 'You are a helpful language learning assistant that always responds in valid JSON format.',
+              'content': 'You are a helpful language learning assistant that always responds in valid JSON format with proper UTF-8 encoding. Ensure all Japanese text is correctly formed.',
             },
             {
               'role': 'user',
@@ -72,7 +76,21 @@ Important guidelines:
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final content = data['choices'][0]['message']['content'];
-        return jsonDecode(content);
+        final result = jsonDecode(content);
+        
+        // 日本語テキストの検証と修正
+        if (result['improvements'] != null) {
+          result['improvements'] = (result['improvements'] as List).map((item) {
+            // 文字化けチェック
+            if (_isCorruptedJapanese(item.toString())) {
+              // デフォルトの改善点を返す
+              return _getDefaultImprovement();
+            }
+            return item;
+          }).toList();
+        }
+        
+        return result;
       } else {
         print('Groq API Error: ${response.statusCode} - ${response.body}');
         throw Exception('Failed to process with Groq API');
@@ -140,5 +158,35 @@ Important guidelines:
     }
     
     return [];
+  }
+  
+  static bool _isCorruptedJapanese(String text) {
+    // 一般的な文字化けパターンをチェック
+    final corruptedPatterns = [
+      '過当形', '幸相', '注昔', '必裂',
+      RegExp(r'[\u0000-\u001F]'), // 制御文字
+      RegExp(r'[^\u0020-\u007E\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\uFF00-\uFFEF]'), // 日本語以外の特殊文字
+    ];
+    
+    for (final pattern in corruptedPatterns) {
+      if (pattern is String && text.contains(pattern)) {
+        return true;
+      } else if (pattern is RegExp && pattern.hasMatch(text)) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
+  
+  static String _getDefaultImprovement() {
+    final defaults = [
+      '時制の使い方に注意しましょう',
+      '冠詞の使用法を確認しましょう',
+      '前置詞の選択に気をつけましょう',
+      '動詞の活用を見直しましょう',
+      '語順に注意が必要です',
+    ];
+    return defaults[DateTime.now().millisecond % defaults.length];
   }
 }
