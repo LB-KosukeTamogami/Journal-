@@ -31,6 +31,9 @@
 
   <title>Squirrel - Journal Language Learning</title>
   <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@800&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
@@ -46,7 +49,7 @@
 </head>
 <body>
   <!-- Initial loading screen to match splash screen exactly -->
-  <div id="loading" style="color: white; font-size: 56px; font-weight: 800; letter-spacing: 4px; font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">Squirrel</div>
+  <div id="loading" style="color: white; font-size: 56px; font-weight: 800; letter-spacing: 4px; font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; font-synthesis: none;">Squirrel</div>
   <script>
     // Remove loading element when Flutter first frame is rendered
     window.addEventListener('flutter-first-frame', function () {

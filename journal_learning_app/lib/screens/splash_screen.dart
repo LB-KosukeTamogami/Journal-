@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 import 'main_navigation_screen.dart';
 
@@ -47,14 +48,13 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: AppTheme.primaryColor,
       body: Center(
-        child: const Text(
+        child: Text(
           'Squirrel',
-          style: TextStyle(
+          style: GoogleFonts.roboto(
             fontSize: 56,
             fontWeight: FontWeight.w800,
             color: Colors.white,
             letterSpacing: 4,
-            fontFamily: 'Roboto',
           ),
         ),
       ),
