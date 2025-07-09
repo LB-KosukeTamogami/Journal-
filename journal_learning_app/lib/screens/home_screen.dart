@@ -375,7 +375,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: Center(
               child: Text(
-                '🌸',
+                '🐿️',
                 style: TextStyle(fontSize: 20),
               ),
             ),
