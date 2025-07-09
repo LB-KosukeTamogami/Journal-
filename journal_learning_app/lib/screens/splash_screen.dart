@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 import 'main_navigation_screen.dart';
 
@@ -14,11 +13,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // フォント読み込みを並行して行い、画面表示をブロックしない
-    GoogleFonts.pendingFonts([
-      GoogleFonts.roboto(fontWeight: FontWeight.w800),
-    ]);
-    
     _navigateToHome();
   }
 
@@ -57,13 +51,14 @@ class _SplashScreenState extends State<SplashScreen> {
           child: RepaintBoundary(
             child: Text(
               'Squirrel',
-              style: GoogleFonts.roboto(
+              style: TextStyle(
                 fontSize: 56,
                 fontWeight: FontWeight.w800,
                 color: Colors.white,
                 letterSpacing: 4,
                 fontStyle: FontStyle.normal,
                 decoration: TextDecoration.none,
+                fontFamily: 'Roboto',
               ),
               textAlign: TextAlign.center,
               textDirection: TextDirection.ltr,
