@@ -33,7 +33,8 @@
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@800&display=block" rel="stylesheet">
+  <link rel="preload" href="https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmWUlfBBc4.woff2" as="font" type="font/woff2" crossorigin>
   <style>
     body {
       margin: 0;
@@ -48,22 +49,7 @@
   </style>
 </head>
 <body>
-  <!-- Initial loading screen to match splash screen exactly -->
-  <div id="loading" style="color: white; font-size: 56px; font-weight: 800; letter-spacing: 4px; font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; font-synthesis: none; font-display: block; font-variant-ligatures: none; font-feature-settings: normal;">Squirrel</div>
-  <script>
-    // Ensure font is loaded before showing text
-    document.fonts.ready.then(function() {
-      console.log('Fonts loaded');
-    });
-    
-    // Remove loading element when Flutter first frame is rendered
-    window.addEventListener('flutter-first-frame', function () {
-      var loadingElement = document.getElementById('loading');
-      if (loadingElement) {
-        loadingElement.remove();
-      }
-    });
-  </script>
+  <!-- No HTML loading screen - Flutter handles all display -->
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

@@ -14,6 +14,15 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    _preloadFontsAndNavigate();
+  }
+
+  Future<void> _preloadFontsAndNavigate() async {
+    // Ensure Roboto font is loaded before showing text
+    await GoogleFonts.pendingFonts([
+      GoogleFonts.roboto(fontWeight: FontWeight.w800),
+    ]);
+    
     _navigateToHome();
   }
 
@@ -56,7 +65,10 @@ class _SplashScreenState extends State<SplashScreen> {
               fontWeight: FontWeight.w800,
               color: Colors.white,
               letterSpacing: 4,
+              fontStyle: FontStyle.normal,
+              decoration: TextDecoration.none,
             ),
+            textAlign: TextAlign.center,
           ),
         ),
       ),
