@@ -1,20 +1,12 @@
 // API設定ファイル
 // 本番環境では環境変数やセキュアストレージから読み込んでください
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 class ApiConfig {
   // Gemini API Key (開発環境用のデフォルト値)
   static const String _defaultGeminiApiKey = 'AIzaSyBRgV7ts1Viv7YaMmtHRUOgHXGi3-GqXos';
   
   // 環境変数からAPIキーを取得（エラーを投げずにnullを返す）
   static String? getGroqApiKey() {
-    // まず.envファイルから読み込みを試みる
-    final envKey = dotenv.env['GROQ_API_KEY'];
-    if (envKey != null && envKey.isNotEmpty) {
-      return envKey;
-    }
-    
     // ビルド時の環境変数から読み込む
     const buildTimeKey = String.fromEnvironment('GROQ_API_KEY');
     if (buildTimeKey.isNotEmpty) {
@@ -27,12 +19,6 @@ class ApiConfig {
   
   // Gemini APIキーを取得
   static String? getGeminiApiKey() {
-    // まず.envファイルから読み込みを試みる
-    final envKey = dotenv.env['GEMINI_API_KEY'];
-    if (envKey != null && envKey.isNotEmpty) {
-      return envKey;
-    }
-    
     // ビルド時の環境変数から読み込む
     const buildTimeKey = String.fromEnvironment('GEMINI_API_KEY');
     if (buildTimeKey.isNotEmpty) {
@@ -45,12 +31,6 @@ class ApiConfig {
   }
   
   static String? getGoogleTranslateApiKey() {
-    // まず.envファイルから読み込みを試みる
-    final envKey = dotenv.env['GOOGLE_TRANSLATE_API_KEY'];
-    if (envKey != null && envKey.isNotEmpty) {
-      return envKey;
-    }
-    
     // ビルド時の環境変数から読み込む
     const buildTimeKey = String.fromEnvironment('GOOGLE_TRANSLATE_API_KEY');
     if (buildTimeKey.isNotEmpty) {
