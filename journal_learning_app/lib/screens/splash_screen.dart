@@ -24,11 +24,18 @@ class _SplashScreenState extends State<SplashScreen> {
     await Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => const MainNavigationScreen(),
-        transitionDuration: const Duration(milliseconds: 500),
+        transitionDuration: const Duration(milliseconds: 800),
+        reverseTransitionDuration: const Duration(milliseconds: 800),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: animation,
-            child: child,
+          // ディゾルブ効果：両方の画面を同時にフェード
+          return Stack(
+            children: [
+              // ホーム画面をフェードイン
+              FadeTransition(
+                opacity: animation,
+                child: child,
+              ),
+            ],
           );
         },
       ),
