@@ -9,7 +9,7 @@
 ### デプロイURL：
 
 #### Vercel (推奨):
-https://journal-fawn-three.vercel.app/
+https://journal-brown-three.vercel.app/
 
 #### GitHub Pages:
 https://lb-kosuketamogami.github.io/Journal-/
