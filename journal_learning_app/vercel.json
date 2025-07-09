@@ -1,0 +1,15 @@
+{
+  "buildCommand": "flutter build web",
+  "outputDirectory": "build/web",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Permissions-Policy",
+          "value": "browsing-topics=(), camera=(), microphone=(), geolocation=(), display-capture=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), ambient-light-sensor=(), autoplay=(), battery=(), bluetooth=(), ch-ua=(), ch-ua-mobile=(), ch-ua-platform=(), clipboard-read=(), clipboard-write=(), cross-origin-isolated=(), document-domain=(), encrypted-media=(), fullscreen=(), hid=(), identity-credentials-get=(), idle-detection=(), local-fonts=(), midi=(), otp-credentials=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), speaker-selection=(), sync-xhr=(), web-share=(), window-placement=(), xr-spatial-tracking=()"
+        }
+      ]
+    }
+  ]
+}
