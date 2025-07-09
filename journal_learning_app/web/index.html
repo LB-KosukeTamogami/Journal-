@@ -31,101 +31,58 @@
 
   <title>Squirrel - Journal Language Learning</title>
   <link rel="manifest" href="manifest.json">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- Roboto 800を最優先でプリロード -->
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@800&display=block" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@800&display=block" rel="stylesheet"></noscript>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600&family=Noto+Sans+JP:wght@400;600;700&family=Noto+Sans:wght@400;600;700&family=Noto+Emoji&family=Noto+Color+Emoji&family=Noto+Sans+CJK+JP:wght@400;700&display=swap" rel="stylesheet">
+  
+  <!-- Critical CSS for splash screen -->
   <style>
-    /* Critical inline font */
-    @font-face {
-      font-family: 'Roboto';
-      font-style: normal;
-      font-weight: 800;
-      font-display: block;
-      src: local('Roboto Black'), local('Roboto-Black'), url(https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmYUtfBBc4.woff2) format('woff2');
-      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-    }
-    
-    /* テキストを最初から表示、ただし透明度で制御 */
-    #splash-text {
-      opacity: 0;
-      animation: fadeInText 0.3s ease-in-out 0.1s forwards;
-    }
-    
-    @keyframes fadeInText {
-      to {
-        opacity: 1;
-      }
+    /* Reset and base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
     
     body {
       margin: 0;
       padding: 0;
       background-color: #8B6D47;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      font-family: 'Roboto', 'Noto Sans JP', 'Noto Sans', 'Noto Color Emoji', 'Noto Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Sans CJK JP', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
       overflow: hidden;
+      /* システムフォントを使用してピクつきを防ぐ */
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
     
+    /* スプラッシュ画面の背景 */
     #splash-screen {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
+      background-color: #8B6D47;
+      z-index: 9999;
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 9999;
-      /* スプラッシュ画面コンテナ - アニメーションなし */
-      transition: none;
+      transition: opacity 0.5s ease-out;
     }
     
-    #splash-background {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #8B6D47;
-      opacity: 1;
-      /* 背景のみにディゾルブ効果を適用 */
-      transition: opacity 0.8s ease-in-out;
-    }
-    
+    /* テキストコンテナ - 静的でシンプル */
     #splash-text {
       color: white;
       font-size: 56px;
       font-weight: 800;
       letter-spacing: 4px;
-      /* Robotoフォントのみを使用 */
-      font-family: 'Roboto', sans-serif;
       text-align: center;
-      margin: 0;
-      padding: 0;
-      z-index: 10;
-      position: relative;
-      /* フォントのスムージングを設定 */
+      /* システムフォントを使用 */
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      /* アンチエイリアシング */
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      /* 位置とサイズを完全に固定 */
-      line-height: 1.2;
-      display: block;
-      width: 300px;
-      height: 68px;
-      /* 中央に配置 */
-      margin-left: auto;
-      margin-right: auto;
-      /* レイアウトシフトを防ぐ */
-      contain: layout style paint;
-      will-change: opacity;
+      /* テキスト選択を無効化 */
+      user-select: none;
+      -webkit-user-select: none;
     }
     
+    /* Flutter app container */
     #flutter-app {
       position: fixed;
       top: 0;
@@ -133,85 +90,88 @@
       width: 100%;
       height: 100%;
       opacity: 0;
-      /* Flutterアプリのフェードイン */
-      transition: opacity 0.8s ease-in-out;
+      transition: opacity 0.5s ease-in;
     }
     
-    /* 背景のみをディゾルブ（テキストは変化なし） */
-    .flutter-loaded #splash-background {
-      opacity: 0;
+    /* フェードアウトクラス */
+    .fade-out {
+      opacity: 0 !important;
       pointer-events: none;
     }
     
-    /* スプラッシュ画面全体をディゾルブ */
-    .flutter-loaded #splash-screen {
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.8s ease-in-out;
-    }
-    
-    .flutter-loaded #flutter-app {
-      opacity: 1;
+    /* フェードインクラス */
+    .fade-in {
+      opacity: 1 !important;
     }
   </style>
+  
+  <!-- Google Fontsは後で読み込む -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body>
+  <!-- シンプルなスプラッシュ画面 -->
   <div id="splash-screen">
-    <div id="splash-background"></div>
     <div id="splash-text">Squirrel</div>
   </div>
+  
+  <!-- Flutter app -->
   <div id="flutter-app">
     <script src="flutter_bootstrap.js" async></script>
   </div>
   
   <script>
-    // フォントの事前読み込みを確実にする
-    if ('fonts' in document && document.fonts) {
-      // Roboto 800を明示的に読み込む
-      document.fonts.load('800 56px Roboto').catch(() => {
-        // エラーは静かに処理
-        console.log('Font preload attempted');
-      });
-    }
-    
-    // スプラッシュ画面のディゾルブ効果を制御
-    function initializeSplashScreen() {
+    // スプラッシュ画面の制御
+    (function() {
       const splashScreen = document.getElementById('splash-screen');
-      const splashBackground = document.getElementById('splash-background');
       const flutterApp = document.getElementById('flutter-app');
       
-      // Flutterアプリが読み込まれてから少し待ってディゾルブ開始
-      // Flutter側で2.8秒後に画面遷移するので、その少し前にディゾルブを開始
-      setTimeout(() => {
-        // 背景をフェードアウト、Flutterアプリをフェードイン
-        document.body.classList.add('flutter-loaded');
+      // 最小表示時間を設定（Flutterの初期化を待つ）
+      const minSplashDuration = 2000;
+      const startTime = Date.now();
+      
+      // Flutterの初期化を監視
+      function checkFlutterReady() {
+        const elapsedTime = Date.now() - startTime;
         
-        // ディゾルブ効果完了後にスプラッシュ画面全体を削除
-        setTimeout(() => {
-          if (splashScreen) {
+        // 最小表示時間が経過したら
+        if (elapsedTime >= minSplashDuration) {
+          // スプラッシュ画面をフェードアウト
+          splashScreen.classList.add('fade-out');
+          flutterApp.classList.add('fade-in');
+          
+          // 完全にフェードアウトしたら削除
+          setTimeout(() => {
             splashScreen.remove();
-          }
-        }, 1000);
-      }, 2400);
-    }
-    
-    // Service Worker を完全に無効化
-    window.addEventListener('load', function() {
-      try {
-        if (window._flutter && window._flutter.loader) {
-          // Service Worker を無効化
-          window._flutter.loader.load({
-            serviceWorkerSettings: null  // Service Worker を完全に無効化
-          });
+          }, 500);
+        } else {
+          // まだ時間が経過していない場合は再チェック
+          setTimeout(checkFlutterReady, 100);
         }
-      } catch (e) {
-        // Flutter loader エラーを静かに処理
-        console.log('Flutter loader initialization:', e);
       }
-    });
-    
-    // スプラッシュ画面初期化
-    initializeSplashScreen();
+      
+      // Service Worker を無効化
+      window.addEventListener('load', function() {
+        try {
+          if (window._flutter && window._flutter.loader) {
+            window._flutter.loader.load({
+              serviceWorkerSettings: null
+            });
+          }
+        } catch (e) {
+          console.log('Flutter loader initialization:', e);
+        }
+        
+        // Flutter初期化チェックを開始
+        checkFlutterReady();
+      });
+      
+      // フォントを後から読み込む（スプラッシュ画面には影響しない）
+      const link = document.createElement('link');
+      link.href = 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;800&family=Noto+Sans+JP:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap';
+      link.rel = 'stylesheet';
+      document.head.appendChild(link);
+    })();
   </script>
 </body>
 </html>
