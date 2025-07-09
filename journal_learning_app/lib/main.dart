@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/test_splash_screen.dart';
+import 'screens/splash_screen.dart';
 import 'services/storage_service.dart';
 import 'theme/app_theme.dart';
 
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       title: 'Squirrel - Journal Language Learning',
       theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
-      home: const TestSplashScreen(),
+      home: const SplashScreen(),
     );
   }
 }
