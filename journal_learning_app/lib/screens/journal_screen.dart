@@ -100,12 +100,12 @@ class _JournalScreenState extends State<JournalScreen> {
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryBlue.withOpacity(0.1),
+                  color: AppTheme.secondaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   Icons.chat_bubble_outline,
-                  color: AppTheme.primaryBlue,
+                  color: AppTheme.secondaryColor,
                   size: 20,
                 ),
               ),
@@ -135,16 +135,16 @@ class _JournalScreenState extends State<JournalScreen> {
                 defaultTextStyle: TextStyle(color: AppTheme.textPrimary),
                 weekendTextStyle: TextStyle(color: AppTheme.textSecondary),
                 selectedDecoration: BoxDecoration(
-                  color: AppTheme.primaryBlue,
+                  color: AppTheme.primaryColor,
                   shape: BoxShape.circle,
                 ),
                 todayDecoration: BoxDecoration(
-                  color: AppTheme.primaryBlue.withOpacity(0.3),
+                  color: AppTheme.primaryColor.withOpacity(0.3),
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppTheme.primaryBlue, width: 2),
+                  border: Border.all(color: AppTheme.primaryColor, width: 2),
                 ),
                 markerDecoration: BoxDecoration(
-                  color: AppTheme.primaryBlue,
+                  color: AppTheme.primaryColor,
                   shape: BoxShape.circle,
                 ),
                 markersMaxCount: 1,
@@ -183,7 +183,7 @@ class _JournalScreenState extends State<JournalScreen> {
           // 選択された日の日記リスト
           Expanded(
             child: _isLoading
-                ? Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue))
+                ? Center(child: CircularProgressIndicator(color: AppTheme.primaryColor))
                 : _selectedDay == null
                     ? Center(
                         child: Text(
@@ -204,7 +204,7 @@ class _JournalScreenState extends State<JournalScreen> {
           onPressed: () {
             _showJournalDialog(context);
           },
-          backgroundColor: AppTheme.primaryBlue,
+          backgroundColor: AppTheme.primaryColor,
           icon: const Icon(Icons.add, color: Colors.white),
           label: Text('新規作成', style: AppTheme.button),
         ),

@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _loadData,
-          color: AppTheme.primaryBlue,
+          color: AppTheme.primaryColor,
           child: CustomScrollView(
             slivers: [
               // Header
@@ -161,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Padding(
                       padding: const EdgeInsets.all(32),
                       child: CircularProgressIndicator(
-                        color: AppTheme.primaryBlue,
+                        color: AppTheme.primaryColor,
                       ),
                     ),
                   ),
@@ -261,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       '$_currentStreak',
                       style: AppTheme.headline2.copyWith(
-                        color: AppTheme.primaryBlue,
+                        color: AppTheme.primaryColor,
                       ),
                     ),
                     const SizedBox(width: 4),
@@ -297,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildCreateDiaryCard() {
     return AppCard(
-      backgroundColor: AppTheme.primaryBlue,
+      backgroundColor: AppTheme.primaryColor,
       onTap: () {
         Navigator.push(
           context,
@@ -483,13 +483,13 @@ class _MissionCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: AppTheme.primaryBlue.withOpacity(0.1),
+                color: AppTheme.secondaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 '+${mission.experiencePoints}XP',
                 style: AppTheme.caption.copyWith(
-                  color: AppTheme.primaryBlue,
+                  color: AppTheme.secondaryColor,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -518,7 +518,7 @@ class _MissionCard extends StatelessWidget {
   Color _getColorFromType(MissionType type) {
     switch (type) {
       case MissionType.dailyDiary:
-        return AppTheme.primaryBlue;
+        return AppTheme.primaryColor;
       case MissionType.wordLearning:
         return AppTheme.info;
       case MissionType.streak:

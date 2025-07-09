@@ -70,7 +70,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                 labelColor: Colors.white,
                 unselectedLabelColor: AppTheme.textSecondary,
                 indicator: BoxDecoration(
-                  color: AppTheme.primaryBlue,
+                  color: AppTheme.primaryColor,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 indicatorPadding: EdgeInsets.zero,
@@ -107,7 +107,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
       ),
       body: _isLoading
           ? Center(
-              child: CircularProgressIndicator(color: AppTheme.primaryBlue),
+              child: CircularProgressIndicator(color: AppTheme.primaryColor),
             )
           : TabBarView(
               controller: _tabController,
@@ -126,7 +126,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           onPressed: () {
             _startFlashcardSession();
           },
-          backgroundColor: AppTheme.primaryBlue,
+          backgroundColor: AppTheme.primaryColor,
           icon: const Icon(Icons.play_arrow, color: Colors.white),
           label: Text('学習を開始', style: AppTheme.button),
         ),

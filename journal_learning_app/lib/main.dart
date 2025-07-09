@@ -118,14 +118,14 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? AppTheme.primaryBlue.withOpacity(0.1)
+                      ? AppTheme.primaryColor.withOpacity(0.1)
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Icon(
                   item.icon,
                   color: isSelected
-                      ? AppTheme.primaryBlue
+                      ? AppTheme.primaryColor
                       : AppTheme.textTertiary,
                   size: 24,
                 ),
@@ -135,7 +135,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 item.label,
                 style: AppTheme.caption.copyWith(
                   color: isSelected
-                      ? AppTheme.primaryBlue
+                      ? AppTheme.primaryColor
                       : AppTheme.textTertiary,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                 ),

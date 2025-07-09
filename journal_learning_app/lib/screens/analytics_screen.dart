@@ -125,7 +125,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
       ),
       body: _isLoading
           ? Center(
-              child: CircularProgressIndicator(color: AppTheme.primaryBlue),
+              child: CircularProgressIndicator(color: AppTheme.primaryColor),
             )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -151,7 +151,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                           value: (_analyticsData['totalEntries'] ?? 0).toString(),
                           unit: '件',
                           icon: Icons.book,
-                          color: AppTheme.primaryBlue,
+                          color: AppTheme.accentColor,
                         ).animate().fadeIn().scale(delay: 200.ms),
                       ),
               ],
@@ -204,7 +204,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                     labelColor: Colors.white,
                     unselectedLabelColor: AppTheme.textSecondary,
                     indicator: BoxDecoration(
-                      color: AppTheme.primaryBlue,
+                      color: AppTheme.secondaryColor,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     indicatorPadding: EdgeInsets.zero,
@@ -334,7 +334,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                       spots: _getSpots(),
                       isCurved: true,
                       gradient: LinearGradient(
-                        colors: [AppTheme.primaryBlue, AppTheme.primaryBlueLight],
+                        colors: [AppTheme.primaryColor, AppTheme.primaryColor.withOpacity(0.7)],
                       ),
                       barWidth: 3,
                       isStrokeCapRound: true,
@@ -345,7 +345,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                             radius: 4,
                             color: AppTheme.backgroundPrimary,
                             strokeWidth: 2,
-                            strokeColor: AppTheme.primaryBlue,
+                            strokeColor: AppTheme.primaryColor,
                           );
                         },
                       ),
@@ -353,8 +353,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                         show: true,
                         gradient: LinearGradient(
                           colors: [
-                            AppTheme.primaryBlue.withOpacity(0.3),
-                            AppTheme.primaryBlue.withOpacity(0.1),
+                            AppTheme.primaryColor.withOpacity(0.3),
+                            AppTheme.primaryColor.withOpacity(0.1),
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,

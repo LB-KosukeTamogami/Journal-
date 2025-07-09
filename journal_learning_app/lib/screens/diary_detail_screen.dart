@@ -203,7 +203,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 labelColor: Colors.white,
                 unselectedLabelColor: AppTheme.textSecondary,
                 indicator: BoxDecoration(
-                  color: AppTheme.primaryBlue,
+                  color: AppTheme.primaryColor,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 indicatorPadding: EdgeInsets.zero,
@@ -235,7 +235,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         ),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue))
+          ? Center(child: CircularProgressIndicator(color: AppTheme.primaryColor))
           : TabBarView(
               controller: _tabController,
               children: [
@@ -261,7 +261,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   children: [
                     Icon(
                       Icons.edit_note,
-                      color: AppTheme.primaryBlue,
+                      color: AppTheme.accentColor,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -269,7 +269,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       '元の文章',
                       style: AppTheme.body1.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: AppTheme.primaryBlue,
+                        color: AppTheme.accentColor,
                       ),
                     ),
                   ],
@@ -372,12 +372,12 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 child: GestureDetector(
                   onTap: () => _showWordListModal(context),
                   child: AppCard(
-                    backgroundColor: AppTheme.primaryBlue.withOpacity(0.05),
+                    backgroundColor: AppTheme.primaryColor.withOpacity(0.05),
                     child: Row(
                       children: [
                         Icon(
                           Icons.text_fields,
-                          color: AppTheme.primaryBlue,
+                          color: AppTheme.primaryColor,
                           size: 20,
                         ),
                         const SizedBox(width: 8),
@@ -385,14 +385,14 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           child: Text(
                             '${widget.entry.wordCount} words',
                             style: AppTheme.body2.copyWith(
-                              color: AppTheme.primaryBlue,
+                              color: AppTheme.primaryColor,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                         Icon(
                           Icons.arrow_forward_ios,
-                          color: AppTheme.primaryBlue,
+                          color: AppTheme.primaryColor,
                           size: 12,
                         ),
                       ],
