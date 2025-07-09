@@ -52,6 +52,15 @@
 </head>
 <body>
   <div id="loading">Squirrel</div>
+  <script>
+    // ローディング要素を削除する関数
+    window.addEventListener('flutter-first-frame', function () {
+      var loadingElement = document.getElementById('loading');
+      if (loadingElement) {
+        loadingElement.remove();
+      }
+    });
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

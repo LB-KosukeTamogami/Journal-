@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Squirrel - Journal Language Learning</title>
   <script>
-    // 404エラー時にindex.htmlへリダイレクト
+    // GitHub PagesのSPA対応
     const path = window.location.pathname;
-    const base = '/Journal-/';
-    if (path.startsWith(base)) {
-      window.location.replace(base);
-    } else {
-      window.location.replace('/');
-    }
+    const search = window.location.search;
+    const hash = window.location.hash;
+    
+    // ベースURLを設定
+    window.location.replace('/Journal-/' + search + hash);
   </script>
 </head>
 <body>
