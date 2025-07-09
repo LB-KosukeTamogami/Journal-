@@ -357,11 +357,26 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.info.withOpacity(0.1),
+        gradient: LinearGradient(
+          colors: [
+            const Color(0xFFF5E6D3), // ナッツのような淡いベージュ
+            const Color(0xFFEDD8C7), // 少し濃いベージュ
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppTheme.info.withOpacity(0.2),
+          color: AppTheme.primaryColor.withOpacity(0.3),
+          width: 1.5,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryColor.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -370,8 +385,22 @@ class _HomeScreenState extends State<HomeScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppTheme.info.withOpacity(0.2),
+              gradient: LinearGradient(
+                colors: [
+                  AppTheme.primaryColor.withOpacity(0.8),
+                  AppTheme.primaryColor,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.primaryColor.withOpacity(0.3),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Center(
               child: Text(
@@ -385,17 +414,33 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Lily からのメッセージ',
-                  style: AppTheme.body2.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.info,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      'Lily からのメッセージ',
+                      style: AppTheme.body2.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.primaryColor,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE74C3C), // 新着メッセージの赤いドット
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Text(
                   _lilyMessage,
-                  style: AppTheme.body2,
+                  style: AppTheme.body2.copyWith(
+                    color: const Color(0xFF5D4037), // ダークブラウンのテキスト
+                    height: 1.4,
+                  ),
                 ),
               ],
             ),
