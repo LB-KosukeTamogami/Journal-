@@ -107,6 +107,13 @@
       pointer-events: none;
     }
     
+    /* スプラッシュ画面全体をディゾルブ */
+    .flutter-loaded #splash-screen {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease-in-out;
+    }
+    
     .flutter-loaded #flutter-app {
       opacity: 1;
     }
