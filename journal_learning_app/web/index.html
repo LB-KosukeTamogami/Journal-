@@ -33,8 +33,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@800&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@800&display=swap" rel="stylesheet"></noscript>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600&family=Noto+Sans+JP:wght@400;600;700&family=Noto+Sans:wght@400;600;700&family=Noto+Emoji&family=Noto+Color+Emoji&family=Noto+Sans+CJK+JP:wght@400;700&display=swap" rel="stylesheet">
   <style>
     /* Critical Font Face - ローカルフォントで即座に表示 */
@@ -42,8 +41,9 @@
       font-family: 'Roboto Fallback';
       font-style: normal;
       font-weight: 800;
-      src: local('Arial Black'), local('Arial-Black'), local('Helvetica Neue Bold');
+      src: local('Arial Black'), local('Arial-Black'), local('Helvetica Neue Bold'), local('sans-serif');
       font-display: swap;
+      unicode-range: U+0020-007F; /* 基本的なASCII文字のみ */
     }
     
     body {
@@ -148,12 +148,19 @@
   </div>
   
   <script>
-    // フォント読み込み検出
-    if ('fonts' in document) {
-      document.fonts.ready.then(function () {
-        // フォントが読み込まれたらボディにクラスを追加
-        document.body.classList.add('fonts-loaded');
-      });
+    // フォント読み込み検出（エラーハンドリング付き）
+    try {
+      if ('fonts' in document && document.fonts) {
+        document.fonts.ready.then(function () {
+          // フォントが読み込まれたらボディにクラスを追加
+          document.body.classList.add('fonts-loaded');
+        }).catch(function(error) {
+          // フォント読み込みエラーを静かに処理
+          console.log('Font loading detection failed:', error);
+        });
+      }
+    } catch (e) {
+      // Font API非対応のブラウザでは無視
     }
     
     // スプラッシュ画面のディゾルブ効果を制御
@@ -179,11 +186,16 @@
     
     // Service Worker を完全に無効化
     window.addEventListener('load', function() {
-      if (window._flutter && window._flutter.loader) {
-        // Service Worker を無効化
-        window._flutter.loader.load({
-          serviceWorkerSettings: null  // Service Worker を完全に無効化
-        });
+      try {
+        if (window._flutter && window._flutter.loader) {
+          // Service Worker を無効化
+          window._flutter.loader.load({
+            serviceWorkerSettings: null  // Service Worker を完全に無効化
+          });
+        }
+      } catch (e) {
+        // Flutter loader エラーを静かに処理
+        console.log('Flutter loader initialization:', e);
       }
     });
     
