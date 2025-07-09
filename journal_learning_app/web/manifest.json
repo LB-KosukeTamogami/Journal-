@@ -1,11 +1,11 @@
 {
-    "name": "journal_learning_app",
-    "short_name": "journal_learning_app",
+    "name": "Squirrel - Journal Language Learning",
+    "short_name": "Squirrel",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#8B6D47",
+    "theme_color": "#8B6D47",
+    "description": "Learn languages naturally through journaling",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

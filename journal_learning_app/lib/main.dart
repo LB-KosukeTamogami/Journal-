@@ -5,6 +5,7 @@ import 'screens/journal_screen.dart';
 import 'screens/learning_screen.dart';
 import 'screens/analytics_screen.dart';
 import 'screens/my_page_screen.dart';
+import 'screens/splash_screen.dart';
 import 'services/storage_service.dart';
 import 'theme/app_theme.dart';
 
@@ -21,10 +22,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Journal英語学習',
+      title: 'Squirrel - Journal Language Learning',
       theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
-      home: const MainNavigationScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const SplashScreen(),
+        '/home': (context) => const MainNavigationScreen(),
+      },
     );
   }
 }

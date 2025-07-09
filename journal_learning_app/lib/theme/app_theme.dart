@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Brand Colors
-  static const Color primaryColor = Color(0xFFE07A5F);      // テラコッタオレンジ
-  static const Color secondaryColor = Color(0xFF457B9D);    // セルリアンブルー
-  static const Color accentColor = Color(0xFF5A3E2B);       // ダークブラウン
+  // Brand Colors - Squirrel Theme
+  static const Color primaryColor = Color(0xFF8B6D47);      // リスの毛色（ウォームブラウン）
+  static const Color secondaryColor = Color(0xFF6B8E7F);    // 森の緑（ソフトグリーン）
+  static const Color accentColor = Color(0xFF4A3728);       // ダークブラウン（木の幹）
   
   // Legacy aliases for smooth transition
   static const Color primaryBlue = secondaryColor;
@@ -17,18 +17,18 @@ class AppTheme {
   static const Color textSecondary = Color(0xFF6B6B6B);
   static const Color textTertiary = Color(0xFF9B9B9B);
   static const Color backgroundPrimary = Color(0xFFFFFFFF);   // コンテンツ背景
-  static const Color backgroundSecondary = Color(0xFFF5F1E8);  // アイボリー系オフホワイト
-  static const Color backgroundTertiary = Color(0xFFF0E9DD);   // セクション区切り
+  static const Color backgroundSecondary = Color(0xFFFFFFFF);  // メイン背景（白）
+  static const Color backgroundTertiary = Color(0xFFF8F6F3);   // セクション区切り（薄いベージュ）
   
   // Semantic / Status Colors
-  static const Color success = Color(0xFF8EBF87);   // ソフトグリーン
-  static const Color warning = Color(0xFFF4A261);   // マスタードイエロー
-  static const Color error = Color(0xFFE63946);     // ビビッドレッド
-  static const Color info = Color(0xFF2A9D8F);      // ティール
+  static const Color success = Color(0xFF7CB342);   // フレッシュグリーン
+  static const Color warning = Color(0xFFFFB74D);   // どんぐりオレンジ
+  static const Color error = Color(0xFFE57373);     // ソフトレッド
+  static const Color info = Color(0xFF64B5F6);      // スカイブルー
   
   // Border & Divider
-  static const Color borderColor = Color(0xFFE5DCCC);
-  static const Color dividerColor = Color(0xFFE5DCCC);
+  static const Color borderColor = Color(0xFFE8E4DE);
+  static const Color dividerColor = Color(0xFFE8E4DE);
   
   // Shadow
   static List<BoxShadow> cardShadow = [
