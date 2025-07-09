@@ -91728,7 +91728,7 @@ k(a){return"LocaleDataException: "+this.a},
 $idn:1}
 A.Oi.prototype={
 G(a){var s=$.aM3()
-return new A.Bv(B.Us,"Squirrel - Journal Language Learning",s.anF(s.ok.amg(A.b(["Noto Sans JP","Noto Sans","Noto Emoji"],t.s))),!1,null)}}
+return new A.Bv(B.Us,"Squirrel - Journal Language Learning",s.anF(s.ok.amg(A.b(["Noto Sans JP","Noto Sans","Noto Emoji","Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Sans CJK JP","Noto Sans CJK","Hiragino Sans","Yu Gothic","Meiryo","Takao","IPAexGothic","IPAPGothic","sans-serif"],t.s))),!1,null)}}
 A.dt.prototype={
 eK(){var s=this
 return A.ak(["id",s.a,"title",s.b,"content",s.c,"translatedTitle",s.d,"translatedContent",s.e,"originalLanguage",s.f,"learnedWords",s.r,"createdAt",s.w.k9(),"updatedAt",s.x.k9(),"isCompleted",s.y,"wordCount",s.z],t.N,t.z)}}

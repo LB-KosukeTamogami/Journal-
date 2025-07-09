@@ -19,9 +19,26 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Squirrel - Journal Language Learning',
       theme: AppTheme.lightTheme.copyWith(
-        // フォントフォールバックを追加
+        // 包括的なフォントフォールバックを追加
         textTheme: AppTheme.lightTheme.textTheme.apply(
-          fontFamilyFallback: ['Noto Sans JP', 'Noto Sans', 'Noto Emoji'],
+          fontFamilyFallback: [
+            'Noto Sans JP', 
+            'Noto Sans', 
+            'Noto Emoji',
+            'Noto Color Emoji',
+            'Apple Color Emoji',
+            'Segoe UI Emoji',
+            'Segoe UI Symbol',
+            'Noto Sans CJK JP',
+            'Noto Sans CJK',
+            'Hiragino Sans',
+            'Yu Gothic',
+            'Meiryo',
+            'Takao',
+            'IPAexGothic',
+            'IPAPGothic',
+            'sans-serif'
+          ],
         ),
       ),
       debugShowCheckedModeBanner: false,
