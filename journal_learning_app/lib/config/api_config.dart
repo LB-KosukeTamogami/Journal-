@@ -1,25 +1,63 @@
 // API設定ファイル
 // 本番環境では環境変数やセキュアストレージから読み込んでください
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class ApiConfig {
-  // 環境変数からAPIキーを取得
-  static String getGroqApiKey() {
-    // 環境変数から読み込む
-    const envKey = String.fromEnvironment('GROQ_API_KEY');
-    if (envKey.isNotEmpty) {
+  // Gemini API Key (開発環境用のデフォルト値)
+  static const String _defaultGeminiApiKey = 'AIzaSyBRgV7ts1Viv7YaMmtHRUOgHXGi3-GqXos';
+  
+  // 環境変数からAPIキーを取得（エラーを投げずにnullを返す）
+  static String? getGroqApiKey() {
+    // まず.envファイルから読み込みを試みる
+    final envKey = dotenv.env['GROQ_API_KEY'];
+    if (envKey != null && envKey.isNotEmpty) {
       return envKey;
     }
     
-    // デフォルト（テスト用）
-    // 本番環境では必ず環境変数 GROQ_API_KEY を設定してください
-    throw Exception('GROQ_API_KEY environment variable is not set');
+    // ビルド時の環境変数から読み込む
+    const buildTimeKey = String.fromEnvironment('GROQ_API_KEY');
+    if (buildTimeKey.isNotEmpty) {
+      return buildTimeKey;
+    }
+    
+    // APIキーが設定されていない場合はnullを返す
+    return null;
   }
   
-  static String getGoogleTranslateApiKey() {
-    const envKey = String.fromEnvironment('GOOGLE_TRANSLATE_API_KEY');
-    if (envKey.isNotEmpty) {
+  // Gemini APIキーを取得
+  static String? getGeminiApiKey() {
+    // まず.envファイルから読み込みを試みる
+    final envKey = dotenv.env['GEMINI_API_KEY'];
+    if (envKey != null && envKey.isNotEmpty) {
       return envKey;
     }
-    throw Exception('GOOGLE_TRANSLATE_API_KEY environment variable is not set');
+    
+    // ビルド時の環境変数から読み込む
+    const buildTimeKey = String.fromEnvironment('GEMINI_API_KEY');
+    if (buildTimeKey.isNotEmpty) {
+      return buildTimeKey;
+    }
+    
+    // 開発環境用のデフォルト値を使用
+    // 本番環境では必ず環境変数 GEMINI_API_KEY を設定してください
+    return _defaultGeminiApiKey;
+  }
+  
+  static String? getGoogleTranslateApiKey() {
+    // まず.envファイルから読み込みを試みる
+    final envKey = dotenv.env['GOOGLE_TRANSLATE_API_KEY'];
+    if (envKey != null && envKey.isNotEmpty) {
+      return envKey;
+    }
+    
+    // ビルド時の環境変数から読み込む
+    const buildTimeKey = String.fromEnvironment('GOOGLE_TRANSLATE_API_KEY');
+    if (buildTimeKey.isNotEmpty) {
+      return buildTimeKey;
+    }
+    
+    // APIキーが設定されていない場合はnullを返す
+    return null;
   }
 }

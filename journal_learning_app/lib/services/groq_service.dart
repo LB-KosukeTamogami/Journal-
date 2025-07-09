@@ -13,6 +13,20 @@ class GroqService {
     String targetLanguage = 'en',
   }) async {
     try {
+      final apiKey = ApiConfig.getGroqApiKey();
+      if (apiKey == null || apiKey.isEmpty) {
+        // APIキーが設定されていない場合はフォールバック
+        print('Groq API key not configured, using offline mode');
+        return {
+          'detected_language': sourceLanguage,
+          'original': content,
+          'corrected': content,
+          'translation': content,
+          'improvements': [],
+          'learned_phrases': [],
+        };
+      }
+
       final prompt = '''
 You are an expert language translator and teacher specializing in natural, conversational translations between English and Japanese.
 
@@ -54,7 +68,7 @@ IMPORTANT:
       final response = await http.post(
         Uri.parse(_baseUrl),
         headers: {
-          'Authorization': 'Bearer ${ApiConfig.getGroqApiKey()}',
+          'Authorization': 'Bearer $apiKey',
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
@@ -133,6 +147,12 @@ IMPORTANT:
     String language,
   ) async {
     try {
+      final apiKey = ApiConfig.getGroqApiKey();
+      if (apiKey == null || apiKey.isEmpty) {
+        // APIキーが設定されていない場合は空配列を返す
+        return [];
+      }
+
       final prompt = '''
 "$word"という単語/フレーズを使った例文を3つ生成してください。
 言語: $language
@@ -151,7 +171,7 @@ IMPORTANT:
       final response = await http.post(
         Uri.parse(_baseUrl),
         headers: {
-          'Authorization': 'Bearer ${ApiConfig.getGroqApiKey()}',
+          'Authorization': 'Bearer $apiKey',
           'Content-Type': 'application/json',
         },
         body: jsonEncode({

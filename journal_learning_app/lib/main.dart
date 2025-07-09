@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'screens/splash_screen.dart';
 import 'services/storage_service.dart';
 import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // .envファイルを読み込む
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    print('Warning: .env file not found or could not be loaded: $e');
+  }
+  
   await StorageService.init();
   await StorageService.initializeSampleData();
   runApp(const MyApp());

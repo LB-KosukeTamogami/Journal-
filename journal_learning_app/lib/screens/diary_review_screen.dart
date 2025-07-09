@@ -5,7 +5,7 @@ import '../models/diary_entry.dart';
 import '../models/word.dart';
 import '../theme/app_theme.dart';
 import '../services/translation_service.dart';
-import '../services/groq_service.dart';
+import '../services/gemini_service.dart';
 import '../services/storage_service.dart';
 
 class DiaryReviewScreen extends StatefulWidget {
@@ -39,7 +39,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   Future<void> _processContent() async {
     try {
       // Groq APIで添削と翻訳を実行
-      final result = await GroqService.correctAndTranslate(
+      final result = await GeminiService.correctAndTranslate(
         widget.entry.content,
         targetLanguage: widget.detectedLanguage == 'ja' ? 'en' : 'ja',
       );
