@@ -387,17 +387,21 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppTheme.primaryColor.withOpacity(0.9),
-                  AppTheme.primaryColor,
+                  const Color(0xFFF5F5F5), // 薄いグレー
+                  const Color(0xFFE8E8E8), // 少し濃いグレー
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               shape: BoxShape.circle,
+              border: Border.all(
+                color: AppTheme.primaryColor.withOpacity(0.3),
+                width: 1.5,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.primaryColor.withOpacity(0.25),
-                  blurRadius: 6,
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
               ],
@@ -414,32 +418,12 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      'Lily からのメッセージ',
-                      style: AppTheme.body2.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.primaryColor,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFF6B6B), // より柔らかい赤色
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFFF6B6B).withOpacity(0.4),
-                            blurRadius: 3,
-                            offset: const Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                Text(
+                  'Lily からのメッセージ',
+                  style: AppTheme.body2.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.primaryColor,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 Text(
