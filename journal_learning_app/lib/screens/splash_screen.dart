@@ -45,19 +45,26 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.primaryColor,
-      body: Center(
-        child: Text(
-          'Squirrel',
-          style: GoogleFonts.roboto(
-            fontSize: 56,
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
-            letterSpacing: 4,
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: AppTheme.primaryColor,
+        body: Center(
+          child: Text(
+            'Squirrel',
+            style: GoogleFonts.roboto(
+              fontSize: 56,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+              letterSpacing: 4,
+            ),
           ),
         ),
       ),
+      theme: ThemeData(
+        // 完全に独立したテーマを使用してフォントの影響を排除
+        fontFamily: 'Roboto',
+      ),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

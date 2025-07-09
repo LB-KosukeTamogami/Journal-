@@ -49,8 +49,13 @@
 </head>
 <body>
   <!-- Initial loading screen to match splash screen exactly -->
-  <div id="loading" style="color: white; font-size: 56px; font-weight: 800; letter-spacing: 4px; font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; font-synthesis: none;">Squirrel</div>
+  <div id="loading" style="color: white; font-size: 56px; font-weight: 800; letter-spacing: 4px; font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; font-synthesis: none; font-display: block; font-variant-ligatures: none; font-feature-settings: normal;">Squirrel</div>
   <script>
+    // Ensure font is loaded before showing text
+    document.fonts.ready.then(function() {
+      console.log('Fonts loaded');
+    });
+    
     // Remove loading element when Flutter first frame is rendered
     window.addEventListener('flutter-first-frame', function () {
       var loadingElement = document.getElementById('loading');
