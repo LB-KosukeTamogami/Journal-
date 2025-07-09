@@ -35,46 +35,39 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
-    
     return Scaffold(
       backgroundColor: AppTheme.backgroundSecondary,
       body: IndexedStack(
         index: _selectedIndex,
         children: _screens,
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: AppTheme.backgroundPrimary,
-          border: Border(
-            top: BorderSide(color: AppTheme.borderColor),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 10,
-              offset: const Offset(0, -5),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppTheme.backgroundPrimary,
+            border: Border(
+              top: BorderSide(color: AppTheme.borderColor),
             ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              height: 64,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: _navItems.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final item = entry.value;
-                  return _buildNavItem(index, item);
-                }).toList(),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 10,
+                offset: const Offset(0, -5),
               ),
+            ],
+          ),
+          child: Container(
+            height: 64,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: _navItems.asMap().entries.map((entry) {
+                final index = entry.key;
+                final item = entry.value;
+                return _buildNavItem(index, item);
+              }).toList(),
             ),
-            // iPhone のホームインジケーターのための追加パディング
-            SizedBox(height: bottomPadding > 0 ? bottomPadding : 8),
-          ],
+          ),
         ),
       ),
     );

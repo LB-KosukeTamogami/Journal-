@@ -44,12 +44,70 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Roboto', sans-serif;
+      overflow: hidden;
+    }
+    
+    #splash-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #8B6D47;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.8s ease-in-out;
+    }
+    
+    #splash-text {
+      color: white;
+      font-size: 56px;
+      font-weight: 800;
+      letter-spacing: 4px;
+      font-family: 'Roboto', sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    
+    #flutter-app {
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+    }
+    
+    .flutter-loaded #splash-screen {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .flutter-loaded #flutter-app {
+      opacity: 1;
     }
   </style>
 </head>
 <body>
-  <!-- No HTML loading screen - Flutter handles all display -->
-  <script src="flutter_bootstrap.js" async></script>
+  <div id="splash-screen">
+    <div id="splash-text">Squirrel</div>
+  </div>
+  <div id="flutter-app">
+    <script src="flutter_bootstrap.js" async></script>
+  </div>
+  
+  <script>
+    // スプラッシュ画面を2秒後に非表示にし、Flutterアプリを表示
+    setTimeout(() => {
+      document.body.classList.add('flutter-loaded');
+      // 追加で800ms待ってからスプラッシュ画面を削除
+      setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+          splash.remove();
+        }
+      }, 800);
+    }, 2000);
+  </script>
 </body>
 </html>

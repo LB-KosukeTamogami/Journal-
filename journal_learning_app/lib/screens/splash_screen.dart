@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
 import 'main_navigation_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -17,60 +16,24 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateToHome() async {
-    await Future.delayed(const Duration(seconds: 2));
+    // HTMLスプラッシュ画面が2秒表示されるので、少し待ってからナビゲート
+    await Future.delayed(const Duration(milliseconds: 2800));
     
     if (!mounted) return;
     
     await Navigator.of(context).pushReplacement(
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => const MainNavigationScreen(),
-        transitionDuration: const Duration(milliseconds: 800),
-        reverseTransitionDuration: const Duration(milliseconds: 800),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          // ディゾルブ効果：両方の画面を同時にフェード
-          return Stack(
-            children: [
-              // ホーム画面をフェードイン
-              FadeTransition(
-                opacity: animation,
-                child: child,
-              ),
-            ],
-          );
-        },
+      MaterialPageRoute(
+        builder: (context) => const MainNavigationScreen(),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        backgroundColor: AppTheme.primaryColor,
-        body: Center(
-          child: RepaintBoundary(
-            child: Text(
-              'Squirrel',
-              style: TextStyle(
-                fontSize: 56,
-                fontWeight: FontWeight.w800,
-                color: Colors.white,
-                letterSpacing: 4,
-                fontStyle: FontStyle.normal,
-                decoration: TextDecoration.none,
-                fontFamily: 'Roboto',
-              ),
-              textAlign: TextAlign.center,
-              textDirection: TextDirection.ltr,
-            ),
-          ),
-        ),
-      ),
-      theme: ThemeData(
-        // 完全に独立したテーマを使用してフォントの影響を排除
-        fontFamily: 'Roboto',
-      ),
-      debugShowCheckedModeBanner: false,
+    // 透明なスプラッシュ画面 - HTMLが実際の表示を担当
+    return const Scaffold(
+      backgroundColor: Colors.transparent,
+      body: SizedBox.shrink(),
     );
   }
 }
