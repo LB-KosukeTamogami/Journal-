@@ -2,28 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Primary Colors
-  static const Color primaryBlue = Color(0xFF2563EB);
-  static const Color primaryBlueLight = Color(0xFF3B82F6);
-  static const Color primaryBlueDark = Color(0xFF1E40AF);
+  // Brand Colors
+  static const Color primaryColor = Color(0xFFE07A5F);      // テラコッタオレンジ
+  static const Color secondaryColor = Color(0xFF457B9D);    // セルリアンブルー
+  static const Color accentColor = Color(0xFF5A3E2B);       // ダークブラウン
+  
+  // Legacy aliases for smooth transition
+  static const Color primaryBlue = secondaryColor;
+  static const Color primaryBlueLight = Color(0xFF5A8EB0);
+  static const Color primaryBlueDark = Color(0xFF34627F);
   
   // Neutral Colors
-  static const Color textPrimary = Color(0xFF1F2937);
-  static const Color textSecondary = Color(0xFF6B7280);
-  static const Color textTertiary = Color(0xFF9CA3AF);
-  static const Color backgroundPrimary = Color(0xFFFFFFFF);
-  static const Color backgroundSecondary = Color(0xFFF9FAFB);
-  static const Color backgroundTertiary = Color(0xFFF3F4F6);
+  static const Color textPrimary = Color(0xFF2C2C2C);
+  static const Color textSecondary = Color(0xFF6B6B6B);
+  static const Color textTertiary = Color(0xFF9B9B9B);
+  static const Color backgroundPrimary = Color(0xFFFFFFFF);   // コンテンツ背景
+  static const Color backgroundSecondary = Color(0xFFF5F1E8);  // アイボリー系オフホワイト
+  static const Color backgroundTertiary = Color(0xFFF0E9DD);   // セクション区切り
   
-  // Semantic Colors
-  static const Color success = Color(0xFF10B981);
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color error = Color(0xFFEF4444);
-  static const Color info = Color(0xFF3B82F6);
+  // Semantic / Status Colors
+  static const Color success = Color(0xFF8EBF87);   // ソフトグリーン
+  static const Color warning = Color(0xFFF4A261);   // マスタードイエロー
+  static const Color error = Color(0xFFE63946);     // ビビッドレッド
+  static const Color info = Color(0xFF2A9D8F);      // ティール
   
   // Border & Divider
-  static const Color borderColor = Color(0xFFE5E7EB);
-  static const Color dividerColor = Color(0xFFE5E7EB);
+  static const Color borderColor = Color(0xFFE5DCCC);
+  static const Color dividerColor = Color(0xFFE5DCCC);
   
   // Shadow
   static List<BoxShadow> cardShadow = [
@@ -41,7 +46,7 @@ class AppTheme {
   
   static List<BoxShadow> buttonShadow = [
     BoxShadow(
-      color: primaryBlue.withOpacity(0.25),
+      color: primaryColor.withOpacity(0.25),
       blurRadius: 8,
       offset: const Offset(0, 4),
     ),
@@ -100,12 +105,12 @@ class AppTheme {
   // Theme Data
   static ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
-    primaryColor: primaryBlue,
+    primaryColor: primaryColor,
     scaffoldBackgroundColor: backgroundSecondary,
     
     colorScheme: const ColorScheme.light(
-      primary: primaryBlue,
-      secondary: primaryBlueLight,
+      primary: primaryColor,
+      secondary: secondaryColor,
       surface: backgroundPrimary,
       background: backgroundSecondary,
       error: error,
@@ -126,7 +131,7 @@ class AppTheme {
     
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: primaryBlue,
+        backgroundColor: primaryColor,
         foregroundColor: Colors.white,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -160,7 +165,7 @@ class AppTheme {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: primaryBlue, width: 2),
+        borderSide: const BorderSide(color: primaryColor, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -178,7 +183,7 @@ class AppTheme {
     
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: backgroundPrimary,
-      selectedItemColor: primaryBlue,
+      selectedItemColor: primaryColor,
       unselectedItemColor: textTertiary,
       showUnselectedLabels: true,
       type: BottomNavigationBarType.fixed,
@@ -215,7 +220,7 @@ class PrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheme.primaryBlue,
+          backgroundColor: AppTheme.primaryColor,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         ),
         child: isLoading
