@@ -619,7 +619,6 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                             if (!isJapanese && _correctedContent == widget.entry.content) ...[
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                margin: const EdgeInsets.only(bottom: 12),
                                 decoration: BoxDecoration(
                                   color: AppTheme.success.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
@@ -642,50 +641,52 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                   ],
                                 ),
                               ),
-                            ],
-                            // 添削後/翻訳テキスト
-                            Text(
-                              isJapanese ? _translatedContent : _correctedContent,
-                              style: AppTheme.body1.copyWith(
-                                height: 1.6,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
+                            ] else ...[
+                              // 添削が必要な場合のみ表示
+                              // 添削後/翻訳テキスト
+                              Text(
+                                isJapanese ? _translatedContent : _correctedContent,
+                                style: AppTheme.body1.copyWith(
+                                  height: 1.6,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
-                            // 和訳を追加（英語の場合）
-                            if (!isJapanese && _translatedContent.isNotEmpty) ...[
-                              const SizedBox(height: 12),
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: AppTheme.info.withOpacity(0.05),
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: AppTheme.info.withOpacity(0.2),
-                                    width: 1,
+                              // 和訳を追加（英語の場合）
+                              if (!isJapanese && _translatedContent.isNotEmpty) ...[
+                                const SizedBox(height: 12),
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.info.withOpacity(0.05),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: AppTheme.info.withOpacity(0.2),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '日本語訳',
+                                        style: AppTheme.caption.copyWith(
+                                          color: AppTheme.info,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        _translatedContent,
+                                        style: AppTheme.body2.copyWith(
+                                          color: AppTheme.textPrimary,
+                                          height: 1.5,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '日本語訳',
-                                      style: AppTheme.caption.copyWith(
-                                        color: AppTheme.info,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      _translatedContent,
-                                      style: AppTheme.body2.copyWith(
-                                        color: AppTheme.textPrimary,
-                                        height: 1.5,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                              ],
                             ],
                           ],
                         ),
@@ -1487,12 +1488,12 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   Widget _buildAdviceItem(String title, String description, Color color) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
+        color: AppTheme.backgroundPrimary,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: color.withOpacity(0.2),
+          color: AppTheme.warning.withOpacity(0.2),
           width: 1,
         ),
       ),
