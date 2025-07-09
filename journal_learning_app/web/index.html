@@ -33,7 +33,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;800&family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;800&family=Noto+Sans+JP:wght@400;600;700&family=Noto+Sans:wght@400;600;700&family=Noto+Emoji&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
@@ -43,7 +43,7 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      font-family: 'Roboto', 'Noto Sans JP', sans-serif;
+      font-family: 'Roboto', 'Noto Sans JP', 'Noto Sans', 'Noto Emoji', sans-serif;
       overflow: hidden;
     }
     
@@ -58,6 +58,7 @@
       align-items: center;
       justify-content: center;
       z-index: 9999;
+      opacity: 1;
       transition: opacity 0.8s ease-in-out;
     }
     
@@ -66,17 +67,26 @@
       font-size: 56px;
       font-weight: 800;
       letter-spacing: 4px;
-      font-family: 'Roboto', 'Noto Sans JP', sans-serif;
+      font-family: 'Roboto', 'Noto Sans JP', 'Noto Sans', 'Noto Emoji', sans-serif;
       text-align: center;
       margin: 0;
       padding: 0;
+      /* テキストの個別アニメーションを無効化 */
+      transition: none;
+      opacity: 1;
     }
     
     #flutter-app {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       opacity: 0;
       transition: opacity 0.8s ease-in-out;
     }
     
+    /* スプラッシュ画面全体をディゾルブ */
     .flutter-loaded #splash-screen {
       opacity: 0;
       pointer-events: none;
@@ -108,15 +118,12 @@
       }, 800);
     }, 2000);
     
-    // Service Worker の設定をカスタマイズ
+    // Service Worker を完全に無効化
     window.addEventListener('load', function() {
       if (window._flutter && window._flutter.loader) {
-        // Service Worker のタイムアウトを延長
+        // Service Worker を無効化
         window._flutter.loader.load({
-          serviceWorkerSettings: {
-            serviceWorkerVersion: null, // Service Worker を無効化
-            timeoutMillis: 0
-          }
+          serviceWorkerSettings: null  // Service Worker を完全に無効化
         });
       }
     });

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'screens/splash_screen.dart';
 import 'services/storage_service.dart';
 import 'theme/app_theme.dart';
@@ -17,7 +18,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Squirrel - Journal Language Learning',
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.lightTheme.copyWith(
+        // フォントフォールバックを追加
+        textTheme: AppTheme.lightTheme.textTheme.apply(
+          fontFamilyFallback: ['Noto Sans JP', 'Noto Sans', 'Noto Emoji'],
+        ),
+      ),
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
     );
