@@ -33,9 +33,19 @@
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@800&display=block" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@800&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@800&display=swap" rel="stylesheet"></noscript>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600&family=Noto+Sans+JP:wght@400;600;700&family=Noto+Sans:wght@400;600;700&family=Noto+Emoji&family=Noto+Color+Emoji&family=Noto+Sans+CJK+JP:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    /* Critical Font Face - ローカルフォントで即座に表示 */
+    @font-face {
+      font-family: 'Roboto Fallback';
+      font-style: normal;
+      font-weight: 800;
+      src: local('Arial Black'), local('Arial-Black'), local('Helvetica Neue Bold');
+      font-display: swap;
+    }
+    
     body {
       margin: 0;
       padding: 0;
@@ -79,7 +89,8 @@
       font-size: 56px;
       font-weight: 800;
       letter-spacing: 4px;
-      font-family: 'Roboto', sans-serif;
+      /* 初期表示はフォールバックフォント、Robotoが読み込まれたら切り替え */
+      font-family: 'Roboto Fallback', 'Roboto', 'Arial Black', sans-serif;
       text-align: center;
       margin: 0;
       padding: 0;
@@ -92,6 +103,10 @@
       /* フォントのスムージングを設定 */
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      /* 高さを固定してサイズ変化を防ぐ */
+      line-height: 1.2;
+      display: block;
+      min-height: 68px;
     }
     
     #flutter-app {
@@ -133,6 +148,14 @@
   </div>
   
   <script>
+    // フォント読み込み検出
+    if ('fonts' in document) {
+      document.fonts.ready.then(function () {
+        // フォントが読み込まれたらボディにクラスを追加
+        document.body.classList.add('fonts-loaded');
+      });
+    }
+    
     // スプラッシュ画面のディゾルブ効果を制御
     function initializeSplashScreen() {
       const splashScreen = document.getElementById('splash-screen');
