@@ -21,9 +21,16 @@ class _SplashScreenState extends State<SplashScreen> {
     
     if (!mounted) return;
     
+    // アニメーションなしで遷移（HTMLのディゾルブのみ）
     await Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => const MainNavigationScreen(),
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => const MainNavigationScreen(),
+        transitionDuration: Duration.zero,
+        reverseTransitionDuration: Duration.zero,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          // アニメーションなしで即座に表示
+          return child;
+        },
       ),
     );
   }
