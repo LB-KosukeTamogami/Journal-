@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'main_navigation_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -46,12 +47,11 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Center(
         child: Text(
           'Squirrel',
-          style: TextStyle(
+          style: GoogleFonts.roboto(
             color: Colors.white,
             fontSize: 56,
             fontWeight: FontWeight.w800,
             letterSpacing: 4,
-            fontFamily: 'Roboto',
           ),
         ),
       ),
