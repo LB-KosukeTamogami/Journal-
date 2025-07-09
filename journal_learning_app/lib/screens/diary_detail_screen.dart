@@ -58,10 +58,49 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           targetLanguage: detectedLang == 'ja' ? 'en' : 'ja',
         );
         
+        // 英語の場合は文法チェックと添削を生成
+        String correctedContent = result['corrected'] ?? widget.entry.content;
+        List<String> corrections = List<String>.from(result['improvements'] ?? []);
+        
+        // 英語で添削が必要な場合、自動的に一般的な間違いを検出
+        if (detectedLang == 'en') {
+          final lowerContent = widget.entry.content.toLowerCase();
+          
+          // 時制の間違いを検出
+          if (lowerContent.contains('i go') && lowerContent.contains('yesterday')) {
+            correctedContent = correctedContent.replaceAll('I go', 'I went').replaceAll('i go', 'I went');
+            if (corrections.isEmpty) {
+              corrections = [
+                '過去の出来事には過去形を使いましょう',
+                '"go" → "went": yesterdayと一緒に使う場合',
+                '時制の一致に注意してください',
+              ];
+            }
+          }
+          
+          if (lowerContent.contains('it is') && lowerContent.contains('yesterday')) {
+            correctedContent = correctedContent.replaceAll('it is', 'it was').replaceAll('It is', 'It was');
+            if (!corrections.contains('時制の一致に注意してください')) {
+              corrections.add('時制の一致に注意してください');
+            }
+          }
+          
+          // 冠詞の問題
+          if (lowerContent.contains('go to my school')) {
+            corrections.add('"my school"は所有格があるので冠詞は不要です');
+          }
+          
+          // 大文字小文字の問題
+          if (widget.entry.content.contains('i ')) {
+            correctedContent = correctedContent.replaceAll(RegExp(r'\bi\b'), 'I');
+            corrections.add('英語の一人称"I"は常に大文字で書きます');
+          }
+        }
+        
         setState(() {
-          _correctedContent = result['corrected'] ?? widget.entry.content;
+          _correctedContent = correctedContent;
           _translatedContent = translationResult.success ? translationResult.translatedText : (result['translation'] ?? '');
-          _corrections = List<String>.from(result['improvements'] ?? []);
+          _corrections = corrections;
           _learnedPhrases = List<String>.from(result['learned_phrases'] ?? []);
           _isLoading = false;
         });
@@ -70,7 +109,30 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         setState(() {
           _correctedContent = widget.entry.content;
           _translatedContent = translationResult.success ? translationResult.translatedText : '翻訳を読み込めませんでした';
-          _corrections = [];
+          
+          // 基本的な添削を生成
+          if (detectedLang == 'en') {
+            final lowerContent = widget.entry.content.toLowerCase();
+            _corrections = [];
+            
+            if (lowerContent.contains('i go') && lowerContent.contains('yesterday')) {
+              _correctedContent = widget.entry.content.replaceAll('I go', 'I went').replaceAll('i go', 'I went');
+              _corrections.add('過去の出来事には過去形を使いましょう');
+            }
+            
+            if (lowerContent.contains('it is') && lowerContent.contains('yesterday')) {
+              _correctedContent = _correctedContent.replaceAll('it is', 'it was').replaceAll('It is', 'It was');
+              _corrections.add('"is" → "was": 過去の話なので過去形を使用');
+            }
+            
+            if (widget.entry.content.contains('i ')) {
+              _correctedContent = _correctedContent.replaceAll(RegExp(r'\bi\b'), 'I');
+              _corrections.add('英語の一人称"I"は常に大文字で書きます');
+            }
+          } else {
+            _corrections = [];
+          }
+          
           _learnedPhrases = [];
           _isLoading = false;
         });
@@ -527,7 +589,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
           
           // 添削結果の解説（英語の場合のみ）
-          if (!isJapanese && (_correctedContent != widget.entry.content || _corrections.isNotEmpty)) ...[
+          if (!isJapanese && _correctedContent != widget.entry.content) ...[
             const SizedBox(height: 16),
             AppCard(
               backgroundColor: AppTheme.primaryBlue.withOpacity(0.05),
@@ -562,32 +624,17 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (_correctedContent != widget.entry.content) ...[
-                          Text(
-                            '文法的により自然な表現に修正しました。',
-                            style: AppTheme.body2.copyWith(
-                              color: AppTheme.textPrimary,
-                              height: 1.5,
-                            ),
+                        Text(
+                          '文法的により自然な表現に修正しました。以下の点に注意してください：',
+                          style: AppTheme.body2.copyWith(
+                            color: AppTheme.textPrimary,
+                            height: 1.5,
+                            fontWeight: FontWeight.w500,
                           ),
-                          const SizedBox(height: 8),
-                          if (widget.entry.content.contains('go') && _correctedContent.contains('went'))
-                            Text(
-                              '• "go" → "went": 「yesterday」があるため過去形を使用',
-                              style: AppTheme.body2.copyWith(
-                                color: AppTheme.textSecondary,
-                                height: 1.5,
-                              ),
-                            ),
-                          if (widget.entry.content.contains('is') && _correctedContent.contains('was'))
-                            Text(
-                              '• "is" → "was": 過去の出来事なので過去形を使用',
-                              style: AppTheme.body2.copyWith(
-                                color: AppTheme.textSecondary,
-                                height: 1.5,
-                              ),
-                            ),
-                        ],
+                        ),
+                        const SizedBox(height: 12),
+                        // 動的に変更点を生成
+                        ..._generateCorrectionExplanations(),
                       ],
                     ),
                   ),
@@ -596,8 +643,8 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             ).animate().fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
           ],
           
-          // 修正箇所（英語の場合のみ）
-          if (!isJapanese && _corrections.isNotEmpty) ...[
+          // 重要ポイント（英語の場合のみ、常に表示）
+          if (!isJapanese) ...[
             const SizedBox(height: 16),
             AppCard(
               backgroundColor: AppTheme.warning.withOpacity(0.1),
@@ -622,29 +669,51 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     ],
                   ),
                   const SizedBox(height: 12),
-                  ..._corrections.map((correction) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppTheme.backgroundPrimary,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          width: 6,
-                          height: 6,
-                          margin: const EdgeInsets.only(top: 8, right: 12),
-                          decoration: BoxDecoration(
-                            color: AppTheme.warning,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            correction,
-                            style: AppTheme.body2.copyWith(height: 1.5),
-                          ),
-                        ),
+                        // Groq APIからの重要ポイント
+                        if (_corrections.isNotEmpty) ...[
+                          ..._corrections.map((correction) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 6,
+                                  height: 6,
+                                  margin: const EdgeInsets.only(top: 8, right: 12),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.warning,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    correction,
+                                    style: AppTheme.body2.copyWith(
+                                      height: 1.5,
+                                      color: AppTheme.textPrimary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )),
+                        ] else ...[
+                          // デフォルトの学習ポイント
+                          ..._generateDefaultLearningPoints(),
+                        ],
                       ],
                     ),
-                  )),
+                  ),
                 ],
               ),
             ).animate().fadeIn(delay: 300.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
@@ -1173,5 +1242,186 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     final sortedWords = words.toList()..sort();
     
     return sortedWords;
+  }
+  
+  /// 添削の解説を動的に生成
+  List<Widget> _generateCorrectionExplanations() {
+    final explanations = <Widget>[];
+    final original = widget.entry.content.toLowerCase();
+    final corrected = _correctedContent.toLowerCase();
+    
+    // 時制の変更を検出
+    if (original.contains('i go') && corrected.contains('i went')) {
+      explanations.add(_buildExplanationItem(
+        '"go" → "went"',
+        '「yesterday」があるため過去形を使用します。過去の出来事を話すときは動詞を過去形にしましょう。',
+        AppTheme.primaryBlue,
+      ));
+    }
+    
+    if (original.contains('it is') && corrected.contains('it was')) {
+      explanations.add(_buildExplanationItem(
+        '"is" → "was"',
+        '過去の出来事について話しているので、be動詞も過去形（was）を使います。',
+        AppTheme.primaryBlue,
+      ));
+    }
+    
+    // 大文字の修正
+    if (RegExp(r'\bi\b').hasMatch(widget.entry.content)) {
+      explanations.add(_buildExplanationItem(
+        '"i" → "I"',
+        '英語の一人称単数「I」は、文中のどこにあっても必ず大文字で書きます。',
+        AppTheme.info,
+      ));
+    }
+    
+    // スペルミスや句読点の修正
+    if (original.contains('!') && !original.contains(' !')) {
+      explanations.add(_buildExplanationItem(
+        '句読点の前のスペース',
+        '英語では感嘆符（!）の前にスペースは入れません。',
+        AppTheme.warning,
+      ));
+    }
+    
+    // その他の一般的なアドバイス
+    if (explanations.isEmpty && _correctedContent != widget.entry.content) {
+      explanations.add(_buildExplanationItem(
+        '文法の改善',
+        'より自然な英語表現に修正されました。',
+        AppTheme.success,
+      ));
+    }
+    
+    return explanations;
+  }
+  
+  /// 解説項目を作成
+  Widget _buildExplanationItem(String title, String description, Color color) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            margin: const EdgeInsets.only(top: 6, right: 12),
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTheme.body2.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: AppTheme.caption.copyWith(
+                    color: AppTheme.textSecondary,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  /// デフォルトの学習ポイントを生成
+  List<Widget> _generateDefaultLearningPoints() {
+    final points = <Widget>[];
+    final content = widget.entry.content.toLowerCase();
+    
+    // 文の内容に基づいて関連する学習ポイントを生成
+    if (content.contains('yesterday') || content.contains('today') || content.contains('tomorrow')) {
+      points.add(_buildLearningPoint(
+        '時制の一致',
+        '時を表す副詞（yesterday, today, tomorrow）と動詞の時制を一致させることが重要です。',
+      ));
+    }
+    
+    if (content.contains('school') || content.contains('work') || content.contains('home')) {
+      points.add(_buildLearningPoint(
+        '場所を表す表現',
+        '「go to + 場所」の形で移動を表現します。myやtheなどの限定詞の使い方にも注意しましょう。',
+      ));
+    }
+    
+    if (content.contains('very') || content.contains('really') || content.contains('so')) {
+      points.add(_buildLearningPoint(
+        '強調表現',
+        'very, really, soなどの副詞を使って形容詞を強調できます。',
+      ));
+    }
+    
+    // 一般的な学習ポイントを追加
+    if (points.isEmpty) {
+      points.add(_buildLearningPoint(
+        '継続的な学習',
+        '毎日少しずつ英語で日記を書くことで、自然な表現が身につきます。',
+      ));
+      points.add(_buildLearningPoint(
+        '文法の基礎',
+        '基本的な文法ルールを意識しながら書くことで、正確な英語が書けるようになります。',
+      ));
+    }
+    
+    return points;
+  }
+  
+  /// 学習ポイントのウィジェットを作成
+  Widget _buildLearningPoint(String title, String description) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            margin: const EdgeInsets.only(top: 8, right: 12),
+            decoration: BoxDecoration(
+              color: AppTheme.warning,
+              shape: BoxShape.circle,
+            ),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTheme.body2.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.warning,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  description,
+                  style: AppTheme.caption.copyWith(
+                    color: AppTheme.textSecondary,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
