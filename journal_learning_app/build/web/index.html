@@ -135,7 +135,8 @@
       const splashBackground = document.getElementById('splash-background');
       const flutterApp = document.getElementById('flutter-app');
       
-      // 2秒後にスプラッシュ画面の背景のみをディゾルブ
+      // Flutterアプリが読み込まれてから少し待ってディゾルブ開始
+      // Flutter側で2.8秒後に画面遷移するので、その少し前にディゾルブを開始
       setTimeout(() => {
         // 背景をフェードアウト、Flutterアプリをフェードイン
         document.body.classList.add('flutter-loaded');
@@ -145,8 +146,8 @@
           if (splashScreen) {
             splashScreen.remove();
           }
-        }, 800);
-      }, 2000);
+        }, 1000);
+      }, 2400);
     }
     
     // Service Worker を完全に無効化

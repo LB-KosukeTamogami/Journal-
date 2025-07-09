@@ -21,15 +21,18 @@ class _SplashScreenState extends State<SplashScreen> {
     
     if (!mounted) return;
     
-    // アニメーションなしで遷移（HTMLのディゾルブのみ）
+    // フェード効果で遷移
     await Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => const MainNavigationScreen(),
-        transitionDuration: Duration.zero,
-        reverseTransitionDuration: Duration.zero,
+        transitionDuration: const Duration(milliseconds: 800),
+        reverseTransitionDuration: const Duration(milliseconds: 800),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          // アニメーションなしで即座に表示
-          return child;
+          // フェード効果
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
         },
       ),
     );
@@ -37,10 +40,21 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // 透明なスプラッシュ画面 - HTMLが実際の表示を担当
-    return const Scaffold(
-      backgroundColor: Colors.transparent,
-      body: SizedBox.shrink(),
+    // Flutter側でも同じスプラッシュ画面を表示
+    return Scaffold(
+      backgroundColor: const Color(0xFF8B6D47),
+      body: Center(
+        child: Text(
+          'Squirrel',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 56,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 4,
+            fontFamily: 'Roboto',
+          ),
+        ),
+      ),
     );
   }
 }
