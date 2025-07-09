@@ -17,8 +17,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateToHome() async {
-    // HTMLスプラッシュ画面が2秒表示されるので、少し待ってからナビゲート
-    await Future.delayed(const Duration(milliseconds: 2800));
+    // HTMLスプラッシュ画面の表示を考慮して、即座に遷移
+    // HTMLで2秒表示されるので、Flutter側では追加の待機は不要
+    await Future.delayed(const Duration(milliseconds: 100));
     
     if (!mounted) return;
     
@@ -26,8 +27,8 @@ class _SplashScreenState extends State<SplashScreen> {
     await Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => const MainNavigationScreen(),
-        transitionDuration: const Duration(milliseconds: 800),
-        reverseTransitionDuration: const Duration(milliseconds: 800),
+        transitionDuration: const Duration(milliseconds: 500),
+        reverseTransitionDuration: const Duration(milliseconds: 500),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           // フェード効果
           return FadeTransition(
@@ -41,20 +42,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Flutter側でも同じスプラッシュ画面を表示
-    return Scaffold(
-      backgroundColor: const Color(0xFF8B6D47),
-      body: Center(
-        child: Text(
-          'Squirrel',
-          style: GoogleFonts.roboto(
-            color: Colors.white,
-            fontSize: 56,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 4,
-          ),
-        ),
-      ),
+    // Flutter側のスプラッシュ画面は透明にして、HTMLスプラッシュ画面を表示
+    return const Scaffold(
+      backgroundColor: Colors.transparent,
+      body: SizedBox.expand(),
     );
   }
 }
