@@ -20,8 +20,14 @@ flutter config --no-analytics || true
 echo "Getting dependencies..."
 flutter pub get
 
-# Build web
+# Build web with environment variables
 echo "Building web..."
-flutter build web --release --web-renderer html
+if [ -n "$GEMINI_API_KEY" ]; then
+    echo "Building with Gemini API key..."
+    flutter build web --release --web-renderer html --dart-define=GEMINI_API_KEY="$GEMINI_API_KEY"
+else
+    echo "Building without API key (using default)..."
+    flutter build web --release --web-renderer html
+fi
 
 echo "Build completed!"

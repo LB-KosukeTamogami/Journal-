@@ -48,6 +48,36 @@ https://lb-kosuketamogami.github.io/Journal-/
 - iOS: Xcode (iOS開発の場合)
 - Android: Android Studio (Android開発の場合)
 
+### 環境変数の設定
+
+このアプリはGemini APIを使用します。以下の手順で環境変数を設定してください：
+
+1. `.env.example`をコピーして`.env`ファイルを作成:
+```bash
+cp .env.example .env
+```
+
+2. `.env`ファイルを編集してAPIキーを設定:
+```
+GEMINI_API_KEY=your_api_key_here
+```
+
+3. ローカル開発時の実行:
+```bash
+# .envファイルから環境変数を読み込んで実行
+./run_local.sh
+```
+
+4. ローカルでのビルド:
+```bash
+# .envファイルから環境変数を読み込んでビルド
+./build_local.sh
+```
+
+**注意**: 
+- `.env`ファイルは`.gitignore`に含まれているため、Gitにコミットされません
+- 本番環境（Vercel）では、Vercelのダッシュボードで環境変数を設定してください
+
 ### インストール手順
 
 1. Flutter SDKのインストール

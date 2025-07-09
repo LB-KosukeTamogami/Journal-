@@ -17,8 +17,14 @@ cd journal_learning_app
 echo "Getting dependencies..."
 flutter pub get
 
-# Build for web
+# Build for web with environment variables
 echo "Building web app..."
-flutter build web --release
+if [ -n "$GEMINI_API_KEY" ]; then
+    echo "Building with Gemini API key..."
+    flutter build web --release --dart-define=GEMINI_API_KEY="$GEMINI_API_KEY"
+else
+    echo "Building without API key (using default)..."
+    flutter build web --release
+fi
 
 echo "Build completed!"

@@ -33,17 +33,31 @@
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@800&display=swap" rel="stylesheet">
+  <!-- Roboto 800を最優先でプリロード -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@800&display=block" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@800&display=block" rel="stylesheet"></noscript>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600&family=Noto+Sans+JP:wght@400;600;700&family=Noto+Sans:wght@400;600;700&family=Noto+Emoji&family=Noto+Color+Emoji&family=Noto+Sans+CJK+JP:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    /* Critical Font Face - ローカルフォントで即座に表示 */
+    /* Critical inline font */
     @font-face {
-      font-family: 'Roboto Fallback';
+      font-family: 'Roboto';
       font-style: normal;
       font-weight: 800;
-      src: local('Arial Black'), local('Arial-Black'), local('Helvetica Neue Bold'), local('sans-serif');
-      font-display: swap;
-      unicode-range: U+0020-007F; /* 基本的なASCII文字のみ */
+      font-display: block;
+      src: local('Roboto Black'), local('Roboto-Black'), url(https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmYUtfBBc4.woff2) format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+    
+    /* テキストを最初から表示、ただし透明度で制御 */
+    #splash-text {
+      opacity: 0;
+      animation: fadeInText 0.3s ease-in-out 0.1s forwards;
+    }
+    
+    @keyframes fadeInText {
+      to {
+        opacity: 1;
+      }
     }
     
     body {
@@ -89,24 +103,27 @@
       font-size: 56px;
       font-weight: 800;
       letter-spacing: 4px;
-      /* 初期表示はフォールバックフォント、Robotoが読み込まれたら切り替え */
-      font-family: 'Roboto Fallback', 'Roboto', 'Arial Black', sans-serif;
+      /* Robotoフォントのみを使用 */
+      font-family: 'Roboto', sans-serif;
       text-align: center;
       margin: 0;
       padding: 0;
       z-index: 10;
-      /* テキストは完全に静的 - アニメーションなし */
-      transition: none !important;
-      opacity: 1 !important;
-      transform: none !important;
       position: relative;
       /* フォントのスムージングを設定 */
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      /* 高さを固定してサイズ変化を防ぐ */
+      /* 位置とサイズを完全に固定 */
       line-height: 1.2;
       display: block;
-      min-height: 68px;
+      width: 300px;
+      height: 68px;
+      /* 中央に配置 */
+      margin-left: auto;
+      margin-right: auto;
+      /* レイアウトシフトを防ぐ */
+      contain: layout style paint;
+      will-change: opacity;
     }
     
     #flutter-app {
@@ -148,19 +165,13 @@
   </div>
   
   <script>
-    // フォント読み込み検出（エラーハンドリング付き）
-    try {
-      if ('fonts' in document && document.fonts) {
-        document.fonts.ready.then(function () {
-          // フォントが読み込まれたらボディにクラスを追加
-          document.body.classList.add('fonts-loaded');
-        }).catch(function(error) {
-          // フォント読み込みエラーを静かに処理
-          console.log('Font loading detection failed:', error);
-        });
-      }
-    } catch (e) {
-      // Font API非対応のブラウザでは無視
+    // フォントの事前読み込みを確実にする
+    if ('fonts' in document && document.fonts) {
+      // Roboto 800を明示的に読み込む
+      document.fonts.load('800 56px Roboto').catch(() => {
+        // エラーは静かに処理
+        console.log('Font preload attempted');
+      });
     }
     
     // スプラッシュ画面のディゾルブ効果を制御
