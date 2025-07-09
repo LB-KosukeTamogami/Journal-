@@ -54,6 +54,7 @@ class _SplashScreenState extends State<SplashScreen> {
             fontWeight: FontWeight.w800,
             color: Colors.white,
             letterSpacing: 4,
+            fontFamily: 'Roboto',
           ),
         ),
       ),
