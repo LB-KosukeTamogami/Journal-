@@ -359,22 +359,22 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFFF5E6D3), // ナッツのような淡いベージュ
-            const Color(0xFFEDD8C7), // 少し濃いベージュ
+            Colors.white, // 純白
+            const Color(0xFFFBF8F5), // 非常に薄いクリーム色
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppTheme.primaryColor.withOpacity(0.3),
-          width: 1.5,
+          color: AppTheme.primaryColor.withOpacity(0.2),
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.primaryColor.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: AppTheme.primaryColor.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -387,7 +387,7 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppTheme.primaryColor.withOpacity(0.8),
+                  AppTheme.primaryColor.withOpacity(0.9),
                   AppTheme.primaryColor,
                 ],
                 begin: Alignment.topLeft,
@@ -396,8 +396,8 @@ class _HomeScreenState extends State<HomeScreen> {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.primaryColor.withOpacity(0.3),
-                  blurRadius: 4,
+                  color: AppTheme.primaryColor.withOpacity(0.25),
+                  blurRadius: 6,
                   offset: const Offset(0, 2),
                 ),
               ],
@@ -428,8 +428,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE74C3C), // 新着メッセージの赤いドット
+                        color: const Color(0xFFFF6B6B), // より柔らかい赤色
                         shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFFF6B6B).withOpacity(0.4),
+                            blurRadius: 3,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -438,8 +445,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   _lilyMessage,
                   style: AppTheme.body2.copyWith(
-                    color: const Color(0xFF5D4037), // ダークブラウンのテキスト
-                    height: 1.4,
+                    color: const Color(0xFF424242), // より読みやすいダークグレー
+                    height: 1.5,
                   ),
                 ),
               ],
