@@ -25,11 +25,7 @@ class MyApp extends StatelessWidget {
       title: 'Squirrel - Journal Language Learning',
       theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const SplashScreen(),
-        '/home': (context) => const MainNavigationScreen(),
-      },
+      home: const SplashScreen(),
     );
   }
 }
