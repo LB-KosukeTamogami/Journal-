@@ -14,12 +14,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _preloadFontsAndNavigate();
-  }
-
-  Future<void> _preloadFontsAndNavigate() async {
-    // Ensure Roboto font is loaded before showing text
-    await GoogleFonts.pendingFonts([
+    // フォント読み込みを並行して行い、画面表示をブロックしない
+    GoogleFonts.pendingFonts([
       GoogleFonts.roboto(fontWeight: FontWeight.w800),
     ]);
     
@@ -58,17 +54,20 @@ class _SplashScreenState extends State<SplashScreen> {
       home: Scaffold(
         backgroundColor: AppTheme.primaryColor,
         body: Center(
-          child: Text(
-            'Squirrel',
-            style: GoogleFonts.roboto(
-              fontSize: 56,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              letterSpacing: 4,
-              fontStyle: FontStyle.normal,
-              decoration: TextDecoration.none,
+          child: RepaintBoundary(
+            child: Text(
+              'Squirrel',
+              style: GoogleFonts.roboto(
+                fontSize: 56,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+                letterSpacing: 4,
+                fontStyle: FontStyle.normal,
+                decoration: TextDecoration.none,
+              ),
+              textAlign: TextAlign.center,
+              textDirection: TextDirection.ltr,
             ),
-            textAlign: TextAlign.center,
           ),
         ),
       ),
