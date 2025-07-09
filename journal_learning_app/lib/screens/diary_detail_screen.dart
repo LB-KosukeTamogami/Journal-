@@ -588,27 +588,27 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             ),
           ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
           
-          // 添削結果の解説（英語の場合のみ）
-          if (!isJapanese && _correctedContent != widget.entry.content) ...[
+          // 添削の解説（英語の場合のみ）
+          if (!isJapanese) ...[
             const SizedBox(height: 16),
             AppCard(
-              backgroundColor: AppTheme.primaryBlue.withOpacity(0.05),
+              backgroundColor: AppTheme.info.withOpacity(0.05),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       Icon(
-                        Icons.auto_fix_high,
-                        color: AppTheme.primaryBlue,
+                        Icons.school,
+                        color: AppTheme.info,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        '添削結果の解説',
+                        '添削の解説',
                         style: AppTheme.body1.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: AppTheme.primaryBlue,
+                          color: AppTheme.info,
                         ),
                       ),
                     ],
@@ -624,17 +624,36 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '文法的により自然な表現に修正しました。以下の点に注意してください：',
-                          style: AppTheme.body2.copyWith(
-                            color: AppTheme.textPrimary,
-                            height: 1.5,
-                            fontWeight: FontWeight.w500,
+                        if (_correctedContent != widget.entry.content) ...[
+                          Text(
+                            '文法的により自然な表現に修正しました。以下の点に注意してください：',
+                            style: AppTheme.body2.copyWith(
+                              color: AppTheme.textPrimary,
+                              height: 1.5,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        // 動的に変更点を生成
-                        ..._generateCorrectionExplanations(),
+                          const SizedBox(height: 12),
+                          // 動的に変更点を生成
+                          ..._generateCorrectionExplanations(),
+                        ] else ...[
+                          Text(
+                            '素晴らしい！文法的な誤りは見つかりませんでした。',
+                            style: AppTheme.body2.copyWith(
+                              color: AppTheme.success,
+                              height: 1.5,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'このまま継続して学習を続けることで、さらに上達できます。',
+                            style: AppTheme.caption.copyWith(
+                              color: AppTheme.textSecondary,
+                              height: 1.4,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -643,7 +662,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             ).animate().fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
           ],
           
-          // 重要ポイント（英語の場合のみ、常に表示）
+          // ワンポイントアドバイス（英語の場合のみ、常に表示）
           if (!isJapanese) ...[
             const SizedBox(height: 16),
             AppCard(
@@ -654,13 +673,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   Row(
                     children: [
                       Icon(
-                        Icons.lightbulb,
+                        Icons.tips_and_updates,
                         color: AppTheme.warning,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        '重要ポイント',
+                        'ワンポイントアドバイス',
                         style: AppTheme.body1.copyWith(
                           fontWeight: FontWeight.w600,
                           color: AppTheme.warning,
@@ -678,40 +697,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Groq APIからの重要ポイント
-                        if (_corrections.isNotEmpty) ...[
-                          ..._corrections.map((correction) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: 6,
-                                  height: 6,
-                                  margin: const EdgeInsets.only(top: 8, right: 12),
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.warning,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    correction,
-                                    style: AppTheme.body2.copyWith(
-                                      height: 1.5,
-                                      color: AppTheme.textPrimary,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )),
-                        ] else ...[
-                          // デフォルトの学習ポイント
-                          ..._generateDefaultLearningPoints(),
-                        ],
-                      ],
+                      children: _generateOnePointAdvice(),
                     ),
                   ),
                 ],
@@ -1340,46 +1326,96 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     );
   }
   
-  /// デフォルトの学習ポイントを生成
-  List<Widget> _generateDefaultLearningPoints() {
-    final points = <Widget>[];
+  /// ワンポイントアドバイスを生成
+  List<Widget> _generateOnePointAdvice() {
+    final advice = <Widget>[];
     final content = widget.entry.content.toLowerCase();
+    final hasCorrections = _correctedContent != widget.entry.content;
     
-    // 文の内容に基づいて関連する学習ポイントを生成
-    if (content.contains('yesterday') || content.contains('today') || content.contains('tomorrow')) {
-      points.add(_buildLearningPoint(
-        '時制の一致',
-        '時を表す副詞（yesterday, today, tomorrow）と動詞の時制を一致させることが重要です。',
+    // 文の内容と修正内容に基づいてアドバイスを生成
+    if (hasCorrections) {
+      // 時制の間違いがある場合
+      if (content.contains('yesterday') && (content.contains('go') || content.contains('is'))) {
+        advice.add(_buildAdviceItem(
+          '💡 時制のコツ',
+          'yesterdayのような過去を表す言葉が出てきたら、動詞も過去形にすることを忘れずに！',
+          AppTheme.primaryBlue,
+        ));
+      }
+      
+      // 大文字の間違いがある場合
+      if (widget.entry.content.contains(' i ') || widget.entry.content.startsWith('i ')) {
+        advice.add(_buildAdviceItem(
+          '✏️ 書き方のルール',
+          '英語の「I」は、文のどこにあっても必ず大文字で書きます。これは特別なルールです。',
+          AppTheme.info,
+        ));
+      }
+    }
+    
+    // 内容に基づく一般的なアドバイス
+    if (content.contains('fun') || content.contains('enjoy') || content.contains('happy')) {
+      advice.add(_buildAdviceItem(
+        '😊 感情表現',
+        '楽しい気持ちを表現できていて素晴らしいです！感情を表す単語をもっと覚えると、より豊かな表現ができるようになります。',
+        AppTheme.success,
       ));
     }
     
-    if (content.contains('school') || content.contains('work') || content.contains('home')) {
-      points.add(_buildLearningPoint(
-        '場所を表す表現',
-        '「go to + 場所」の形で移動を表現します。myやtheなどの限定詞の使い方にも注意しましょう。',
+    if (content.contains('school') || content.contains('study')) {
+      advice.add(_buildAdviceItem(
+        '📚 学習のヒント',
+        '学校生活について書くことは、日常的な英語表現を身につける良い練習になります。',
+        AppTheme.info,
       ));
     }
     
-    if (content.contains('very') || content.contains('really') || content.contains('so')) {
-      points.add(_buildLearningPoint(
-        '強調表現',
-        'very, really, soなどの副詞を使って形容詞を強調できます。',
+    // デフォルトのアドバイス
+    if (advice.isEmpty) {
+      advice.add(_buildAdviceItem(
+        '🌟 継続は力なり',
+        '毎日少しずつでも英語で日記を書き続けることで、必ず上達します。今日も頑張りましたね！',
+        AppTheme.warning,
       ));
     }
     
-    // 一般的な学習ポイントを追加
-    if (points.isEmpty) {
-      points.add(_buildLearningPoint(
-        '継続的な学習',
-        '毎日少しずつ英語で日記を書くことで、自然な表現が身につきます。',
-      ));
-      points.add(_buildLearningPoint(
-        '文法の基礎',
-        '基本的な文法ルールを意識しながら書くことで、正確な英語が書けるようになります。',
-      ));
-    }
-    
-    return points;
+    return advice;
+  }
+  
+  /// アドバイス項目を作成
+  Widget _buildAdviceItem(String title, String description, Color color) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: color.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: AppTheme.body2.copyWith(
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            description,
+            style: AppTheme.caption.copyWith(
+              color: AppTheme.textPrimary,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
   }
   
   /// 学習ポイントのウィジェットを作成
