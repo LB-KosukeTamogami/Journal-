@@ -173,8 +173,8 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
                 // Main controls
                 Container(
                   padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 12),
-              child: Row(
-                children: [
+                  child: Row(
+                    children: [
                   // Speed control (dropdown style)
                   GestureDetector(
                     onTap: () {
@@ -310,7 +310,8 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
                       ),
                     ],
                   ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
