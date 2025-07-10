@@ -134,66 +134,63 @@ class _JournalScreenState extends State<JournalScreen> {
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
+            height: _isCalendarExpanded ? null : 80, // カード全体の高さを制御
             margin: const EdgeInsets.all(16),
             child: Stack(
               children: [
                 AppCard(
                   padding: EdgeInsets.zero,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    height: _isCalendarExpanded ? null : 320,
-                    child: SingleChildScrollView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: TableCalendar<Map<String, dynamic>>(
-                          firstDay: DateTime.utc(2020, 1, 1),
-                          lastDay: DateTime.utc(2030, 12, 31),
-                          focusedDay: _focusedDay,
-                          calendarFormat: _isCalendarExpanded ? CalendarFormat.month : CalendarFormat.week,
-                          selectedDayPredicate: (day) {
-                            return isSameDay(_selectedDay, day);
-                          },
-                          eventLoader: _getJournalsForCalendar,
-                          startingDayOfWeek: StartingDayOfWeek.monday,
-                          calendarStyle: CalendarStyle(
-                            outsideDaysVisible: false,
-                            defaultTextStyle: TextStyle(color: AppTheme.textPrimary),
-                            weekendTextStyle: TextStyle(color: AppTheme.textSecondary),
-                            selectedDecoration: BoxDecoration(
-                              color: AppTheme.primaryColor,
-                              shape: BoxShape.circle,
-                            ),
-                            todayDecoration: BoxDecoration(
-                              color: AppTheme.primaryColor.withOpacity(0.3),
-                              shape: BoxShape.circle,
-                              border: Border.all(color: AppTheme.primaryColor, width: 2),
-                            ),
-                            markerDecoration: BoxDecoration(
-                              color: AppTheme.primaryColor,
-                              shape: BoxShape.circle,
-                            ),
-                            markersMaxCount: 1,
+                  child: SingleChildScrollView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: TableCalendar<Map<String, dynamic>>(
+                        firstDay: DateTime.utc(2020, 1, 1),
+                        lastDay: DateTime.utc(2030, 12, 31),
+                        focusedDay: _focusedDay,
+                        calendarFormat: _isCalendarExpanded ? CalendarFormat.month : CalendarFormat.week,
+                        selectedDayPredicate: (day) {
+                          return isSameDay(_selectedDay, day);
+                        },
+                        eventLoader: _getJournalsForCalendar,
+                        startingDayOfWeek: StartingDayOfWeek.monday,
+                        calendarStyle: CalendarStyle(
+                          outsideDaysVisible: false,
+                          defaultTextStyle: TextStyle(color: AppTheme.textPrimary),
+                          weekendTextStyle: TextStyle(color: AppTheme.textSecondary),
+                          selectedDecoration: BoxDecoration(
+                            color: AppTheme.primaryColor,
+                            shape: BoxShape.circle,
                           ),
-                          headerStyle: HeaderStyle(
-                            formatButtonVisible: false,
-                            titleCentered: true,
-                            titleTextStyle: AppTheme.headline3,
-                            leftChevronIcon: Icon(Icons.chevron_left, color: AppTheme.textPrimary),
-                            rightChevronIcon: Icon(Icons.chevron_right, color: AppTheme.textPrimary),
+                          todayDecoration: BoxDecoration(
+                            color: AppTheme.primaryColor.withOpacity(0.3),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppTheme.primaryColor, width: 2),
                           ),
-                          onDaySelected: (selectedDay, focusedDay) {
-                            if (!isSameDay(_selectedDay, selectedDay)) {
-                              setState(() {
-                                _selectedDay = selectedDay;
-                                _focusedDay = focusedDay;
-                              });
-                            }
-                          },
-                          onPageChanged: (focusedDay) {
-                            _focusedDay = focusedDay;
-                          },
+                          markerDecoration: BoxDecoration(
+                            color: AppTheme.primaryColor,
+                            shape: BoxShape.circle,
+                          ),
+                          markersMaxCount: 1,
                         ),
+                        headerStyle: HeaderStyle(
+                          formatButtonVisible: false,
+                          titleCentered: true,
+                          titleTextStyle: AppTheme.headline3,
+                          leftChevronIcon: Icon(Icons.chevron_left, color: AppTheme.textPrimary),
+                          rightChevronIcon: Icon(Icons.chevron_right, color: AppTheme.textPrimary),
+                        ),
+                        onDaySelected: (selectedDay, focusedDay) {
+                          if (!isSameDay(_selectedDay, selectedDay)) {
+                            setState(() {
+                              _selectedDay = selectedDay;
+                              _focusedDay = focusedDay;
+                            });
+                          }
+                        },
+                        onPageChanged: (focusedDay) {
+                          _focusedDay = focusedDay;
+                        },
                       ),
                     ),
                   ),
@@ -297,125 +294,83 @@ class _JournalScreenState extends State<JournalScreen> {
       );
     }
     
-    return NotificationListener<ScrollNotification>(
-      onNotification: (scrollNotification) {
-        // スクロール位置に応じてカードの表示状態を更新
-        if (scrollNotification is ScrollUpdateNotification) {
-          setState(() {});
-        }
-        return false;
+    // グラデーションマスクを使用して境界を曖昧にする
+    return ShaderMask(
+      shaderCallback: (Rect bounds) {
+        return LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.transparent,
+            Colors.white,
+            Colors.white,
+            Colors.transparent,
+          ],
+          stops: const [0.0, 0.05, 0.95, 1.0],
+        ).createShader(bounds);
       },
+      blendMode: BlendMode.dstIn,
       child: ListView.builder(
         controller: _scrollController,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: journals.length,
         itemBuilder: (context, index) {
           final journal = journals[index];
-          return AnimatedBuilder(
-            animation: _scrollController,
-            builder: (context, child) {
-              // スクロール位置に基づいてカードの不透明度とスケールを計算
-              double opacity = 1.0;
-              double scale = 1.0;
-              double translateY = 0.0;
-              
-              if (_scrollController.hasClients) {
-                final itemHeight = 140.0; // カードの推定高さ
-                final itemPosition = index * itemHeight;
-                final scrollOffset = _scrollController.offset;
-                final viewportHeight = _scrollController.position.viewportDimension;
-                
-                // カードの画面上での位置
-                final cardTopPosition = itemPosition - scrollOffset;
-                final cardBottomPosition = cardTopPosition + itemHeight;
-                
-                // カードが画面上部から消える時のアニメーション（グラデーション効果）
-                if (cardBottomPosition < 150) {
-                  final fadeDistance = 150.0;
-                  opacity = (cardBottomPosition / fadeDistance).clamp(0.0, 1.0);
-                  // より緩やかなフェード曲線
-                  opacity = Math.pow(opacity, 0.7).toDouble();
-                  scale = 0.98 + (0.02 * opacity);
-                  translateY = -10.0 * (1.0 - opacity);
-                }
-                
-                // カードが画面下部から現れる時のアニメーション
-                if (cardTopPosition > viewportHeight - 150) {
-                  final fadeDistance = 150.0;
-                  final distanceFromBottom = cardTopPosition - (viewportHeight - 150);
-                  opacity = (1.0 - (distanceFromBottom / fadeDistance)).clamp(0.0, 1.0);
-                  // より緩やかなフェード曲線
-                  opacity = Math.pow(opacity, 0.7).toDouble();
-                  scale = 0.98 + (0.02 * opacity);
-                }
-              }
-              
-              return Opacity(
-                opacity: opacity,
-                child: Transform.scale(
-                  scale: scale,
-                  child: Transform.translate(
-                    offset: Offset(0, translateY),
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: AppCard(
-                        onTap: () {
-                          _showDiaryDetail(context, journal);
-                        },
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    journal.title,
-                                    style: AppTheme.headline3,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Text(
-                                  DateFormat('HH:mm').format(journal.createdAt),
-                                  style: AppTheme.caption,
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              journal.content,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTheme.body2,
-                            ),
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.edit,
-                                  size: 16,
-                                  color: AppTheme.textTertiary,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '${journal.wordCount} words',
-                                  style: AppTheme.caption,
-                                ),
-                              ],
-                            ),
-                          ],
+          return Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            child: AppCard(
+              onTap: () {
+                _showDiaryDetail(context, journal);
+              },
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          journal.title,
+                          style: AppTheme.headline3,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ).animate().fadeIn(
-                        delay: Duration(milliseconds: 50 * index),
-                        duration: 300.ms,
-                      ).slideX(begin: 0.1, end: 0),
-                    ),
+                      ),
+                      Text(
+                        DateFormat('HH:mm').format(journal.createdAt),
+                        style: AppTheme.caption,
+                      ),
+                    ],
                   ),
-                ),
-              );
-            },
+                  const SizedBox(height: 8),
+                  Text(
+                    journal.content,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTheme.body2,
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.edit,
+                        size: 16,
+                        color: AppTheme.textTertiary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${journal.wordCount} words',
+                        style: AppTheme.caption,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ).animate().fadeIn(
+              delay: Duration(milliseconds: 50 * index),
+              duration: 300.ms,
+            ).slideX(begin: 0.1, end: 0),
           );
         },
       ),
