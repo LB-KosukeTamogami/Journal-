@@ -12,7 +12,7 @@ export PATH=$FLUTTER_ROOT/bin:$PATH
 
 if [ ! -d "$FLUTTER_ROOT" ]; then
     echo "Downloading Flutter SDK..."
-    curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.16.0-stable.tar.xz -o flutter.tar.xz
+    curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.32.5-stable.tar.xz -o flutter.tar.xz
     echo "Extracting Flutter SDK..."
     tar xf flutter.tar.xz -C $HOME
     rm flutter.tar.xz

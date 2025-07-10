@@ -11,7 +11,7 @@ fi
 
 # Download Flutter SDK
 echo "Downloading Flutter SDK..."
-curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.16.0-stable.tar.xz -o flutter.tar.xz
+curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.32.5-stable.tar.xz -o flutter.tar.xz
 
 # Extract Flutter SDK with proper permissions
 echo "Extracting Flutter SDK..."
