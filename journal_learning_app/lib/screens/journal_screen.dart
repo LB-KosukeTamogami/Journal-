@@ -146,52 +146,53 @@ class _JournalScreenState extends State<JournalScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: TableCalendar<Map<String, dynamic>>(
-                        firstDay: DateTime.utc(2020, 1, 1),
-                        lastDay: DateTime.utc(2030, 12, 31),
-                        focusedDay: _focusedDay,
-                        calendarFormat: _isCalendarExpanded ? CalendarFormat.month : CalendarFormat.week,
-                        selectedDayPredicate: (day) {
-                          return isSameDay(_selectedDay, day);
-                        },
-                        eventLoader: _getJournalsForCalendar,
-                        startingDayOfWeek: StartingDayOfWeek.monday,
-                        calendarStyle: CalendarStyle(
-                          outsideDaysVisible: false,
-                          defaultTextStyle: TextStyle(color: AppTheme.textPrimary),
-                          weekendTextStyle: TextStyle(color: AppTheme.textSecondary),
-                          selectedDecoration: BoxDecoration(
-                            color: AppTheme.primaryColor,
-                            shape: BoxShape.circle,
+                          firstDay: DateTime.utc(2020, 1, 1),
+                          lastDay: DateTime.utc(2030, 12, 31),
+                          focusedDay: _focusedDay,
+                          calendarFormat: _isCalendarExpanded ? CalendarFormat.month : CalendarFormat.week,
+                          selectedDayPredicate: (day) {
+                            return isSameDay(_selectedDay, day);
+                          },
+                          eventLoader: _getJournalsForCalendar,
+                          startingDayOfWeek: StartingDayOfWeek.monday,
+                          calendarStyle: CalendarStyle(
+                            outsideDaysVisible: false,
+                            defaultTextStyle: TextStyle(color: AppTheme.textPrimary),
+                            weekendTextStyle: TextStyle(color: AppTheme.textSecondary),
+                            selectedDecoration: BoxDecoration(
+                              color: AppTheme.primaryColor,
+                              shape: BoxShape.circle,
+                            ),
+                            todayDecoration: BoxDecoration(
+                              color: AppTheme.primaryColor.withOpacity(0.3),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: AppTheme.primaryColor, width: 2),
+                            ),
+                            markerDecoration: BoxDecoration(
+                              color: AppTheme.primaryColor,
+                              shape: BoxShape.circle,
+                            ),
+                            markersMaxCount: 1,
                           ),
-                          todayDecoration: BoxDecoration(
-                            color: AppTheme.primaryColor.withOpacity(0.3),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: AppTheme.primaryColor, width: 2),
+                          headerStyle: HeaderStyle(
+                            formatButtonVisible: false,
+                            titleCentered: true,
+                            titleTextStyle: AppTheme.headline3,
+                            leftChevronIcon: Icon(Icons.chevron_left, color: AppTheme.textPrimary),
+                            rightChevronIcon: Icon(Icons.chevron_right, color: AppTheme.textPrimary),
                           ),
-                          markerDecoration: BoxDecoration(
-                            color: AppTheme.primaryColor,
-                            shape: BoxShape.circle,
-                          ),
-                          markersMaxCount: 1,
+                          onDaySelected: (selectedDay, focusedDay) {
+                            if (!isSameDay(_selectedDay, selectedDay)) {
+                              setState(() {
+                                _selectedDay = selectedDay;
+                                _focusedDay = focusedDay;
+                              });
+                            }
+                          },
+                          onPageChanged: (focusedDay) {
+                            _focusedDay = focusedDay;
+                          },
                         ),
-                        headerStyle: HeaderStyle(
-                          formatButtonVisible: false,
-                          titleCentered: true,
-                          titleTextStyle: AppTheme.headline3,
-                          leftChevronIcon: Icon(Icons.chevron_left, color: AppTheme.textPrimary),
-                          rightChevronIcon: Icon(Icons.chevron_right, color: AppTheme.textPrimary),
-                        ),
-                        onDaySelected: (selectedDay, focusedDay) {
-                          if (!isSameDay(_selectedDay, selectedDay)) {
-                            setState(() {
-                              _selectedDay = selectedDay;
-                              _focusedDay = focusedDay;
-                            });
-                          }
-                        },
-                        onPageChanged: (focusedDay) {
-                          _focusedDay = focusedDay;
-                        },
                       ),
                     ),
                   ),
