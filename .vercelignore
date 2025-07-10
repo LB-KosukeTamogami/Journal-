@@ -1,0 +1,11 @@
+# Ignore Flutter SDK to avoid git issues
+flutter/
+journal_learning_app/flutter/
+
+# Ignore build artifacts
+journal_learning_app/build/
+journal_learning_app/.dart_tool/
+
+# Ignore git files that might cause issues
+.git/
+*.git
