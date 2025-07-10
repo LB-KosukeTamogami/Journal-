@@ -41,24 +41,29 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         index: _selectedIndex,
         children: _screens,
       ),
-      bottomNavigationBar: SafeArea(
-        child: Container(
-          decoration: BoxDecoration(
-            color: AppTheme.backgroundPrimary,
-            border: Border(
-              top: BorderSide(color: AppTheme.borderColor),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 10,
-                offset: const Offset(0, -5),
-              ),
-            ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.backgroundPrimary,
+          border: Border(
+            top: BorderSide(color: AppTheme.borderColor),
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          top: false,
           child: Container(
-            height: 64,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 12,
+              bottom: 8,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: _navItems.asMap().entries.map((entry) {
@@ -86,28 +91,28 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         },
         behavior: HitTestBehavior.opaque,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 4),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppTheme.primaryColor.withOpacity(0.1)
                       : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(24),
                 ),
                 child: Icon(
                   item.icon,
                   color: isSelected
                       ? AppTheme.primaryColor
                       : AppTheme.textTertiary,
-                  size: 24,
+                  size: 26,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 6),
               Text(
                 item.label,
                 style: AppTheme.caption.copyWith(
@@ -115,6 +120,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                       ? AppTheme.primaryColor
                       : AppTheme.textTertiary,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                  fontSize: 11,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
