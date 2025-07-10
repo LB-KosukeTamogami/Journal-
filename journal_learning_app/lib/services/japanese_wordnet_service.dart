@@ -70,6 +70,9 @@ class JapaneseWordNetService {
 
   // 開発用のモックデータ
   static WordNetEntry? _getMockData(String word) {
+    // 単語を小文字に統一
+    final lowerWord = word.toLowerCase();
+    
     final mockData = {
       'school': WordNetEntry(
         word: 'school',
@@ -141,9 +144,224 @@ class JapaneseWordNetService {
         synonyms: ['period', 'moment', 'hour'],
         examples: ['What time is it?', 'I don\'t have much time.'],
       ),
+      // よく使われる単語を追加
+      'today': WordNetEntry(
+        word: 'today',
+        partOfSpeech: '名詞/副詞',
+        definitions: ['今日', '本日', '現在'],
+        synonyms: ['this day', 'nowadays'],
+        examples: ['Today is Monday.', 'I have a meeting today.'],
+      ),
+      'yesterday': WordNetEntry(
+        word: 'yesterday',
+        partOfSpeech: '名詞/副詞',
+        definitions: ['昨日', '前日'],
+        synonyms: ['the day before'],
+        examples: ['I went to school yesterday.', 'Yesterday was sunny.'],
+      ),
+      'tomorrow': WordNetEntry(
+        word: 'tomorrow',
+        partOfSpeech: '名詞/副詞',
+        definitions: ['明日', '翌日'],
+        synonyms: ['the next day'],
+        examples: ['See you tomorrow.', 'Tomorrow will be better.'],
+      ),
+      'day': WordNetEntry(
+        word: 'day',
+        partOfSpeech: '名詞',
+        definitions: ['日', '一日', '昼間'],
+        synonyms: ['daytime', 'date'],
+        examples: ['It was a beautiful day.', 'Every day is a new beginning.'],
+      ),
+      'good': WordNetEntry(
+        word: 'good',
+        partOfSpeech: '形容詞',
+        definitions: ['良い', '優れた', '善い'],
+        synonyms: ['nice', 'fine', 'excellent'],
+        examples: ['That\'s a good idea.', 'Have a good day!'],
+      ),
+      'very': WordNetEntry(
+        word: 'very',
+        partOfSpeech: '副詞',
+        definitions: ['とても', '非常に', '大変'],
+        synonyms: ['extremely', 'greatly', 'highly'],
+        examples: ['She is very kind.', 'Thank you very much.'],
+      ),
+      'eat': WordNetEntry(
+        word: 'eat',
+        partOfSpeech: '動詞',
+        definitions: ['食べる', '食事をする'],
+        synonyms: ['consume', 'dine', 'have'],
+        examples: ['Let\'s eat lunch.', 'I eat breakfast every morning.'],
+      ),
+      'see': WordNetEntry(
+        word: 'see',
+        partOfSpeech: '動詞',
+        definitions: ['見る', '会う', '理解する'],
+        synonyms: ['look', 'watch', 'view'],
+        examples: ['I can see the mountain.', 'See you later!'],
+      ),
+      'work': WordNetEntry(
+        word: 'work',
+        partOfSpeech: '名詞/動詞',
+        definitions: ['仕事', '働く', '作品'],
+        synonyms: ['job', 'labor', 'employment'],
+        examples: ['I work at a bank.', 'This machine doesn\'t work.'],
+      ),
+      'home': WordNetEntry(
+        word: 'home',
+        partOfSpeech: '名詞',
+        definitions: ['家', '自宅', '故郷'],
+        synonyms: ['house', 'residence', 'dwelling'],
+        examples: ['Welcome home!', 'I\'m going home.'],
+      ),
+      'love': WordNetEntry(
+        word: 'love',
+        partOfSpeech: '名詞/動詞',
+        definitions: ['愛', '愛する', '恋'],
+        synonyms: ['affection', 'adore', 'cherish'],
+        examples: ['I love you.', 'Love is beautiful.'],
+      ),
+      'like': WordNetEntry(
+        word: 'like',
+        partOfSpeech: '動詞/前置詞',
+        definitions: ['好き', '～のような', '好む'],
+        synonyms: ['enjoy', 'prefer', 'similar to'],
+        examples: ['I like coffee.', 'It looks like rain.'],
+      ),
+      'want': WordNetEntry(
+        word: 'want',
+        partOfSpeech: '動詞',
+        definitions: ['欲しい', '望む', '必要とする'],
+        synonyms: ['desire', 'wish', 'need'],
+        examples: ['I want to learn Japanese.', 'What do you want?'],
+      ),
+      'make': WordNetEntry(
+        word: 'make',
+        partOfSpeech: '動詞',
+        definitions: ['作る', '製造する', '～にさせる'],
+        synonyms: ['create', 'produce', 'build'],
+        examples: ['I make coffee every morning.', 'Let\'s make a cake.'],
+      ),
+      'think': WordNetEntry(
+        word: 'think',
+        partOfSpeech: '動詞',
+        definitions: ['思う', '考える', '思考する'],
+        synonyms: ['believe', 'consider', 'ponder'],
+        examples: ['I think so too.', 'Think before you speak.'],
+      ),
+      'know': WordNetEntry(
+        word: 'know',
+        partOfSpeech: '動詞',
+        definitions: ['知る', '知っている', '理解する'],
+        synonyms: ['understand', 'realize', 'comprehend'],
+        examples: ['I know the answer.', 'Do you know her?'],
+      ),
+      'people': WordNetEntry(
+        word: 'people',
+        partOfSpeech: '名詞',
+        definitions: ['人々', '人間', '国民'],
+        synonyms: ['persons', 'individuals', 'humans'],
+        examples: ['Many people came to the party.', 'People are kind here.'],
+      ),
+      'new': WordNetEntry(
+        word: 'new',
+        partOfSpeech: '形容詞',
+        definitions: ['新しい', '新たな', '最近の'],
+        synonyms: ['fresh', 'novel', 'recent'],
+        examples: ['I bought a new car.', 'Happy New Year!'],
+      ),
+      'old': WordNetEntry(
+        word: 'old',
+        partOfSpeech: '形容詞',
+        definitions: ['古い', '年をとった', '昔の'],
+        synonyms: ['aged', 'elderly', 'ancient'],
+        examples: ['This is an old book.', 'My old friend visited me.'],
+      ),
     };
 
-    return mockData[word];
+    // モックデータから検索
+    final entry = mockData[lowerWord];
+    if (entry != null) {
+      return entry;
+    }
+    
+    // モックデータに存在しない場合は、基本的な辞書エントリを生成
+    // これにより、すべての英単語に対して何らかの情報を表示
+    return WordNetEntry(
+      word: word,
+      partOfSpeech: _inferPartOfSpeech(lowerWord),
+      definitions: [_generateDefaultDefinition(word)],
+      synonyms: [],
+      examples: [],
+    );
+  }
+  
+  // 品詞を推測する簡易的なメソッド
+  static String _inferPartOfSpeech(String word) {
+    // 簡単な品詞推測ロジック
+    if (word.endsWith('ly')) return '副詞';
+    if (word.endsWith('ing') || word.endsWith('ed')) return '動詞';
+    if (word.endsWith('tion') || word.endsWith('ment') || word.endsWith('ness')) return '名詞';
+    if (word.endsWith('ful') || word.endsWith('less') || word.endsWith('ous')) return '形容詞';
+    
+    // デフォルトは名詞とする
+    return '名詞';
+  }
+  
+  // デフォルトの定義を生成
+  static String _generateDefaultDefinition(String word) {
+    // 一般的な単語に対して簡易的な定義を提供
+    final simpleDefinitions = {
+      'the': '定冠詞',
+      'a': '不定冠詞',
+      'an': '不定冠詞',
+      'is': '～である',
+      'are': '～である（複数）',
+      'was': '～だった',
+      'were': '～だった（複数）',
+      'have': '持つ/ある',
+      'has': '持つ/ある（三人称）',
+      'had': '持った/あった',
+      'do': 'する',
+      'does': 'する（三人称）',
+      'did': 'した',
+      'will': '～だろう/～するつもり',
+      'can': '～できる',
+      'may': '～かもしれない',
+      'must': '～しなければならない',
+      'should': '～すべきだ',
+      'could': '～できた/～できるかも',
+      'would': '～だろう/～したものだ',
+      'and': 'そして/と',
+      'or': 'または',
+      'but': 'しかし',
+      'if': 'もし',
+      'when': 'いつ/～するとき',
+      'where': 'どこで/～する場所',
+      'why': 'なぜ',
+      'how': 'どうやって/どのように',
+      'what': '何',
+      'who': '誰',
+      'which': 'どちら/どの',
+      'in': '～の中に',
+      'on': '～の上に',
+      'at': '～で/～に',
+      'to': '～へ/～に',
+      'for': '～のために',
+      'from': '～から',
+      'with': '～と一緒に',
+      'by': '～によって',
+      'of': '～の',
+      'about': '～について',
+      'into': '～の中へ',
+      'out': '外へ',
+      'up': '上へ',
+      'down': '下へ',
+    };
+    
+    final lowerWord = word.toLowerCase();
+    return simpleDefinitions[lowerWord] ?? '[詳細な定義は準備中]';
   }
 
   // 品詞の日本語表記変換
