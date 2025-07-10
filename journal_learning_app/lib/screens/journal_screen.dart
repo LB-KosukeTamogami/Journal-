@@ -134,17 +134,18 @@ class _JournalScreenState extends State<JournalScreen> {
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
-            height: _isCalendarExpanded ? null : 80, // カード全体の高さを制御
+            height: _isCalendarExpanded ? null : 160, // 週表示が見える高さに調整
             margin: const EdgeInsets.all(16),
             child: Stack(
               children: [
                 AppCard(
                   padding: EdgeInsets.zero,
-                  child: SingleChildScrollView(
-                    physics: const NeverScrollableScrollPhysics(),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: TableCalendar<Map<String, dynamic>>(
+                  child: ClipRect(
+                    child: SingleChildScrollView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: TableCalendar<Map<String, dynamic>>(
                         firstDay: DateTime.utc(2020, 1, 1),
                         lastDay: DateTime.utc(2030, 12, 31),
                         focusedDay: _focusedDay,
