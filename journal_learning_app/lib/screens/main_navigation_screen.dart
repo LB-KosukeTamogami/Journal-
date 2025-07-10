@@ -55,24 +55,28 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             ),
           ],
         ),
-        child: SafeArea(
-          top: false,
-          child: Container(
-            padding: const EdgeInsets.only(
-              left: 16,
-              right: 16,
-              top: 12,
-              bottom: 8,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 12,
+                bottom: 12,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: _navItems.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final item = entry.value;
+                  return _buildNavItem(index, item);
+                }).toList(),
+              ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: _navItems.asMap().entries.map((entry) {
-                final index = entry.key;
-                final item = entry.value;
-                return _buildNavItem(index, item);
-              }).toList(),
-            ),
-          ),
+            // ホームインジケーター用の余白
+            SizedBox(height: MediaQuery.of(context).padding.bottom > 0 ? 34 : 0),
+          ],
         ),
       ),
     );
@@ -109,7 +113,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                   color: isSelected
                       ? AppTheme.primaryColor
                       : AppTheme.textTertiary,
-                  size: 26,
+                  size: 24,
                 ),
               ),
               const SizedBox(height: 6),
