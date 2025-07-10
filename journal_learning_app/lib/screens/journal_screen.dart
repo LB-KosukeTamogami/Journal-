@@ -134,18 +134,21 @@ class _JournalScreenState extends State<JournalScreen> {
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
-            height: _isCalendarExpanded ? null : 160, // 週表示が見える高さに調整
+            height: _isCalendarExpanded ? null : 180, // 週表示が見えて矢印が被らない高さに調整
             margin: const EdgeInsets.all(16),
             child: Stack(
               children: [
                 AppCard(
                   padding: EdgeInsets.zero,
-                  child: ClipRect(
-                    child: SingleChildScrollView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: TableCalendar<Map<String, dynamic>>(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    child: ClipRect(
+                      child: SingleChildScrollView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: TableCalendar<Map<String, dynamic>>(
                           firstDay: DateTime.utc(2020, 1, 1),
                           lastDay: DateTime.utc(2030, 12, 31),
                           focusedDay: _focusedDay,
@@ -192,13 +195,16 @@ class _JournalScreenState extends State<JournalScreen> {
                           onPageChanged: (focusedDay) {
                             _focusedDay = focusedDay;
                           },
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
                 // 展開/折りたたみボタンを右下に配置
-                Positioned(
+                AnimatedPositioned(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
                   right: 8,
                   bottom: 8,
                   child: Material(
@@ -226,6 +232,7 @@ class _JournalScreenState extends State<JournalScreen> {
                         child: AnimatedRotation(
                           turns: _isCalendarExpanded ? 0 : 0.5,
                           duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
                           child: Icon(
                             Icons.expand_less,
                             color: AppTheme.textSecondary,
