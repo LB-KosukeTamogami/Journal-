@@ -17,7 +17,7 @@ class JournalScreen extends StatefulWidget {
   State<JournalScreen> createState() => _JournalScreenState();
 }
 
-class _JournalScreenState extends State<JournalScreen> {
+class _JournalScreenState extends State<JournalScreen> with SingleTickerProviderStateMixin {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
@@ -26,17 +26,33 @@ class _JournalScreenState extends State<JournalScreen> {
   bool _isLoading = true;
   bool _isCalendarExpanded = true;
   final ScrollController _scrollController = ScrollController();
+  late AnimationController _animationController;
+  late Animation<double> _heightAnimation;
 
   @override
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
     _loadEntries();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _heightAnimation = Tween<double>(
+      begin: 180,
+      end: 400, // カレンダーの展開時の推定高さ
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+    // 初期状態が展開なのでアニメーションを完了状態に
+    _animationController.forward();
   }
   
   @override
   void dispose() {
     _scrollController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -131,12 +147,13 @@ class _JournalScreenState extends State<JournalScreen> {
       body: Column(
         children: [
           // カレンダー
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            height: _isCalendarExpanded ? null : 180, // 週表示が見えて矢印が被らない高さに調整
-            margin: const EdgeInsets.all(16),
-            child: Stack(
+          AnimatedBuilder(
+            animation: _heightAnimation,
+            builder: (context, child) {
+              return Container(
+                height: _heightAnimation.value,
+                margin: const EdgeInsets.all(16),
+                child: Stack(
               children: [
                 AppCard(
                   padding: EdgeInsets.zero,
@@ -213,6 +230,11 @@ class _JournalScreenState extends State<JournalScreen> {
                       onTap: () {
                         setState(() {
                           _isCalendarExpanded = !_isCalendarExpanded;
+                          if (_isCalendarExpanded) {
+                            _animationController.forward();
+                          } else {
+                            _animationController.reverse();
+                          }
                         });
                       },
                       borderRadius: BorderRadius.circular(20),
@@ -244,7 +266,9 @@ class _JournalScreenState extends State<JournalScreen> {
                   ),
                 ),
               ],
-            ),
+              ),
+            );
+            },
           ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1, end: 0),
           
           const SizedBox(height: 16),
