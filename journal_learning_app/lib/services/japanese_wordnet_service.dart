@@ -26,7 +26,10 @@ class JapaneseWordNetService {
       // 単語をクリーンアップ
       final cleanWord = word.trim().toLowerCase().replaceAll(RegExp(r'[^\w\s-]'), '');
       
+      print('JapaneseWordNet: Looking up word: "$word" -> cleaned: "$cleanWord"');
+      
       if (cleanWord.isEmpty) {
+        print('JapaneseWordNet: Clean word is empty, returning null');
         return null;
       }
 
@@ -45,7 +48,12 @@ class JapaneseWordNetService {
       */
       
       // モックデータ（開発用）
-      return _getMockData(cleanWord);
+      final result = _getMockData(cleanWord);
+      print('JapaneseWordNet: Mock data result: ${result != null ? "Found" : "Not found"}');
+      if (result != null) {
+        print('JapaneseWordNet: Definitions: ${result.definitions}');
+      }
+      return result;
     } catch (e) {
       print('Japanese WordNet lookup error: $e');
       return null;
@@ -278,16 +286,194 @@ class JapaneseWordNetService {
         synonyms: ['aged', 'elderly', 'ancient'],
         examples: ['This is an old book.', 'My old friend visited me.'],
       ),
+      // 追加の一般的な単語
+      'i': WordNetEntry(
+        word: 'I',
+        partOfSpeech: '代名詞',
+        definitions: ['私', '僕', '自分'],
+        synonyms: ['me', 'myself'],
+        examples: ['I am a student.', 'I love music.'],
+      ),
+      'you': WordNetEntry(
+        word: 'you',
+        partOfSpeech: '代名詞',
+        definitions: ['あなた', '君', 'あなた方'],
+        synonyms: ['yourself'],
+        examples: ['You are welcome.', 'How are you?'],
+      ),
+      'he': WordNetEntry(
+        word: 'he',
+        partOfSpeech: '代名詞',
+        definitions: ['彼', 'その男性'],
+        synonyms: ['him', 'himself'],
+        examples: ['He is my brother.', 'He works hard.'],
+      ),
+      'she': WordNetEntry(
+        word: 'she',
+        partOfSpeech: '代名詞',
+        definitions: ['彼女', 'その女性'],
+        synonyms: ['her', 'herself'],
+        examples: ['She is a doctor.', 'She likes reading.'],
+      ),
+      'it': WordNetEntry(
+        word: 'it',
+        partOfSpeech: '代名詞',
+        definitions: ['それ', 'あれ'],
+        synonyms: ['itself'],
+        examples: ['It is raining.', 'I like it.'],
+      ),
+      'we': WordNetEntry(
+        word: 'we',
+        partOfSpeech: '代名詞',
+        definitions: ['私たち', '我々'],
+        synonyms: ['us', 'ourselves'],
+        examples: ['We are friends.', 'We went together.'],
+      ),
+      'they': WordNetEntry(
+        word: 'they',
+        partOfSpeech: '代名詞',
+        definitions: ['彼ら', '彼女ら', 'それら'],
+        synonyms: ['them', 'themselves'],
+        examples: ['They are coming.', 'They said yes.'],
+      ),
+      'am': WordNetEntry(
+        word: 'am',
+        partOfSpeech: '動詞',
+        definitions: ['～です（一人称）', '存在する'],
+        synonyms: ['be'],
+        examples: ['I am happy.', 'I am here.'],
+      ),
+      'is': WordNetEntry(
+        word: 'is',
+        partOfSpeech: '動詞',
+        definitions: ['～です', '～である', '存在する'],
+        synonyms: ['be', 'exists'],
+        examples: ['He is tall.', 'It is important.'],
+      ),
+      'are': WordNetEntry(
+        word: 'are',
+        partOfSpeech: '動詞',
+        definitions: ['～です（複数）', '～である'],
+        synonyms: ['be'],
+        examples: ['They are students.', 'You are right.'],
+      ),
+      'was': WordNetEntry(
+        word: 'was',
+        partOfSpeech: '動詞',
+        definitions: ['～でした', '～だった'],
+        synonyms: ['be (past)'],
+        examples: ['I was tired.', 'It was fun.'],
+      ),
+      'were': WordNetEntry(
+        word: 'were',
+        partOfSpeech: '動詞',
+        definitions: ['～でした（複数）', '～だった'],
+        synonyms: ['be (past plural)'],
+        examples: ['They were happy.', 'We were there.'],
+      ),
+      'my': WordNetEntry(
+        word: 'my',
+        partOfSpeech: '所有格',
+        definitions: ['私の', '僕の'],
+        synonyms: ['mine'],
+        examples: ['This is my book.', 'My name is...'],
+      ),
+      'your': WordNetEntry(
+        word: 'your',
+        partOfSpeech: '所有格',
+        definitions: ['あなたの', '君の'],
+        synonyms: ['yours'],
+        examples: ['Your idea is great.', 'Is this your pen?'],
+      ),
+      'his': WordNetEntry(
+        word: 'his',
+        partOfSpeech: '所有格',
+        definitions: ['彼の'],
+        synonyms: [],
+        examples: ['His car is new.', 'This is his.'],
+      ),
+      'her': WordNetEntry(
+        word: 'her',
+        partOfSpeech: '所有格/目的格',
+        definitions: ['彼女の', '彼女を/に'],
+        synonyms: ['hers'],
+        examples: ['Her dress is beautiful.', 'I saw her.'],
+      ),
+      'this': WordNetEntry(
+        word: 'this',
+        partOfSpeech: '指示代名詞',
+        definitions: ['これ', 'この'],
+        synonyms: [],
+        examples: ['This is nice.', 'This book is mine.'],
+      ),
+      'that': WordNetEntry(
+        word: 'that',
+        partOfSpeech: '指示代名詞',
+        definitions: ['あれ', 'あの', 'その'],
+        synonyms: [],
+        examples: ['That is correct.', 'I know that.'],
+      ),
+      'these': WordNetEntry(
+        word: 'these',
+        partOfSpeech: '指示代名詞',
+        definitions: ['これら', 'これらの'],
+        synonyms: [],
+        examples: ['These are my friends.', 'These books are new.'],
+      ),
+      'those': WordNetEntry(
+        word: 'those',
+        partOfSpeech: '指示代名詞',
+        definitions: ['あれら', 'あれらの', 'それらの'],
+        synonyms: [],
+        examples: ['Those were the days.', 'Those people are kind.'],
+      ),
+      'get': WordNetEntry(
+        word: 'get',
+        partOfSpeech: '動詞',
+        definitions: ['得る', '入手する', '理解する', '到着する'],
+        synonyms: ['obtain', 'receive', 'acquire'],
+        examples: ['I get up early.', 'Did you get it?'],
+      ),
+      'take': WordNetEntry(
+        word: 'take',
+        partOfSpeech: '動詞',
+        definitions: ['取る', '持っていく', '撮る', '時間がかかる'],
+        synonyms: ['grab', 'carry', 'require'],
+        examples: ['Take this.', 'It takes time.'],
+      ),
+      'give': WordNetEntry(
+        word: 'give',
+        partOfSpeech: '動詞',
+        definitions: ['与える', 'あげる', '提供する'],
+        synonyms: ['provide', 'offer', 'grant'],
+        examples: ['Give me a chance.', 'I gave him a book.'],
+      ),
+      'come': WordNetEntry(
+        word: 'come',
+        partOfSpeech: '動詞',
+        definitions: ['来る', '到着する', '起こる'],
+        synonyms: ['arrive', 'approach'],
+        examples: ['Come here.', 'Spring has come.'],
+      ),
+      'went': WordNetEntry(
+        word: 'went',
+        partOfSpeech: '動詞',
+        definitions: ['行った（goの過去形）'],
+        synonyms: ['go (past)'],
+        examples: ['I went to school.', 'They went home.'],
+      ),
     };
 
     // モックデータから検索
     final entry = mockData[lowerWord];
     if (entry != null) {
+      print('JapaneseWordNet: Found in mock data: $lowerWord');
       return entry;
     }
     
+    print('JapaneseWordNet: Not found in mock data, generating default for: $lowerWord');
     // モックデータに存在しない場合は、基本的な辞書エントリを生成
-    // これにより、すべての英単語に対して何らかの情報を表示
+    // これにより、すべての英单語に対して何らかの情報を表示
     return WordNetEntry(
       word: word,
       partOfSpeech: _inferPartOfSpeech(lowerWord),
@@ -361,7 +547,13 @@ class JapaneseWordNetService {
     };
     
     final lowerWord = word.toLowerCase();
-    return simpleDefinitions[lowerWord] ?? '[詳細な定義は準備中]';
+    final definition = simpleDefinitions[lowerWord];
+    if (definition != null) {
+      print('JapaneseWordNet: Found simple definition for: $lowerWord -> $definition');
+      return definition;
+    }
+    print('JapaneseWordNet: No simple definition found for: $lowerWord');
+    return '[詳細な定義は準備中]';
   }
 
   // 品詞の日本語表記変換
