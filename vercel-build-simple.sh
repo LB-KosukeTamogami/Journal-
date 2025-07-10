@@ -2,6 +2,8 @@
 set -e
 
 echo "=== Simple Vercel Build Script ==="
+echo "Current directory: $(pwd)"
+echo "Home directory: $HOME"
 
 # Install Flutter
 echo "Installing Flutter SDK..."
@@ -9,15 +11,35 @@ export FLUTTER_ROOT=$HOME/flutter
 export PATH=$FLUTTER_ROOT/bin:$PATH
 
 if [ ! -d "$FLUTTER_ROOT" ]; then
-    curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.24.5-stable.tar.xz -o flutter.tar.xz
+    echo "Downloading Flutter SDK..."
+    curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.16.0-stable.tar.xz -o flutter.tar.xz
+    echo "Extracting Flutter SDK..."
     tar xf flutter.tar.xz -C $HOME
+    rm flutter.tar.xz
+    echo "Flutter SDK installed"
 fi
+
+# Verify Flutter installation
+if ! command -v flutter &> /dev/null; then
+    echo "Error: Flutter installation failed"
+    exit 1
+fi
+
+flutter --version
+
+# Disable analytics and accept licenses
+flutter config --no-analytics || true
+yes | flutter doctor --android-licenses 2>/dev/null || true
 
 # Navigate to app directory
 cd journal_learning_app
 
-# Clean build cache
-flutter clean
+# Clean build cache (only if build directory exists)
+if [ -d "build" ]; then
+    flutter clean
+else
+    echo "No existing build directory, skipping clean"
+fi
 
 # Get dependencies
 flutter pub get
