@@ -3,6 +3,11 @@ set -e
 
 echo "Building Flutter web app for Vercel..."
 
+# Debug: Show current directory and git status
+echo "Current directory: $(pwd)"
+echo "Git status:"
+git status || echo "Git command failed"
+
 # Install Flutter
 if ! command -v flutter &> /dev/null; then
     echo "Installing Flutter..."
@@ -15,14 +20,6 @@ cd journal_learning_app
 
 # Get dependencies
 echo "Getting dependencies..."
-flutter pub get
-
-# Clean build cache
-echo "Cleaning build cache..."
-flutter clean
-
-# Get dependencies again
-echo "Getting dependencies after clean..."
 flutter pub get
 
 # Build for web with environment variables
