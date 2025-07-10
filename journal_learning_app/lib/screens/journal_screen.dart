@@ -23,12 +23,20 @@ class _JournalScreenState extends State<JournalScreen> {
   List<DiaryEntry> _allEntries = [];
   Map<DateTime, List<DiaryEntry>> _entriesByDate = {};
   bool _isLoading = true;
+  bool _isCalendarExpanded = true;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
     _loadEntries();
+  }
+  
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadEntries() async {
@@ -122,15 +130,65 @@ class _JournalScreenState extends State<JournalScreen> {
       body: Column(
         children: [
           // カレンダー
-          Container(
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
             margin: const EdgeInsets.all(16),
             child: AppCard(
-              padding: const EdgeInsets.all(16),
-              child: TableCalendar<Map<String, dynamic>>(
+              padding: EdgeInsets.zero,
+              child: Column(
+                children: [
+                  // カレンダーヘッダーと展開/折りたたみボタン
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(color: AppTheme.borderColor.withOpacity(0.1)),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'カレンダー',
+                          style: AppTheme.body1.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.textSecondary,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _isCalendarExpanded = !_isCalendarExpanded;
+                            });
+                          },
+                          icon: AnimatedRotation(
+                            turns: _isCalendarExpanded ? 0 : 0.5,
+                            duration: const Duration(milliseconds: 300),
+                            child: Icon(
+                              Icons.expand_less,
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // カレンダー本体
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    height: _isCalendarExpanded ? null : 80,
+                    child: SingleChildScrollView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: TableCalendar<Map<String, dynamic>>(
               firstDay: DateTime.utc(2020, 1, 1),
               lastDay: DateTime.utc(2030, 12, 31),
               focusedDay: _focusedDay,
-              calendarFormat: _calendarFormat,
+              calendarFormat: _isCalendarExpanded ? CalendarFormat.month : CalendarFormat.week,
               selectedDayPredicate: (day) {
                 return isSameDay(_selectedDay, day);
               },
@@ -170,17 +228,15 @@ class _JournalScreenState extends State<JournalScreen> {
                   });
                 }
               },
-              onFormatChanged: (format) {
-                if (_calendarFormat != format) {
-                  setState(() {
-                    _calendarFormat = format;
-                  });
-                }
-              },
               onPageChanged: (focusedDay) {
                 _focusedDay = focusedDay;
               },
             ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1, end: 0),
           ),
           
@@ -240,68 +296,124 @@ class _JournalScreenState extends State<JournalScreen> {
       );
     }
     
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: journals.length,
-      itemBuilder: (context, index) {
-        final journal = journals[index];
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          child: AppCard(
-            onTap: () {
-              _showDiaryDetail(context, journal);
-            },
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        journal.title,
-                        style: AppTheme.headline3,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Text(
-                      DateFormat('HH:mm').format(journal.createdAt),
-                      style: AppTheme.caption,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  journal.content,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTheme.body2,
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.edit,
-                      size: 16,
-                      color: AppTheme.textTertiary,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${journal.wordCount} words',
-                      style: AppTheme.caption,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ).animate().fadeIn(
-            delay: Duration(milliseconds: 50 * index),
-            duration: 300.ms,
-          ).slideX(begin: 0.1, end: 0),
-        );
+    return NotificationListener<ScrollNotification>(
+      onNotification: (scrollNotification) {
+        // スクロール位置に応じてカードの表示状態を更新
+        if (scrollNotification is ScrollUpdateNotification) {
+          setState(() {});
+        }
+        return false;
       },
+      child: ListView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: journals.length,
+        itemBuilder: (context, index) {
+          final journal = journals[index];
+          return AnimatedBuilder(
+            animation: _scrollController,
+            builder: (context, child) {
+              // スクロール位置に基づいてカードの不透明度とスケールを計算
+              double opacity = 1.0;
+              double scale = 1.0;
+              double translateY = 0.0;
+              
+              if (_scrollController.hasClients) {
+                final itemHeight = 140.0; // カードの推定高さ
+                final itemPosition = index * itemHeight;
+                final scrollOffset = _scrollController.offset;
+                final viewportHeight = _scrollController.position.viewportDimension;
+                
+                // カードの画面上での位置
+                final cardTopPosition = itemPosition - scrollOffset;
+                final cardBottomPosition = cardTopPosition + itemHeight;
+                
+                // カードが画面上部から消える時のアニメーション
+                if (cardBottomPosition < 100) {
+                  final fadeDistance = 100.0;
+                  opacity = (cardBottomPosition / fadeDistance).clamp(0.0, 1.0);
+                  scale = 0.95 + (0.05 * opacity);
+                  translateY = -20.0 * (1.0 - opacity);
+                }
+                
+                // カードが画面下部から現れる時のアニメーション
+                if (cardTopPosition > viewportHeight - 100) {
+                  final fadeDistance = 100.0;
+                  final distanceFromBottom = cardTopPosition - (viewportHeight - 100);
+                  opacity = (1.0 - (distanceFromBottom / fadeDistance)).clamp(0.0, 1.0);
+                  scale = 0.95 + (0.05 * opacity);
+                }
+              }
+              
+              return Opacity(
+                opacity: opacity,
+                child: Transform.scale(
+                  scale: scale,
+                  child: Transform.translate(
+                    offset: Offset(0, translateY),
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      child: AppCard(
+                        onTap: () {
+                          _showDiaryDetail(context, journal);
+                        },
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    journal.title,
+                                    style: AppTheme.headline3,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Text(
+                                  DateFormat('HH:mm').format(journal.createdAt),
+                                  style: AppTheme.caption,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              journal.content,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTheme.body2,
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.edit,
+                                  size: 16,
+                                  color: AppTheme.textTertiary,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${journal.wordCount} words',
+                                  style: AppTheme.caption,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ).animate().fadeIn(
+                        delay: Duration(milliseconds: 50 * index),
+                        duration: 300.ms,
+                      ).slideX(begin: 0.1, end: 0),
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
