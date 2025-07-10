@@ -261,7 +261,7 @@ class _FlashcardSessionScreenState extends State<FlashcardSessionScreen> {
                               ),
                             ).animate(onPlay: (controller) => controller.repeat())
                               .fade(begin: 0.5, end: 1.0, duration: 1.2.seconds)
-                              .scale(begin: 0.9, end: 1.1, duration: 1.2.seconds),
+                              .scale(begin: const Offset(0.9, 0.9), end: const Offset(1.1, 1.1), duration: 1.2.seconds),
                           ),
                       ],
                     ),
