@@ -1,3 +1,15 @@
+enum WordCategory {
+  noun('名詞'),
+  verb('動詞'),
+  adjective('形容詞'),
+  adverb('副詞'),
+  phrase('熟語・フレーズ'),
+  other('その他');
+
+  final String displayName;
+  const WordCategory(this.displayName);
+}
+
 class Word {
   final String id;
   final String english;
@@ -9,6 +21,7 @@ class Word {
   final DateTime? lastReviewedAt;
   final bool isMastered;
   final int masteryLevel; // 0 = unknown, 1 = partial, 2 = mastered
+  final WordCategory category;
 
   Word({
     required this.id,
@@ -21,6 +34,7 @@ class Word {
     this.lastReviewedAt,
     this.isMastered = false,
     this.masteryLevel = 0,
+    this.category = WordCategory.other,
   });
 
   Map<String, dynamic> toJson() {
@@ -35,6 +49,7 @@ class Word {
       'lastReviewedAt': lastReviewedAt?.toIso8601String(),
       'isMastered': isMastered,
       'masteryLevel': masteryLevel,
+      'category': category.name,
     };
   }
 
@@ -52,6 +67,12 @@ class Word {
           : null,
       isMastered: json['isMastered'] ?? false,
       masteryLevel: json['masteryLevel'] ?? 0,
+      category: json['category'] != null
+          ? WordCategory.values.firstWhere(
+              (e) => e.name == json['category'],
+              orElse: () => WordCategory.other,
+            )
+          : WordCategory.other,
     );
   }
 
@@ -64,6 +85,7 @@ class Word {
     DateTime? lastReviewedAt,
     bool? isMastered,
     int? masteryLevel,
+    WordCategory? category,
   }) {
     return Word(
       id: id,
@@ -76,6 +98,7 @@ class Word {
       lastReviewedAt: lastReviewedAt ?? this.lastReviewedAt,
       isMastered: isMastered ?? this.isMastered,
       masteryLevel: masteryLevel ?? this.masteryLevel,
+      category: category ?? this.category,
     );
   }
 }

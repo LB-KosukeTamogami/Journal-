@@ -18,6 +18,12 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
   List<Word> _allWords = [];
   bool _isLoading = true;
   Set<int> _selectedMasteryLevels = {0, 1}; // Default: show × and △ only
+  
+  // フィルター関連の状態
+  Set<WordCategory> _selectedCategories = WordCategory.values.toSet();
+  DateTime? _startDate;
+  DateTime? _endDate;
+  bool _showFilters = false;
 
   @override
   void initState() {
@@ -54,6 +60,34 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
         title: Text('学習', style: AppTheme.headline3),
         backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: Stack(
+              children: [
+                Icon(
+                  Icons.filter_list,
+                  color: _hasActiveFilters() ? AppTheme.primaryColor : AppTheme.textPrimary,
+                ),
+                if (_hasActiveFilters())
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryColor,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            onPressed: () {
+              _showFilterBottomSheet();
+            },
+          ),
+        ],
       ),
       body: _isLoading
           ? Center(
@@ -113,9 +147,9 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                   child: TabBarView(
                     controller: _tabController,
                     children: [
-                      _buildCardList(_allWords),
+                      _buildCardList(_getFilteredWords(_allWords)),
                       _buildLearningTab(),
-                      _buildCardList(_allWords.where((word) => word.masteryLevel == 2).toList()),
+                      _buildCardList(_getFilteredWords(_allWords.where((word) => word.masteryLevel == 2).toList())),
                     ],
                   ),
                 ),
@@ -139,7 +173,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
   }
 
   Widget _buildLearningTab() {
-    final learningWords = _allWords.where((word) => word.masteryLevel < 2).toList();
+    final learningWords = _getFilteredWords(_allWords).where((word) => word.masteryLevel < 2).toList();
     final filteredWords = learningWords.where((word) => 
       _selectedMasteryLevels.contains(word.masteryLevel)
     ).toList();
@@ -499,22 +533,325 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     );
   }
 
+  bool _hasActiveFilters() {
+    // カテゴリフィルターがすべて選択されていない、または日付フィルターが設定されている場合
+    return _selectedCategories.length != WordCategory.values.length ||
+           _startDate != null ||
+           _endDate != null;
+  }
+
+  List<Word> _getFilteredWords(List<Word> words) {
+    return words.where((word) {
+      // カテゴリフィルター
+      if (!_selectedCategories.contains(word.category)) {
+        return false;
+      }
+      
+      // 日付フィルター
+      if (_startDate != null && word.createdAt.isBefore(_startDate!)) {
+        return false;
+      }
+      if (_endDate != null && word.createdAt.isAfter(_endDate!.add(const Duration(days: 1)))) {
+        return false;
+      }
+      
+      return true;
+    }).toList();
+  }
+
+  void _showFilterBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          decoration: BoxDecoration(
+            color: AppTheme.backgroundPrimary,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppTheme.textTertiary,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'フィルター',
+                      style: AppTheme.headline2,
+                    ),
+                    const SizedBox(height: 24),
+                    
+                    // カテゴリフィルター
+                    Text(
+                      'カテゴリ',
+                      style: AppTheme.body1.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: WordCategory.values.map((category) {
+                        final isSelected = _selectedCategories.contains(category);
+                        return GestureDetector(
+                          onTap: () {
+                            setModalState(() {
+                              if (isSelected) {
+                                _selectedCategories.remove(category);
+                              } else {
+                                _selectedCategories.add(category);
+                              }
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? AppTheme.primaryColor.withOpacity(0.1)
+                                  : AppTheme.backgroundSecondary,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: isSelected
+                                    ? AppTheme.primaryColor
+                                    : AppTheme.borderColor,
+                                width: isSelected ? 2 : 1,
+                              ),
+                            ),
+                            child: Text(
+                              category.displayName,
+                              style: AppTheme.body2.copyWith(
+                                color: isSelected
+                                    ? AppTheme.primaryColor
+                                    : AppTheme.textSecondary,
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // 日付範囲フィルター
+                    Text(
+                      '登録日',
+                      style: AppTheme.body1.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              final date = await showDatePicker(
+                                context: context,
+                                initialDate: _startDate ?? DateTime.now(),
+                                firstDate: DateTime(2020),
+                                lastDate: DateTime.now(),
+                                builder: (context, child) {
+                                  return Theme(
+                                    data: Theme.of(context).copyWith(
+                                      colorScheme: ColorScheme.light(
+                                        primary: AppTheme.primaryColor,
+                                      ),
+                                    ),
+                                    child: child!,
+                                  );
+                                },
+                              );
+                              if (date != null) {
+                                setModalState(() {
+                                  _startDate = date;
+                                });
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: AppTheme.backgroundSecondary,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: AppTheme.borderColor),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.calendar_today,
+                                    size: 18,
+                                    color: AppTheme.textSecondary,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _startDate != null
+                                        ? '${_startDate!.year}/${_startDate!.month}/${_startDate!.day}'
+                                        : '開始日',
+                                    style: AppTheme.body2.copyWith(
+                                      color: _startDate != null
+                                          ? AppTheme.textPrimary
+                                          : AppTheme.textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text('〜', style: AppTheme.body2),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              final date = await showDatePicker(
+                                context: context,
+                                initialDate: _endDate ?? DateTime.now(),
+                                firstDate: _startDate ?? DateTime(2020),
+                                lastDate: DateTime.now(),
+                                builder: (context, child) {
+                                  return Theme(
+                                    data: Theme.of(context).copyWith(
+                                      colorScheme: ColorScheme.light(
+                                        primary: AppTheme.primaryColor,
+                                      ),
+                                    ),
+                                    child: child!,
+                                  );
+                                },
+                              );
+                              if (date != null) {
+                                setModalState(() {
+                                  _endDate = date;
+                                });
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: AppTheme.backgroundSecondary,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: AppTheme.borderColor),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.calendar_today,
+                                    size: 18,
+                                    color: AppTheme.textSecondary,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _endDate != null
+                                        ? '${_endDate!.year}/${_endDate!.month}/${_endDate!.day}'
+                                        : '終了日',
+                                    style: AppTheme.body2.copyWith(
+                                      color: _endDate != null
+                                          ? AppTheme.textPrimary
+                                          : AppTheme.textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // ボタン
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {
+                              setModalState(() {
+                                _selectedCategories = WordCategory.values.toSet();
+                                _startDate = null;
+                                _endDate = null;
+                              });
+                            },
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              side: BorderSide(color: AppTheme.borderColor),
+                            ),
+                            child: Text(
+                              'リセット',
+                              style: AppTheme.body1.copyWith(
+                                color: AppTheme.textSecondary,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {});
+                              Navigator.pop(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.primaryColor,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                            child: Text(
+                              '適用',
+                              style: AppTheme.button,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _startFlashcardSession() {
     // Get words based on current tab and filters
     List<Word> sessionWords;
     
     if (_tabController.index == 1) {
       // Learning tab with filters
-      final learningWords = _allWords.where((word) => word.masteryLevel < 2).toList();
+      final learningWords = _getFilteredWords(_allWords).where((word) => word.masteryLevel < 2).toList();
       sessionWords = learningWords.where((word) => 
         _selectedMasteryLevels.contains(word.masteryLevel)
       ).toList();
     } else if (_tabController.index == 2) {
       // Mastered tab
-      sessionWords = _allWords.where((word) => word.masteryLevel == 2).toList();
+      sessionWords = _getFilteredWords(_allWords).where((word) => word.masteryLevel == 2).toList();
     } else {
       // All tab
-      sessionWords = _allWords;
+      sessionWords = _getFilteredWords(_allWords);
     }
     
     if (sessionWords.isEmpty) {

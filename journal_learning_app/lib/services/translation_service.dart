@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../models/word.dart';
 
 class TranslationService {
   // 簡易的な翻訳マッピング（オフライン用）
@@ -797,5 +798,146 @@ class TranslationResult {
       isPartialTranslation: json['isPartialTranslation'] ?? false,
       timestamp: DateTime.parse(json['timestamp']),
     );
+  }
+  
+  // 単語のカテゴリを推測する関数
+  static WordCategory inferWordCategory(String english) {
+    final word = english.toLowerCase().trim();
+    
+    // 複数の単語（フレーズ）の場合
+    if (word.contains(' ')) {
+      return WordCategory.phrase;
+    }
+    
+    // 動詞のパターン
+    final verbPatterns = [
+      'go', 'went', 'gone',
+      'do', 'did', 'done',
+      'make', 'made',
+      'take', 'took', 'taken',
+      'get', 'got', 'gotten',
+      'come', 'came',
+      'see', 'saw', 'seen',
+      'know', 'knew', 'known',
+      'think', 'thought',
+      'look', 'looked',
+      'want', 'wanted',
+      'give', 'gave', 'given',
+      'use', 'used',
+      'find', 'found',
+      'tell', 'told',
+      'ask', 'asked',
+      'work', 'worked',
+      'seem', 'seemed',
+      'feel', 'felt',
+      'leave', 'left',
+      'call', 'called',
+      'eat', 'ate', 'eaten',
+      'drink', 'drank', 'drunk',
+      'sleep', 'slept',
+      'walk', 'walked',
+      'run', 'ran',
+      'write', 'wrote', 'written',
+      'read', 'read',
+      'speak', 'spoke', 'spoken',
+      'learn', 'learned', 'learnt',
+      'study', 'studied',
+      'play', 'played',
+      'watch', 'watched',
+      'listen', 'listened',
+      'buy', 'bought',
+      'sell', 'sold',
+      'love', 'loved',
+      'like', 'liked',
+      'hate', 'hated',
+      'try', 'tried',
+      'help', 'helped',
+      'need', 'needed',
+      'start', 'started',
+      'stop', 'stopped',
+      'finish', 'finished',
+      'begin', 'began', 'begun',
+      'send', 'sent',
+      'receive', 'received',
+      'bring', 'brought',
+      'meet', 'met',
+      'sit', 'sat',
+      'stand', 'stood',
+      'live', 'lived',
+      'die', 'died',
+      'grow', 'grew', 'grown',
+      'open', 'opened',
+      'close', 'closed',
+      'turn', 'turned',
+      'move', 'moved',
+      'happen', 'happened',
+      'become', 'became',
+      'change', 'changed',
+      'hear', 'heard',
+      'believe', 'believed',
+      'understand', 'understood',
+      'remember', 'remembered',
+      'forget', 'forgot', 'forgotten'
+    ];
+    
+    // 形容詞のパターン（語尾）
+    final adjectiveEndings = ['-able', '-ible', '-al', '-ful', '-ic', '-ive', '-less', '-ous', '-y'];
+    final commonAdjectives = [
+      'good', 'bad', 'new', 'old', 'great', 'high', 'low', 'big', 'small', 
+      'large', 'long', 'short', 'hot', 'cold', 'easy', 'hard', 'fast', 'slow',
+      'happy', 'sad', 'angry', 'beautiful', 'ugly', 'rich', 'poor', 'young',
+      'strong', 'weak', 'clean', 'dirty', 'simple', 'difficult', 'important',
+      'interesting', 'boring', 'dangerous', 'safe', 'modern', 'ancient',
+      'delicious', 'sweet', 'bitter', 'sour', 'spicy', 'bland',
+      'fun', 'funny', 'serious', 'cool', 'warm', 'nice', 'mean',
+      'smart', 'stupid', 'clever', 'wise', 'foolish'
+    ];
+    
+    // 副詞のパターン（語尾）
+    final adverbEndings = ['-ly'];
+    final commonAdverbs = [
+      'very', 'really', 'quite', 'too', 'so', 'just', 'only', 'even',
+      'still', 'already', 'yet', 'often', 'sometimes', 'always', 'never',
+      'here', 'there', 'now', 'then', 'today', 'tomorrow', 'yesterday',
+      'soon', 'later', 'early', 'late', 'fast', 'slow', 'well', 'badly'
+    ];
+    
+    // 動詞チェック
+    if (verbPatterns.contains(word)) {
+      return WordCategory.verb;
+    }
+    
+    // 形容詞チェック
+    if (commonAdjectives.contains(word) || 
+        adjectiveEndings.any((ending) => word.endsWith(ending))) {
+      return WordCategory.adjective;
+    }
+    
+    // 副詞チェック
+    if (commonAdverbs.contains(word) || 
+        (word.endsWith('ly') && word.length > 3)) {
+      return WordCategory.adverb;
+    }
+    
+    // 代名詞、冠詞、前置詞などは名詞として扱わない
+    final functionWords = [
+      'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them',
+      'my', 'your', 'his', 'her', 'its', 'our', 'their',
+      'this', 'that', 'these', 'those',
+      'a', 'an', 'the',
+      'in', 'on', 'at', 'to', 'from', 'with', 'by', 'for', 'of', 'about',
+      'and', 'or', 'but', 'if', 'when', 'where', 'what', 'who', 'which', 'how',
+      'is', 'am', 'are', 'was', 'were', 'be', 'been', 'being',
+      'have', 'has', 'had', 'having',
+      'do', 'does', 'did', 'doing',
+      'will', 'would', 'shall', 'should', 'may', 'might', 'can', 'could', 'must'
+    ];
+    
+    if (functionWords.contains(word)) {
+      return WordCategory.other;
+    }
+    
+    // それ以外は名詞として扱う
+    return WordCategory.noun;
   }
 }
