@@ -31,7 +31,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
     // 初期メッセージを追加
     _messages.add(
       ConversationMessage(
-        text: "Hello! I'm your English conversation partner. What would you like to talk about today? 😊\n\nこんにちは！英会話の練習相手です。今日は何について話しましょうか？",
+        text: "Hello! I'm Aco, your English conversation partner. What would you like to talk about today? 😊\n\nこんにちは！私はAcoです。英会話の練習相手として一緒に学習しましょう。今日は何について話しましょうか？",
         isUser: false,
         timestamp: DateTime.now(),
       ),
@@ -230,6 +230,47 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
       child: Column(
         crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
+          // Acoの場合、アイコンと名前を表示
+          if (!isUser) ...[
+            Row(
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xFFF5F5F5),
+                        const Color(0xFFE8E8E8),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppTheme.primaryColor.withOpacity(0.3),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '🐿',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Aco',
+                  style: AppTheme.body2.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+          ],
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(

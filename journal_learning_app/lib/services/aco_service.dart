@@ -2,7 +2,7 @@ import 'dart:math';
 import '../models/mission.dart';
 import '../models/diary_entry.dart';
 
-class LilyService {
+class AcoService {
   static const List<String> _greetingMessages = [
     'こんにちは！今日も一緒に英語を学びましょう！✨',
     'お疲れさまです！今日はどんな一日でしたか？😊',
@@ -111,7 +111,7 @@ class LilyService {
     bool justCompletedMission = false,
   }) {
     if (isFirstVisit) {
-      return 'はじめまして！私はLilyです😊 一緒に英語学習を楽しみましょう！';
+      return 'はじめまして！私はAcoです😊 一緒に英語学習を楽しみましょう！';
     }
 
     if (justCompletedMission) {

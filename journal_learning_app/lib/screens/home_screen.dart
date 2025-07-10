@@ -4,7 +4,7 @@ import 'diary_creation_screen.dart';
 import '../models/mission.dart';
 import '../services/mission_service.dart';
 import '../services/storage_service.dart';
-import '../services/lily_service.dart';
+import '../services/aco_service.dart';
 import '../theme/app_theme.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = true;
   int _currentStreak = 0;
   int _totalDays = 0;
-  String _lilyMessage = '';
+  String _acoMessage = '';
   DateTime _today = DateTime.now();
 
   @override
@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final recentEntries = await StorageService.getDiaryEntries();
       
       final completedMissions = missions.where((m) => m.isCompleted).length;
-      final lilyMessage = LilyService.getContextualMessage(
+      final acoMessage = AcoService.getContextualMessage(
         streakDays: analytics['currentStreak'] ?? 0,
         completedMissions: completedMissions,
         recentEntries: recentEntries.take(3).toList(),
@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _missions = missions;
         _currentStreak = analytics['currentStreak'] ?? 0;
         _totalDays = analytics['totalEntries'] ?? 0;
-        _lilyMessage = lilyMessage;
+        _acoMessage = acoMessage;
         _isLoading = false;
       });
     } catch (e) {
@@ -70,13 +70,13 @@ class _HomeScreenState extends State<HomeScreen> {
       final index = _missions.indexWhere((m) => m.id == mission.id);
       if (index != -1) {
         _missions[index] = updatedMission;
-        _lilyMessage = LilyService.getMissionCompleteMessage();
+        _acoMessage = AcoService.getMissionCompleteMessage();
       }
     });
     
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(LilyService.getMissionCompleteMessage()),
+        content: Text(AcoService.getMissionCompleteMessage()),
         backgroundColor: AppTheme.success,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
@@ -109,9 +109,38 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: AppTheme.headline1,
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        '${_today.month}月${_today.day}日 ${_getDayOfWeek()}曜日',
-                        style: AppTheme.body2,
+                      Row(
+                        children: [
+                          Text(
+                            '${_today.month}月${_today.day}日 ${_getDayOfWeek()}曜日',
+                            style: AppTheme.body2,
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppTheme.primaryColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '🐿',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Acoと一緒に学習中',
+                                  style: AppTheme.caption.copyWith(
+                                    color: AppTheme.primaryColor,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -134,12 +163,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 ).animate().fadeIn(delay: 100.ms, duration: 300.ms).slideX(begin: -0.1, end: 0),
               ),
 
-              // Lilyからのメッセージ
-              if (_lilyMessage.isNotEmpty)
+              // Acoからのメッセージ
+              if (_acoMessage.isNotEmpty)
                 SliverToBoxAdapter(
                   child: Container(
                     margin: const EdgeInsets.all(20),
-                    child: _buildLilyMessageCard(),
+                    child: _buildAcoMessageCard(),
                   ).animate().fadeIn(delay: 200.ms, duration: 300.ms).slideX(begin: -0.1, end: 0),
                 ),
 
@@ -353,7 +382,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildLilyMessageCard() {
+  Widget _buildAcoMessageCard() {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -419,7 +448,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Lily からのメッセージ',
+                  'Aco からのメッセージ',
                   style: AppTheme.body2.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppTheme.primaryColor,
@@ -427,7 +456,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  _lilyMessage,
+                  _acoMessage,
                   style: AppTheme.body2.copyWith(
                     color: const Color(0xFF424242), // より読みやすいダークグレー
                     height: 1.5,
