@@ -114,6 +114,13 @@ class _FlashcardSessionScreenState extends State<FlashcardSessionScreen> {
       _unknownCount = 0;
       _totalCount = 0;
     });
+    
+    // リセット後、音声が有効な場合は最初のカードの音声を再生
+    if (_isAudioEnabled && widget.words.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _playCurrentCardAudio();
+      });
+    }
   }
 
   void _updateWordMastery(Word word, int masteryLevel) async {
@@ -221,18 +228,42 @@ class _FlashcardSessionScreenState extends State<FlashcardSessionScreen> {
                   child: AppCard(
                     key: ValueKey(_isFlipped),
                     padding: const EdgeInsets.all(32),
-                    child: Container(
-                      width: double.infinity,
-                      height: 300,
-                      alignment: Alignment.center,
-                      child: AnimatedCrossFade(
-                        duration: const Duration(milliseconds: 300),
-                        firstChild: Center(child: _buildCardFront(currentWord)),
-                        secondChild: Center(child: _buildCardBack(currentWord)),
-                        crossFadeState: _isFlipped
-                            ? CrossFadeState.showSecond
-                            : CrossFadeState.showFirst,
-                      ),
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          height: 300,
+                          alignment: Alignment.center,
+                          child: AnimatedCrossFade(
+                            duration: const Duration(milliseconds: 300),
+                            firstChild: Center(child: _buildCardFront(currentWord)),
+                            secondChild: Center(child: _buildCardBack(currentWord)),
+                            crossFadeState: _isFlipped
+                                ? CrossFadeState.showSecond
+                                : CrossFadeState.showFirst,
+                          ),
+                        ),
+                        // タップアイコンを右下に配置（表面のみ）
+                        if (!_isFlipped)
+                          Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: AppTheme.primaryBlue.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Icon(
+                                Icons.touch_app,
+                                color: AppTheme.primaryBlue,
+                                size: 24,
+                              ),
+                            ).animate(onPlay: (controller) => controller.repeat())
+                              .fade(begin: 0.5, end: 1.0, duration: 1.2.seconds)
+                              .scale(begin: 0.9, end: 1.1, duration: 1.2.seconds),
+                          ),
+                      ],
                     ),
                   ),
                 ),
@@ -305,54 +336,29 @@ class _FlashcardSessionScreenState extends State<FlashcardSessionScreen> {
                     ),
                   ],
                 )
-              : Row(
-                  children: [
-                    // 音声再生ボタン
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: _isPlayingAudio ? null : _playCurrentCardAudio,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.primaryBlue,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              _isPlayingAudio ? Icons.stop : Icons.volume_up,
-                              color: Colors.white,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              _isPlayingAudio ? '再生中...' : '音声を再生',
-                              style: AppTheme.button,
-                            ),
-                          ],
+              : ElevatedButton(
+                  onPressed: (!_isAudioEnabled || _isPlayingAudio) ? null : _playCurrentCardAudio,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _isAudioEnabled ? AppTheme.primaryBlue : AppTheme.backgroundSecondary,
+                    foregroundColor: _isAudioEnabled ? Colors.white : AppTheme.textTertiary,
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _isPlayingAudio ? Icons.stop : Icons.volume_up,
+                        color: _isAudioEnabled ? Colors.white : AppTheme.textTertiary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _isPlayingAudio ? '再生中...' : '音声を再生',
+                        style: AppTheme.button.copyWith(
+                          color: _isAudioEnabled ? Colors.white : AppTheme.textTertiary,
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    // 答えを見るボタン
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: _flipCard,
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppTheme.primaryBlue,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          side: BorderSide(color: AppTheme.primaryBlue),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.flip),
-                            const SizedBox(width: 8),
-                            Text('答えを見る', style: AppTheme.button),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
         ),
       ],
@@ -379,7 +385,7 @@ class _FlashcardSessionScreenState extends State<FlashcardSessionScreen> {
         ),
         const SizedBox(height: 16),
         Text(
-          '音声を再生するか答えを確認',
+          'カードをタップして答えを確認',
           style: AppTheme.caption.copyWith(
             color: AppTheme.textTertiary,
           ),
