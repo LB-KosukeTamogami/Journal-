@@ -208,7 +208,12 @@ class _JournalScreenState extends State<JournalScreen> {
         ),
         child: FloatingActionButton.extended(
           onPressed: () {
-            _showJournalDialog(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const DiaryCreationScreen(),
+              ),
+            );
           },
           backgroundColor: AppTheme.primaryColor,
           icon: const Icon(Icons.add, color: Colors.white),
@@ -300,7 +305,8 @@ class _JournalScreenState extends State<JournalScreen> {
     );
   }
 
-  void _showJournalDialog(BuildContext context) {
+  // 不要になったため削除
+  /*void _showJournalDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -461,6 +467,8 @@ class _JournalScreenState extends State<JournalScreen> {
       ),
     );
   }
+
+  }*/
 
   void _showDiaryDetail(BuildContext context, DiaryEntry journal) {
     Navigator.push(

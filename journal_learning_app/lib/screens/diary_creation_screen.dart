@@ -8,6 +8,7 @@ import '../services/mission_service.dart';
 import '../theme/app_theme.dart';
 import '../models/word.dart';
 import 'diary_review_screen.dart';
+import 'conversation_journal_screen.dart';
 
 class DiaryCreationScreen extends StatefulWidget {
   final DiaryEntry? existingEntry;
@@ -364,6 +365,95 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                           style: AppTheme.body1,
                           maxLines: 10,
                           textInputAction: TextInputAction.newline,
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Acoと会話ボタン
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ConversationJournalScreen(),
+                            ),
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppTheme.primaryColor.withOpacity(0.1),
+                                AppTheme.primaryColor.withOpacity(0.05),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: AppTheme.primaryColor.withOpacity(0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      const Color(0xFFF5F5F5),
+                                      const Color(0xFFE8E8E8),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: AppTheme.primaryColor.withOpacity(0.3),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    '🐿',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Acoと会話で練習',
+                                      style: AppTheme.body1.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: AppTheme.primaryColor,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '英会話の練習をしてから日記を書いてみましょう',
+                                      style: AppTheme.body2.copyWith(
+                                        color: AppTheme.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                color: AppTheme.primaryColor.withOpacity(0.6),
+                                size: 16,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       
