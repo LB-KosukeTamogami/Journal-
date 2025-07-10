@@ -912,11 +912,11 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 ],
               ),
             ).animate().fadeIn(delay: 400.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
-            
+          ],
+          
+          // 抽出された単語・熟語リスト
+          if (_extractedWords.isNotEmpty) ...[
             const SizedBox(height: 16),
-            
-            // 抽出された単語・熟語リスト
-            if (_extractedWords.isNotEmpty) ..[
               AppCard(
                 backgroundColor: AppTheme.primaryBlue.withOpacity(0.05),
                 child: Column(
@@ -993,8 +993,9 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   ],
                 ),
               ).animate().fadeIn(delay: 500.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
-              const SizedBox(height: 16),
             ],
+            
+            const SizedBox(height: 16),
             
             // 学習カードに追加ボタン
             SizedBox(
@@ -1013,7 +1014,6 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 label: Text('学習カードに追加', style: AppTheme.button),
               ),
             ).animate().fadeIn(delay: 600.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
-          ],
         ],
       ),
     );
