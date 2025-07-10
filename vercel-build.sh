@@ -21,10 +21,10 @@ flutter pub get
 echo "Building web app..."
 if [ -n "$GEMINI_API_KEY" ]; then
     echo "Building with Gemini API key..."
-    flutter build web --release --dart-define=GEMINI_API_KEY="$GEMINI_API_KEY"
+    flutter build web --release --web-renderer html --dart-define=GEMINI_API_KEY="$GEMINI_API_KEY"
 else
     echo "Building without API key (using default)..."
-    flutter build web --release
+    flutter build web --release --web-renderer html
 fi
 
 echo "Build completed!"
