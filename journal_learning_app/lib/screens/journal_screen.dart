@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'dart:math' as Math;
 import 'diary_creation_screen.dart';
 import 'diary_detail_screen.dart';
 import 'conversation_journal_screen.dart';
@@ -134,52 +135,13 @@ class _JournalScreenState extends State<JournalScreen> {
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
             margin: const EdgeInsets.all(16),
-            child: AppCard(
-              padding: EdgeInsets.zero,
-              child: Column(
-                children: [
-                  // カレンダーヘッダーと展開/折りたたみボタン
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(color: AppTheme.borderColor.withOpacity(0.1)),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'カレンダー',
-                          style: AppTheme.body1.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: AppTheme.textSecondary,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _isCalendarExpanded = !_isCalendarExpanded;
-                            });
-                          },
-                          icon: AnimatedRotation(
-                            turns: _isCalendarExpanded ? 0 : 0.5,
-                            duration: const Duration(milliseconds: 300),
-                            child: Icon(
-                              Icons.expand_less,
-                              color: AppTheme.textSecondary,
-                            ),
-                          ),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // カレンダー本体
-                  AnimatedContainer(
+            child: Stack(
+              children: [
+                AppCard(
+                  padding: EdgeInsets.zero,
+                  child: AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
-                    height: _isCalendarExpanded ? null : 80,
+                    height: _isCalendarExpanded ? null : 320,
                     child: SingleChildScrollView(
                       physics: const NeverScrollableScrollPhysics(),
                       child: Padding(
@@ -232,11 +194,51 @@ class _JournalScreenState extends State<JournalScreen> {
                 _focusedDay = focusedDay;
               },
             ),
+                        ),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+                // 展開/折りたたみボタンを右下に配置
+                Positioned(
+                  right: 8,
+                  bottom: 8,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _isCalendarExpanded = !_isCalendarExpanded;
+                        });
+                      },
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppTheme.backgroundPrimary.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: AnimatedRotation(
+                          turns: _isCalendarExpanded ? 0 : 0.5,
+                          duration: const Duration(milliseconds: 300),
+                          child: Icon(
+                            Icons.expand_less,
+                            color: AppTheme.textSecondary,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1, end: 0),
           ),
           
@@ -328,20 +330,24 @@ class _JournalScreenState extends State<JournalScreen> {
                 final cardTopPosition = itemPosition - scrollOffset;
                 final cardBottomPosition = cardTopPosition + itemHeight;
                 
-                // カードが画面上部から消える時のアニメーション
-                if (cardBottomPosition < 100) {
-                  final fadeDistance = 100.0;
+                // カードが画面上部から消える時のアニメーション（グラデーション効果）
+                if (cardBottomPosition < 150) {
+                  final fadeDistance = 150.0;
                   opacity = (cardBottomPosition / fadeDistance).clamp(0.0, 1.0);
-                  scale = 0.95 + (0.05 * opacity);
-                  translateY = -20.0 * (1.0 - opacity);
+                  // より緩やかなフェード曲線
+                  opacity = Math.pow(opacity, 0.7).toDouble();
+                  scale = 0.98 + (0.02 * opacity);
+                  translateY = -10.0 * (1.0 - opacity);
                 }
                 
                 // カードが画面下部から現れる時のアニメーション
-                if (cardTopPosition > viewportHeight - 100) {
-                  final fadeDistance = 100.0;
-                  final distanceFromBottom = cardTopPosition - (viewportHeight - 100);
+                if (cardTopPosition > viewportHeight - 150) {
+                  final fadeDistance = 150.0;
+                  final distanceFromBottom = cardTopPosition - (viewportHeight - 150);
                   opacity = (1.0 - (distanceFromBottom / fadeDistance)).clamp(0.0, 1.0);
-                  scale = 0.95 + (0.05 * opacity);
+                  // より緩やかなフェード曲線
+                  opacity = Math.pow(opacity, 0.7).toDouble();
+                  scale = 0.98 + (0.02 * opacity);
                 }
               }
               
