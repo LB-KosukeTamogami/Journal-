@@ -600,4 +600,5 @@ class _JournalScreenState extends State<JournalScreen> {
       }
     });
   }
-}// Force rebuild
+}
+// Force rebuild
