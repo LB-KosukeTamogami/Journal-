@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 import '../models/word.dart';
 import '../services/storage_service.dart';
+import '../widgets/text_to_speech_button.dart';
 import 'flashcard_session_screen.dart' hide AppCard;
 
 class LearningScreen extends StatefulWidget {
@@ -310,17 +311,8 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                   word.english,
                   style: AppTheme.headline2,
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryBlue.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: IconButton(
-                    icon: Icon(Icons.volume_up, color: AppTheme.primaryBlue),
-                    onPressed: () {
-                      // TODO: TTS実装
-                    },
-                  ),
+                TextToSpeechButton(
+                  text: word.english,
                 ),
               ],
             ),

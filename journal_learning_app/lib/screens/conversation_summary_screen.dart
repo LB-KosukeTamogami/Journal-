@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 import '../models/conversation_message.dart';
 import '../services/gemini_service.dart';
+import '../widgets/text_to_speech_button.dart';
 import 'diary_creation_screen.dart';
 
 class ConversationSummaryScreen extends StatefulWidget {
@@ -129,29 +130,38 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppTheme.primaryColor.withOpacity(0.1),
-                      AppTheme.primaryColor.withOpacity(0.05),
-                    ],
+              Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppTheme.primaryColor.withOpacity(0.1),
+                          AppTheme.primaryColor.withOpacity(0.05),
+                        ],
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.summarize,
+                      color: AppTheme.primaryColor,
+                      size: 20,
+                    ),
                   ),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.summarize,
-                  color: AppTheme.primaryColor,
-                  size: 20,
-                ),
+                  const SizedBox(width: 12),
+                  Text(
+                    '会話のまとめ',
+                    style: AppTheme.headline3,
+                  ),
+                ],
               ),
-              const SizedBox(width: 12),
-              Text(
-                '会話のまとめ',
-                style: AppTheme.headline3,
+              TextToSpeechButton(
+                text: _summary,
+                size: 20,
               ),
             ],
           ),

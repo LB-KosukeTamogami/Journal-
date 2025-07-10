@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../models/word.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/text_to_speech_button.dart';
 
 class FlashcardSessionScreen extends StatefulWidget {
   final List<Word> words;
@@ -283,12 +284,24 @@ class _FlashcardSessionScreenState extends State<FlashcardSessionScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        Text(
-          word.english,
-          style: AppTheme.headline1.copyWith(
-            color: AppTheme.primaryBlue,
-          ),
-          textAlign: TextAlign.center,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Text(
+                word.english,
+                style: AppTheme.headline1.copyWith(
+                  color: AppTheme.primaryBlue,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(width: 8),
+            TextToSpeechButton(
+              text: word.english,
+              size: 28,
+            ),
+          ],
         ),
         const SizedBox(height: 16),
         Text(

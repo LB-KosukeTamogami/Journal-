@@ -4,6 +4,7 @@ import '../theme/app_theme.dart';
 import '../services/gemini_service.dart';
 import '../models/conversation_message.dart';
 import '../services/storage_service.dart';
+import '../widgets/text_to_speech_button.dart';
 import 'conversation_summary_screen.dart';
 
 class ConversationJournalScreen extends StatefulWidget {
@@ -319,11 +320,26 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  message.text,
-                  style: AppTheme.body1.copyWith(
-                    color: isUser ? Colors.white : AppTheme.textPrimary,
-                  ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        message.text,
+                        style: AppTheme.body1.copyWith(
+                          color: isUser ? Colors.white : AppTheme.textPrimary,
+                        ),
+                      ),
+                    ),
+                    if (!isUser) ...[
+                      const SizedBox(width: 8),
+                      TextToSpeechButton(
+                        text: message.text,
+                        size: 18,
+                        color: AppTheme.textSecondary,
+                      ),
+                    ],
+                  ],
                 ),
                 
                 // 修正提案
