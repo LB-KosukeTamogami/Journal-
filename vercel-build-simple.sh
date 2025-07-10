@@ -17,6 +17,9 @@ if [ ! -d "$FLUTTER_ROOT" ]; then
     tar xf flutter.tar.xz -C $HOME
     rm flutter.tar.xz
     echo "Flutter SDK installed"
+    
+    # Configure git to trust the newly installed Flutter directory
+    git config --global --add safe.directory $FLUTTER_ROOT 2>/dev/null || true
 fi
 
 # Verify Flutter installation
@@ -26,6 +29,10 @@ if ! command -v flutter &> /dev/null; then
 fi
 
 flutter --version
+
+# Configure git to trust the Flutter directory
+git config --global --add safe.directory $FLUTTER_ROOT 2>/dev/null || true
+git config --global --add safe.directory '*' 2>/dev/null || true
 
 # Disable analytics and accept licenses
 flutter config --no-analytics || true
