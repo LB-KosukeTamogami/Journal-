@@ -4,6 +4,7 @@ import '../theme/app_theme.dart';
 import '../models/word.dart';
 import '../services/storage_service.dart';
 import '../widgets/text_to_speech_button.dart';
+import '../widgets/dictionary_dialog.dart';
 import 'flashcard_session_screen.dart' hide AppCard;
 
 class LearningScreen extends StatefulWidget {
@@ -408,7 +409,10 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                   child: OutlinedButton.icon(
                     onPressed: () {
                       Navigator.pop(context);
-                      // TODO: シャドウイング機能
+                      showDialog(
+                        context: context,
+                        builder: (context) => DictionaryDialog(word: word.english),
+                      );
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppTheme.primaryBlue,
@@ -418,12 +422,12 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    icon: const Icon(Icons.mic, size: 20),
-                    label: const Text('シャドウイング'),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
+                    icon: const Icon(Icons.menu_book, size: 20),
+                    label: const Text('辞書'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () async {
                       // Toggle between mastered (2) and not mastered (0)

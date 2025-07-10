@@ -9,6 +9,7 @@ import '../services/translation_service.dart';
 import '../services/storage_service.dart';
 import '../services/gemini_service.dart';
 import '../widgets/text_to_speech_button.dart';
+import '../widgets/dictionary_dialog.dart';
 import 'diary_creation_screen.dart';
 
 class DiaryDetailScreen extends StatefulWidget {
@@ -965,6 +966,16 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   }
   
   void _showWordDetail(String english, String japanese, {bool canAddToCards = true}) {
+    // 英単語の場合は辞書ダイアログを表示
+    if (RegExp(r'^[a-zA-Z\s-]+$').hasMatch(english.trim())) {
+      showDialog(
+        context: context,
+        builder: (context) => DictionaryDialog(word: english),
+      );
+      return;
+    }
+    
+    // それ以外の場合は従来の詳細ダイアログを表示
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

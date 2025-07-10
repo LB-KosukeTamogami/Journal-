@@ -29,6 +29,7 @@ dependencies:
   flutter_animate: ^4.3.0
   # google_translator: ^1.0.0
   flutter_tts: ^3.8.3
+  audioplayers: ^5.2.1
   uuid: ^4.2.2
 
 dev_dependencies:
