@@ -968,10 +968,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   void _showWordDetail(String english, String japanese, {bool canAddToCards = true}) {
     // 英単語の場合は辞書ダイアログを表示
     if (RegExp(r'^[a-zA-Z\s-]+$').hasMatch(english.trim())) {
-      showDialog(
-        context: context,
-        builder: (context) => JapaneseDictionaryDialog(word: english),
-      );
+      JapaneseDictionaryDialog.show(context, english);
       return;
     }
     

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../theme/app_theme.dart';
+import '../theme/app_theme.dart' show AppTheme, AppCard;
 import '../services/japanese_wordnet_service.dart';
 
 class JapaneseDictionaryDialog extends StatefulWidget {
@@ -11,6 +11,15 @@ class JapaneseDictionaryDialog extends StatefulWidget {
     required this.word,
   });
 
+  static void show(BuildContext context, String word) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => JapaneseDictionaryDialog(word: word),
+    );
+  }
+
   @override
   State<JapaneseDictionaryDialog> createState() => _JapaneseDictionaryDialogState();
 }
@@ -18,7 +27,6 @@ class JapaneseDictionaryDialog extends StatefulWidget {
 class _JapaneseDictionaryDialogState extends State<JapaneseDictionaryDialog> {
   bool _isLoading = true;
   WordNetEntry? _wordNetEntry;
-  bool _isFlipped = false;
 
   @override
   void initState() {
@@ -37,399 +45,228 @@ class _JapaneseDictionaryDialogState extends State<JapaneseDictionaryDialog> {
     }
   }
 
-  void _flipCard() {
-    setState(() {
-      _isFlipped = !_isFlipped;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      child: Container(
-        margin: const EdgeInsets.all(20),
-        child: _isLoading
-            ? Center(
-                child: DictionaryCard(
-                  padding: const EdgeInsets.all(40),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircularProgressIndicator(
-                        color: AppTheme.primaryColor,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        '辞書を検索中...',
-                        style: AppTheme.body2.copyWith(
-                          color: AppTheme.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            : _wordNetEntry == null
-                ? Center(
-                    child: DictionaryCard(
-                      padding: const EdgeInsets.all(40),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.search_off,
-                            size: 48,
-                            color: AppTheme.textTertiary,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'この単語の意味は見つかりませんでした',
-                            style: AppTheme.body1.copyWith(
-                              color: AppTheme.textSecondary,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '「${widget.word}」',
-                            style: AppTheme.body2.copyWith(
-                              color: AppTheme.textTertiary,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: Text(
-                              '閉じる',
-                              style: AppTheme.body2.copyWith(
-                                color: AppTheme.primaryColor,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                : GestureDetector(
-                    onTap: _flipCard,
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      transitionBuilder: (Widget child, Animation<double> animation) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: ScaleTransition(
-                            scale: animation,
-                            child: child,
-                          ),
-                        );
-                      },
-                      child: DictionaryCard(
-                        key: ValueKey(_isFlipped),
-                        padding: const EdgeInsets.all(32),
-                        child: Stack(
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              constraints: const BoxConstraints(
-                                minHeight: 300,
-                                maxWidth: 400,
-                              ),
-                              child: AnimatedCrossFade(
-                                duration: const Duration(milliseconds: 300),
-                                firstChild: _buildCardFront(),
-                                secondChild: _buildCardBack(),
-                                crossFadeState: _isFlipped
-                                    ? CrossFadeState.showSecond
-                                    : CrossFadeState.showFirst,
-                              ),
-                            ),
-                            // 閉じるボタン
-                            Positioned(
-                              right: -8,
-                              top: -8,
-                              child: IconButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                icon: Container(
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.backgroundSecondary,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    Icons.close,
-                                    size: 20,
-                                    color: AppTheme.textSecondary,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // タップアイコンを右下に配置（表面のみ）
-                            if (!_isFlipped)
-                              Positioned(
-                                right: 0,
-                                bottom: 0,
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.primaryColor.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Icon(
-                                    Icons.touch_app,
-                                    color: AppTheme.primaryColor,
-                                    size: 24,
-                                  ),
-                                ).animate(onPlay: (controller) => controller.repeat())
-                                  .fade(begin: 0.5, end: 1.0, duration: 1.2.seconds)
-                                  .scale(begin: const Offset(0.9, 0.9), end: const Offset(1.1, 1.1), duration: 1.2.seconds),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.backgroundPrimary,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
+        ],
       ),
-    );
-  }
-
-  Widget _buildCardFront() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // 品詞バッジ
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: AppTheme.info.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: AppTheme.info.withOpacity(0.3),
-            ),
-          ),
-          child: Text(
-            _wordNetEntry!.partOfSpeech,
-            style: AppTheme.body2.copyWith(
-              color: AppTheme.info,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        const SizedBox(height: 24),
-        Text(
-          'English',
-          style: AppTheme.caption.copyWith(
-            color: AppTheme.textSecondary,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          _wordNetEntry!.word,
-          style: AppTheme.headline1.copyWith(
-            fontSize: 36,
-            fontWeight: FontWeight.bold,
-            color: AppTheme.primaryColor,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 24),
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppTheme.backgroundTertiary,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.flip,
-                size: 18,
-                color: AppTheme.textSecondary,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'タップして意味を見る',
-                style: AppTheme.caption.copyWith(
-                  color: AppTheme.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCardBack() {
-    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            '日本語',
-            style: AppTheme.caption.copyWith(
-              color: AppTheme.textSecondary,
+          // ハンドル
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppTheme.textTertiary,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
           ),
-          const SizedBox(height: 16),
-          // 日本語の意味
-          if (_wordNetEntry!.definitions.isNotEmpty) ...[
+          const SizedBox(height: 20),
+          
+          if (_isLoading)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppTheme.primaryColor.withOpacity(0.2),
+              padding: const EdgeInsets.symmetric(vertical: 40),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(
+                      color: AppTheme.primaryColor,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      '辞書を検索中...',
+                      style: AppTheme.body2.copyWith(
+                        color: AppTheme.textSecondary,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              child: Column(
-                children: _wordNetEntry!.definitions.map((def) => 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text(
-                      def,
-                      style: AppTheme.headline2.copyWith(
-                        color: AppTheme.primaryColor,
-                        fontWeight: FontWeight.w600,
+            )
+          else if (_wordNetEntry == null)
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 40),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.search_off,
+                      size: 48,
+                      color: AppTheme.textTertiary,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'この単語の意味は見つかりませんでした',
+                      style: AppTheme.body1.copyWith(
+                        color: AppTheme.textSecondary,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                  )
-                ).toList(),
-              ),
-            ),
-          ],
-          // 例文
-          if (_wordNetEntry!.examples.isNotEmpty) ...[
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppTheme.backgroundSecondary,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.format_quote,
-                        size: 16,
-                        color: AppTheme.success,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '例文',
-                        style: AppTheme.caption.copyWith(
-                          color: AppTheme.success,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  ..._wordNetEntry!.examples.take(2).map((example) =>
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Text(
-                        example,
-                        style: AppTheme.body2.copyWith(
-                          color: AppTheme.textSecondary,
-                          fontStyle: FontStyle.italic,
-                        ),
-                        textAlign: TextAlign.center,
+                    const SizedBox(height: 8),
+                    Text(
+                      '「${widget.word}」',
+                      style: AppTheme.body2.copyWith(
+                        color: AppTheme.textTertiary,
+                        fontStyle: FontStyle.italic,
                       ),
                     ),
-                  ).toList(),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
-          // 同義語
-          if (_wordNetEntry!.synonyms.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            Text(
-              '類義語',
-              style: AppTheme.caption.copyWith(
-                color: AppTheme.textTertiary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: _wordNetEntry!.synonyms
-                  .take(4)
-                  .map((synonym) => Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 4,
+            )
+          else ...[
+            // 単語と品詞
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _wordNetEntry!.word,
+                        style: AppTheme.headline2,
+                      ),
+                      const SizedBox(height: 8),
+                      // 日本語の意味
+                      if (_wordNetEntry!.definitions.isNotEmpty) ...[
+                        Text(
+                          _wordNetEntry!.definitions.join('、'),
+                          style: AppTheme.body1.copyWith(fontSize: 18),
                         ),
-                        decoration: BoxDecoration(
-                          color: AppTheme.backgroundTertiary,
-                          borderRadius: BorderRadius.circular(16),
+                      ],
+                    ],
+                  ),
+                ),
+                // 品詞バッジ
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.info.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppTheme.info.withOpacity(0.3),
+                    ),
+                  ),
+                  child: Text(
+                    _wordNetEntry!.partOfSpeech,
+                    style: AppTheme.caption.copyWith(
+                      color: AppTheme.info,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            
+            // 例文
+            if (_wordNetEntry!.examples.isNotEmpty) ...[
+              const SizedBox(height: 20),
+              AppCard(
+                padding: const EdgeInsets.all(16),
+                backgroundColor: AppTheme.backgroundTertiary,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.format_quote,
+                          size: 16,
+                          color: AppTheme.primaryBlue,
                         ),
-                        child: Text(
-                          synonym,
-                          style: AppTheme.caption.copyWith(
-                            color: AppTheme.textSecondary,
-                            fontSize: 12,
+                        const SizedBox(width: 4),
+                        Text(
+                          '例文',
+                          style: AppTheme.body2.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.primaryBlue,
                           ),
                         ),
-                      ))
-                  .toList(),
-            ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    ..._wordNetEntry!.examples.take(3).map((example) => 
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(
+                          example,
+                          style: AppTheme.body1,
+                        ),
+                      ),
+                    ).toList(),
+                  ],
+                ),
+              ),
+            ],
+            
+            // 同義語
+            if (_wordNetEntry!.synonyms.isNotEmpty) ...[
+              const SizedBox(height: 20),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '類義語',
+                    style: AppTheme.body2.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _wordNetEntry!.synonyms
+                        .take(6)
+                        .map((synonym) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppTheme.backgroundSecondary,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: AppTheme.borderColor,
+                                ),
+                              ),
+                              child: Text(
+                                synonym,
+                                style: AppTheme.caption.copyWith(
+                                  color: AppTheme.textSecondary,
+                                ),
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                ],
+              ),
+            ],
+            
+            // 下部の余白
+            const SizedBox(height: 20),
           ],
         ],
       ),
-    );
+    ).animate().fadeIn(duration: 200.ms).slideY(begin: 0.1, end: 0);
   }
 }
 
-class DictionaryCard extends StatelessWidget {
-  final Widget child;
-  final EdgeInsetsGeometry padding;
-  final Color? backgroundColor;
-  final VoidCallback? onTap;
-
-  const DictionaryCard({
-    super.key,
-    required this.child,
-    this.padding = const EdgeInsets.all(16),
-    this.backgroundColor,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: backgroundColor ?? AppTheme.backgroundPrimary,
-      borderRadius: BorderRadius.circular(16),
-      elevation: 4,
-      shadowColor: Colors.black.withOpacity(0.1),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: padding,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: AppTheme.borderColor,
-              width: 1,
-            ),
-          ),
-          child: child,
-        ),
-      ),
-    );
-  }
-}

@@ -409,10 +409,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                   child: OutlinedButton.icon(
                     onPressed: () {
                       Navigator.pop(context);
-                      showDialog(
-                        context: context,
-                        builder: (context) => JapaneseDictionaryDialog(word: word.english),
-                      );
+                      JapaneseDictionaryDialog.show(context, word.english);
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppTheme.primaryBlue,
