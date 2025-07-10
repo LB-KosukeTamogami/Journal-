@@ -31,6 +31,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   String _translatedContent = '';
   List<String> _corrections = [];
   List<String> _learnedPhrases = [];
+  List<PhraseInfo> _extractedWords = [];
   
   @override
   void initState() {
@@ -99,11 +100,19 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           }
         }
         
+        // 単語・熟語を抽出
+        final phraseInfos = TranslationService.detectPhrasesAndWords(widget.entry.content);
+        final extractedWords = phraseInfos.where((info) {
+          final isWord = info.text.trim().isNotEmpty && RegExp(r'\w').hasMatch(info.text);
+          return isWord && (info.translation.isNotEmpty || RegExp(r'^[a-zA-Z\s-]+$').hasMatch(info.text));
+        }).toList();
+        
         setState(() {
           _correctedContent = correctedContent;
           _translatedContent = translationResult.success ? translationResult.translatedText : (result['translation'] ?? '');
           _corrections = corrections;
           _learnedPhrases = List<String>.from(result['learned_phrases'] ?? []);
+          _extractedWords = extractedWords;
           _isLoading = false;
         });
       } catch (apiError) {
@@ -136,6 +145,14 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           }
           
           _learnedPhrases = [];
+          
+          // 単語・熟語を抽出
+          final phraseInfos2 = TranslationService.detectPhrasesAndWords(widget.entry.content);
+          _extractedWords = phraseInfos2.where((info) {
+            final isWord = info.text.trim().isNotEmpty && RegExp(r'\w').hasMatch(info.text);
+            return isWord && (info.translation.isNotEmpty || RegExp(r'^[a-zA-Z\s-]+$').hasMatch(info.text));
+          }).toList();
+          
           _isLoading = false;
         });
       }
@@ -143,6 +160,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       setState(() {
         _correctedContent = widget.entry.content;
         _translatedContent = widget.entry.translatedContent ?? '翻訳を読み込めませんでした';
+        _extractedWords = [];
         _isLoading = false;
       });
     }
@@ -286,7 +304,10 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   ],
                 ),
                 const SizedBox(height: 12),
-                _buildInteractiveText(widget.entry.content, widget.entry.originalLanguage),
+                Text(
+                  widget.entry.content,
+                  style: AppTheme.body1.copyWith(height: 1.6),
+                ),
               ],
             ),
           ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
@@ -388,7 +409,10 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     ],
                   ),
                   const SizedBox(height: 12),
-                  _buildInteractiveText(_correctedContent, 'en'),
+                  Text(
+                    _correctedContent,
+                    style: AppTheme.body1.copyWith(height: 1.6),
+                  ),
                 ],
               ),
             ).animate().fadeIn(delay: 300.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
@@ -891,6 +915,87 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             
             const SizedBox(height: 16),
             
+            // 抽出された単語・熟語リスト
+            if (_extractedWords.isNotEmpty) ..[
+              AppCard(
+                backgroundColor: AppTheme.primaryBlue.withOpacity(0.05),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.library_books,
+                          color: AppTheme.primaryBlue,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '抽出された単語・熟語',
+                          style: AppTheme.body1.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.primaryBlue,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _extractedWords.map((info) => 
+                        GestureDetector(
+                          onTap: () {
+                            if (info.translation.isNotEmpty) {
+                              _showWordDetail(info.text.trim(), info.translation);
+                            } else if (RegExp(r'^[a-zA-Z\s-]+$').hasMatch(info.text.trim())) {
+                              JapaneseDictionaryDialog.show(context, info.text.trim());
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: info.isPhrase 
+                                  ? AppTheme.success.withOpacity(0.1)
+                                  : AppTheme.primaryBlue.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: info.isPhrase 
+                                    ? AppTheme.success.withOpacity(0.3)
+                                    : AppTheme.primaryBlue.withOpacity(0.3),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  info.text,
+                                  style: AppTheme.body2.copyWith(
+                                    color: info.isPhrase ? AppTheme.success : AppTheme.primaryBlue,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                if (info.translation.isNotEmpty) ...[
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '• ${info.translation}',
+                                    style: AppTheme.caption.copyWith(
+                                      color: AppTheme.textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                      ).toList(),
+                    ),
+                  ],
+                ),
+              ).animate().fadeIn(delay: 500.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+              const SizedBox(height: 16),
+            ],
+            
             // 学習カードに追加ボタン
             SizedBox(
               width: double.infinity,
@@ -914,65 +1019,8 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     );
   }
   
-  Widget _buildInteractiveText(String text, String? language) {
-    final phraseInfos = TranslationService.detectPhrasesAndWords(text);
-    final spans = <InlineSpan>[];
-    
-    for (final info in phraseInfos) {
-      final hasTranslation = info.translation.isNotEmpty;
-      final isWord = info.text.trim().isNotEmpty && RegExp(r'\w').hasMatch(info.text);
-      
-      if (isWord) {
-        spans.add(
-          WidgetSpan(
-            child: GestureDetector(
-              onTap: () {
-                _showWordDetail(info.text.trim(), info.translation, canAddToCards: hasTranslation);
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                decoration: BoxDecoration(
-                  color: info.isPhrase 
-                      ? AppTheme.success.withOpacity(hasTranslation ? 0.1 : 0.05)
-                      : AppTheme.primaryBlue.withOpacity(hasTranslation ? 0.08 : 0.04),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  info.text,
-                  style: AppTheme.body1.copyWith(
-                    color: hasTranslation 
-                        ? (info.isPhrase ? AppTheme.success : AppTheme.primaryBlue)
-                        : AppTheme.textPrimary,
-                    height: 1.6,
-                    fontWeight: hasTranslation ? FontWeight.w500 : FontWeight.normal,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      } else {
-        // スペースや記号はそのまま表示
-        spans.add(TextSpan(
-          text: info.text,
-          style: AppTheme.body1.copyWith(height: 1.6),
-        ));
-      }
-    }
-    
-    return Text.rich(
-      TextSpan(children: spans),
-    );
-  }
   
-  void _showWordDetail(String english, String japanese, {bool canAddToCards = true}) {
-    // 英単語の場合は辞書ダイアログを表示
-    if (RegExp(r'^[a-zA-Z\s-]+$').hasMatch(english.trim())) {
-      JapaneseDictionaryDialog.show(context, english);
-      return;
-    }
-    
-    // それ以外の場合は従来の詳細ダイアログを表示
+  void _showWordDetail(String english, String japanese) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -1046,7 +1094,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 ],
               ),
             ),
-            if (canAddToCards && japanese.isNotEmpty) ...[
+            if (japanese.isNotEmpty) ...[
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
