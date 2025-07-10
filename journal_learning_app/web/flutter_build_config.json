@@ -1,0 +1,9 @@
+{
+  "builds": [
+    {
+      "target": "web",
+      "renderer": "html",
+      "dart-define": []
+    }
+  ]
+}
