@@ -53,68 +53,71 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
         title: Text('学習', style: AppTheme.headline3),
         backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppTheme.backgroundPrimary,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.borderColor),
-              ),
-              padding: const EdgeInsets.all(4),
-              child: TabBar(
-                controller: _tabController,
-                labelColor: Colors.white,
-                unselectedLabelColor: AppTheme.textSecondary,
-                indicator: BoxDecoration(
-                  color: AppTheme.primaryColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                indicatorPadding: EdgeInsets.zero,
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelStyle: AppTheme.body2.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-                unselectedLabelStyle: AppTheme.body2,
-                dividerColor: Colors.transparent,
-                tabs: [
-                  Tab(
-                    child: Container(
-                      width: double.infinity,
-                      child: const Center(child: Text('すべて')),
-                    ),
-                  ),
-                  Tab(
-                    child: Container(
-                      width: double.infinity,
-                      child: const Center(child: Text('学習中')),
-                    ),
-                  ),
-                  Tab(
-                    child: Container(
-                      width: double.infinity,
-                      child: const Center(child: Text('習得済み')),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
       ),
       body: _isLoading
           ? Center(
               child: CircularProgressIndicator(color: AppTheme.primaryColor),
             )
-          : TabBarView(
-              controller: _tabController,
+          : Column(
               children: [
-                _buildCardList(_allWords),
-                _buildLearningTab(),
-                _buildCardList(_allWords.where((word) => word.masteryLevel == 2).toList()),
+                Container(
+                  color: AppTheme.backgroundPrimary,
+                  child: Container(
+                    margin: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppTheme.backgroundPrimary,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppTheme.borderColor),
+                    ),
+                    padding: const EdgeInsets.all(4),
+                    child: TabBar(
+                      controller: _tabController,
+                      labelColor: Colors.white,
+                      unselectedLabelColor: AppTheme.textSecondary,
+                      indicator: BoxDecoration(
+                        color: AppTheme.primaryColor,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      indicatorPadding: EdgeInsets.zero,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      labelStyle: AppTheme.body2.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      unselectedLabelStyle: AppTheme.body2,
+                      dividerColor: Colors.transparent,
+                      tabs: [
+                        Tab(
+                          child: Container(
+                            width: double.infinity,
+                            child: const Center(child: Text('すべて')),
+                          ),
+                        ),
+                        Tab(
+                          child: Container(
+                            width: double.infinity,
+                            child: const Center(child: Text('学習中')),
+                          ),
+                        ),
+                        Tab(
+                          child: Container(
+                            width: double.infinity,
+                            child: const Center(child: Text('習得済み')),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildCardList(_allWords),
+                      _buildLearningTab(),
+                      _buildCardList(_allWords.where((word) => word.masteryLevel == 2).toList()),
+                    ],
+                  ),
+                ),
               ],
             ),
       floatingActionButton: Container(
