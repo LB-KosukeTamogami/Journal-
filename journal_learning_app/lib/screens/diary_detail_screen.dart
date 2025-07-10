@@ -9,7 +9,7 @@ import '../services/translation_service.dart';
 import '../services/storage_service.dart';
 import '../services/gemini_service.dart';
 import '../widgets/text_to_speech_button.dart';
-import '../widgets/dictionary_dialog.dart';
+import '../widgets/japanese_dictionary_dialog.dart';
 import 'diary_creation_screen.dart';
 
 class DiaryDetailScreen extends StatefulWidget {
@@ -970,7 +970,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     if (RegExp(r'^[a-zA-Z\s-]+$').hasMatch(english.trim())) {
       showDialog(
         context: context,
-        builder: (context) => DictionaryDialog(word: english),
+        builder: (context) => JapaneseDictionaryDialog(word: english),
       );
       return;
     }

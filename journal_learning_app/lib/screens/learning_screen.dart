@@ -4,7 +4,7 @@ import '../theme/app_theme.dart';
 import '../models/word.dart';
 import '../services/storage_service.dart';
 import '../widgets/text_to_speech_button.dart';
-import '../widgets/dictionary_dialog.dart';
+import '../widgets/japanese_dictionary_dialog.dart';
 import 'flashcard_session_screen.dart' hide AppCard;
 
 class LearningScreen extends StatefulWidget {
@@ -411,7 +411,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                       Navigator.pop(context);
                       showDialog(
                         context: context,
-                        builder: (context) => DictionaryDialog(word: word.english),
+                        builder: (context) => JapaneseDictionaryDialog(word: word.english),
                       );
                     },
                     style: OutlinedButton.styleFrom(
