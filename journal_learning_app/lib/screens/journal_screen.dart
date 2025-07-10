@@ -239,8 +239,8 @@ class _JournalScreenState extends State<JournalScreen> {
                   ),
                 ),
               ],
-            ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1, end: 0),
-          ),
+            ),
+          ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1, end: 0),
           
           const SizedBox(height: 16),
           
