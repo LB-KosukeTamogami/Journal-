@@ -95,6 +95,18 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
     });
   }
   
+  void _seekForward() {
+    setState(() {
+      _currentPosition = (_currentPosition + 5).clamp(0, _totalDuration);
+    });
+  }
+  
+  void _seekBackward() {
+    setState(() {
+      _currentPosition = (_currentPosition - 5).clamp(0, _totalDuration);
+    });
+  }
+  
   void _changeSpeed(double speed) {
     setState(() {
       _playbackSpeed = speed;
@@ -131,13 +143,106 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Top row with controls
-              Row(
+              // Progress bar at the top
+              Column(
                 children: [
+                  SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      activeTrackColor: AppTheme.primaryColor,
+                      inactiveTrackColor: AppTheme.borderColor,
+                      thumbColor: AppTheme.primaryColor,
+                      overlayColor: AppTheme.primaryColor.withOpacity(0.2),
+                      trackHeight: 3,
+                      thumbShape: const RoundSliderThumbShape(
+                        enabledThumbRadius: 6,
+                      ),
+                    ),
+                    child: Slider(
+                      value: _currentPosition,
+                      min: 0,
+                      max: _totalDuration,
+                      onChanged: _onSeek,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _formatTime(_currentPosition),
+                          style: AppTheme.caption.copyWith(
+                            color: AppTheme.textSecondary,
+                            fontSize: 10,
+                          ),
+                        ),
+                        Text(
+                          _formatTime(_totalDuration),
+                          style: AppTheme.caption.copyWith(
+                            color: AppTheme.textSecondary,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 4),
+              
+              // Control buttons row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Speed control
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: AppTheme.backgroundSecondary,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppTheme.borderColor),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildCompactSpeedButton('0.5', 0.5),
+                        const SizedBox(width: 2),
+                        _buildCompactSpeedButton('0.75', 0.75),
+                        const SizedBox(width: 2),
+                        _buildCompactSpeedButton('1.0', 1.0),
+                      ],
+                    ),
+                  ),
+                  
+                  const SizedBox(width: 16),
+                  
+                  // 5 seconds backward
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: AppTheme.backgroundSecondary,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppTheme.borderColor),
+                    ),
+                    child: IconButton(
+                      onPressed: _seekBackward,
+                      icon: Icon(
+                        Icons.replay_5,
+                        color: AppTheme.textPrimary,
+                        size: 18,
+                      ),
+                      padding: EdgeInsets.zero,
+                    ),
+                  ),
+                  
+                  const SizedBox(width: 8),
+                  
                   // Play/Pause button
                   Container(
-                    width: 40,
-                    height: 40,
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
                       color: AppTheme.primaryColor,
                       shape: BoxShape.circle,
@@ -147,86 +252,35 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
                       icon: Icon(
                         _isPlaying ? Icons.pause : Icons.play_arrow,
                         color: Colors.white,
-                        size: 20,
+                        size: 24,
                       ),
                       padding: EdgeInsets.zero,
                     ),
                   ),
                   
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 8),
                   
-                  // Progress bar
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SliderTheme(
-                          data: SliderTheme.of(context).copyWith(
-                            activeTrackColor: AppTheme.primaryColor,
-                            inactiveTrackColor: AppTheme.borderColor,
-                            thumbColor: AppTheme.primaryColor,
-                            overlayColor: AppTheme.primaryColor.withOpacity(0.2),
-                            trackHeight: 3,
-                            thumbShape: const RoundSliderThumbShape(
-                              enabledThumbRadius: 6,
-                            ),
-                          ),
-                          child: Slider(
-                            value: _currentPosition,
-                            min: 0,
-                            max: _totalDuration,
-                            onChanged: _onSeek,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                _formatTime(_currentPosition),
-                                style: AppTheme.caption.copyWith(
-                                  color: AppTheme.textSecondary,
-                                  fontSize: 11,
-                                ),
-                              ),
-                              Text(
-                                _formatTime(_totalDuration),
-                                style: AppTheme.caption.copyWith(
-                                  color: AppTheme.textSecondary,
-                                  fontSize: 11,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  
-                  const SizedBox(width: 12),
-                  
-                  // Speed control
+                  // 5 seconds forward
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
                       color: AppTheme.backgroundSecondary,
-                      borderRadius: BorderRadius.circular(16),
+                      shape: BoxShape.circle,
                       border: Border.all(color: AppTheme.borderColor),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _buildCompactSpeedButton('0.75', 0.75),
-                        const SizedBox(width: 4),
-                        _buildCompactSpeedButton('1.0', 1.0),
-                        const SizedBox(width: 4),
-                        _buildCompactSpeedButton('1.25', 1.25),
-                      ],
+                    child: IconButton(
+                      onPressed: _seekForward,
+                      icon: Icon(
+                        Icons.forward_5,
+                        color: AppTheme.textPrimary,
+                        size: 18,
+                      ),
+                      padding: EdgeInsets.zero,
                     ),
                   ),
                   
-                  const SizedBox(width: 8),
+                  const Spacer(),
                   
                   // Close button
                   IconButton(
