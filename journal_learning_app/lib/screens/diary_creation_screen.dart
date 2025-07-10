@@ -11,10 +11,12 @@ import 'diary_review_screen.dart';
 
 class DiaryCreationScreen extends StatefulWidget {
   final DiaryEntry? existingEntry;
+  final String? initialContent;
 
   const DiaryCreationScreen({
     Key? key,
     this.existingEntry,
+    this.initialContent,
   }) : super(key: key);
 
   @override
@@ -38,6 +40,9 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     if (widget.existingEntry != null) {
       _titleController.text = widget.existingEntry!.title;
       _contentController.text = widget.existingEntry!.content;
+      _detectLanguage();
+    } else if (widget.initialContent != null) {
+      _contentController.text = widget.initialContent!;
       _detectLanguage();
     }
     

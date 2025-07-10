@@ -449,4 +449,94 @@ Respond in JSON format:
     
     return result;
   }
+  
+  static Future<Map<String, dynamic>> analyzeConversation({
+    required String conversationText,
+    required List<ConversationMessage> messages,
+  }) async {
+    try {
+      final apiKey = ApiConfig.getGeminiApiKey();
+      if (apiKey == null || apiKey.isEmpty) {
+        return _getOfflineAnalysis(messages);
+      }
+
+      final prompt = '''
+会話の内容を分析して、以下の情報を日本語で提供してください：
+
+会話内容：
+$conversationText
+
+以下のJSON形式で回答してください：
+{
+  "summary": "会話の要約（2-3文で学習者が何を練習したか、どんな内容を話したかを説明）",
+  "keyPhrases": ["会話で使用された重要なフレーズや表現を5つまで"],
+  "newWords": ["学習者が使った新しいまたは難しい単語を5つまで"],
+  "corrections": ["学習者の英語の改善点や文法的な修正提案を3つまで"]
+}
+
+注意：
+- 要約は学習者の視点で書いてください
+- キーフレーズは実際に会話で使われた英語表現を抽出してください
+- 修正提案は具体的で建設的なものにしてください''';
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl?key=$apiKey'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'contents': [{
+            'parts': [{
+              'text': prompt
+            }]
+          }],
+          'generationConfig': {
+            'temperature': 0.7,
+            'topK': 40,
+            'topP': 0.95,
+            'maxOutputTokens': 1024,
+            'responseMimeType': 'application/json',
+          }
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['candidates'] != null && 
+            data['candidates'].isNotEmpty &&
+            data['candidates'][0]['content'] != null &&
+            data['candidates'][0]['content']['parts'] != null &&
+            data['candidates'][0]['content']['parts'].isNotEmpty) {
+          
+          final text = data['candidates'][0]['content']['parts'][0]['text'];
+          final analysis = jsonDecode(text);
+          
+          return {
+            'summary': analysis['summary'] ?? '',
+            'keyPhrases': List<String>.from(analysis['keyPhrases'] ?? []),
+            'newWords': List<String>.from(analysis['newWords'] ?? []),
+            'corrections': List<String>.from(analysis['corrections'] ?? []),
+          };
+        }
+      }
+      
+      return _getOfflineAnalysis(messages);
+    } catch (e) {
+      print('Error analyzing conversation: $e');
+      return _getOfflineAnalysis(messages);
+    }
+  }
+  
+  static Map<String, dynamic> _getOfflineAnalysis(List<ConversationMessage> messages) {
+    // オフライン時の簡単な分析
+    final userMessages = messages.where((m) => m.isUser).toList();
+    final totalWords = userMessages.fold(0, (sum, msg) => sum + msg.text.split(' ').length);
+    
+    return {
+      'summary': '今回の会話では${messages.length}回のメッセージをやり取りしました。合計で約$totalWords単語を使用して英語の練習を行いました。',
+      'keyPhrases': userMessages.take(3).map((m) => m.text.split('.').first).toList(),
+      'newWords': [],
+      'corrections': ['オフラインのため、詳細な分析は利用できません。'],
+    };
+  }
 }

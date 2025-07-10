@@ -4,6 +4,7 @@ import '../theme/app_theme.dart';
 import '../services/gemini_service.dart';
 import '../models/conversation_message.dart';
 import '../services/storage_service.dart';
+import 'conversation_summary_screen.dart';
 
 class ConversationJournalScreen extends StatefulWidget {
   const ConversationJournalScreen({super.key});
@@ -142,6 +143,30 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
     _sendMessage(suggestion);
   }
   
+  void _endConversation() {
+    if (_messages.length <= 2) return; // 初期メッセージのみの場合は何もしない
+    
+    // 会話履歴から初期メッセージを除外
+    final conversationMessages = _messages.skip(2).toList();
+    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ConversationSummaryScreen(
+          messages: conversationMessages,
+          topic: _conversationTopic,
+        ),
+      ),
+    ).then((_) {
+      // 振り返り画面から戻ってきた時に会話をリセット
+      setState(() {
+        _messages.clear();
+        _conversationTopic = null;
+        _initializeConversation();
+      });
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,6 +176,16 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
         backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
         actions: [
+          // 会話を終了ボタン
+          if (_messages.length > 2) // 初期メッセージ以外がある場合のみ表示
+            TextButton.icon(
+              icon: Icon(Icons.check_circle_outline, color: AppTheme.primaryColor, size: 20),
+              label: Text(
+                '会話を終了',
+                style: AppTheme.body2.copyWith(color: AppTheme.primaryColor),
+              ),
+              onPressed: _endConversation,
+            ),
           IconButton(
             icon: Icon(Icons.refresh, color: AppTheme.textPrimary),
             onPressed: () {
