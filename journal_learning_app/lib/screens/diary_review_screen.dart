@@ -7,6 +7,7 @@ import '../theme/app_theme.dart';
 import '../services/translation_service.dart';
 import '../services/gemini_service.dart';
 import '../services/storage_service.dart';
+import '../widgets/text_to_speech_button.dart';
 
 class DiaryReviewScreen extends StatefulWidget {
   final DiaryEntry entry;
@@ -249,19 +250,28 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(
-                Icons.translate,
-                color: AppTheme.success,
-                size: 20,
+              Row(
+                children: [
+                  Icon(
+                    Icons.translate,
+                    color: AppTheme.success,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '英語翻訳',
+                    style: AppTheme.body1.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.success,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              Text(
-                '英語翻訳',
-                style: AppTheme.body1.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.success,
-                ),
+              TextToSpeechButton(
+                text: _translatedContent,
+                size: 20,
               ),
             ],
           ),
@@ -287,19 +297,28 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(
-                    Icons.check_circle,
-                    color: AppTheme.success,
-                    size: 20,
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.check_circle,
+                        color: AppTheme.success,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '添削後',
+                        style: AppTheme.body1.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.success,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '添削後',
-                    style: AppTheme.body1.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.success,
-                    ),
+                  TextToSpeechButton(
+                    text: _correctedContent,
+                    size: 20,
                   ),
                 ],
               ),
