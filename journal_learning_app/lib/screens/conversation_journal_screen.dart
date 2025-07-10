@@ -147,7 +147,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
     return Scaffold(
       backgroundColor: AppTheme.backgroundSecondary,
       appBar: AppBar(
-        title: Text('Conversation Journal', style: AppTheme.headline3),
+        title: Text('会話ジャーナル', style: AppTheme.headline3),
         backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
         actions: [

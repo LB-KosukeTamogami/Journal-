@@ -19,7 +19,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
     return Scaffold(
       backgroundColor: AppTheme.backgroundSecondary,
       appBar: AppBar(
-        title: Text('My Page', style: AppTheme.headline3),
+        title: Text('マイページ', style: AppTheme.headline3),
         backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
       ),

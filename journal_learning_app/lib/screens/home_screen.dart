@@ -109,38 +109,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: AppTheme.headline1,
                       ),
                       const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Text(
-                            '${_today.month}月${_today.day}日 ${_getDayOfWeek()}曜日',
-                            style: AppTheme.body2,
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: AppTheme.primaryColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  '🐿',
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'Acoと一緒に学習中',
-                                  style: AppTheme.caption.copyWith(
-                                    color: AppTheme.primaryColor,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                      Text(
+                        '${_today.month}月${_today.day}日 ${_getDayOfWeek()}曜日',
+                        style: AppTheme.body2,
                       ),
                     ],
                   ),

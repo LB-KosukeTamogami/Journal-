@@ -87,7 +87,7 @@ class _JournalScreenState extends State<JournalScreen> {
     return Scaffold(
       backgroundColor: AppTheme.backgroundSecondary,
       appBar: AppBar(
-        title: Text('Journal', style: AppTheme.headline3),
+        title: Text('ジャーナル', style: AppTheme.headline3),
         backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
         actions: [

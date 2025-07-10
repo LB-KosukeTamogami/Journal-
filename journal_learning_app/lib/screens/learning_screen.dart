@@ -50,7 +50,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     return Scaffold(
       backgroundColor: AppTheme.backgroundSecondary,
       appBar: AppBar(
-        title: Text('Learning', style: AppTheme.headline3),
+        title: Text('学習', style: AppTheme.headline3),
         backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
         bottom: PreferredSize(
