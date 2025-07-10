@@ -235,9 +235,9 @@ class _ShadowingPlayerState extends State<ShadowingPlayer> with SingleTickerProv
                           ),
                         ),
                       ).animate(target: _isPlaying ? 1 : 0)
-                        .scale(begin: 1, end: 1.1, duration: 300.ms)
+                        .scale(begin: const Offset(1, 1), end: const Offset(1.1, 1.1), duration: 300.ms)
                         .then()
-                        .scale(begin: 1.1, end: 1, duration: 300.ms),
+                        .scale(begin: const Offset(1.1, 1.1), end: const Offset(1, 1), duration: 300.ms),
                       
                       const SizedBox(height: 24),
                       
