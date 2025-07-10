@@ -118,7 +118,7 @@ class _TextToSpeechButtonState extends State<TextToSpeechButton> with SingleTick
                     size: widget.size ?? 24,
                   ),
           ),
-          onPressed: _isSpeaking || widget.text.isEmpty ? null : _handlePress,
+          onPressed: widget.text.isEmpty ? null : _handlePress,
           tooltip: _isSpeaking ? '停止' : '読み上げ',
         ),
       ),

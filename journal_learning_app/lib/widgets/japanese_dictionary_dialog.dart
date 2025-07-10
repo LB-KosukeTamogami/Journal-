@@ -5,18 +5,23 @@ import '../services/japanese_wordnet_service.dart';
 
 class JapaneseDictionaryDialog extends StatefulWidget {
   final String word;
+  final String? providedTranslation;
 
   const JapaneseDictionaryDialog({
     super.key,
     required this.word,
+    this.providedTranslation,
   });
 
-  static void show(BuildContext context, String word) {
+  static void show(BuildContext context, String word, {String? providedTranslation}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => JapaneseDictionaryDialog(word: word),
+      builder: (context) => JapaneseDictionaryDialog(
+        word: word,
+        providedTranslation: providedTranslation,
+      ),
     );
   }
 
@@ -35,6 +40,24 @@ class _JapaneseDictionaryDialogState extends State<JapaneseDictionaryDialog> {
   }
 
   Future<void> _loadDictionaryData() async {
+    // 提供された翻訳がある場合は、それを使用してWordNetEntryを作成
+    if (widget.providedTranslation != null) {
+      if (mounted) {
+        setState(() {
+          _wordNetEntry = WordNetEntry(
+            word: widget.word,
+            partOfSpeech: '単語',
+            definitions: [widget.providedTranslation!],
+            examples: [],
+            synonyms: [],
+          );
+          _isLoading = false;
+        });
+      }
+      return;
+    }
+    
+    // 提供された翻訳がない場合は、WordNetサービスから取得
     final result = await JapaneseWordNetService.lookupWord(widget.word);
     
     if (mounted) {

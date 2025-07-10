@@ -946,10 +946,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       children: _extractedWords.map((info) => 
                         GestureDetector(
                           onTap: () {
-                            if (info.translation.isNotEmpty) {
-                              _showWordDetail(info.text.trim(), info.translation);
-                            } else if (RegExp(r'^[a-zA-Z\s-]+$').hasMatch(info.text.trim())) {
-                              JapaneseDictionaryDialog.show(context, info.text.trim());
+                            if (RegExp(r'^[a-zA-Z\s-]+$').hasMatch(info.text.trim())) {
+                              // 英語の単語の場合、日本語辞書ダイアログを表示
+                              JapaneseDictionaryDialog.show(
+                                context, 
+                                info.text.trim(),
+                                providedTranslation: info.translation.isNotEmpty ? info.translation : null,
+                              );
                             }
                           },
                           child: Container(
