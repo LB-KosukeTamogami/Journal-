@@ -127,9 +127,7 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: Alignment.bottomCenter,
       children: [
-        // Main player container
         Container(
           decoration: BoxDecoration(
             color: AppTheme.backgroundPrimary,
@@ -143,8 +141,38 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
           ),
           child: SafeArea(
             top: false,
-            child: Container(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 6, bottom: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Progress bar at the very top
+                Container(
+                  height: 4,
+                  child: SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      activeTrackColor: AppTheme.primaryColor,
+                      inactiveTrackColor: AppTheme.borderColor,
+                      thumbColor: AppTheme.primaryColor,
+                      overlayColor: AppTheme.primaryColor.withOpacity(0.2),
+                      trackHeight: 4,
+                      thumbShape: const RoundSliderThumbShape(
+                        enabledThumbRadius: 0, // Hide thumb for cleaner look
+                      ),
+                      overlayShape: const RoundSliderOverlayShape(
+                        overlayRadius: 0,
+                      ),
+                    ),
+                    child: Slider(
+                      value: _currentPosition,
+                      min: 0,
+                      max: _totalDuration,
+                      onChanged: _onSeek,
+                    ),
+                  ),
+                ),
+                
+                // Main controls
+                Container(
+                  padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 12),
               child: Row(
                 children: [
                   // Speed control (dropdown style)
@@ -282,31 +310,17 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
                       ),
                     ],
                   ),
-                ],
-              ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
         
-        // Progress bar on top edge
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          child: SizedBox(
-            height: 3,
-            child: LinearProgressIndicator(
-              value: _totalDuration > 0 ? _currentPosition / _totalDuration : 0,
-              backgroundColor: AppTheme.borderColor,
-              valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
-            ),
-          ),
-        ),
-        
-        // Speed options popup
+        // Speed options popup (shown above the player when open)
         if (_showSpeedOptions)
           Positioned(
-            bottom: 60,
+            bottom: 70,
             left: 16,
             child: Container(
               decoration: BoxDecoration(
@@ -314,9 +328,9 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withOpacity(0.15),
                     blurRadius: 10,
-                    offset: const Offset(0, -2),
+                    offset: const Offset(0, 4),
                   ),
                 ],
                 border: Border.all(color: AppTheme.borderColor),
