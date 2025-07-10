@@ -298,6 +298,9 @@ Respond in JSON format:
       }
     } catch (e) {
       print('Conversation generation error: $e');
+      if (e.toString().contains('XMLHttpRequest')) {
+        print('Note: CORS error detected. This is expected in web development mode.');
+      }
     }
     
     return _getOfflineConversationResponse(userMessage);

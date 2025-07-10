@@ -62,12 +62,16 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
   }
   
   void _scrollToBottom() {
-    if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
+    if (_scrollController.hasClients && mounted) {
+      try {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      } catch (e) {
+        // スクロールエラーは静かに処理
+      }
     }
   }
   
@@ -112,7 +116,9 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
         });
         
         // 少し遅延を入れてからスクロール
-        Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (mounted) _scrollToBottom();
+        });
       }
     } catch (e) {
       if (mounted) {

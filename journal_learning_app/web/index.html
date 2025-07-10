@@ -156,13 +156,14 @@
       // Service Worker を無効化
       window.addEventListener('load', function() {
         try {
-          if (window._flutter && window._flutter.loader) {
+          // Flutter loaderが利用可能になるまで待つ
+          if (typeof window._flutter !== 'undefined' && window._flutter.loader) {
             window._flutter.loader.load({
               serviceWorkerSettings: null
             });
           }
         } catch (e) {
-          console.log('Flutter loader initialization:', e);
+          // エラーは静かに処理
         }
         
         // Flutter初期化チェックを開始
