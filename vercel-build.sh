@@ -38,7 +38,9 @@ fi
 # Fix renderer in flutter_bootstrap.js
 echo "Ensuring HTML renderer is used..."
 if [ -f "build/web/flutter_bootstrap.js" ]; then
-    sed -i 's/"renderer":"canvaskit"/"renderer":"html"/g' build/web/flutter_bootstrap.js
+    # Create a temporary file with the fix
+    cat build/web/flutter_bootstrap.js | sed 's/"renderer":"canvaskit"/"renderer":"html"/g' > build/web/flutter_bootstrap.js.tmp
+    mv build/web/flutter_bootstrap.js.tmp build/web/flutter_bootstrap.js
     echo "Renderer configuration updated to HTML"
 fi
 
