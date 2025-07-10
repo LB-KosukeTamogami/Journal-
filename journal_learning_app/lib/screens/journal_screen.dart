@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'diary_creation_screen.dart';
 import 'diary_detail_screen.dart';
+import 'conversation_journal_screen.dart';
 import '../models/diary_entry.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
@@ -94,7 +95,12 @@ class _JournalScreenState extends State<JournalScreen> {
             margin: const EdgeInsets.only(right: 16),
             child: InkWell(
               onTap: () {
-                // TODO: 会話ジャーナルへの遷移
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ConversationJournalScreen(),
+                  ),
+                );
               },
               borderRadius: BorderRadius.circular(12),
               child: Container(
@@ -396,16 +402,10 @@ class _JournalScreenState extends State<JournalScreen> {
               AppCard(
                 onTap: () {
                   Navigator.pop(context);
-                  // TODO: 会話ジャーナル機能の実装
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('会話ジャーナル機能は準備中です'),
-                      backgroundColor: AppTheme.info,
-                      behavior: SnackBarBehavior.floating,
-                      margin: const EdgeInsets.all(16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ConversationJournalScreen(),
                     ),
                   );
                 },

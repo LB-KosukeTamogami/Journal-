@@ -51,7 +51,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       // 自動翻訳を実行
       final translationResult = await TranslationService.autoTranslate(widget.entry.content);
       
-      // Groq APIで添削と翻訳を実行（フォールバック）
+      // Gemini APIで添削と翻訳を実行（フォールバック）
       try {
         final result = await GeminiService.correctAndTranslate(
           widget.entry.content,
@@ -104,8 +104,8 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           _learnedPhrases = List<String>.from(result['learned_phrases'] ?? []);
           _isLoading = false;
         });
-      } catch (groqError) {
-        // Groq API失敗時は翻訳サービスの結果のみ使用
+      } catch (apiError) {
+        // Gemini API失敗時は翻訳サービスの結果のみ使用
         setState(() {
           _correctedContent = widget.entry.content;
           _translatedContent = translationResult.success ? translationResult.translatedText : '翻訳を読み込めませんでした';

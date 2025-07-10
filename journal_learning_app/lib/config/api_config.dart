@@ -5,18 +5,6 @@ class ApiConfig {
   // Gemini API Key (開発環境用のデフォルト値)
   static const String _defaultGeminiApiKey = 'AIzaSyBRgV7ts1Viv7YaMmtHRUOgHXGi3-GqXos';
   
-  // 環境変数からAPIキーを取得（エラーを投げずにnullを返す）
-  static String? getGroqApiKey() {
-    // ビルド時の環境変数から読み込む
-    const buildTimeKey = String.fromEnvironment('GROQ_API_KEY');
-    if (buildTimeKey.isNotEmpty) {
-      return buildTimeKey;
-    }
-    
-    // APIキーが設定されていない場合はnullを返す
-    return null;
-  }
-  
   // Gemini APIキーを取得
   static String? getGeminiApiKey() {
     // ビルド時の環境変数から読み込む

@@ -38,7 +38,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
 
   Future<void> _processContent() async {
     try {
-      // Groq APIで添削と翻訳を実行
+      // Gemini APIで添削と翻訳を実行
       final result = await GeminiService.correctAndTranslate(
         widget.entry.content,
         targetLanguage: widget.detectedLanguage == 'ja' ? 'en' : 'ja',

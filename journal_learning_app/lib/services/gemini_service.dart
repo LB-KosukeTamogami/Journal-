@@ -1,7 +1,21 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/diary_entry.dart';
+import '../models/conversation_message.dart';
 import '../config/api_config.dart';
+
+// 会話レスポンスクラス
+class ConversationResponse {
+  final String reply;
+  final List<String> corrections;
+  final List<String> suggestions;
+
+  ConversationResponse({
+    required this.reply,
+    required this.corrections,
+    required this.suggestions,
+  });
+}
 
 class GeminiService {
   static const String _baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
@@ -196,6 +210,136 @@ IMPORTANT:
     }
     
     return _getOfflineExamples(word, language);
+  }
+  
+  // 会話ジャーナル用の応答生成
+  static Future<ConversationResponse> generateConversationResponse({
+    required String userMessage,
+    required List<ConversationMessage> conversationHistory,
+    String? topic,
+  }) async {
+    try {
+      final apiKey = ApiConfig.getGeminiApiKey();
+      if (apiKey == null || apiKey.isEmpty) {
+        return _getOfflineConversationResponse(userMessage);
+      }
+
+      // 会話履歴を構築
+      String history = '';
+      for (final message in conversationHistory.take(10)) { // 最新10件のみ
+        if (!message.isError) {
+          history += '${message.isUser ? "User" : "AI"}: ${message.text}\n';
+        }
+      }
+
+      final prompt = '''
+You are a friendly English conversation partner helping Japanese learners practice English.
+Your role is to:
+1. Respond naturally to the user's message
+2. Gently correct any grammar mistakes
+3. Provide helpful suggestions for improvement
+4. Keep the conversation engaging and educational
+
+Conversation History:
+$history
+
+User's Latest Message: "$userMessage"
+${topic != null ? 'Conversation Topic: $topic' : ''}
+
+RESPONSE RULES:
+- Use simple, clear English appropriate for learners
+- Include Japanese translations for difficult words/phrases
+- Be encouraging and supportive
+- Suggest 2-3 follow-up questions or responses the user could practice
+
+Respond in JSON format:
+{
+  "reply": "Your natural response in English with some Japanese support",
+  "corrections": ["Grammar correction 1 (if any)", "Grammar correction 2 (if any)"],
+  "suggestions": ["Suggested response 1", "Suggested response 2", "Suggested response 3"]
+}
+''';
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl?key=$apiKey'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'contents': [{
+            'parts': [{'text': prompt}]
+          }],
+          'generationConfig': {
+            'temperature': 0.8,
+            'maxOutputTokens': 1000,
+          },
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['candidates'] != null && 
+            data['candidates'].isNotEmpty &&
+            data['candidates'][0]['content'] != null &&
+            data['candidates'][0]['content']['parts'] != null &&
+            data['candidates'][0]['content']['parts'].isNotEmpty) {
+          
+          final textContent = data['candidates'][0]['content']['parts'][0]['text'];
+          final content = jsonDecode(textContent);
+          
+          return ConversationResponse(
+            reply: content['reply'] ?? 'I understand. Could you tell me more?',
+            corrections: content['corrections'] != null 
+                ? List<String>.from(content['corrections'])
+                : [],
+            suggestions: content['suggestions'] != null
+                ? List<String>.from(content['suggestions'])
+                : [],
+          );
+        }
+      }
+    } catch (e) {
+      print('Conversation generation error: $e');
+    }
+    
+    return _getOfflineConversationResponse(userMessage);
+  }
+  
+  // オフライン会話レスポンス
+  static ConversationResponse _getOfflineConversationResponse(String userMessage) {
+    final lowercaseMessage = userMessage.toLowerCase();
+    
+    // 簡単なパターンマッチング
+    if (lowercaseMessage.contains('hello') || lowercaseMessage.contains('hi')) {
+      return ConversationResponse(
+        reply: "Hello! It's nice to meet you. How are you today? 😊\n今日はどうですか？",
+        corrections: [],
+        suggestions: [
+          "I'm fine, thank you!",
+          "I'm doing well. How about you?",
+          "Not bad. What's new?",
+        ],
+      );
+    } else if (lowercaseMessage.contains('hobby') || lowercaseMessage.contains('hobbies')) {
+      return ConversationResponse(
+        reply: "That's interesting! Hobbies are a great topic. What do you like to do in your free time?\n趣味について話しましょう！",
+        corrections: [],
+        suggestions: [
+          "I like reading books",
+          "I enjoy playing sports",
+          "My hobby is cooking",
+        ],
+      );
+    }
+    
+    // デフォルトレスポンス
+    return ConversationResponse(
+      reply: "That's interesting! Tell me more about that. 🤔\nもっと詳しく教えてください。",
+      corrections: [],
+      suggestions: [
+        "Let me explain more",
+        "For example...",
+        "I think that...",
+      ],
+    );
   }
   
   // オフラインレスポンス
