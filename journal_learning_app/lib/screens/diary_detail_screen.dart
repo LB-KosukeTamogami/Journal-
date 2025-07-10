@@ -32,12 +32,21 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   List<String> _corrections = [];
   List<String> _learnedPhrases = [];
   List<PhraseInfo> _extractedWords = [];
+  Set<String> _savedWords = {}; // Track which words are saved
   
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _loadTranslationData();
+    _loadSavedWords();
+  }
+  
+  Future<void> _loadSavedWords() async {
+    final words = await StorageService.getWords();
+    setState(() {
+      _savedWords = words.map((w) => w.english.toLowerCase()).toSet();
+    });
   }
   
   @override
@@ -278,28 +287,19 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.edit_note,
-                          color: AppTheme.accentColor,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '元の文章',
-                          style: AppTheme.body1.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: AppTheme.accentColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                    TextToSpeechButton(
-                      text: widget.entry.content,
+                    Icon(
+                      Icons.edit_note,
+                      color: AppTheme.accentColor,
                       size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '元の文章',
+                      style: AppTheme.body1.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.accentColor,
+                      ),
                     ),
                   ],
                 ),
@@ -343,10 +343,11 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           ),
                         ],
                       ),
-                      TextToSpeechButton(
-                        text: _translatedContent,
-                        size: 20,
-                      ),
+                      if (TranslationService.detectLanguage(_translatedContent) == 'en')
+                        TextToSpeechButton(
+                          text: _translatedContent,
+                          size: 20,
+                        ),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -943,80 +944,143 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: _extractedWords.map((info) => 
-                        GestureDetector(
-                          onTap: () {
-                            if (RegExp(r'^[a-zA-Z\s-]+$').hasMatch(info.text.trim())) {
-                              // 英語の単語の場合、日本語辞書ダイアログを表示
-                              JapaneseDictionaryDialog.show(
-                                context, 
-                                info.text.trim(),
-                                providedTranslation: info.translation.isNotEmpty ? info.translation : null,
-                              );
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: info.isPhrase 
-                                  ? AppTheme.success.withOpacity(0.1)
-                                  : AppTheme.primaryBlue.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: info.isPhrase 
-                                    ? AppTheme.success.withOpacity(0.3)
-                                    : AppTheme.primaryBlue.withOpacity(0.3),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  info.text,
-                                  style: AppTheme.body2.copyWith(
-                                    color: info.isPhrase ? AppTheme.success : AppTheme.primaryBlue,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                if (info.translation.isNotEmpty) ...[
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    '• ${info.translation}',
-                                    style: AppTheme.caption.copyWith(
-                                      color: AppTheme.textSecondary,
-                                    ),
-                                  ),
-                                ],
-                              ],
+                      children: _extractedWords.map((info) {
+                        final isSaved = _savedWords.contains(info.text.trim().toLowerCase());
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: isSaved
+                                ? AppTheme.success.withOpacity(0.05)
+                                : (info.isPhrase 
+                                    ? AppTheme.success.withOpacity(0.1)
+                                    : AppTheme.primaryBlue.withOpacity(0.1)),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: isSaved
+                                  ? AppTheme.success.withOpacity(0.5)
+                                  : (info.isPhrase 
+                                      ? AppTheme.success.withOpacity(0.3)
+                                      : AppTheme.primaryBlue.withOpacity(0.3)),
                             ),
                           ),
-                        ),
-                      ).toList(),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  if (RegExp(r'^[a-zA-Z\s-]+$').hasMatch(info.text.trim())) {
+                                    // 英語の単語の場合、日本語辞書ダイアログを表示
+                                    JapaneseDictionaryDialog.show(
+                                      context, 
+                                      info.text.trim(),
+                                      providedTranslation: info.translation.isNotEmpty ? info.translation : null,
+                                    );
+                                  }
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.only(left: 12, top: 8, bottom: 8, right: 4),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        info.text,
+                                        style: AppTheme.body2.copyWith(
+                                          color: isSaved 
+                                              ? AppTheme.success 
+                                              : (info.isPhrase ? AppTheme.success : AppTheme.primaryBlue),
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      if (info.translation.isNotEmpty) ...[
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          '• ${info.translation}',
+                                          style: AppTheme.caption.copyWith(
+                                            color: AppTheme.textSecondary,
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () async {
+                                    if (isSaved) {
+                                      // 削除処理
+                                      final words = await StorageService.getWords();
+                                      final wordToDelete = words.firstWhere(
+                                        (w) => w.english.toLowerCase() == info.text.trim().toLowerCase(),
+                                        orElse: () => Word(
+                                          id: '',
+                                          english: '',
+                                          japanese: '',
+                                          category: WordCategory.other,
+                                          createdAt: DateTime.now(),
+                                          lastReviewedAt: null,
+                                          reviewCount: 0,
+                                          masteryLevel: 0,
+                                          diaryEntryId: null,
+                                        ),
+                                      );
+                                      if (wordToDelete.id.isNotEmpty) {
+                                        await StorageService.deleteWord(wordToDelete.id);
+                                        setState(() {
+                                          _savedWords.remove(info.text.trim().toLowerCase());
+                                        });
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text('単語帳から削除しました', style: AppTheme.body2.copyWith(color: Colors.white)),
+                                            backgroundColor: AppTheme.warning,
+                                          ),
+                                        );
+                                      }
+                                    } else {
+                                      // 追加処理
+                                      final word = Word(
+                                        id: const Uuid().v4(),
+                                        english: info.text.trim(),
+                                        japanese: info.translation.isNotEmpty ? info.translation : '[意味を確認中]',
+                                        category: info.isPhrase ? WordCategory.phrase : WordCategory.other,
+                                        createdAt: DateTime.now(),
+                                        lastReviewedAt: null,
+                                        reviewCount: 0,
+                                        masteryLevel: 0,
+                                        diaryEntryId: widget.entry.id,
+                                      );
+                                      await StorageService.saveWord(word);
+                                      setState(() {
+                                        _savedWords.add(info.text.trim().toLowerCase());
+                                      });
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('単語帳に追加しました', style: AppTheme.body2.copyWith(color: Colors.white)),
+                                          backgroundColor: AppTheme.success,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  borderRadius: const BorderRadius.horizontal(right: Radius.circular(20)),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Icon(
+                                      isSaved ? Icons.check : Icons.add_card,
+                                      size: 16,
+                                      color: isSaved ? AppTheme.success : AppTheme.primaryBlue.withOpacity(0.7),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
                     ),
                   ],
                 ),
               ).animate().fadeIn(delay: 500.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
             ],
-            
-            const SizedBox(height: 16),
-            
-            // 学習カードに追加ボタン
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: _addPhrasesToWordCards,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryBlue,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                icon: const Icon(Icons.add_card),
-                label: Text('学習カードに追加', style: AppTheme.button),
-              ),
-            ).animate().fadeIn(delay: 600.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
         ],
       ),
     );
@@ -1134,6 +1198,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       japanese: japanese,
       createdAt: DateTime.now(),
       masteryLevel: 0,
+      diaryEntryId: widget.entry.id, // Link word to diary entry
     );
     
     await StorageService.saveWord(word);
@@ -1200,104 +1265,178 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.backgroundPrimary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Row(
-          children: [
-            Icon(
-              Icons.text_fields,
-              color: AppTheme.primaryBlue,
-              size: 24,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              '単語リスト (${words.length}個)',
-              style: AppTheme.headline3,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => AlertDialog(
+          backgroundColor: AppTheme.backgroundPrimary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.text_fields,
+                    color: AppTheme.primaryBlue,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '単語リスト (${words.length}個)',
+                    style: AppTheme.headline3,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '単語をタップして詳細を表示',
+                style: AppTheme.caption.copyWith(
+                  color: AppTheme.textSecondary,
+                ),
+              ),
+            ],
+          ),
+          content: Container(
+            width: double.maxFinite,
+            height: 400,
+            child: words.isEmpty
+                ? Center(
+                    child: Text(
+                      '単語が見つかりません',
+                      style: AppTheme.body2.copyWith(
+                        color: AppTheme.textTertiary,
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: words.length,
+                    itemBuilder: (context, index) {
+                      final word = words[index];
+                      final translation = TranslationService.suggestTranslations(word)[word.toLowerCase()];
+                      final isSaved = _savedWords.contains(word.toLowerCase());
+                      
+                      return Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            // Show JapaneseDictionaryDialog when word is clicked
+                            JapaneseDictionaryDialog.show(
+                              context, 
+                              word,
+                              providedTranslation: translation,
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: AppTheme.backgroundSecondary,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: isSaved 
+                                    ? AppTheme.success.withOpacity(0.3)
+                                    : AppTheme.primaryBlue.withOpacity(0.2),
+                              ),
+                            ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      word,
+                                      style: AppTheme.body1.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: isSaved ? AppTheme.success : AppTheme.primaryBlue,
+                                      ),
+                                    ),
+                                    if (translation != null) ...[
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        translation,
+                                        style: AppTheme.body2.copyWith(
+                                          color: AppTheme.textSecondary,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                              if (translation != null)
+                                IconButton(
+                                  onPressed: () async {
+                                    if (isSaved) {
+                                      // Remove word from saved list
+                                      final words = await StorageService.getWords();
+                                      final wordToRemove = words.firstWhere(
+                                        (w) => w.english.toLowerCase() == word.toLowerCase(),
+                                        orElse: () => Word(
+                                          id: '',
+                                          english: '',
+                                          japanese: '',
+                                          createdAt: DateTime.now(),
+                                        ),
+                                      );
+                                      if (wordToRemove.id.isNotEmpty) {
+                                        await StorageService.deleteWord(wordToRemove.id);
+                                        setState(() {
+                                          _savedWords.remove(word.toLowerCase());
+                                        });
+                                        setModalState(() {});
+                                        
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text('単語帳から削除しました'),
+                                              backgroundColor: AppTheme.warning,
+                                              behavior: SnackBarBehavior.floating,
+                                              margin: const EdgeInsets.all(16),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      }
+                                    } else {
+                                      // Add word to saved list
+                                      await _addWordToCards(word, translation);
+                                      setState(() {
+                                        _savedWords.add(word.toLowerCase());
+                                      });
+                                      setModalState(() {});
+                                    }
+                                  },
+                                  icon: Icon(
+                                    isSaved ? Icons.check : Icons.add_card,
+                                    color: isSaved ? AppTheme.success : AppTheme.primaryBlue,
+                                    size: 20,
+                                  ),
+                                ),
+                            ],
+                          ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('閉じる', style: AppTheme.body2),
             ),
           ],
         ),
-        content: Container(
-          width: double.maxFinite,
-          height: 400,
-          child: words.isEmpty
-              ? Center(
-                  child: Text(
-                    '単語が見つかりません',
-                    style: AppTheme.body2.copyWith(
-                      color: AppTheme.textTertiary,
-                    ),
-                  ),
-                )
-              : ListView.builder(
-                  itemCount: words.length,
-                  itemBuilder: (context, index) {
-                    final word = words[index];
-                    final translation = TranslationService.suggestTranslations(word)[word.toLowerCase()];
-                    
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppTheme.backgroundSecondary,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: AppTheme.primaryBlue.withOpacity(0.2),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  word,
-                                  style: AppTheme.body1.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: AppTheme.primaryBlue,
-                                  ),
-                                ),
-                                if (translation != null) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    translation,
-                                    style: AppTheme.body2.copyWith(
-                                      color: AppTheme.textSecondary,
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                          if (translation != null)
-                            IconButton(
-                              onPressed: () {
-                                _addWordToCards(word, translation);
-                                Navigator.pop(context);
-                              },
-                              icon: Icon(
-                                Icons.add_card,
-                                color: AppTheme.primaryBlue,
-                                size: 20,
-                              ),
-                            ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('閉じる', style: AppTheme.body2),
-          ),
-        ],
       ),
-    );
+    ).then((_) {
+      // Refresh saved words when dialog is closed
+      _loadSavedWords();
+    });
   }
   
   /// 学習した単語クリック時のモーダル表示
