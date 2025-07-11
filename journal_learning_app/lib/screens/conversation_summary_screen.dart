@@ -205,13 +205,14 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
                     child: OutlinedButton.icon(
                       onPressed: () async {
                         // 学習カードに追加
+                        final now = DateTime.now();
                         final flashcard = Flashcard(
                           id: const Uuid().v4(),
-                          front: wordOrPhrase,
-                          back: translation,
-                          level: 1,
-                          nextReviewDate: DateTime.now(),
-                          createdAt: DateTime.now(),
+                          word: wordOrPhrase,
+                          meaning: translation,
+                          createdAt: now,
+                          lastReviewed: now,
+                          nextReviewDate: now.add(const Duration(days: 1)),
                         );
                         
                         await StorageService.saveFlashcard(flashcard);
