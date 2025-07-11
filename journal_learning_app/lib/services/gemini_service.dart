@@ -277,38 +277,46 @@ ANALYZE CAREFULLY:
 Conversation History:
 $history
 
-RESPONSE REQUIREMENTS:
+RESPONSE FORMAT (ALWAYS follow this structure):
 ${_detectLanguage(userMessage) == 'ja' ? '''
-1. START with: "In English, you could say: '[natural English translation]'"
-2. Then acknowledge what they said and respond naturally
+1. Brief reaction in English (e.g., "Oh, that's interesting!")
+2. "In English, you could say: '[natural English translation of their Japanese]'"
+3. Your main English response with follow-up question
+4. Complete Japanese translation of your entire English response
 ''' : '''
-1. START by acknowledging what they said (show you understood)
+1. Brief reaction + acknowledgment in English
+2. Your main English response with follow-up question  
+3. Complete Japanese translation of your entire English response
 '''}
-2. React genuinely (express emotion, relate to their experience)
-3. Ask ONE specific follow-up question about their topic
-4. Keep it conversational and natural
-5. AVOID generic responses - be specific to their message
+
+IMPORTANT RULES:
+- Keep reactions natural and varied
+- Ask specific follow-up questions related to their topic
+- Ensure Japanese translation is COMPLETE, not summarized
 
 Round $userMessageCount/5 Strategy:
 ${userMessageCount <= 2 ? 'Build connection, show interest in their life' : 
   userMessageCount <= 4 ? 'Share your perspective, deepen the topic' :
   'Start wrapping up, express enjoyment'}
 
-FORMAT YOUR RESPONSE:
-- First: Complete English response (simple, natural, A2-B1 level)
-- Then: COMPLETE Japanese translation (not summary) after double line break
-- The Japanese translation must convey the EXACT same meaning as the English
+EXAMPLE RESPONSE FORMATS:
 
-IMPORTANT:
-- ALWAYS relate your response to what they JUST said
-- Use natural conversational English (contractions, casual phrases)
-- Provide COMPLETE Japanese translation, not a summary
-- Make each response unique and specific to their message
+For Japanese input:
+"Oh, I see! In English, you could say: 'I went to the park yesterday.'
+
+That sounds like a nice way to spend your day! Parks are great for relaxing. What did you do at the park? Did you have a picnic or just enjoy walking around?
+
+なるほど！公園で過ごすのは素敵な一日の過ごし方ですね！公園はリラックスするのに最適です。公園で何をしましたか？ピクニックをしたり、ただ散歩を楽しんだりしましたか？"
+
+For English input:
+"That's wonderful! I love hearing about your hobbies. Reading is such a great way to learn new things and escape into different worlds. What kind of books do you enjoy the most?
+
+素晴らしいですね！あなたの趣味について聞くのが大好きです。読書は新しいことを学んだり、別の世界に入り込んだりする素晴らしい方法です。どんな種類の本が一番好きですか？"
 
 Respond in JSON format:
 {
-  "reply": "Your natural response with complete Japanese translation",
-  "corrections": ["Only major grammar corrections with explanations in Japanese"],
+  "reply": "Your complete response following the format above",
+  "corrections": ["英文作成のアドバイス1", "英文作成のアドバイス2"],
   "suggestions": ["Natural follow-up 1", "Natural follow-up 2", "Natural follow-up 3"]
 }
 ''';
@@ -500,16 +508,16 @@ $conversationText
 Please respond in the following JSON format:
 {
   "summary": "A 2-3 sentence summary IN ENGLISH describing what was discussed and what the learner practiced",
-  "keyPhrases": ["Up to 5 important phrases or expressions used in the conversation"],
-  "newWords": ["Up to 5 new or difficult words the learner used"],
-  "corrections": ["Up to 3 constructive grammar corrections or language improvement suggestions IN JAPANESE"]
+  "keyPhrases": ["Up to 5 important ENGLISH phrases or expressions used (exclude Japanese)"],
+  "newWords": ["Up to 5 new or difficult ENGLISH words used (exclude Japanese)"],
+  "corrections": ["Up to 3 specific ENGLISH WRITING TIPS in Japanese (focus on grammar, word choice, sentence structure)"]
 }
 
 Note:
 - Write the summary from the learner's perspective in English
-- Extract actual English phrases used in the conversation
-- Write corrections and learning points in Japanese for better understanding
-- Make corrections specific and constructive''';
+- Extract ONLY English phrases/words (if user wrote in Japanese, use the English translation provided)
+- For corrections, provide specific advice about English writing (e.g., "過去形を使う時は動詞にedを付けます", "aとtheの使い分けに注意しましょう")
+- Do NOT include general conversation feedback, focus on English language learning''';
 
       final response = await http.post(
         Uri.parse('$_baseUrl?key=$apiKey'),
