@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:async';
 import '../models/diary_entry.dart';
+import '../models/mission.dart';
 import '../services/storage_service.dart';
 import '../services/translation_service.dart';
 import '../services/mission_service.dart';
@@ -34,6 +35,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
   // リアルタイム翻訳機能を削除
   List<Word> _selectedWords = [];
   String _detectedLanguage = '';
+  List<Mission> _todaysMissions = [];
 
   @override
   void initState() {
@@ -49,6 +51,16 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     
     _titleController.addListener(_onTextChanged);
     _contentController.addListener(_onTextChanged);
+    _loadMissions();
+  }
+
+  Future<void> _loadMissions() async {
+    final missions = await MissionService.getTodaysMissions();
+    if (mounted) {
+      setState(() {
+        _todaysMissions = missions;
+      });
+    }
   }
 
   @override
@@ -158,6 +170,81 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     }
   }
 
+  void _showMissionsModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        decoration: BoxDecoration(
+          color: AppTheme.backgroundPrimary,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // ハンドル
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppTheme.textTertiary.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            // タイトル
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text(
+                '今日のミッション',
+                style: AppTheme.headline2,
+              ),
+            ),
+            // ミッションリスト
+            Expanded(
+              child: _todaysMissions.isEmpty
+                ? Center(
+                    child: Text(
+                      'ミッションがありません',
+                      style: AppTheme.body2.copyWith(color: AppTheme.textSecondary),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: _todaysMissions.length,
+                    itemBuilder: (context, index) {
+                      final mission = _todaysMissions[index];
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: _MissionCard(mission: mission),
+                      );
+                    },
+                  ),
+            ),
+            // 閉じるボタン
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('閉じる'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showSnackBar(String message, {required bool isError}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -232,6 +319,11 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
             },
           ),
           actions: [
+            IconButton(
+              icon: Icon(Icons.flag_outlined, color: AppTheme.primaryColor),
+              onPressed: _showMissionsModal,
+              tooltip: '今日のミッション',
+            ),
             if (_hasChanges)
               Container(
                 margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
@@ -287,7 +379,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                           controller: _titleController,
                           focusNode: _titleFocusNode,
                           decoration: InputDecoration(
-                            hintText: '日記のタイトルを入力...',
+                            hintText: '日記のタイトルを入力',
                             hintStyle: AppTheme.body2.copyWith(
                               color: AppTheme.textTertiary,
                             ),
@@ -354,13 +446,16 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                           focusNode: _contentFocusNode,
                           decoration: InputDecoration(
                             hintText: _detectedLanguage == 'ja' 
-                              ? '今日の出来事や感想を書いてみましょう...'
-                              : 'Write about your day and thoughts...',
+                              ? '今日の出来事や感想を書いてみましょう'
+                              : 'Write about your day and thoughts',
                             hintStyle: AppTheme.body2.copyWith(
                               color: AppTheme.textTertiary,
                             ),
                             border: InputBorder.none,
-                            contentPadding: const EdgeInsets.all(16),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 16,
+                            ),
                           ),
                           style: AppTheme.body1,
                           maxLines: 10,
@@ -431,7 +526,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Acoと会話で練習',
+                                      '日記のネタを見つける',
                                       style: AppTheme.body1.copyWith(
                                         fontWeight: FontWeight.w600,
                                         color: AppTheme.primaryColor,
@@ -439,7 +534,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '英会話の練習をしてから日記を書いてみましょう',
+                                      'Acoとの会話から今日の出来事を振り返りましょう',
                                       style: AppTheme.body2.copyWith(
                                         color: AppTheme.textSecondary,
                                       ),
@@ -746,5 +841,127 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
         ],
       ),
     );
+  }
+}
+
+// ミッションカードWidget（ホーム画面のデザインを流用）
+class _MissionCard extends StatelessWidget {
+  final Mission mission;
+
+  const _MissionCard({
+    required this.mission,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bool completed = mission.isCompleted;
+    final IconData icon = _getIconFromType(mission.type);
+    final Color color = _getColorFromType(mission.type);
+    
+    return AppCard(
+      onTap: null, // タップ不可
+      backgroundColor: completed ? AppTheme.backgroundTertiary : AppTheme.backgroundPrimary,
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: completed
+                ? AppTheme.textTertiary.withOpacity(0.1)
+                : color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              completed ? Icons.check : icon,
+              color: completed ? AppTheme.textTertiary : color,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  mission.title,
+                  style: AppTheme.body1.copyWith(
+                    fontWeight: FontWeight.w600,
+                    decoration: completed ? TextDecoration.lineThrough : null,
+                    color: completed ? AppTheme.textTertiary : AppTheme.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  mission.description,
+                  style: AppTheme.caption.copyWith(
+                    color: completed ? AppTheme.textTertiary : AppTheme.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                LinearProgressIndicator(
+                  value: mission.targetValue > 0
+                    ? (mission.currentValue / mission.targetValue).clamp(0.0, 1.0)
+                    : 0.0,
+                  backgroundColor: AppTheme.backgroundTertiary,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    completed ? AppTheme.textTertiary : color,
+                  ),
+                  minHeight: 4,
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${mission.currentValue}/${mission.targetValue}',
+                      style: AppTheme.caption.copyWith(
+                        color: AppTheme.textTertiary,
+                      ),
+                    ),
+                    if (completed)
+                      Icon(
+                        Icons.star,
+                        size: 16,
+                        color: AppTheme.warning,
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  IconData _getIconFromType(MissionType type) {
+    switch (type) {
+      case MissionType.dailyDiary:
+        return Icons.edit_note;
+      case MissionType.wordLearning:
+        return Icons.book;
+      case MissionType.conversation:
+        return Icons.chat_bubble_outline;
+      case MissionType.streak:
+        return Icons.local_fire_department;
+      case MissionType.review:
+        return Icons.refresh;
+    }
+  }
+
+  Color _getColorFromType(MissionType type) {
+    switch (type) {
+      case MissionType.dailyDiary:
+        return AppTheme.primaryBlue;
+      case MissionType.wordLearning:
+        return AppTheme.success;
+      case MissionType.conversation:
+        return AppTheme.secondaryColor;
+      case MissionType.streak:
+        return AppTheme.warning;
+      case MissionType.review:
+        return AppTheme.tertiaryColor;
+    }
   }
 }

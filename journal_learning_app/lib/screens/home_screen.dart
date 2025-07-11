@@ -223,33 +223,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildStreakCard() {
     return AppCard(
-      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            width: 60,
+            height: 60,
             decoration: BoxDecoration(
-              color: AppTheme.warning.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                colors: [
+                  AppTheme.warning.withOpacity(0.8),
+                  AppTheme.warning,
+                ],
+              ),
+              shape: BoxShape.circle,
             ),
-            child: Icon(
+            child: const Icon(
               Icons.local_fire_department,
-              color: AppTheme.warning,
-              size: 28,
+              color: Colors.white,
+              size: 32,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   '連続記録',
-                  style: AppTheme.caption.copyWith(
-                    color: AppTheme.textSecondary,
-                  ),
+                  style: AppTheme.body2,
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 4),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   textBaseline: TextBaseline.alphabetic,
@@ -257,20 +260,34 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       '$_currentStreak',
                       style: AppTheme.headline2.copyWith(
-                        fontWeight: FontWeight.bold,
+                        color: AppTheme.primaryColor,
                       ),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       '日',
-                      style: AppTheme.body1.copyWith(
-                        color: AppTheme.textSecondary,
-                      ),
+                      style: AppTheme.body2,
                     ),
                   ],
                 ),
               ],
             ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '総学習日数',
+                style: AppTheme.caption,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '$_totalDays日',
+                style: AppTheme.body1.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ],
       ),
