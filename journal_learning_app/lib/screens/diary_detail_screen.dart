@@ -348,6 +348,31 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           
           const SizedBox(height: 16),
           
+          // AI利用制限メッセージ
+          if (_corrections.contains('本日のAI利用枠を使い切りました。明日また利用可能になります。'))
+            AppCard(
+              backgroundColor: AppTheme.warning.withOpacity(0.05),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    color: AppTheme.warning,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      '本日のAI利用枠を使い切りました。明日また利用可能になります。',
+                      style: AppTheme.body1.copyWith(
+                        color: AppTheme.warning,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ).animate().fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+          
           // 翻訳セクション（独立配置）
           if (_translatedContent.isNotEmpty)
             AppCard(
@@ -755,15 +780,45 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                               ),
                             ] else ...[
                               // 添削が必要な場合のみ表示
-                              // 添削後/翻訳テキスト
-                              Text(
-                                isJapanese ? _translatedContent : (isMixed ? _correctedContent : _correctedContent),
-                                style: AppTheme.body1.copyWith(
-                                  height: 1.6,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
+                              // AI利用制限チェック
+                              if (_corrections.contains('本日のAI利用枠を使い切りました。明日また利用可能になります。')) ...[
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.warning.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.info_outline,
+                                        color: AppTheme.warning,
+                                        size: 16,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          '本日のAI利用枠を使い切りました。明日また利用可能になります。',
+                                          style: AppTheme.caption.copyWith(
+                                            color: AppTheme.warning,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
+                              ] else ...[
+                                // 添削後/翻訳テキスト
+                                Text(
+                                  isJapanese ? _translatedContent : (isMixed ? _correctedContent : _correctedContent),
+                                  style: AppTheme.body1.copyWith(
+                                    height: 1.6,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                               // 和訳を追加（英語の場合）
                               if (!isJapanese && _translatedContent.isNotEmpty) ...[
                                 const SizedBox(height: 12),
