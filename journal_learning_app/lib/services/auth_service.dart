@@ -1,10 +1,24 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'supabase_service.dart';
 
 class AuthService {
-  static final _supabase = Supabase.instance.client;
+  static SupabaseClient get _supabase {
+    final client = SupabaseService.client;
+    if (client == null) {
+      throw Exception('Supabase not initialized');
+    }
+    return client;
+  }
   
   // Get current user
-  static User? get currentUser => _supabase.auth.currentUser;
+  static User? get currentUser {
+    try {
+      return _supabase.auth.currentUser;
+    } catch (e) {
+      print('[AuthService] Error getting current user: $e');
+      return null;
+    }
+  }
   
   // Get current user ID
   static String? get currentUserId => currentUser?.id;

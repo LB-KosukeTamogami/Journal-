@@ -37,10 +37,12 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
+      print('[LoginScreen] Starting login process...');
       final response = await AuthService.signIn(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
+      print('[LoginScreen] Login response received');
 
       if (response.user != null && mounted) {
         Navigator.of(context).pushReplacement(
@@ -65,7 +67,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   String _getErrorMessage(String error) {
-    if (error.contains('Invalid login credentials')) {
+    print('[LoginScreen] Error details: $error');
+    
+    if (error.contains('Supabase not initialized')) {
+      return 'Supabaseが初期化されていません。環境設定を確認してください。';
+    } else if (error.contains('Invalid login credentials')) {
       return 'メールアドレスまたはパスワードが正しくありません';
     } else if (error.contains('Email not confirmed')) {
       return 'メールアドレスの確認が完了していません。メールをご確認ください。';

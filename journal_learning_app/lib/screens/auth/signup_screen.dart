@@ -51,18 +51,26 @@ class _SignupScreenState extends State<SignupScreen> {
     });
 
     try {
-      // Check if email is already registered
-      final isRegistered = await AuthService.isEmailRegistered(
-        _emailController.text.trim(),
-      );
+      print('[SignupScreen] Starting signup process...');
       
-      if (isRegistered) {
-        setState(() {
-          _errorMessage = 'このメールアドレスは既に登録されています';
-        });
-        return;
+      // Check if email is already registered
+      try {
+        final isRegistered = await AuthService.isEmailRegistered(
+          _emailController.text.trim(),
+        );
+        
+        if (isRegistered) {
+          setState(() {
+            _errorMessage = 'このメールアドレスは既に登録されています';
+          });
+          return;
+        }
+      } catch (e) {
+        print('[SignupScreen] Error checking email registration: $e');
+        // Continue with signup even if email check fails
       }
 
+      print('[SignupScreen] Calling AuthService.signUp...');
       final response = await AuthService.signUp(
         email: _emailController.text.trim(),
         password: _passwordController.text,
@@ -131,7 +139,11 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   String _getErrorMessage(String error) {
-    if (error.contains('email already exists') || 
+    print('[SignupScreen] Error details: $error');
+    
+    if (error.contains('Supabase not initialized')) {
+      return 'Supabaseが初期化されていません。環境設定を確認してください。';
+    } else if (error.contains('email already exists') || 
         error.contains('User already registered')) {
       return 'このメールアドレスは既に登録されています';
     } else if (error.contains('Invalid email')) {

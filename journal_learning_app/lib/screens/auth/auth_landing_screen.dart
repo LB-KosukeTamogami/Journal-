@@ -20,44 +20,52 @@ class AuthLandingScreen extends StatelessWidget {
               // ロゴとタイトル
               Column(
                 children: [
-                  Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        '🐿️',
-                        style: TextStyle(fontSize: 60),
-                      ),
-                    ),
-                  ).animate()
-                    .scale(duration: 600.ms, curve: Curves.elasticOut)
-                    .fadeIn(),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Squirrel',
-                    style: TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.w800,
-                      color: AppTheme.primaryColor,
-                      letterSpacing: 2,
-                    ),
-                  ).animate()
-                    .fadeIn(delay: 200.ms)
-                    .slideY(begin: 0.2, end: 0),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Journal Language Learning',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppTheme.textSecondary,
-                      letterSpacing: 0.5,
-                    ),
-                  ).animate()
-                    .fadeIn(delay: 400.ms),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryColor.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '🐿️',
+                            style: TextStyle(fontSize: 40),
+                          ),
+                        ),
+                      ).animate()
+                        .scale(duration: 600.ms, curve: Curves.elasticOut)
+                        .fadeIn(),
+                      const SizedBox(width: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Squirrel',
+                            style: TextStyle(
+                              fontSize: 40,
+                              fontWeight: FontWeight.w800,
+                              color: AppTheme.primaryColor,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                          Text(
+                            'Journal Language Learning',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppTheme.textSecondary,
+                              letterSpacing: 0.3,
+                            ),
+                          ),
+                        ],
+                      ).animate()
+                        .fadeIn(delay: 200.ms)
+                        .slideX(begin: 0.2, end: 0),
+                    ],
+                  ),
                 ],
               ),
               const Spacer(flex: 1),
