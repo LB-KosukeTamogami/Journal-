@@ -2,6 +2,24 @@
 set -e
 
 echo "Starting Vercel build process..."
+echo "========================================"
+echo "Environment Variables Check:"
+echo "========================================"
+
+# List all environment variables that contain SUPABASE
+echo "All SUPABASE-related environment variables:"
+env | grep -i supabase || echo "No SUPABASE variables found"
+
+echo "----------------------------------------"
+
+# Check specific variables
+echo "Checking specific environment variables:"
+echo "SUPABASE_URL=${SUPABASE_URL:-NOT SET}"
+echo "SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:-NOT SET}"
+echo "NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:-NOT SET}"
+echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY:-NOT SET}"
+
+echo "========================================"
 
 # Clean up any existing Flutter installation
 if [ -d "flutter" ]; then
@@ -81,8 +99,17 @@ if [ -n "$GEMINI_API_KEY" ]; then
         --dart-define="SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
 else
     echo "Building with Supabase only..."
+    
+    # Check if NEXT_PUBLIC_ prefixed variables exist
+    if [ -n "$NEXT_PUBLIC_SUPABASE_URL" ] && [ -n "$NEXT_PUBLIC_SUPABASE_ANON_KEY" ]; then
+        echo "Using NEXT_PUBLIC_ prefixed environment variables"
+        SUPABASE_URL="$NEXT_PUBLIC_SUPABASE_URL"
+        SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY"
+    fi
+    
     echo "SUPABASE_URL=$SUPABASE_URL"
-    echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
+    echo "SUPABASE_ANON_KEY length: ${#SUPABASE_ANON_KEY}"
+    
     flutter build web --release --web-renderer html \
         --source-maps \
         --dart-define="SUPABASE_URL=$SUPABASE_URL" \
