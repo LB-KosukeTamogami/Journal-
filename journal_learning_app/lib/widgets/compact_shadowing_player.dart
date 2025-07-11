@@ -348,25 +348,28 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
   Widget _buildSpeedOption(double speed) {
     final isSelected = _playbackSpeed == speed;
     
-    return InkWell(
-      onTap: () {
-        _changeSpeed(speed);
-        setState(() {
-          _showSpeedOptions = false;
-        });
-      },
-      child: Container(
-        width: 80,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? AppTheme.primaryColor.withOpacity(0.1) : Colors.transparent,
-        ),
-        child: Text(
-          '${speed}x',
-          style: AppTheme.body2.copyWith(
-            fontSize: 12,
-            color: isSelected ? AppTheme.primaryColor : AppTheme.textPrimary,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          _changeSpeed(speed);
+          setState(() {
+            _showSpeedOptions = false;
+          });
+        },
+        child: Container(
+          width: 80,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected ? AppTheme.primaryColor.withOpacity(0.1) : Colors.transparent,
+          ),
+          child: Text(
+            '${speed}x',
+            style: AppTheme.body2.copyWith(
+              fontSize: 12,
+              color: isSelected ? AppTheme.primaryColor : AppTheme.textPrimary,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            ),
           ),
         ),
       ),

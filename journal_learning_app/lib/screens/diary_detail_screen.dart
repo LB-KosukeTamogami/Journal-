@@ -371,8 +371,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         IconButton(
                           onPressed: () {
                             setState(() {
-                              _shadowingText = _translatedContent;
-                              _shadowingTitle = '英語翻訳のシャドーイング';
+                              if (_shadowingText == _translatedContent) {
+                                _shadowingText = null;
+                                _shadowingTitle = null;
+                              } else {
+                                _shadowingText = _translatedContent;
+                                _shadowingTitle = '英語翻訳のシャドーイング';
+                              }
                             });
                           },
                           icon: Icon(
@@ -440,8 +445,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       IconButton(
                         onPressed: () {
                           setState(() {
-                            _shadowingText = _correctedContent;
-                            _shadowingTitle = '添削後の英文のシャドーイング';
+                            if (_shadowingText == _correctedContent) {
+                              _shadowingText = null;
+                              _shadowingTitle = null;
+                            } else {
+                              _shadowingText = _correctedContent;
+                              _shadowingTitle = '添削後の英文のシャドーイング';
+                            }
                           });
                         },
                         icon: Icon(
