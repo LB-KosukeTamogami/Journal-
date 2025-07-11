@@ -364,64 +364,18 @@ Respond in JSON format:
     );
   }
   
-  // オフラインレスポンス
+  // オフラインレスポンス（AI利用制限時）
   static Map<String, dynamic> _getOfflineResponse(String content) {
     final detectedLang = _detectLanguage(content);
-    
-    // オフライン翻訳を実行
-    String translation = content;
-    String correctedContent = content;
-    List<String> improvements = [];
-    
-    // 簡易的な翻訳と添削
-    if (detectedLang == 'ja') {
-      // 日本語→英語の基本的な翻訳
-      if (content.contains('今日')) {
-        translation = translation.replaceAll('今日', 'today');
-      }
-      if (content.contains('昨日')) {
-        translation = translation.replaceAll('昨日', 'yesterday');
-      }
-      if (content.contains('明日')) {
-        translation = translation.replaceAll('明日', 'tomorrow');
-      }
-      if (content.contains('です')) {
-        translation = translation.replaceAll('です', 'is');
-      }
-      if (content.contains('でした')) {
-        translation = translation.replaceAll('でした', 'was');
-      }
-    } else {
-      // 英語→日本語の基本的な翻訳
-      if (content.toLowerCase().contains('today')) {
-        translation = translation.replaceAll(RegExp(r'today', caseSensitive: false), '今日');
-      }
-      if (content.toLowerCase().contains('yesterday')) {
-        translation = translation.replaceAll(RegExp(r'yesterday', caseSensitive: false), '昨日');
-      }
-      if (content.toLowerCase().contains('tomorrow')) {
-        translation = translation.replaceAll(RegExp(r'tomorrow', caseSensitive: false), '明日');
-      }
-      
-      // 英語の添削
-      correctedContent = content;
-      if (content.contains('i ')) {
-        correctedContent = correctedContent.replaceAll(RegExp(r'\bi\b'), 'I');
-        improvements.add('英語の一人称"I"は常に大文字で書きます');
-      }
-      if (content.toLowerCase().contains('i go') && content.toLowerCase().contains('yesterday')) {
-        correctedContent = correctedContent.replaceAll(RegExp(r'i go', caseSensitive: false), 'I went');
-        improvements.add('過去の出来事には過去形を使いましょう');
-      }
-    }
     
     return {
       'detected_language': detectedLang,
       'original': content,
-      'corrected': correctedContent,
-      'translation': translation,
-      'improvements': improvements,
+      'corrected': content,
+      'translation': '',
+      'improvements': ['本日のAI利用枠を使い切りました。明日また利用可能になります。'],
       'learned_phrases': [],
+      'rate_limited': true,
     };
   }
   

@@ -222,27 +222,16 @@ class TranslationService {
     }
   }
 
-  /// オフライン翻訳（改善された実装）
+  /// オフライン翻訳（無効化 - AI翻訳のみ使用）
   static TranslationResult _translateOffline(String text, String targetLanguage) {
-    final lowerText = text.toLowerCase().trim();
-    
-    // 完全一致を最初に試す
-    String? directTranslation = _simpleTranslations[lowerText];
-    if (directTranslation != null) {
-      return TranslationResult(
-        originalText: text,
-        translatedText: directTranslation,
-        targetLanguage: targetLanguage,
-        success: true,
-      );
-    }
-
-    // 言語によって異なる翻訳戦略を使用
-    if (targetLanguage == 'ja') {
-      return _translateToJapanese(text, lowerText);
-    } else {
-      return _translateToEnglish(text, lowerText);
-    }
+    // オフライン翻訳は無効化し、AI翻訳のみを使用
+    return TranslationResult(
+      originalText: text,
+      translatedText: '',
+      targetLanguage: targetLanguage,
+      success: false,
+      error: 'AI翻訳サービスのみ利用可能です',
+    );
   }
 
   /// 英語から日本語への流暢な翻訳

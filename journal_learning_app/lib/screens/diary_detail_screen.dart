@@ -93,6 +93,12 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         correctedContent = geminiResult['corrected'] ?? widget.entry.content;
         corrections = List<String>.from(geminiResult['improvements'] ?? []);
         
+        // レート制限チェック
+        if (geminiResult['rate_limited'] == true) {
+          translatedText = '';
+          correctedContent = widget.entry.content;
+        }
+        
         // 混在の場合のメッセージを追加
         if (detectedLang == 'mixed' && corrections.isEmpty) {
           corrections.add('日本語と英語が混在しています。英語に統一しました。');
@@ -156,49 +162,11 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         print('DiaryDetail: Gemini API error: $apiError');
         print('DiaryDetail: Falling back to offline translation');
         
-        // GeminiServiceのオフラインレスポンスが提供されている場合はそれを使用
-        if (geminiResult != null && geminiResult['translation'] != null) {
-          translatedText = geminiResult['translation'];
-          correctedContent = geminiResult['corrected'] ?? widget.entry.content;
-          corrections = List<String>.from(geminiResult['improvements'] ?? []);
-        }
-        
-        // それでも翻訳がない場合はTranslationServiceを使用
-        if (translatedText.isEmpty) {
-          final translationResult = await TranslationService.autoTranslate(widget.entry.content);
-          translatedText = translationResult.success ? translationResult.translatedText : '';
-        }
-        
+        // APIエラーの場合はレート制限の可能性が高い
         setState(() {
-          _correctedContent = correctedContent;
-          _translatedContent = translatedText.isNotEmpty ? translatedText : '翻訳を読み込めませんでした';
-          
-          // 基本的な添削を生成
-          if (detectedLang == 'en' || detectedLang == 'mixed') {
-            final lowerContent = widget.entry.content.toLowerCase();
-            _corrections = [];
-            
-            if (detectedLang == 'mixed') {
-              _corrections.add('日本語と英語が混在しています。英語に統一しました。');
-            }
-            
-            if (lowerContent.contains('i go') && lowerContent.contains('yesterday')) {
-              _correctedContent = widget.entry.content.replaceAll('I go', 'I went').replaceAll('i go', 'I went');
-              _corrections.add('過去の出来事には過去形を使いましょう');
-            }
-            
-            if (lowerContent.contains('it is') && lowerContent.contains('yesterday')) {
-              _correctedContent = _correctedContent.replaceAll('it is', 'it was').replaceAll('It is', 'It was');
-              _corrections.add('"is" → "was": 過去の話なので過去形を使用');
-            }
-            
-            if (widget.entry.content.contains('i ')) {
-              _correctedContent = _correctedContent.replaceAll(RegExp(r'\bi\b'), 'I');
-              _corrections.add('英語の一人称"I"は常に大文字で書きます');
-            }
-          } else {
-            _corrections = [];
-          }
+          _correctedContent = widget.entry.content;
+          _translatedContent = '';
+          _corrections = ['本日のAI利用枠を使い切りました。明日また利用可能になります。'];
           
           _learnedPhrases = [];
           
