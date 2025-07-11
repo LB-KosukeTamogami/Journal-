@@ -304,7 +304,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  '会話のまとめ',
+                  'Acoとの会話内容',
                   style: AppTheme.body1.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppTheme.primaryColor,
@@ -453,35 +453,6 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               onPressed: _showMissionsModal,
               tooltip: '今日のミッション',
             ),
-            if (_hasChanges)
-              Container(
-                margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _saveDiary,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryBlue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: _isLoading
-                      ? SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
-                      : Text(
-                          '保存',
-                          style: AppTheme.button.copyWith(fontSize: 14),
-                        ),
-                ),
-              ),
           ],
         ),
         body: SafeArea(

@@ -419,25 +419,8 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
   }
 
   String _generateDiaryContent() {
-    // 会話の内容を基に日記の初期テキストを生成
-    final buffer = StringBuffer();
-    
-    if (widget.topic != null) {
-      buffer.writeln('Today I practiced English conversation about ${widget.topic}.');
-      buffer.writeln();
-    }
-    
-    if (_keyPhrases.isNotEmpty) {
-      buffer.writeln('I learned these phrases:');
-      for (final phrase in _keyPhrases.take(3)) {
-        buffer.writeln('- $phrase');
-      }
-      buffer.writeln();
-    }
-    
-    buffer.writeln(_summary);
-    
-    return buffer.toString();
+    // 日記の初期テキストは空にする（会話内容は別カードで表示）
+    return '';
   }
 }
 

@@ -21,6 +21,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
   List<ConversationMessage> _messages = [];
   bool _isLoading = false;
   String? _conversationTopic;
+  int _messageCount = 0; // Acoとユーザーのメッセージ数をカウント
   
   @override
   void initState() {
@@ -32,7 +33,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
     // 初期メッセージを追加
     _messages.add(
       ConversationMessage(
-        text: "Hello! I'm Aco, your English conversation partner. Let's practice English together! What would you like to talk about today?\n\nこんにちは！私はAcoです。一緒に英語を練習しましょう！今日は何について話したいですか？",
+        text: "Hi there! I'm Aco, your friendly English practice buddy. Today, let's have a fun 5-minute conversation about anything you like! Don't worry about making mistakes - I'm here to help you learn.\n\nこんにちは！英語学習をサポートするAcoです。今日は5分間、楽しく英会話の練習をしましょう！間違いを気にせず、リラックスして話してくださいね。",
         isUser: false,
         timestamp: DateTime.now(),
       ),
@@ -89,6 +90,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
         ),
       );
       _isLoading = true;
+      _messageCount++;
     });
     
     _messageController.clear();
@@ -104,15 +106,26 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
       
       if (mounted) {
         setState(() {
-          _messages.add(
-            ConversationMessage(
-              text: response.reply,
-              isUser: false,
-              timestamp: DateTime.now(),
-              corrections: response.corrections,
-              suggestions: response.suggestions,
-            ),
-          );
+          // 5ラリー目（ユーザーメッセージが5つ）の場合は終了メッセージ
+          if (_messageCount >= 5) {
+            _messages.add(
+              ConversationMessage(
+                text: "Great job practicing today! You're making wonderful progress. Let's chat again tomorrow!\n\n今日はよく頑張りましたね！素晴らしい進歩です。また明日お話ししましょう！",
+                isUser: false,
+                timestamp: DateTime.now(),
+              ),
+            );
+          } else {
+            _messages.add(
+              ConversationMessage(
+                text: response.reply,
+                isUser: false,
+                timestamp: DateTime.now(),
+                corrections: response.corrections,
+                suggestions: response.suggestions,
+              ),
+            );
+          }
           _isLoading = false;
         });
         
@@ -176,8 +189,8 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
         backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
         actions: [
-          // 会話を終了ボタン
-          if (_messages.length > 2) // 初期メッセージ以外がある場合のみ表示
+          // 会話を終了ボタン（初期メッセージ以外がある場合、または5ラリー完了時）
+          if (_messages.length > 2 || _messageCount >= 5) // 初期メッセージ以外がある場合のみ表示
             TextButton.icon(
               icon: Icon(Icons.check_circle_outline, color: AppTheme.primaryColor, size: 20),
               label: Text(
@@ -207,8 +220,11 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
             ),
           ),
           
-          // 入力フィールド
-          _buildInputField(),
+          // 入力フィールド（5ラリー完了時は会話終了ボタンを表示）
+          if (_messageCount >= 5)
+            _buildConversationEndCard()
+          else
+            _buildInputField(),
         ],
       ),
     );
@@ -473,6 +489,46 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildConversationEndCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.backgroundPrimary,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: _endConversation,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryColor,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            icon: Icon(Icons.check_circle_outline, size: 24),
+            label: Text(
+              '会話を終了する',
+              style: AppTheme.body1.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
         ),
       ),
     );
