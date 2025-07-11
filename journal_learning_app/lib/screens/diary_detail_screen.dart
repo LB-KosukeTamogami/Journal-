@@ -9,6 +9,7 @@ import '../services/translation_service.dart';
 import '../services/storage_service.dart';
 import '../services/gemini_service.dart';
 import '../services/supabase_service.dart';
+import '../services/auth_service.dart';
 import '../widgets/text_to_speech_button.dart';
 import '../widgets/japanese_dictionary_dialog.dart';
 import '../widgets/shadowing_player.dart';
@@ -187,16 +188,19 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         
         // 翻訳成功時はキャッシュに保存
         if (translatedText.isNotEmpty && !corrections.contains('本日のAI利用枠を使い切りました。明日また利用可能になります。')) {
-          await SupabaseService.saveTranslationCache(
-            userId: 'default_user', // 将来的には実際のユーザーIDを使用
-            diaryEntryId: widget.entry.id,
-            originalText: widget.entry.content,
-            translatedText: translatedText,
-            correctedText: correctedContent,
-            improvements: corrections,
-            detectedLanguage: detectedLang,
-            targetLanguage: targetLanguage,
-          );
+          // Supabaseが初期化されている場合のみキャッシュを保存
+          if (SupabaseService.client != null) {
+            await SupabaseService.saveTranslationCache(
+              userId: AuthService.currentUserId ?? 'anonymous',
+              diaryEntryId: widget.entry.id,
+              originalText: widget.entry.content,
+              translatedText: translatedText,
+              correctedText: correctedContent,
+              improvements: corrections,
+              detectedLanguage: detectedLang,
+              targetLanguage: targetLanguage,
+            );
+          }
           print('Translation cached successfully');
         }
         

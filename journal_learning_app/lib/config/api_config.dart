@@ -2,9 +2,6 @@
 // 本番環境では環境変数やセキュアストレージから読み込んでください
 
 class ApiConfig {
-  // Gemini API Key (開発環境用のデフォルト値)
-  static const String _defaultGeminiApiKey = 'AIzaSyBRgV7ts1Viv7YaMmtHRUOgHXGi3-GqXos';
-  
   // Gemini APIキーを取得
   static String? getGeminiApiKey() {
     // ビルド時の環境変数から読み込む
@@ -13,9 +10,8 @@ class ApiConfig {
       return buildTimeKey;
     }
     
-    // 開発環境用のデフォルト値を使用
-    // 本番環境では必ず環境変数 GEMINI_API_KEY を設定してください
-    return _defaultGeminiApiKey;
+    // APIキーが設定されていない場合はnullを返す
+    return null;
   }
   
   static String? getGoogleTranslateApiKey() {

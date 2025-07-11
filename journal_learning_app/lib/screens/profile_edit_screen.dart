@@ -25,7 +25,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   void _loadUserData() {
     final user = AuthService.currentUser;
     if (user != null) {
-      _userNameController.text = user.userMetadata?['user_name'] ?? '';
+      _userNameController.text = user.userMetadata?['username'] ?? '';
     }
   }
 
@@ -44,8 +44,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     });
 
     try {
-      await AuthService.updateUserProfile(
-        userName: _userNameController.text.trim(),
+      await AuthService.updateProfile(
+        username: _userNameController.text.trim(),
       );
 
       if (mounted) {

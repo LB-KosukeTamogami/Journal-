@@ -19,7 +19,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
   
   String get _userName {
     final user = AuthService.currentUser;
-    return user?.userMetadata?['user_name'] ?? 'ゲスト';
+    return user?.userMetadata?['username'] ?? 'ゲスト';
   }
   
   String get _userEmail {
