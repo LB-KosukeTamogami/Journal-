@@ -6,6 +6,12 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
 echo "Starting Vercel build process..."
+
+# Run environment debug script
+if [ -f "vercel-env-fix.sh" ]; then
+    bash vercel-env-fix.sh
+fi
+
 echo "========================================"
 echo "Environment Variables Check:"
 echo "======================================="
@@ -15,6 +21,17 @@ echo "All SUPABASE-related environment variables:"
 env | grep -i supabase || echo "No SUPABASE variables found"
 
 echo "----------------------------------------"
+
+# Export environment variables if they exist with different names
+if [ -z "$SUPABASE_URL" ] && [ -n "$NEXT_PUBLIC_SUPABASE_URL" ]; then
+    export SUPABASE_URL="$NEXT_PUBLIC_SUPABASE_URL"
+    echo "Exported SUPABASE_URL from NEXT_PUBLIC_SUPABASE_URL"
+fi
+
+if [ -z "$SUPABASE_ANON_KEY" ] && [ -n "$NEXT_PUBLIC_SUPABASE_ANON_KEY" ]; then
+    export SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY"
+    echo "Exported SUPABASE_ANON_KEY from NEXT_PUBLIC_SUPABASE_ANON_KEY"
+fi
 
 # Check specific variables
 echo "Checking specific environment variables:"
@@ -92,32 +109,42 @@ else
     echo "WARNING: SUPABASE_URL format may be incorrect"
 fi
 
+# Create .env file from Vercel environment variables
+if [ -f "create-env-from-vercel.sh" ]; then
+    bash create-env-from-vercel.sh
+fi
+
 # Build web with environment variables and HTML renderer
 echo "Building Flutter web with HTML renderer..."
+
+# Force set the variables for the build
+SUPABASE_URL="${SUPABASE_URL}"
+SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY}"
+
+# Final verification before build
+if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+    echo "ERROR: Environment variables are not set!"
+    echo "SUPABASE_URL: ${SUPABASE_URL:-EMPTY}"
+    echo "SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-EMPTY}"
+    echo "Build will continue but Supabase features will not work."
+fi
+
 if [ -n "$GEMINI_API_KEY" ]; then
     echo "Building with Gemini API key and Supabase..."
     flutter build web --release --web-renderer html \
         --source-maps \
-        --dart-define="GEMINI_API_KEY=$GEMINI_API_KEY" \
-        --dart-define="SUPABASE_URL=$SUPABASE_URL" \
-        --dart-define="SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
+        --dart-define="GEMINI_API_KEY=${GEMINI_API_KEY}" \
+        --dart-define="SUPABASE_URL=${SUPABASE_URL}" \
+        --dart-define="SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}"
 else
     echo "Building with Supabase only..."
-    
-    # Check if NEXT_PUBLIC_ prefixed variables exist
-    if [ -n "$NEXT_PUBLIC_SUPABASE_URL" ] && [ -n "$NEXT_PUBLIC_SUPABASE_ANON_KEY" ]; then
-        echo "Using NEXT_PUBLIC_ prefixed environment variables"
-        SUPABASE_URL="$NEXT_PUBLIC_SUPABASE_URL"
-        SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY"
-    fi
-    
-    echo "SUPABASE_URL=$SUPABASE_URL"
-    echo "SUPABASE_ANON_KEY length: ${#SUPABASE_ANON_KEY}"
+    echo "Using SUPABASE_URL: ${SUPABASE_URL}"
+    echo "Using SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:0:20}..."
     
     flutter build web --release --web-renderer html \
         --source-maps \
-        --dart-define="SUPABASE_URL=$SUPABASE_URL" \
-        --dart-define="SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
+        --dart-define="SUPABASE_URL=${SUPABASE_URL}" \
+        --dart-define="SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}"
 fi
 
 # Fix renderer in flutter_bootstrap.js
