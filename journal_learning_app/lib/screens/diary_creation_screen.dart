@@ -14,11 +14,13 @@ import 'conversation_journal_screen.dart';
 class DiaryCreationScreen extends StatefulWidget {
   final DiaryEntry? existingEntry;
   final String? initialContent;
+  final Map<String, dynamic>? conversationSummary;
 
   const DiaryCreationScreen({
     Key? key,
     this.existingEntry,
     this.initialContent,
+    this.conversationSummary,
   }) : super(key: key);
 
   @override
@@ -259,6 +261,133 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     );
   }
 
+  Widget _buildConversationSummaryCard() {
+    final summary = widget.conversationSummary!['summary'] as String;
+    final keyPhrases = widget.conversationSummary!['keyPhrases'] as List<String>? ?? [];
+    final newWords = widget.conversationSummary!['newWords'] as List<String>? ?? [];
+    
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.backgroundPrimary,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppTheme.primaryColor.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ヘッダー
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppTheme.primaryColor.withOpacity(0.1),
+                  AppTheme.primaryColor.withOpacity(0.05),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(11),
+                topRight: Radius.circular(11),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.summarize,
+                  color: AppTheme.primaryColor,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '会話のまとめ',
+                  style: AppTheme.body1.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.primaryColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // コンテンツ
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  summary,
+                  style: AppTheme.body2.copyWith(
+                    height: 1.5,
+                  ),
+                ),
+                
+                if (keyPhrases.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    '使用した単語・熟語',
+                    style: AppTheme.caption.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      ...keyPhrases.take(5).map((phrase) => Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppTheme.info.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: AppTheme.info.withOpacity(0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          phrase,
+                          style: AppTheme.caption.copyWith(
+                            color: AppTheme.info,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      )),
+                      ...newWords.take(5).map((word) => Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppTheme.success.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: AppTheme.success.withOpacity(0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          word,
+                          style: AppTheme.caption.copyWith(
+                            color: AppTheme.success,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      )),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<bool> _onWillPop() async {
     if (!_hasChanges) return true;
 
@@ -465,92 +594,95 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       
                       const SizedBox(height: 16),
                       
-                      // Acoと会話ボタン
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ConversationJournalScreen(),
+                      // 会話のまとめまたはAcoと会話ボタン
+                      if (widget.conversationSummary != null) 
+                        _buildConversationSummaryCard()
+                      else
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ConversationJournalScreen(),
+                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppTheme.primaryColor.withOpacity(0.1),
+                                  AppTheme.primaryColor.withOpacity(0.05),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: AppTheme.primaryColor.withOpacity(0.3),
+                                width: 1,
+                              ),
                             ),
-                          );
-                        },
-                        borderRadius: BorderRadius.circular(12),
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                AppTheme.primaryColor.withOpacity(0.1),
-                                AppTheme.primaryColor.withOpacity(0.05),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: AppTheme.primaryColor.withOpacity(0.3),
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      const Color(0xFFF5F5F5),
-                                      const Color(0xFFE8E8E8),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        const Color(0xFFF5F5F5),
+                                        const Color(0xFFE8E8E8),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: AppTheme.primaryColor.withOpacity(0.3),
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      '🐿',
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '日記のネタを見つける',
+                                        style: AppTheme.body1.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: AppTheme.primaryColor,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Acoとの会話から今日の出来事を振り返りましょう',
+                                        style: AppTheme.body2.copyWith(
+                                          color: AppTheme.textSecondary,
+                                        ),
+                                      ),
                                     ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: AppTheme.primaryColor.withOpacity(0.3),
-                                    width: 1.5,
                                   ),
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    '🐿',
-                                    style: TextStyle(fontSize: 20),
-                                  ),
+                                Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: AppTheme.primaryColor.withOpacity(0.6),
+                                  size: 16,
                                 ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '日記のネタを見つける',
-                                      style: AppTheme.body1.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: AppTheme.primaryColor,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Acoとの会話から今日の出来事を振り返りましょう',
-                                      style: AppTheme.body2.copyWith(
-                                        color: AppTheme.textSecondary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Icon(
-                                Icons.arrow_forward_ios,
-                                color: AppTheme.primaryColor.withOpacity(0.6),
-                                size: 16,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
                       
                       // リアルタイム翻訳を削除
                       /*if (_translatedContent.isNotEmpty) ...[

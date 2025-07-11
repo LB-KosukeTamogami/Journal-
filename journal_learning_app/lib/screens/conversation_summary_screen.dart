@@ -3,7 +3,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 import '../models/conversation_message.dart';
 import '../services/gemini_service.dart';
-import '../widgets/text_to_speech_button.dart';
 import 'diary_creation_screen.dart';
 
 class ConversationSummaryScreen extends StatefulWidget {
@@ -159,10 +158,6 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
                   ),
                 ],
               ),
-              TextToSpeechButton(
-                text: _summary,
-                size: 20,
-              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -204,7 +199,7 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
               ),
               const SizedBox(width: 12),
               Text(
-                '使用した単語・フレーズ',
+                '使用した単語・熟語',
                 style: AppTheme.headline3,
               ),
             ],
@@ -214,7 +209,7 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
           // キーフレーズ
           if (_keyPhrases.isNotEmpty) ...[
             Text(
-              'キーフレーズ',
+              '重要な熟語',
               style: AppTheme.body2.copyWith(
                 fontWeight: FontWeight.w600,
                 color: AppTheme.textSecondary,
@@ -364,6 +359,11 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
                 MaterialPageRoute(
                   builder: (context) => DiaryCreationScreen(
                     initialContent: _generateDiaryContent(),
+                    conversationSummary: {
+                      'summary': _summary,
+                      'keyPhrases': _keyPhrases,
+                      'newWords': _newWords,
+                    },
                   ),
                 ),
               );

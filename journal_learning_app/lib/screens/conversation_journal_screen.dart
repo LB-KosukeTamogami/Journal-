@@ -4,7 +4,6 @@ import '../theme/app_theme.dart';
 import '../services/gemini_service.dart';
 import '../models/conversation_message.dart';
 import '../services/storage_service.dart';
-import '../widgets/text_to_speech_button.dart';
 import 'conversation_summary_screen.dart';
 
 class ConversationJournalScreen extends StatefulWidget {
@@ -33,7 +32,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
     // 初期メッセージを追加
     _messages.add(
       ConversationMessage(
-        text: "Hello! I'm Aco, your English conversation partner. What would you like to talk about today? 😊\n\nこんにちは！私はAcoです。英会話の練習相手として一緒に学習しましょう。今日は何について話しましょうか？",
+        text: "Hello! I'm Aco, your English conversation partner. Let's practice English together! What would you like to talk about today?\n\nこんにちは！私はAcoです。一緒に英語を練習しましょう！今日は何について話したいですか？",
         isUser: false,
         timestamp: DateTime.now(),
       ),
@@ -187,45 +186,6 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
               ),
               onPressed: _endConversation,
             ),
-          IconButton(
-            icon: Icon(Icons.refresh, color: AppTheme.textPrimary),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  backgroundColor: AppTheme.backgroundPrimary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  title: Text('新しい会話を始めますか？', style: AppTheme.headline3),
-                  content: Text(
-                    '現在の会話履歴がクリアされます。',
-                    style: AppTheme.body2,
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text('キャンセル', style: AppTheme.body2),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        setState(() {
-                          _messages.clear();
-                          _conversationTopic = null;
-                          _initializeConversation();
-                        });
-                      },
-                      child: Text(
-                        '新しい会話',
-                        style: AppTheme.body2.copyWith(color: AppTheme.primaryColor),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
         ],
       ),
       body: Column(
@@ -331,14 +291,6 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                         ),
                       ),
                     ),
-                    if (!isUser) ...[
-                      const SizedBox(width: 8),
-                      TextToSpeechButton(
-                        text: message.text,
-                        size: 18,
-                        color: AppTheme.textSecondary,
-                      ),
-                    ],
                   ],
                 ),
                 
