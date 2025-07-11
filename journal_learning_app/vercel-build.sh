@@ -7,6 +7,11 @@ export LC_ALL=en_US.UTF-8
 
 echo "Starting Vercel build process..."
 
+# Print all environment variables first
+if [ -f "print-env-vars.sh" ]; then
+    bash print-env-vars.sh
+fi
+
 # Run environment debug script
 if [ -f "vercel-env-fix.sh" ]; then
     bash vercel-env-fix.sh
