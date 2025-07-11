@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 import '../services/auth_service.dart';
+import '../services/storage_service.dart';
 import 'auth/login_screen.dart';
 import 'profile_edit_screen.dart';
 
@@ -223,6 +224,21 @@ class _MyPageScreenState extends State<MyPageScreen> {
                   ),
                   const Divider(height: 1),
                   ListTile(
+                    leading: const Icon(Icons.delete_sweep, color: Colors.orange),
+                    title: const Text(
+                      'サンプルデータを削除',
+                      style: TextStyle(color: Colors.orange),
+                    ),
+                    subtitle: const Text(
+                      'デモ用のサンプルデータを削除します',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    onTap: () {
+                      _showClearSampleDataDialog();
+                    },
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
                     leading: const Icon(Icons.logout, color: Colors.red),
                     title: const Text(
                       'ログアウト',
@@ -344,6 +360,53 @@ class _MyPageScreenState extends State<MyPageScreen> {
         _notificationTime = '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
       });
     }
+  }
+  
+  void _showClearSampleDataDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('サンプルデータを削除'),
+        content: const Text('デモ用のサンプルデータ（sample_で始まる日記と単語）を削除します。実際に作成したデータは削除されません。'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('キャンセル'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              
+              try {
+                await StorageService.clearSampleData();
+                
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('サンプルデータを削除しました'),
+                      backgroundColor: AppTheme.success,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('削除に失敗しました: ${e.toString()}'),
+                      backgroundColor: AppTheme.error,
+                    ),
+                  );
+                }
+              }
+            },
+            child: const Text(
+              '削除',
+              style: TextStyle(color: Colors.orange),
+            ),
+          ),
+        ],
+      ),
+    );
   }
   
   void _showLogoutDialog() {
