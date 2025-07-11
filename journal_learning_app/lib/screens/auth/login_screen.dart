@@ -298,7 +298,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text(
                     'アカウントをお持ちでない方は',
                     style: TextStyle(
-                      color: AppTheme.secondaryTextColor,
+                      color: AppTheme.textSecondary,
                     ),
                   ),
                   TextButton(

@@ -306,7 +306,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       '• 登録時と異なるメールアドレスを入力していませんか？\n'
                       '• 問題が解決しない場合は、サポートまでお問い合わせください',
                       style: TextStyle(
-                        color: AppTheme.secondaryTextColor,
+                        color: AppTheme.textSecondary,
                         height: 1.5,
                         fontSize: 13,
                       ),
