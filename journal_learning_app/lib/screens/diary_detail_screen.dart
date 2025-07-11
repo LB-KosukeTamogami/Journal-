@@ -64,6 +64,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     try {
       // 言語を検出
       final detectedLang = TranslationService.detectLanguage(widget.entry.content);
+      print('DiaryDetail: Detected language: $detectedLang');
       
       // 日英混在の場合は英語に統一する
       String targetLanguage;
@@ -72,9 +73,11 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       } else {
         targetLanguage = detectedLang == 'ja' ? 'en' : 'ja';
       }
+      print('DiaryDetail: Target language: $targetLanguage');
       
       // 自動翻訳を実行
       final translationResult = await TranslationService.autoTranslate(widget.entry.content);
+      print('DiaryDetail: Translation result: ${translationResult.success}, ${translationResult.translatedText}');
       
       // Gemini APIで添削と翻訳を実行（フォールバック）
       try {
@@ -558,7 +561,9 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   }
   
   Widget _buildTranslationTab() {
-    final isJapanese = TranslationService.detectLanguage(widget.entry.content) == 'ja';
+    final detectedLang = TranslationService.detectLanguage(widget.entry.content);
+    final isJapanese = detectedLang == 'ja';
+    final isMixed = detectedLang == 'mixed';
     
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -579,7 +584,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      isJapanese ? '英語翻訳' : '添削結果',
+                      isJapanese ? '英語翻訳' : (isMixed ? '英語への統一' : '添削結果'),
                       style: AppTheme.body1.copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppTheme.success,
@@ -710,7 +715,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            isJapanese ? '翻訳文' : '添削後',
+                            isJapanese ? '翻訳文' : (isMixed ? '英語に統一' : '添削後'),
                             style: AppTheme.caption.copyWith(
                               color: AppTheme.textSecondary,
                             ),
@@ -733,7 +738,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // 添削が必要ない場合のコメント
-                            if (!isJapanese && _correctedContent == widget.entry.content) ...[
+                            if (!isJapanese && !isMixed && _correctedContent == widget.entry.content) ...[
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                 decoration: BoxDecoration(
@@ -762,7 +767,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                               // 添削が必要な場合のみ表示
                               // 添削後/翻訳テキスト
                               Text(
-                                isJapanese ? _translatedContent : _correctedContent,
+                                isJapanese ? _translatedContent : (isMixed ? _correctedContent : _correctedContent),
                                 style: AppTheme.body1.copyWith(
                                   height: 1.6,
                                   fontSize: 16,

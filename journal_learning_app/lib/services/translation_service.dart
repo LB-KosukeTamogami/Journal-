@@ -225,10 +225,12 @@ class TranslationService {
   /// オフライン翻訳（改善された実装）
   static TranslationResult _translateOffline(String text, String targetLanguage) {
     final lowerText = text.toLowerCase().trim();
+    print('TranslationService: Translating "$text" to $targetLanguage');
     
     // 完全一致を最初に試す
     String? directTranslation = _simpleTranslations[lowerText];
     if (directTranslation != null) {
+      print('TranslationService: Found direct translation: $directTranslation');
       return TranslationResult(
         originalText: text,
         translatedText: directTranslation,
@@ -728,7 +730,16 @@ class TranslationService {
 
     // 言語を自動検出
     final detectedLanguage = detectLanguage(text);
-    final targetLanguage = detectedLanguage == 'ja' ? 'en' : 'ja';
+    String targetLanguage;
+    
+    if (detectedLanguage == 'mixed') {
+      // 混在の場合は英語に統一
+      targetLanguage = 'en';
+    } else if (detectedLanguage == 'ja') {
+      targetLanguage = 'en';
+    } else {
+      targetLanguage = 'ja';
+    }
     
     // 翻訳実行
     return await translate(
