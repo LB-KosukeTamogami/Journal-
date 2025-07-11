@@ -147,7 +147,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.backgroundSecondary,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -175,7 +175,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   Text(
                     '新規アカウント作成',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: AppTheme.primaryTextColor,
+                          color: AppTheme.textPrimary,
                           fontWeight: FontWeight.bold,
                         ),
                   ).animate().fadeIn(delay: 100.ms),
@@ -183,7 +183,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   Text(
                     '言語学習の旅を始めましょう',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppTheme.secondaryTextColor,
+                          color: AppTheme.textSecondary,
                         ),
                   ).animate().fadeIn(delay: 200.ms),
                 ],
@@ -385,7 +385,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         child: RichText(
                           text: TextSpan(
                             style: TextStyle(
-                              color: AppTheme.secondaryTextColor,
+                              color: AppTheme.textSecondary,
                               fontSize: 14,
                             ),
                             children: [

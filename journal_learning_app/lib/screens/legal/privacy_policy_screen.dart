@@ -8,7 +8,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.backgroundSecondary,
       appBar: AppBar(
         title: const Text('プライバシーポリシー'),
         backgroundColor: AppTheme.primaryColor,
@@ -23,14 +23,14 @@ class PrivacyPolicyScreen extends StatelessWidget {
               'Journal Language Learning\nプライバシーポリシー',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryTextColor,
+                    color: AppTheme.textPrimary,
                   ),
             ).animate().fadeIn(),
             const SizedBox(height: 8),
             Text(
               '最終更新日: ${DateTime.now().year}年${DateTime.now().month}月${DateTime.now().day}日',
               style: TextStyle(
-                color: AppTheme.secondaryTextColor,
+                color: AppTheme.textSecondary,
                 fontSize: 14,
               ),
             ).animate().fadeIn(delay: 100.ms),
@@ -148,7 +148,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
           Text(
             content,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.secondaryTextColor,
+                  color: AppTheme.textSecondary,
                   height: 1.6,
                 ),
           ),

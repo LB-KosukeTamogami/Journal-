@@ -66,11 +66,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.backgroundSecondary,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: AppTheme.primaryTextColor),
+        iconTheme: IconThemeData(color: AppTheme.textPrimary),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -98,7 +98,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   Text(
                     _emailSent ? 'メールを送信しました' : 'パスワードリセット',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: AppTheme.primaryTextColor,
+                          color: AppTheme.textPrimary,
                           fontWeight: FontWeight.bold,
                         ),
                   ).animate().fadeIn(delay: 100.ms),
@@ -108,7 +108,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ? 'パスワードリセットの手順をメールで送信しました'
                         : 'ご登録のメールアドレスを入力してください',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppTheme.secondaryTextColor,
+                          color: AppTheme.textSecondary,
                         ),
                     textAlign: TextAlign.center,
                   ).animate().fadeIn(delay: 200.ms),
@@ -234,14 +234,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         'メールをご確認ください',
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: AppTheme.primaryTextColor,
+                              color: AppTheme.textPrimary,
                             ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         '${_emailController.text}\nに送信されたリンクからパスワードをリセットしてください。',
                         style: TextStyle(
-                          color: AppTheme.secondaryTextColor,
+                          color: AppTheme.textSecondary,
                           height: 1.5,
                         ),
                         textAlign: TextAlign.center,
@@ -295,7 +295,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           'お困りですか？',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: AppTheme.primaryTextColor,
+                            color: AppTheme.textPrimary,
                           ),
                         ),
                       ],

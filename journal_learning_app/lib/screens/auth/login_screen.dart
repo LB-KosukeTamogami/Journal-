@@ -78,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.backgroundSecondary,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -106,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text(
                     'おかえりなさい！',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: AppTheme.primaryTextColor,
+                          color: AppTheme.textPrimary,
                           fontWeight: FontWeight.bold,
                         ),
                   ).animate().fadeIn(delay: 100.ms),
@@ -114,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text(
                     '言語学習の旅を続けましょう',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppTheme.secondaryTextColor,
+                          color: AppTheme.textSecondary,
                         ),
                   ).animate().fadeIn(delay: 200.ms),
                 ],
