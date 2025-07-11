@@ -2,8 +2,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'supabase_service.dart';
 
 class AuthService {
+  static SupabaseClient? get _supabaseOrNull => SupabaseService.client;
+  
   static SupabaseClient get _supabase {
-    final client = SupabaseService.client;
+    final client = _supabaseOrNull;
     if (client == null) {
       throw Exception('Supabase not initialized');
     }
@@ -13,7 +15,12 @@ class AuthService {
   // Get current user
   static User? get currentUser {
     try {
-      return _supabase.auth.currentUser;
+      final client = _supabaseOrNull;
+      if (client == null) {
+        print('[AuthService] Supabase not initialized, returning null user');
+        return null;
+      }
+      return client.auth.currentUser;
     } catch (e) {
       print('[AuthService] Error getting current user: $e');
       return null;
@@ -21,10 +28,24 @@ class AuthService {
   }
   
   // Get current user ID
-  static String? get currentUserId => currentUser?.id;
+  static String? get currentUserId {
+    try {
+      return currentUser?.id;
+    } catch (e) {
+      print('[AuthService] Error getting current user ID: $e');
+      return null;
+    }
+  }
   
   // Auth state changes stream
-  static Stream<AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;
+  static Stream<AuthState> get authStateChanges {
+    try {
+      return _supabase.auth.onAuthStateChange;
+    } catch (e) {
+      print('[AuthService] Error getting auth state changes: $e');
+      return const Stream.empty();
+    }
+  }
   
   // Sign up with email and password
   static Future<AuthResponse> signUp({

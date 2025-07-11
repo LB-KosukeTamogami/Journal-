@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'main_navigation_screen.dart';
 import 'auth/auth_landing_screen.dart';
 import '../services/auth_service.dart';
@@ -21,9 +20,8 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _navigateToHome() async {
     print('[SplashScreen] Starting navigation logic');
     
-    // HTMLスプラッシュ画面の表示を考慮して、即座に遷移
-    // HTMLで2秒表示されるので、Flutter側では追加の待機は不要
-    await Future.delayed(const Duration(milliseconds: 100));
+    // Supabaseの初期化を待つ
+    await Future.delayed(const Duration(milliseconds: 500));
     
     if (!mounted) {
       print('[SplashScreen] Widget not mounted, skipping navigation');

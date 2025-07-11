@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../../theme/app_theme.dart';
 import 'login_screen.dart';
 import 'signup_screen.dart';
@@ -36,9 +35,7 @@ class AuthLandingScreen extends StatelessWidget {
                             style: TextStyle(fontSize: 40),
                           ),
                         ),
-                      ).animate()
-                        .scale(duration: 600.ms, curve: Curves.elasticOut)
-                        .fadeIn(),
+                      ),
                       const SizedBox(width: 16),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,9 +58,7 @@ class AuthLandingScreen extends StatelessWidget {
                             ),
                           ),
                         ],
-                      ).animate()
-                        .fadeIn(delay: 200.ms)
-                        .slideX(begin: 0.2, end: 0),
+                      ),
                     ],
                   ),
                 ],
@@ -78,8 +73,7 @@ class AuthLandingScreen extends StatelessWidget {
                   height: 1.5,
                 ),
                 textAlign: TextAlign.center,
-              ).animate()
-                .fadeIn(delay: 600.ms),
+              ),
               const SizedBox(height: 8),
               Text(
                 'AIがあなたの日記を添削し、\n自然な表現を学べます',
@@ -89,8 +83,7 @@ class AuthLandingScreen extends StatelessWidget {
                   height: 1.5,
                 ),
                 textAlign: TextAlign.center,
-              ).animate()
-                .fadeIn(delay: 700.ms),
+              ),
               const Spacer(flex: 2),
               // ボタン
               Column(
@@ -124,9 +117,7 @@ class AuthLandingScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ).animate()
-                    .fadeIn(delay: 800.ms)
-                    .slideY(begin: 0.2, end: 0),
+                  ),
                   const SizedBox(height: 16),
                   // ログインボタン
                   SizedBox(
@@ -159,9 +150,7 @@ class AuthLandingScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ).animate()
-                    .fadeIn(delay: 900.ms)
-                    .slideY(begin: 0.2, end: 0),
+                  ),
                 ],
               ),
               const SizedBox(height: 40),
@@ -174,8 +163,7 @@ class AuthLandingScreen extends StatelessWidget {
                   height: 1.5,
                 ),
                 textAlign: TextAlign.center,
-              ).animate()
-                .fadeIn(delay: 1000.ms),
+              ),
               const SizedBox(height: 24),
             ],
           ),

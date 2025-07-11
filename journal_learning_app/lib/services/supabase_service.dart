@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/supabase_config.dart';
 
@@ -18,14 +19,16 @@ class SupabaseService {
     
     if (!SupabaseConfig.isConfigured) {
       print('[Supabase] Not configured. SUPABASE_URL and SUPABASE_ANON_KEY environment variables are required.');
+      print('[Supabase] Skipping initialization - app will run without Supabase features');
       return;
     }
     
     try {
-      print('[Supabase] Initializing with URL: ${SupabaseConfig.supabaseUrl.substring(0, 30)}...');
+      print('[Supabase] Initializing with URL: ${SupabaseConfig.supabaseUrl.substring(0, math.min(30, SupabaseConfig.supabaseUrl.length))}...');
       await Supabase.initialize(
         url: SupabaseConfig.supabaseUrl,
         anonKey: SupabaseConfig.supabaseAnonKey,
+        debug: false, // デバッグモードを無効化
       );
       
       _client = Supabase.instance.client;
@@ -34,7 +37,9 @@ class SupabaseService {
     } catch (e, stack) {
       print('[Supabase] Initialization error: $e');
       print('[Supabase] Stack trace:\n$stack');
-      throw e; // エラーを再スローして上位でキャッチできるようにする
+      // エラーを再スローせず、アプリは続行
+      _initialized = false;
+      _client = null;
     }
   }
   
