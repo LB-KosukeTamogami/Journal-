@@ -24,7 +24,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
   List<DiaryEntry> _allEntries = [];
   Map<DateTime, List<DiaryEntry>> _entriesByDate = {};
   bool _isLoading = true;
-  bool _isCalendarExpanded = true;
+  bool _isCalendarExpanded = false;
   final ScrollController _scrollController = ScrollController();
   late AnimationController _animationController;
   late Animation<double> _heightAnimation;
@@ -45,8 +45,8 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
-    // 初期状態が展開なのでアニメーションを完了状態に
-    _animationController.forward();
+    // 初期状態が縮小なのでアニメーションを初期状態に
+    // _animationController.forward();
   }
   
   @override
@@ -167,7 +167,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                           padding: const EdgeInsets.all(16),
                           child: TableCalendar<Map<String, dynamic>>(
                           firstDay: DateTime.utc(2020, 1, 1),
-                          lastDay: DateTime.utc(2030, 12, 31),
+                          lastDay: DateTime.now(),
                           focusedDay: _focusedDay,
                           calendarFormat: _isCalendarExpanded ? CalendarFormat.month : CalendarFormat.week,
                           selectedDayPredicate: (day) {
@@ -179,6 +179,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                             outsideDaysVisible: false,
                             defaultTextStyle: TextStyle(color: AppTheme.textPrimary),
                             weekendTextStyle: TextStyle(color: AppTheme.textSecondary),
+                            disabledTextStyle: TextStyle(color: AppTheme.textTertiary.withOpacity(0.5)),
                             selectedDecoration: BoxDecoration(
                               color: AppTheme.primaryColor,
                               shape: BoxShape.circle,
@@ -202,6 +203,22 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                             rightChevronIcon: Icon(Icons.chevron_right, color: AppTheme.textPrimary),
                           ),
                           onDaySelected: (selectedDay, focusedDay) {
+                            // 未来日の選択を制限
+                            if (selectedDay.isAfter(DateTime.now())) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text('未来の日付は選択できません'),
+                                  backgroundColor: AppTheme.error,
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                              return;
+                            }
+                            
                             if (!isSameDay(_selectedDay, selectedDay)) {
                               setState(() {
                                 _selectedDay = selectedDay;
@@ -295,6 +312,21 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
         ),
         child: FloatingActionButton.extended(
           onPressed: () {
+            // 選択された日付が未来日でないことを確認
+            if (_selectedDay != null && _selectedDay!.isAfter(DateTime.now())) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('未来の日付には日記を作成できません'),
+                  backgroundColor: AppTheme.error,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              );
+              return;
+            }
+            
             Navigator.push(
               context,
               MaterialPageRoute(
