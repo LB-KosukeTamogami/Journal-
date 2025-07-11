@@ -225,12 +225,10 @@ class TranslationService {
   /// オフライン翻訳（改善された実装）
   static TranslationResult _translateOffline(String text, String targetLanguage) {
     final lowerText = text.toLowerCase().trim();
-    print('TranslationService: Translating "$text" to $targetLanguage');
     
     // 完全一致を最初に試す
     String? directTranslation = _simpleTranslations[lowerText];
     if (directTranslation != null) {
-      print('TranslationService: Found direct translation: $directTranslation');
       return TranslationResult(
         originalText: text,
         translatedText: directTranslation,

@@ -64,7 +64,6 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     try {
       // 言語を検出
       final detectedLang = TranslationService.detectLanguage(widget.entry.content);
-      print('DiaryDetail: Detected language: $detectedLang');
       
       // 日英混在の場合は英語に統一する
       String targetLanguage;
@@ -73,31 +72,26 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       } else {
         targetLanguage = detectedLang == 'ja' ? 'en' : 'ja';
       }
-      print('DiaryDetail: Target language: $targetLanguage');
       
-      // 自動翻訳を実行（オフライン翻訳を優先）
-      final translationResult = await TranslationService.autoTranslate(widget.entry.content);
-      print('DiaryDetail: Translation result: ${translationResult.success}, ${translationResult.translatedText}');
-      
-      // オフライン翻訳が成功した場合はそれを使用
-      String translatedText = translationResult.success ? translationResult.translatedText : '';
-      
-      // Gemini APIで添削と翻訳を実行（オプショナル）
+      // Gemini APIで添削と翻訳を実行（優先）
       Map<String, dynamic>? geminiResult;
+      String translatedText = '';
+      String correctedContent = widget.entry.content;
+      List<String> corrections = [];
+      
       try {
         geminiResult = await GeminiService.correctAndTranslate(
           widget.entry.content,
           targetLanguage: targetLanguage,
         );
         
-        // Geminiから翻訳が取得できた場合は上書き
+        // Geminiから結果を取得
         if (geminiResult['translation'] != null && geminiResult['translation'].isNotEmpty) {
           translatedText = geminiResult['translation'];
         }
         
-        // 英語の場合は文法チェックと添削を生成
-        String correctedContent = geminiResult['corrected'] ?? widget.entry.content;
-        List<String> corrections = List<String>.from(geminiResult['improvements'] ?? []);
+        correctedContent = geminiResult['corrected'] ?? widget.entry.content;
+        corrections = List<String>.from(geminiResult['improvements'] ?? []);
         
         // 混在の場合のメッセージを追加
         if (detectedLang == 'mixed' && corrections.isEmpty) {
@@ -155,8 +149,14 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           _isLoading = false;
         });
       } catch (apiError) {
-        // Gemini API失敗時は翻訳サービスの結果のみ使用
+        // Gemini API失敗時のみオフライン翻訳をフォールバックとして使用
         print('DiaryDetail: Gemini API error: $apiError');
+        print('DiaryDetail: Falling back to offline translation');
+        
+        // オフライン翻訳を実行
+        final translationResult = await TranslationService.autoTranslate(widget.entry.content);
+        translatedText = translationResult.success ? translationResult.translatedText : '';
+        
         setState(() {
           _correctedContent = widget.entry.content;
           _translatedContent = translatedText.isNotEmpty ? translatedText : '翻訳を読み込めませんでした';
