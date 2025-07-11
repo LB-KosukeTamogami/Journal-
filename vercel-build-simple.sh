@@ -53,13 +53,25 @@ flutter pub get
 
 # Build with environment variables
 echo "Building web app..."
+echo "Checking environment variables..."
+echo "GEMINI_API_KEY: ${GEMINI_API_KEY:+SET}"
+echo "SUPABASE_URL: ${SUPABASE_URL:+SET}"
+echo "SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:+SET}"
+
+# Build with all environment variables
+DART_DEFINES=""
 if [ -n "$GEMINI_API_KEY" ]; then
-    echo "Building with Gemini API key..."
-    flutter build web --release --dart-define=GEMINI_API_KEY="$GEMINI_API_KEY"
-else
-    echo "Building without API key (using default)..."
-    flutter build web --release
+    DART_DEFINES="${DART_DEFINES} --dart-define=GEMINI_API_KEY=$GEMINI_API_KEY"
 fi
+if [ -n "$SUPABASE_URL" ]; then
+    DART_DEFINES="${DART_DEFINES} --dart-define=SUPABASE_URL=$SUPABASE_URL"
+fi
+if [ -n "$SUPABASE_ANON_KEY" ]; then
+    DART_DEFINES="${DART_DEFINES} --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
+fi
+
+echo "Building with environment variables..."
+flutter build web --release $DART_DEFINES
 
 # Fix renderer in flutter_bootstrap.js
 echo "Ensuring HTML renderer is used..."
