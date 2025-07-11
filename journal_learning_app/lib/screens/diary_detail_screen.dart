@@ -148,17 +148,29 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           _extractedWords = extractedWords;
           _isLoading = false;
         });
+        
+        print('DiaryDetail: Translation set to: $_translatedContent');
+        print('DiaryDetail: Corrections: $_corrections');
       } catch (apiError) {
         // Gemini API失敗時のみオフライン翻訳をフォールバックとして使用
         print('DiaryDetail: Gemini API error: $apiError');
         print('DiaryDetail: Falling back to offline translation');
         
-        // オフライン翻訳を実行
-        final translationResult = await TranslationService.autoTranslate(widget.entry.content);
-        translatedText = translationResult.success ? translationResult.translatedText : '';
+        // GeminiServiceのオフラインレスポンスが提供されている場合はそれを使用
+        if (geminiResult != null && geminiResult['translation'] != null) {
+          translatedText = geminiResult['translation'];
+          correctedContent = geminiResult['corrected'] ?? widget.entry.content;
+          corrections = List<String>.from(geminiResult['improvements'] ?? []);
+        }
+        
+        // それでも翻訳がない場合はTranslationServiceを使用
+        if (translatedText.isEmpty) {
+          final translationResult = await TranslationService.autoTranslate(widget.entry.content);
+          translatedText = translationResult.success ? translationResult.translatedText : '';
+        }
         
         setState(() {
-          _correctedContent = widget.entry.content;
+          _correctedContent = correctedContent;
           _translatedContent = translatedText.isNotEmpty ? translatedText : '翻訳を読み込めませんでした';
           
           // 基本的な添削を生成
