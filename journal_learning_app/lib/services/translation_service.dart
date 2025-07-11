@@ -698,7 +698,16 @@ class TranslationService {
     // 日本語文字（ひらがな、カタカナ、漢字）が含まれているかチェック
     final japanesePattern = RegExp(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]');
     
-    if (japanesePattern.hasMatch(text)) {
+    // 英文字のパターン
+    final englishPattern = RegExp(r'[a-zA-Z]');
+    
+    bool hasJapanese = japanesePattern.hasMatch(text);
+    bool hasEnglish = englishPattern.hasMatch(text);
+    
+    if (hasJapanese && hasEnglish) {
+      // 日英混在の場合は「mixed」を返す
+      return 'mixed';
+    } else if (hasJapanese) {
       return 'ja';
     } else {
       return 'en';

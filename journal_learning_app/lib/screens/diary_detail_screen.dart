@@ -65,6 +65,14 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       // 言語を検出
       final detectedLang = TranslationService.detectLanguage(widget.entry.content);
       
+      // 日英混在の場合は英語に統一する
+      String targetLanguage;
+      if (detectedLang == 'mixed') {
+        targetLanguage = 'en'; // 混在の場合は英語に統一
+      } else {
+        targetLanguage = detectedLang == 'ja' ? 'en' : 'ja';
+      }
+      
       // 自動翻訳を実行
       final translationResult = await TranslationService.autoTranslate(widget.entry.content);
       
@@ -72,15 +80,20 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       try {
         final result = await GeminiService.correctAndTranslate(
           widget.entry.content,
-          targetLanguage: detectedLang == 'ja' ? 'en' : 'ja',
+          targetLanguage: targetLanguage,
         );
         
         // 英語の場合は文法チェックと添削を生成
         String correctedContent = result['corrected'] ?? widget.entry.content;
         List<String> corrections = List<String>.from(result['improvements'] ?? []);
         
+        // 混在の場合のメッセージを追加
+        if (detectedLang == 'mixed' && corrections.isEmpty) {
+          corrections.add('日本語と英語が混在しています。英語に統一しました。');
+        }
+        
         // 英語で添削が必要な場合、自動的に一般的な間違いを検出
-        if (detectedLang == 'en') {
+        if (detectedLang == 'en' || detectedLang == 'mixed') {
           final lowerContent = widget.entry.content.toLowerCase();
           
           // 時制の間違いを検出
@@ -136,9 +149,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           _translatedContent = translationResult.success ? translationResult.translatedText : '翻訳を読み込めませんでした';
           
           // 基本的な添削を生成
-          if (detectedLang == 'en') {
+          if (detectedLang == 'en' || detectedLang == 'mixed') {
             final lowerContent = widget.entry.content.toLowerCase();
             _corrections = [];
+            
+            if (detectedLang == 'mixed') {
+              _corrections.add('日本語と英語が混在しています。英語に統一しました。');
+            }
             
             if (lowerContent.contains('i go') && lowerContent.contains('yesterday')) {
               _correctedContent = widget.entry.content.replaceAll('I go', 'I went').replaceAll('i go', 'I went');
