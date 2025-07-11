@@ -46,14 +46,14 @@ flutter clean
 echo "Getting Flutter dependencies..."
 flutter pub get
 
-# Build web with environment variables
-echo "Building Flutter web..."
+# Build web with environment variables and HTML renderer
+echo "Building Flutter web with HTML renderer..."
 if [ -n "$GEMINI_API_KEY" ]; then
     echo "Building with Gemini API key..."
-    flutter build web --release --dart-define=GEMINI_API_KEY="$GEMINI_API_KEY"
+    flutter build web --release --web-renderer html --dart-define=GEMINI_API_KEY="$GEMINI_API_KEY"
 else
     echo "Building without API key (using default)..."
-    flutter build web --release
+    flutter build web --release --web-renderer html
 fi
 
 # Fix renderer in flutter_bootstrap.js

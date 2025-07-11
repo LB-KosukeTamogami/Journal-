@@ -116,6 +116,12 @@
   <script>
     // レンダラーを明示的に設定
     window.flutterWebRenderer = "html";
+    
+    // Flutter設定をグローバルに設定
+    window.flutterConfiguration = {
+      renderer: "html",
+      canvasKitVariant: "auto"
+    };
   </script>
 </head>
 <body>
@@ -165,11 +171,12 @@
           // Flutter loaderが利用可能になるまで待つ
           if (typeof window._flutter !== 'undefined' && window._flutter.loader) {
             window._flutter.loader.load({
-              serviceWorkerSettings: null
+              serviceWorkerSettings: null,
+              renderer: 'html'
             });
           }
         } catch (e) {
-          // エラーは静かに処理
+          console.warn('Flutter loader initialization warning:', e);
         }
         
         // Flutter初期化チェックを開始
