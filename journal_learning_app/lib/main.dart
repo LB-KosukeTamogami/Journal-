@@ -7,9 +7,21 @@ import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await StorageService.init();
-  await StorageService.initializeSampleData();
-  await SupabaseService.initialize();
+  
+  try {
+    await StorageService.init();
+    await StorageService.initializeSampleData();
+  } catch (e) {
+    print('Storage initialization error: $e');
+  }
+  
+  try {
+    await SupabaseService.initialize();
+  } catch (e) {
+    print('Supabase initialization error: $e');
+    // Supabaseの初期化に失敗しても、アプリは起動する
+  }
+  
   runApp(const MyApp());
 }
 

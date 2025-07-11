@@ -7,7 +7,12 @@ class SupabaseService {
   
   // Supabaseクライアントの初期化
   static Future<void> initialize() async {
-    if (_initialized || !SupabaseConfig.isConfigured) {
+    if (_initialized) {
+      return;
+    }
+    
+    if (!SupabaseConfig.isConfigured) {
+      print('Supabase is not configured. SUPABASE_URL and SUPABASE_ANON_KEY environment variables are required.');
       return;
     }
     
@@ -22,6 +27,7 @@ class SupabaseService {
       print('Supabase initialized successfully');
     } catch (e) {
       print('Supabase initialization error: $e');
+      throw e; // エラーを再スローして上位でキャッチできるようにする
     }
   }
   

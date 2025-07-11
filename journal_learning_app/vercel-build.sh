@@ -46,6 +46,20 @@ flutter clean
 echo "Getting Flutter dependencies..."
 flutter pub get
 
+# Debug: Check environment variables
+echo "Checking environment variables..."
+if [ -n "$SUPABASE_URL" ]; then
+    echo "SUPABASE_URL is set (length: ${#SUPABASE_URL})"
+else
+    echo "WARNING: SUPABASE_URL is not set"
+fi
+
+if [ -n "$SUPABASE_ANON_KEY" ]; then
+    echo "SUPABASE_ANON_KEY is set (length: ${#SUPABASE_ANON_KEY})"
+else
+    echo "WARNING: SUPABASE_ANON_KEY is not set"
+fi
+
 # Build web with environment variables and HTML renderer
 echo "Building Flutter web with HTML renderer..."
 if [ -n "$GEMINI_API_KEY" ]; then
