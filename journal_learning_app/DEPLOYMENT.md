@@ -10,10 +10,12 @@ The following environment variables must be set in Vercel:
    - Your Supabase project URL
    - Format: `https://xxxxx.supabase.co`
    - Do NOT include trailing slash
+   - ✅ Correct in your setup
 
 2. **SUPABASE_ANON_KEY**
    - Your Supabase anon/public key
    - This is the public key, NOT the service_role key
+   - ⚠️ **IMPORTANT**: The variable name must be exactly `SUPABASE_ANON_KEY` (not `SUPABASE_ANON_KEY`)
 
 ### How to Set Environment Variables in Vercel
 
@@ -33,10 +35,12 @@ The following environment variables must be set in Vercel:
 
 ### Common Issues
 
+- **SPELLING**: Make sure the variable name is spelled correctly: `SUPABASE_ANON_KEY` not `SUPABASE_ANON_KEY`
 - **DO NOT** use `SUPABASE_SERVICE_ROLE_KEY` - this is for server-side only
 - **DO NOT** use `NEXT_PUBLIC_` prefix unless specifically required
 - Make sure there are no quotes around the values in Vercel
 - Make sure the URL does not have a trailing slash
+- Remove any other Supabase-related variables (like GEMINI_API_KEY if not using Gemini)
 
 ### Verifying Environment Variables
 

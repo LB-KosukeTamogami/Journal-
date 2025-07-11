@@ -1,10 +1,14 @@
 #!/bin/bash
 set -e
 
+# Set locale to avoid warnings
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
 echo "Starting Vercel build process..."
 echo "========================================"
 echo "Environment Variables Check:"
-echo "========================================"
+echo "======================================="
 
 # List all environment variables that contain SUPABASE
 echo "All SUPABASE-related environment variables:"
