@@ -19,6 +19,8 @@ class ConversationResponse {
 
 class GeminiService {
   static const String _baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
+  static DateTime? _lastApiCall;
+  static const Duration _rateLimitDelay = Duration(seconds: 2); // レート制限対策
   
   static Future<Map<String, dynamic>> correctAndTranslate(
     String content, {
@@ -30,6 +32,16 @@ class GeminiService {
       if (apiKey == null || apiKey.isEmpty) {
         print('Gemini API key not configured, using offline mode');
         return _getOfflineResponse(content);
+      }
+      
+      // レート制限対策: 前回のAPI呼び出しから一定時間待機
+      if (_lastApiCall != null) {
+        final timeSinceLastCall = DateTime.now().difference(_lastApiCall!);
+        if (timeSinceLastCall < _rateLimitDelay) {
+          final waitTime = _rateLimitDelay - timeSinceLastCall;
+          print('GeminiService: Waiting ${waitTime.inMilliseconds}ms for rate limit');
+          await Future.delayed(waitTime);
+        }
       }
 
       final prompt = '''
@@ -70,6 +82,9 @@ IMPORTANT:
 - For "very fun" → "とても楽しい" NOT "とても楽しみ"
 - Ensure all Japanese text uses proper characters (no corrupted text)''';
 
+      // API呼び出し時刻を記録
+      _lastApiCall = DateTime.now();
+      
       final response = await http.post(
         Uri.parse('$_baseUrl?key=$apiKey'),
         headers: {
@@ -137,6 +152,11 @@ IMPORTANT:
           print('Unexpected Gemini API response structure');
           return _getOfflineResponse(content);
         }
+      } else if (response.statusCode == 429) {
+        // レート制限エラー
+        print('Gemini API Rate Limit Error (429): Too many requests');
+        print('Using offline translation as fallback');
+        return _getOfflineResponse(content);
       } else {
         print('Gemini API Error: ${response.statusCode} - ${response.body}');
         return _getOfflineResponse(content);

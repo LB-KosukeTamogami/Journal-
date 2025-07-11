@@ -75,20 +75,29 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       }
       print('DiaryDetail: Target language: $targetLanguage');
       
-      // 自動翻訳を実行
+      // 自動翻訳を実行（オフライン翻訳を優先）
       final translationResult = await TranslationService.autoTranslate(widget.entry.content);
       print('DiaryDetail: Translation result: ${translationResult.success}, ${translationResult.translatedText}');
       
-      // Gemini APIで添削と翻訳を実行（フォールバック）
+      // オフライン翻訳が成功した場合はそれを使用
+      String translatedText = translationResult.success ? translationResult.translatedText : '';
+      
+      // Gemini APIで添削と翻訳を実行（オプショナル）
+      Map<String, dynamic>? geminiResult;
       try {
-        final result = await GeminiService.correctAndTranslate(
+        geminiResult = await GeminiService.correctAndTranslate(
           widget.entry.content,
           targetLanguage: targetLanguage,
         );
         
+        // Geminiから翻訳が取得できた場合は上書き
+        if (geminiResult['translation'] != null && geminiResult['translation'].isNotEmpty) {
+          translatedText = geminiResult['translation'];
+        }
+        
         // 英語の場合は文法チェックと添削を生成
-        String correctedContent = result['corrected'] ?? widget.entry.content;
-        List<String> corrections = List<String>.from(result['improvements'] ?? []);
+        String correctedContent = geminiResult['corrected'] ?? widget.entry.content;
+        List<String> corrections = List<String>.from(geminiResult['improvements'] ?? []);
         
         // 混在の場合のメッセージを追加
         if (detectedLang == 'mixed' && corrections.isEmpty) {
@@ -139,17 +148,18 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         
         setState(() {
           _correctedContent = correctedContent;
-          _translatedContent = translationResult.success ? translationResult.translatedText : (result['translation'] ?? '');
+          _translatedContent = translatedText;
           _corrections = corrections;
-          _learnedPhrases = List<String>.from(result['learned_phrases'] ?? []);
+          _learnedPhrases = List<String>.from(geminiResult?['learned_phrases'] ?? []);
           _extractedWords = extractedWords;
           _isLoading = false;
         });
       } catch (apiError) {
         // Gemini API失敗時は翻訳サービスの結果のみ使用
+        print('DiaryDetail: Gemini API error: $apiError');
         setState(() {
           _correctedContent = widget.entry.content;
-          _translatedContent = translationResult.success ? translationResult.translatedText : '翻訳を読み込めませんでした';
+          _translatedContent = translatedText.isNotEmpty ? translatedText : '翻訳を読み込めませんでした';
           
           // 基本的な添削を生成
           if (detectedLang == 'en' || detectedLang == 'mixed') {
