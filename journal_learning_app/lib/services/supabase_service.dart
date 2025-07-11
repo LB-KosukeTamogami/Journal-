@@ -29,6 +29,10 @@ class SupabaseService {
         url: SupabaseConfig.supabaseUrl,
         anonKey: SupabaseConfig.supabaseAnonKey,
         debug: false, // デバッグモードを無効化
+        authOptions: const FlutterAuthClientOptions(
+          authFlowType: AuthFlowType.pkce,
+          autoRefreshToken: true,
+        ),
       );
       
       _client = Supabase.instance.client;

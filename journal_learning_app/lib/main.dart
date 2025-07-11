@@ -27,9 +27,10 @@ void main() async {
       await StorageService.init();
       print('[Main] StorageService initialized successfully');
       
-      print('[Main] Initializing sample data...');
-      await StorageService.initializeSampleData();
-      print('[Main] Sample data initialized successfully');
+      // サンプルデータの初期化は削除（本番環境では不要）
+      // print('[Main] Initializing sample data...');
+      // await StorageService.initializeSampleData();
+      // print('[Main] Sample data initialized successfully');
     } catch (e, stack) {
       print('[Main] Storage initialization error: $e');
       print('[Main] Stack trace:\n$stack');

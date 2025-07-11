@@ -130,6 +130,24 @@ class StorageService {
     await prefs.clear();
   }
 
+  // ダミーデータのみを削除
+  static Future<void> clearSampleData() async {
+    // サンプル日記エントリーの削除
+    final entries = await getDiaryEntries();
+    final filteredEntries = entries.where((entry) => !entry.id.startsWith('sample_')).toList();
+    final jsonString = json.encode(filteredEntries.map((e) => e.toJson()).toList());
+    await prefs.setString(_diaryEntriesKey, jsonString);
+    
+    // サンプル単語の削除
+    final words = await getWords();
+    final filteredWords = words.where((word) => !word.id.startsWith('sample_')).toList();
+    final wordsJsonString = json.encode(filteredWords.map((w) => w.toJson()).toList());
+    await prefs.setString(_wordsKey, wordsJsonString);
+    
+    // サンプルデータ初期化フラグをリセット
+    await prefs.setBool(_sampleDataKey, false);
+  }
+
   static Future<int> getDiaryStreak() async {
     final entries = await getDiaryEntries();
     if (entries.isEmpty) return 0;

@@ -20,8 +20,8 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _navigateToHome() async {
     print('[SplashScreen] Starting navigation logic');
     
-    // Supabaseの初期化を待つ
-    await Future.delayed(const Duration(milliseconds: 500));
+    // Supabaseの初期化とセッション復元を待つ（スマホブラウザで重要）
+    await Future.delayed(const Duration(seconds: 1));
     
     if (!mounted) {
       print('[SplashScreen] Widget not mounted, skipping navigation');
@@ -29,10 +29,19 @@ class _SplashScreenState extends State<SplashScreen> {
     }
     
     try {
-      // 認証状態を確認
+      // 認証状態を確認（セッション復元を待つ）
       print('[SplashScreen] Checking authentication status');
+      
+      // スマホブラウザでのセッション復元を確実にするため、再度チェック
+      final user = AuthService.currentUser;
+      if (user == null) {
+        // 少し待ってから再度確認（スマホブラウザでの遅延対策）
+        await Future.delayed(const Duration(milliseconds: 500));
+      }
+      
       final isLoggedIn = AuthService.currentUser != null;
       print('[SplashScreen] User logged in: $isLoggedIn');
+      print('[SplashScreen] User ID: ${AuthService.currentUser?.id}');
       
       // 認証されていない場合は認証ランディング画面へ
       final targetScreen = isLoggedIn ? const MainNavigationScreen() : const AuthLandingScreen();
