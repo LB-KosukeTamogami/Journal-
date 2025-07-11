@@ -8,6 +8,9 @@ class TTSService {
   final FlutterTts _flutterTts = FlutterTts();
   bool _isInitialized = false;
   bool _isSpeaking = false;
+  Function(double)? _progressHandler;
+  DateTime? _speakStartTime;
+  int _totalCharacters = 0;
 
   // 初期化
   Future<void> initialize() async {
@@ -29,18 +32,24 @@ class TTSService {
       // コールバック設定
       _flutterTts.setStartHandler(() {
         _isSpeaking = true;
+        _speakStartTime = DateTime.now();
+        _startProgressTracking();
       });
 
       _flutterTts.setCompletionHandler(() {
         _isSpeaking = false;
+        _speakStartTime = null;
+        _progressHandler?.call(1.0);
       });
 
       _flutterTts.setCancelHandler(() {
         _isSpeaking = false;
+        _speakStartTime = null;
       });
 
       _flutterTts.setErrorHandler((msg) {
         _isSpeaking = false;
+        _speakStartTime = null;
         print('TTS Error: $msg');
       });
 
@@ -82,7 +91,8 @@ class TTSService {
       String language = _detectLanguage(textToSpeak);
       await _flutterTts.setLanguage(language);
       
-      print('Speaking in $language: $textToSpeak');
+      _totalCharacters = textToSpeak.length;
+      print('Speaking in $language: $textToSpeak (${_totalCharacters} characters)');
       
       // 読み上げ実行
       var result = await _flutterTts.speak(textToSpeak);
@@ -137,5 +147,36 @@ class TTSService {
     _flutterTts.stop();
     _isInitialized = false;
     _isSpeaking = false;
+    _progressHandler = null;
+  }
+
+  // プログレスハンドラーを設定
+  void setProgressHandler(Function(double) handler) {
+    _progressHandler = handler;
+  }
+
+  // プログレスハンドラーを解除
+  void removeProgressHandler() {
+    _progressHandler = null;
+  }
+
+  // プログレストラッキングを開始
+  void _startProgressTracking() {
+    if (_speakStartTime == null || _totalCharacters == 0) return;
+    
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (!_isSpeaking || _speakStartTime == null) return;
+      
+      // 推定進行率を計算（1文字あたり約0.15秒と仮定）
+      final elapsed = DateTime.now().difference(_speakStartTime!).inMilliseconds / 1000.0;
+      final estimatedDuration = _totalCharacters * 0.15;
+      final progress = (elapsed / estimatedDuration).clamp(0.0, 1.0);
+      
+      _progressHandler?.call(progress);
+      
+      if (_isSpeaking && progress < 1.0) {
+        _startProgressTracking();
+      }
+    });
   }
 }

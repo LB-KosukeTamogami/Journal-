@@ -30,11 +30,13 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
     super.initState();
     _ttsService.initialize();
     _estimateDuration();
+    _ttsService.setProgressHandler(_updateProgress);
   }
   
   @override
   void dispose() {
     _stopPlayback();
+    _ttsService.removeProgressHandler();
     super.dispose();
   }
   
@@ -58,8 +60,6 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
     
     await _ttsService.setSpeechRate(_playbackSpeed);
     await _ttsService.speak(widget.text);
-    
-    _updateProgress();
   }
   
   Future<void> _stopPlayback() async {
@@ -70,22 +70,13 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
     await _ttsService.stop();
   }
   
-  void _updateProgress() {
-    if (!_isPlaying) return;
+  void _updateProgress(double progress) {
+    if (!mounted) return;
     
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (!mounted || !_isPlaying) return;
-      
-      setState(() {
-        _currentPosition += (0.1 / _playbackSpeed);
-        if (_currentPosition >= _totalDuration) {
-          _currentPosition = _totalDuration;
-          _isPlaying = false;
-        }
-      });
-      
-      if (_isPlaying && _currentPosition < _totalDuration) {
-        _updateProgress();
+    setState(() {
+      _currentPosition = _totalDuration * progress;
+      if (progress >= 1.0) {
+        _isPlaying = false;
       }
     });
   }
@@ -126,9 +117,12 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
   
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
+    return Material(
+      color: Colors.transparent,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
           decoration: BoxDecoration(
             color: AppTheme.backgroundPrimary,
             boxShadow: [
@@ -318,11 +312,11 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
           ),
         ),
         
-        // Speed options popup (shown above the player when open)
-        if (_showSpeedOptions)
-          Positioned(
-            bottom: 80,
-            left: 16,
+          // Speed options popup (shown above the player when open)
+          if (_showSpeedOptions)
+            Positioned(
+              bottom: 60,
+              left: 16,
             child: Container(
               decoration: BoxDecoration(
                 color: AppTheme.backgroundPrimary,
@@ -346,7 +340,8 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
               ),
             ),
           ),
-      ],
+        ],
+      ),
     ).animate().fadeIn(duration: 200.ms).slideY(begin: 1, end: 0);
   }
   
