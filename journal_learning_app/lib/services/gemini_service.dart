@@ -251,13 +251,21 @@ IMPORTANT:
         }
       }
 
+      // 会話の進行度を計算（ユーザーメッセージの数）
+      int userMessageCount = conversationHistory.where((m) => m.isUser).length + 1;
+      
       final prompt = '''
-You are a friendly English conversation partner helping Japanese learners practice English.
-Your role is to:
-1. Respond naturally to the user's message
-2. Gently correct any grammar mistakes
-3. Provide helpful suggestions for improvement
-4. Keep the conversation engaging and educational
+You are Aco, a friendly squirrel who helps Japanese learners practice English conversation.
+Your personality: Warm, encouraging, curious about the learner's life, and naturally conversational.
+
+Current conversation round: $userMessageCount out of 5 (this is a 5-exchange practice session)
+
+Your role:
+1. Have a NATURAL conversation - ask follow-up questions, share related thoughts, react genuinely
+2. Keep responses conversational and engaging (not like a teacher, but like a friendly chat partner)
+3. Vary your responses - don't always say "tell me more" or ask generic questions
+4. Include gentle corrections only for major errors
+5. Match the learner's energy and topic interest
 
 Conversation History:
 $history
@@ -265,17 +273,18 @@ $history
 User's Latest Message: "$userMessage"
 ${topic != null ? 'Conversation Topic: $topic' : ''}
 
-RESPONSE RULES:
-- Use simple, clear English appropriate for learners
-- Include Japanese translations for difficult words/phrases
-- Be encouraging and supportive
-- Suggest 2-3 follow-up questions or responses the user could practice
+IMPORTANT GUIDELINES:
+- Be specific in your responses based on what the user said
+- Ask questions that show you're interested in their specific situation
+- Share brief related experiences or thoughts to make it conversational
+- Use simple English (A2-B1 level) with occasional Japanese support for difficult concepts
+- For rounds 3-5, help guide the conversation toward a natural conclusion
 
 Respond in JSON format:
 {
-  "reply": "Your natural response in English with some Japanese support",
-  "corrections": ["Grammar correction 1 (if any)", "Grammar correction 2 (if any)"],
-  "suggestions": ["Suggested response 1", "Suggested response 2", "Suggested response 3"]
+  "reply": "Your natural, conversational response with personality",
+  "corrections": ["Only major grammar corrections with explanations"],
+  "suggestions": ["Natural follow-up 1", "Natural follow-up 2", "Natural follow-up 3"]
 }
 ''';
 
@@ -329,38 +338,73 @@ Respond in JSON format:
   static ConversationResponse _getOfflineConversationResponse(String userMessage) {
     final lowercaseMessage = userMessage.toLowerCase();
     
-    // 簡単なパターンマッチング
+    // より自然な応答パターン
     if (lowercaseMessage.contains('hello') || lowercaseMessage.contains('hi')) {
       return ConversationResponse(
-        reply: "Hello! It's nice to meet you. How are you today? 😊\n今日はどうですか？",
+        reply: "Hello! Great to see you here! I'm excited to chat with you today. What's been the highlight of your day so far? 😊\n今日のハイライト（一番良かったこと）は何でしたか？",
         corrections: [],
         suggestions: [
-          "I'm fine, thank you!",
-          "I'm doing well. How about you?",
-          "Not bad. What's new?",
+          "I had a nice lunch today",
+          "I finished my work early",
+          "Nothing special, just a normal day",
         ],
       );
     } else if (lowercaseMessage.contains('hobby') || lowercaseMessage.contains('hobbies')) {
       return ConversationResponse(
-        reply: "That's interesting! Hobbies are a great topic. What do you like to do in your free time?\n趣味について話しましょう！",
+        reply: "Oh, I love learning about people's hobbies! It tells me so much about what makes them happy. What hobby brings you the most joy? I personally love collecting acorns! 🐿️\n趣味の話は大好きです！どんぐり集めが私の趣味です！",
         corrections: [],
         suggestions: [
-          "I like reading books",
-          "I enjoy playing sports",
-          "My hobby is cooking",
+          "I really enjoy...",
+          "My favorite hobby is...",
+          "I recently started...",
+        ],
+      );
+    } else if (lowercaseMessage.contains('food') || lowercaseMessage.contains('eat')) {
+      return ConversationResponse(
+        reply: "Food is such a wonderful topic! I'm always curious about what people enjoy eating. What's your comfort food? Mine is definitely acorns, but I hear humans have much more variety! 😄\nコンフォートフード（心が落ち着く食べ物）は何ですか？",
+        corrections: [],
+        suggestions: [
+          "My comfort food is...",
+          "I love eating...",
+          "Japanese food like...",
+        ],
+      );
+    } else if (lowercaseMessage.contains('work') || lowercaseMessage.contains('job')) {
+      return ConversationResponse(
+        reply: "Work can be such a big part of our lives! Is there something about your work that you're particularly proud of recently? I'm always inspired by people's achievements! 💪\n最近の仕事で誇りに思うことはありますか？",
+        corrections: [],
+        suggestions: [
+          "Recently, I completed...",
+          "I'm proud of...",
+          "My work involves...",
         ],
       );
     }
     
-    // デフォルトレスポンス
+    // より多様なデフォルトレスポンス
+    const responses = [
+      {
+        'reply': "Wow, that sounds fascinating! I'd love to hear more details about that. What made you think of this? 🤔\nそれについてもっと詳しく聞きたいです！",
+        'suggestions': ["Well, I think...", "The reason is...", "It started when..."]
+      },
+      {
+        'reply': "That's really cool! You know, that reminds me of something... but first, I'm curious - how long have you been interested in this? 😊\nいつからこれに興味を持っていますか？",
+        'suggestions': ["I've been interested for...", "It started about...", "Since I was..."]
+      },
+      {
+        'reply': "I love your enthusiasm about this! It's making me curious too. What's the best part about it for you? ✨\n一番いいところは何ですか？",
+        'suggestions': ["The best part is...", "I especially like...", "What I enjoy most is..."]
+      }
+    ];
+    
+    // ランダムに選択
+    final random = DateTime.now().millisecondsSinceEpoch % responses.length;
+    final selected = responses[random];
+    
     return ConversationResponse(
-      reply: "That's interesting! Tell me more about that. 🤔\nもっと詳しく教えてください。",
+      reply: selected['reply'] as String,
       corrections: [],
-      suggestions: [
-        "Let me explain more",
-        "For example...",
-        "I think that...",
-      ],
+      suggestions: selected['suggestions'] as List<String>,
     );
   }
   

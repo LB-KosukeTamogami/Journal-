@@ -297,14 +297,34 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
             ),
             child: Row(
               children: [
-                Icon(
-                  Icons.summarize,
-                  color: AppTheme.primaryColor,
-                  size: 20,
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xFFF5F5F5),
+                        const Color(0xFFE8E8E8),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppTheme.primaryColor.withOpacity(0.3),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '🐿',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Acoとの会話内容',
+                  'Acoとの会話まとめ',
                   style: AppTheme.body1.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppTheme.primaryColor,
