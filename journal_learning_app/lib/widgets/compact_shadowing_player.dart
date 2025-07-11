@@ -145,20 +145,20 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Progress bar at the very top
-                Container(
-                  height: 4,
+                SizedBox(
+                  height: 6,
                   child: SliderTheme(
                     data: SliderTheme.of(context).copyWith(
                       activeTrackColor: AppTheme.primaryColor,
                       inactiveTrackColor: AppTheme.borderColor,
                       thumbColor: AppTheme.primaryColor,
                       overlayColor: AppTheme.primaryColor.withOpacity(0.2),
-                      trackHeight: 4,
+                      trackHeight: 6,
                       thumbShape: const RoundSliderThumbShape(
-                        enabledThumbRadius: 0, // Hide thumb for cleaner look
+                        enabledThumbRadius: 6,
                       ),
                       overlayShape: const RoundSliderOverlayShape(
-                        overlayRadius: 0,
+                        overlayRadius: 12,
                       ),
                     ),
                     child: Slider(
@@ -321,7 +321,7 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
         // Speed options popup (shown above the player when open)
         if (_showSpeedOptions)
           Positioned(
-            bottom: 70,
+            bottom: 80,
             left: 16,
             child: Container(
               decoration: BoxDecoration(
