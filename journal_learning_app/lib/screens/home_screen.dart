@@ -200,7 +200,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: _MissionCard(
                           mission: mission,
-                          onToggle: () => _toggleMission(mission),
                         ),
                       ).animate().fadeIn(
                         delay: Duration(milliseconds: 300 + index * 50),
@@ -224,36 +223,33 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildStreakCard() {
     return AppCard(
+      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           Container(
-            width: 60,
-            height: 60,
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppTheme.primaryBlue,
-                  AppTheme.primaryBlueLight,
-                ],
-              ),
-              shape: BoxShape.circle,
+              color: AppTheme.warning.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.local_fire_department,
-              color: Colors.white,
-              size: 32,
+              color: AppTheme.warning,
+              size: 28,
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   '連続記録',
-                  style: AppTheme.body2,
+                  style: AppTheme.caption.copyWith(
+                    color: AppTheme.textSecondary,
+                  ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   textBaseline: TextBaseline.alphabetic,
@@ -261,34 +257,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       '$_currentStreak',
                       style: AppTheme.headline2.copyWith(
-                        color: AppTheme.primaryColor,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       '日',
-                      style: AppTheme.body2,
+                      style: AppTheme.body1.copyWith(
+                        color: AppTheme.textSecondary,
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '総学習日数',
-                style: AppTheme.caption,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '$_totalDays日',
-                style: AppTheme.body1.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
           ),
         ],
       ),
@@ -457,11 +439,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class _MissionCard extends StatelessWidget {
   final Mission mission;
-  final VoidCallback onToggle;
 
   const _MissionCard({
     required this.mission,
-    required this.onToggle,
   });
 
   @override
@@ -471,7 +451,7 @@ class _MissionCard extends StatelessWidget {
     final Color color = _getColorFromType(mission.type);
     
     return AppCard(
-      onTap: completed ? null : onToggle,
+      onTap: null, // タップ不可
       backgroundColor: completed ? AppTheme.backgroundTertiary : AppTheme.backgroundPrimary,
       child: Row(
         children: [

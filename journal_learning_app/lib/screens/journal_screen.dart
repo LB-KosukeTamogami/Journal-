@@ -96,6 +96,13 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
     return _entriesByDate[dateKey] ?? [];
   }
 
+  // 次の月が未来でないかチェック
+  bool _canGoToNextMonth(DateTime focusedDay) {
+    final now = DateTime.now();
+    final nextMonth = DateTime(focusedDay.year, focusedDay.month + 1, 1);
+    return nextMonth.isBefore(DateTime(now.year, now.month + 1, 1));
+  }
+
   List<Map<String, dynamic>> _getJournalsForCalendar(DateTime day) {
     final entries = _getJournalsForDay(day);
     return entries.map((entry) => {
@@ -200,7 +207,12 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                             titleCentered: true,
                             titleTextStyle: AppTheme.headline3,
                             leftChevronIcon: Icon(Icons.chevron_left, color: AppTheme.textPrimary),
-                            rightChevronIcon: Icon(Icons.chevron_right, color: AppTheme.textPrimary),
+                            rightChevronIcon: Icon(
+                              Icons.chevron_right, 
+                              color: _canGoToNextMonth(_focusedDay) 
+                                ? AppTheme.textPrimary 
+                                : AppTheme.textTertiary.withOpacity(0.3),
+                            ),
                           ),
                           onDaySelected: (selectedDay, focusedDay) {
                             // 未来日の選択を制限
@@ -227,7 +239,15 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                             }
                           },
                           onPageChanged: (focusedDay) {
-                            _focusedDay = focusedDay;
+                            // 未来月への移動を制限
+                            final now = DateTime.now();
+                            if (focusedDay.year > now.year || 
+                                (focusedDay.year == now.year && focusedDay.month > now.month)) {
+                              return;
+                            }
+                            setState(() {
+                              _focusedDay = focusedDay;
+                            });
                           },
                           ),
                         ),
