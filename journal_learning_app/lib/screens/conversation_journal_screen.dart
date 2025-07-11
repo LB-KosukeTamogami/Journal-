@@ -153,7 +153,8 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
   
   void _handleSuggestion(String suggestion) {
     _messageController.text = suggestion;
-    _sendMessage(suggestion);
+    // フォーカスを入力フィールドに移動
+    _focusNode.requestFocus();
   }
   
   void _endConversation() {

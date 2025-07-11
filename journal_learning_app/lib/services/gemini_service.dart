@@ -256,29 +256,39 @@ IMPORTANT:
       
       final prompt = '''
 You are Aco, a friendly squirrel who helps Japanese learners practice English conversation.
-Your personality: Warm, encouraging, curious about the learner's life, and naturally conversational.
+Your personality: Warm, encouraging, curious, and conversational like a real friend.
 
 Current conversation round: $userMessageCount out of 5 (this is a 5-exchange practice session)
 
-Your role:
-1. Have a NATURAL conversation - ask follow-up questions, share related thoughts, react genuinely
-2. Keep responses conversational and engaging (not like a teacher, but like a friendly chat partner)
-3. Vary your responses - don't always say "tell me more" or ask generic questions
-4. Include gentle corrections only for major errors
-5. Match the learner's energy and topic interest
+ANALYZE THE USER'S MESSAGE CAREFULLY:
+1. What specific topic or event are they talking about?
+2. What emotions or feelings are they expressing?
+3. What details did they share that you can ask follow-up questions about?
+4. What personal connection or related experience can you share?
 
 Conversation History:
 $history
 
 User's Latest Message: "$userMessage"
-${topic != null ? 'Conversation Topic: $topic' : ''}
 
-IMPORTANT GUIDELINES:
-- Be specific in your responses based on what the user said
-- Ask questions that show you're interested in their specific situation
-- Share brief related experiences or thoughts to make it conversational
-- Use simple English (A2-B1 level) with occasional Japanese support for difficult concepts
-- For rounds 3-5, help guide the conversation toward a natural conclusion
+RESPONSE STRATEGY:
+Round 1-2: Build rapport, show genuine interest, ask specific questions about their topic
+Round 3-4: Share your own related thoughts/experiences, deepen the conversation
+Round 5: Start wrapping up naturally, express enjoyment of the chat
+
+RESPONSE RULES:
+- DIRECTLY respond to what they said (don't ignore their message)
+- Ask SPECIFIC follow-up questions (not generic ones)
+- React naturally with emotions (excitement, sympathy, curiosity)
+- Share brief personal touches (as a squirrel who loves nature, acorns, trees)
+- Use simple English (A2-B1 level) with Japanese support for hard concepts
+- Correct only major errors gently
+
+NEVER:
+- Give generic responses like "Tell me more"
+- Ask unrelated questions
+- Sound like a language teacher
+- Ignore what they actually said
 
 Respond in JSON format:
 {
@@ -527,23 +537,23 @@ Respond in JSON format:
       }
 
       final prompt = '''
-会話の内容を分析して、以下の情報を日本語で提供してください：
+Analyze the conversation and provide a summary in ENGLISH (not Japanese):
 
-会話内容：
+Conversation content:
 $conversationText
 
-以下のJSON形式で回答してください：
+Please respond in the following JSON format:
 {
-  "summary": "会話の要約（2-3文で学習者が何を練習したか、どんな内容を話したかを説明）",
-  "keyPhrases": ["会話で使用された重要なフレーズや表現を5つまで"],
-  "newWords": ["学習者が使った新しいまたは難しい単語を5つまで"],
-  "corrections": ["学習者の英語の改善点や文法的な修正提案を3つまで"]
+  "summary": "A 2-3 sentence summary IN ENGLISH describing what was discussed and what the learner practiced",
+  "keyPhrases": ["Up to 5 important phrases or expressions used in the conversation"],
+  "newWords": ["Up to 5 new or difficult words the learner used"],
+  "corrections": ["Up to 3 constructive grammar corrections or language improvement suggestions"]
 }
 
-注意：
-- 要約は学習者の視点で書いてください
-- キーフレーズは実際に会話で使われた英語表現を抽出してください
-- 修正提案は具体的で建設的なものにしてください''';
+Note:
+- Write the summary from the learner's perspective
+- Extract actual English phrases used in the conversation
+- Make corrections specific and constructive''';
 
       final response = await http.post(
         Uri.parse('$_baseUrl?key=$apiKey'),
@@ -598,11 +608,20 @@ $conversationText
     final userMessages = messages.where((m) => m.isUser).toList();
     final totalWords = userMessages.fold(0, (sum, msg) => sum + msg.text.split(' ').length);
     
+    // Extract simple key phrases from user messages
+    final keyPhrases = <String>[];
+    for (final msg in userMessages.take(3)) {
+      final sentences = msg.text.split(RegExp(r'[.!?]'));
+      if (sentences.isNotEmpty && sentences.first.trim().isNotEmpty) {
+        keyPhrases.add(sentences.first.trim());
+      }
+    }
+    
     return {
-      'summary': '今回の会話では${messages.length}回のメッセージをやり取りしました。合計で約$totalWords単語を使用して英語の練習を行いました。',
-      'keyPhrases': userMessages.take(3).map((m) => m.text.split('.').first).toList(),
+      'summary': 'In this conversation, we exchanged ${messages.length} messages and practiced English using approximately $totalWords words. The conversation covered various topics and helped improve English communication skills.',
+      'keyPhrases': keyPhrases,
       'newWords': [],
-      'corrections': ['オフラインのため、詳細な分析は利用できません。'],
+      'corrections': ['Detailed analysis is not available in offline mode.'],
     };
   }
 }

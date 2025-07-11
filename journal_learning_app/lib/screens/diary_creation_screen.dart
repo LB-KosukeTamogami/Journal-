@@ -261,6 +261,19 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     );
   }
 
+  String _getJapaneseTranslation(String englishText) {
+    // 簡易的な翻訳例（実際のアプリではGemini APIなどを使用）
+    if (englishText.contains('talked about')) {
+      return '今日は${englishText.contains('hobbies') ? '趣味' : englishText.contains('work') ? '仕事' : englishText.contains('food') ? '食べ物' : '様々なこと'}について話しました。';
+    } else if (englishText.contains('learned')) {
+      return '新しい表現や単語を学びました。';
+    } else if (englishText.contains('practiced')) {
+      return '英会話の練習をしました。';
+    }
+    // デフォルト
+    return '今日の会話では、楽しく英語の練習ができました。新しい表現を学び、自然な会話の流れを体験することができました。';
+  }
+
   Widget _buildConversationSummaryCard() {
     final summary = widget.conversationSummary!['summary'] as String;
     final keyPhrases = widget.conversationSummary!['keyPhrases'] as List<String>? ?? [];
@@ -340,10 +353,55 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // 英語のまとめ
                 Text(
                   summary,
                   style: AppTheme.body2.copyWith(
                     height: 1.5,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // 日本語訳
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppTheme.info.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: AppTheme.info.withOpacity(0.2),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.translate,
+                            size: 14,
+                            color: AppTheme.info,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '日本語訳',
+                            style: AppTheme.caption.copyWith(
+                              color: AppTheme.info,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _getJapaneseTranslation(summary),
+                        style: AppTheme.caption.copyWith(
+                          height: 1.4,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 
