@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
+import '../services/auth_service.dart';
+import 'auth/login_screen.dart';
+import 'profile_edit_screen.dart';
 
 class MyPageScreen extends StatefulWidget {
   const MyPageScreen({super.key});
@@ -13,6 +16,16 @@ class _MyPageScreenState extends State<MyPageScreen> {
   String _currentPlan = 'ライトプラン';
   bool _notificationEnabled = true;
   String _notificationTime = '21:00';
+  
+  String get _userName {
+    final user = AuthService.currentUser;
+    return user?.userMetadata?['user_name'] ?? 'ゲスト';
+  }
+  
+  String get _userEmail {
+    final user = AuthService.currentUser;
+    return user?.email ?? 'guest@example.com';
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -46,12 +59,12 @@ class _MyPageScreenState extends State<MyPageScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'ユーザー名',
+                      _userName,
                       style: AppTheme.headline2,
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'user@example.com',
+                      _userEmail,
                       style: AppTheme.body2.copyWith(
                         color: AppTheme.textSecondary,
                       ),
@@ -73,6 +86,31 @@ class _MyPageScreenState extends State<MyPageScreen> {
                           color: AppTheme.primaryBlue,
                           fontWeight: FontWeight.w600,
                         ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // プロフィール編集ボタン
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ProfileEditScreen(),
+                          ),
+                        ).then((_) {
+                          // 画面が戻ってきたときに再描画
+                          setState(() {});
+                        });
+                      },
+                      icon: const Icon(Icons.edit_outlined, size: 18),
+                      label: const Text('プロフィールを編集'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppTheme.primaryColor,
+                        side: BorderSide(color: AppTheme.primaryColor),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       ),
                     ),
                   ],
@@ -320,9 +358,29 @@ class _MyPageScreenState extends State<MyPageScreen> {
             child: const Text('キャンセル'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              // TODO: ログアウト処理
+              
+              try {
+                await AuthService.signOut();
+                
+                if (mounted) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    (route) => false,
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('ログアウトに失敗しました: ${e.toString()}'),
+                      backgroundColor: AppTheme.error,
+                    ),
+                  );
+                }
+              }
             },
             child: const Text(
               'ログアウト',

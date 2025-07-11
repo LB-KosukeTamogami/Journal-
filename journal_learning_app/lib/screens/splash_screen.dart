@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'main_navigation_screen.dart';
+import 'auth/login_screen.dart';
+import '../services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -23,10 +25,14 @@ class _SplashScreenState extends State<SplashScreen> {
     
     if (!mounted) return;
     
+    // 認証状態を確認
+    final isLoggedIn = AuthService.currentUser != null;
+    final targetScreen = isLoggedIn ? const MainNavigationScreen() : const LoginScreen();
+    
     // フェード効果で遷移
     await Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => const MainNavigationScreen(),
+        pageBuilder: (context, animation, secondaryAnimation) => targetScreen,
         transitionDuration: const Duration(milliseconds: 500),
         reverseTransitionDuration: const Duration(milliseconds: 500),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
