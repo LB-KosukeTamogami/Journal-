@@ -49,11 +49,16 @@ flutter pub get
 # Build web with environment variables and HTML renderer
 echo "Building Flutter web with HTML renderer..."
 if [ -n "$GEMINI_API_KEY" ]; then
-    echo "Building with Gemini API key..."
-    flutter build web --release --web-renderer html --dart-define=GEMINI_API_KEY="$GEMINI_API_KEY"
+    echo "Building with Gemini API key and Supabase..."
+    flutter build web --release --web-renderer html \
+        --dart-define=GEMINI_API_KEY="$GEMINI_API_KEY" \
+        --dart-define=SUPABASE_URL="$SUPABASE_URL" \
+        --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY"
 else
-    echo "Building without API key (using default)..."
-    flutter build web --release --web-renderer html
+    echo "Building with Supabase only..."
+    flutter build web --release --web-renderer html \
+        --dart-define=SUPABASE_URL="$SUPABASE_URL" \
+        --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY"
 fi
 
 # Fix renderer in flutter_bootstrap.js

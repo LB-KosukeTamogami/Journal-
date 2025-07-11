@@ -8,6 +8,7 @@ import '../theme/app_theme.dart';
 import '../services/translation_service.dart';
 import '../services/storage_service.dart';
 import '../services/gemini_service.dart';
+import '../services/supabase_service.dart';
 import '../widgets/text_to_speech_button.dart';
 import '../widgets/japanese_dictionary_dialog.dart';
 import '../widgets/shadowing_player.dart';
@@ -73,7 +74,36 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         targetLanguage = detectedLang == 'ja' ? 'en' : 'ja';
       }
       
-      // Gemini APIで添削と翻訳を実行（優先）
+      // まずキャッシュを確認
+      final cachedTranslation = await SupabaseService.getTranslationCache(
+        diaryEntryId: widget.entry.id,
+      );
+      
+      if (cachedTranslation != null) {
+        // キャッシュが存在する場合は使用
+        print('Using cached translation for diary ${widget.entry.id}');
+        setState(() {
+          _translatedContent = cachedTranslation['translated_text'] ?? '';
+          _correctedContent = cachedTranslation['corrected_text'] ?? widget.entry.content;
+          _corrections = List<String>.from(cachedTranslation['improvements'] ?? []);
+          _isLoading = false;
+        });
+        
+        // 単語・熟語を抽出
+        final phraseInfos = TranslationService.detectPhrasesAndWords(widget.entry.content);
+        final extractedWords = phraseInfos.where((info) {
+          final isWord = info.text.trim().isNotEmpty && RegExp(r'\w').hasMatch(info.text);
+          return isWord && (info.translation.isNotEmpty || RegExp(r'^[a-zA-Z\s-]+$').hasMatch(info.text));
+        }).toList();
+        
+        setState(() {
+          _extractedWords = extractedWords;
+        });
+        
+        return;
+      }
+      
+      // キャッシュがない場合はGemini APIを使用
       Map<String, dynamic>? geminiResult;
       String translatedText = '';
       String correctedContent = widget.entry.content;
@@ -154,6 +184,21 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           _extractedWords = extractedWords;
           _isLoading = false;
         });
+        
+        // 翻訳成功時はキャッシュに保存
+        if (translatedText.isNotEmpty && !corrections.contains('本日のAI利用枠を使い切りました。明日また利用可能になります。')) {
+          await SupabaseService.saveTranslationCache(
+            userId: 'default_user', // 将来的には実際のユーザーIDを使用
+            diaryEntryId: widget.entry.id,
+            originalText: widget.entry.content,
+            translatedText: translatedText,
+            correctedText: correctedContent,
+            improvements: corrections,
+            detectedLanguage: detectedLang,
+            targetLanguage: targetLanguage,
+          );
+          print('Translation cached successfully');
+        }
         
         print('DiaryDetail: Translation set to: $_translatedContent');
         print('DiaryDetail: Corrections: $_corrections');
