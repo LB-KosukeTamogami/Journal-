@@ -961,7 +961,7 @@ class _MissionCard extends StatelessWidget {
       case MissionType.streak:
         return AppTheme.warning;
       case MissionType.review:
-        return AppTheme.tertiaryColor;
+        return AppTheme.success;
     }
   }
 }
