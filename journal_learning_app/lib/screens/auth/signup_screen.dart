@@ -174,13 +174,14 @@ class _SignupScreenState extends State<SignupScreen> {
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryColor,
+                      color: AppTheme.primaryColor.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
-                      Icons.pets,
-                      size: 40,
-                      color: Colors.white,
+                    child: Center(
+                      child: Text(
+                        '🌰', // どんぐり絵文字
+                        style: TextStyle(fontSize: 40),
+                      ),
                     ),
                   ).animate().scale(duration: 300.ms),
                   const SizedBox(height: 16),

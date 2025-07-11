@@ -147,6 +147,10 @@
       console.error('Unhandled promise rejection:', event.reason);
     });
     
+    // 環境変数のデバッグ情報を出力
+    console.log('[ENV] Checking environment variables in browser...');
+    // Flutterでは環境変数はビルド時に埋め込まれるため、ブラウザからは直接アクセスできない
+    
     // スプラッシュ画面の制御
     (function() {
       const splashScreen = document.getElementById('splash-screen');
