@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../theme/app_theme.dart';
 import '../../services/auth_service.dart';
+import '../../widgets/acorn_icon.dart';
 import 'signup_screen.dart';
 import 'forgot_password_screen.dart';
 import '../main_navigation_screen.dart';
@@ -102,10 +103,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: AppTheme.primaryColor.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: Center(
-                      child: Text(
-                        '🌰', // どんぐり絵文字
-                        style: TextStyle(fontSize: 40),
+                    child: const Center(
+                      child: AcornIcon(
+                        size: 40,
                       ),
                     ),
                   ).animate().scale(duration: 300.ms),

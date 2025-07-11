@@ -50,14 +50,24 @@ flutter pub get
 echo "Checking environment variables..."
 if [ -n "$SUPABASE_URL" ]; then
     echo "SUPABASE_URL is set (length: ${#SUPABASE_URL})"
+    echo "SUPABASE_URL first 30 chars: ${SUPABASE_URL:0:30}..."
 else
     echo "WARNING: SUPABASE_URL is not set"
 fi
 
 if [ -n "$SUPABASE_ANON_KEY" ]; then
     echo "SUPABASE_ANON_KEY is set (length: ${#SUPABASE_ANON_KEY})"
+    echo "SUPABASE_ANON_KEY first 30 chars: ${SUPABASE_ANON_KEY:0:30}..."
 else
     echo "WARNING: SUPABASE_ANON_KEY is not set"
+fi
+
+# Verify the environment variables are properly formatted
+echo "Verifying environment variable format..."
+if [[ "$SUPABASE_URL" =~ ^https://.*\.supabase\.co$ ]]; then
+    echo "SUPABASE_URL format looks correct"
+else
+    echo "WARNING: SUPABASE_URL format may be incorrect"
 fi
 
 # Build web with environment variables and HTML renderer
@@ -66,15 +76,17 @@ if [ -n "$GEMINI_API_KEY" ]; then
     echo "Building with Gemini API key and Supabase..."
     flutter build web --release --web-renderer html \
         --source-maps \
-        --dart-define=GEMINI_API_KEY="$GEMINI_API_KEY" \
-        --dart-define=SUPABASE_URL="$SUPABASE_URL" \
-        --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY"
+        --dart-define="GEMINI_API_KEY=$GEMINI_API_KEY" \
+        --dart-define="SUPABASE_URL=$SUPABASE_URL" \
+        --dart-define="SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
 else
     echo "Building with Supabase only..."
+    echo "SUPABASE_URL=$SUPABASE_URL"
+    echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
     flutter build web --release --web-renderer html \
         --source-maps \
-        --dart-define=SUPABASE_URL="$SUPABASE_URL" \
-        --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY"
+        --dart-define="SUPABASE_URL=$SUPABASE_URL" \
+        --dart-define="SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
 fi
 
 # Fix renderer in flutter_bootstrap.js

@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../theme/app_theme.dart';
 import '../../services/auth_service.dart';
+import '../../widgets/acorn_icon.dart';
 import 'login_screen.dart';
 import '../legal/terms_of_service_screen.dart';
 import '../legal/privacy_policy_screen.dart';
@@ -177,10 +178,9 @@ class _SignupScreenState extends State<SignupScreen> {
                       color: AppTheme.primaryColor.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: Center(
-                      child: Text(
-                        '🌰', // どんぐり絵文字
-                        style: TextStyle(fontSize: 40),
+                    child: const Center(
+                      child: AcornIcon(
+                        size: 40,
                       ),
                     ),
                   ).animate().scale(duration: 300.ms),
