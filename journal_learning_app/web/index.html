@@ -136,10 +136,23 @@
   </div>
   
   <script>
+    // エラーハンドリング
+    window.addEventListener('error', function(event) {
+      console.error('Global error:', event.error);
+      console.error('Error stack:', event.error?.stack);
+      console.error('Error at:', event.filename + ':' + event.lineno + ':' + event.colno);
+    });
+    
+    window.addEventListener('unhandledrejection', function(event) {
+      console.error('Unhandled promise rejection:', event.reason);
+    });
+    
     // スプラッシュ画面の制御
     (function() {
       const splashScreen = document.getElementById('splash-screen');
       const flutterApp = document.getElementById('flutter-app');
+      
+      console.log('[Splash] Starting initialization');
       
       // 最小表示時間を設定（Flutterの初期化を待つ）
       const minSplashDuration = 2000;
@@ -151,6 +164,7 @@
         
         // 最小表示時間が経過したら
         if (elapsedTime >= minSplashDuration) {
+          console.log('[Splash] Minimum duration reached, fading out splash screen');
           // スプラッシュ画面をフェードアウト
           splashScreen.classList.add('fade-out');
           flutterApp.classList.add('fade-in');
@@ -158,6 +172,7 @@
           // 完全にフェードアウトしたら削除
           setTimeout(() => {
             splashScreen.remove();
+            console.log('[Splash] Splash screen removed');
           }, 500);
         } else {
           // まだ時間が経過していない場合は再チェック
@@ -167,16 +182,30 @@
       
       // Service Worker を無効化
       window.addEventListener('load', function() {
+        console.log('[Flutter] Window loaded, initializing Flutter');
+        
         try {
           // Flutter loaderが利用可能になるまで待つ
           if (typeof window._flutter !== 'undefined' && window._flutter.loader) {
+            console.log('[Flutter] Flutter loader found, loading app');
             window._flutter.loader.load({
               serviceWorkerSettings: null,
-              renderer: 'html'
+              renderer: 'html',
+              onEntrypointLoaded: function(engineInitializer) {
+                console.log('[Flutter] Entrypoint loaded, initializing engine');
+                engineInitializer.initializeEngine().then(function(appRunner) {
+                  console.log('[Flutter] Engine initialized, running app');
+                  appRunner.runApp();
+                }).catch(function(error) {
+                  console.error('[Flutter] Engine initialization error:', error);
+                });
+              }
             });
+          } else {
+            console.warn('[Flutter] Flutter loader not found');
           }
         } catch (e) {
-          console.warn('Flutter loader initialization warning:', e);
+          console.error('[Flutter] Flutter loader initialization error:', e);
         }
         
         // Flutter初期化チェックを開始

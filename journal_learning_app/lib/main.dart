@@ -4,24 +4,47 @@ import 'screens/splash_screen.dart';
 import 'services/storage_service.dart';
 import 'services/supabase_service.dart';
 import 'theme/app_theme.dart';
+import 'config/supabase_config.dart';
 
 void main() async {
+  // エラーハンドリングを設定
+  FlutterError.onError = (FlutterErrorDetails details) {
+    print('Flutter error caught:');
+    print('Error: ${details.exception}');
+    print('Stack trace:\n${details.stack}');
+  };
+  
   WidgetsFlutterBinding.ensureInitialized();
   
-  try {
-    await StorageService.init();
-    await StorageService.initializeSampleData();
-  } catch (e) {
-    print('Storage initialization error: $e');
-  }
+  print('[Main] Starting app initialization');
   
   try {
+    print('[Main] Initializing StorageService...');
+    await StorageService.init();
+    print('[Main] StorageService initialized successfully');
+    
+    print('[Main] Initializing sample data...');
+    await StorageService.initializeSampleData();
+    print('[Main] Sample data initialized successfully');
+  } catch (e, stack) {
+    print('[Main] Storage initialization error: $e');
+    print('[Main] Stack trace:\n$stack');
+  }
+  
+  // Supabaseの設定情報を出力
+  SupabaseConfig.printDebugInfo();
+  
+  try {
+    print('[Main] Initializing SupabaseService...');
     await SupabaseService.initialize();
-  } catch (e) {
-    print('Supabase initialization error: $e');
+    print('[Main] SupabaseService initialization completed');
+  } catch (e, stack) {
+    print('[Main] Supabase initialization error: $e');
+    print('[Main] Stack trace:\n$stack');
     // Supabaseの初期化に失敗しても、アプリは起動する
   }
   
+  print('[Main] Running MyApp...');
   runApp(const MyApp());
 }
 

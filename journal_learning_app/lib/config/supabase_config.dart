@@ -14,4 +14,12 @@ class SupabaseConfig {
   // 設定が有効かどうかをチェック
   static bool get isConfigured => 
     supabaseUrl.isNotEmpty && supabaseAnonKey.isNotEmpty;
+  
+  // デバッグ情報を出力
+  static void printDebugInfo() {
+    print('[SupabaseConfig] Debug info:');
+    print('[SupabaseConfig] URL: ${supabaseUrl.isNotEmpty ? "SET (${supabaseUrl.length} chars)" : "NOT SET"}');
+    print('[SupabaseConfig] Anon Key: ${supabaseAnonKey.isNotEmpty ? "SET (${supabaseAnonKey.length} chars)" : "NOT SET"}');
+    print('[SupabaseConfig] Is configured: $isConfigured');
+  }
 }

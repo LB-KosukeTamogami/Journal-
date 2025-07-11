@@ -8,15 +8,21 @@ class SupabaseService {
   // Supabaseクライアントの初期化
   static Future<void> initialize() async {
     if (_initialized) {
+      print('[Supabase] Already initialized');
       return;
     }
     
+    print('[Supabase] Checking configuration...');
+    print('[Supabase] URL configured: ${SupabaseConfig.supabaseUrl.isNotEmpty}');
+    print('[Supabase] Anon key configured: ${SupabaseConfig.supabaseAnonKey.isNotEmpty}');
+    
     if (!SupabaseConfig.isConfigured) {
-      print('Supabase is not configured. SUPABASE_URL and SUPABASE_ANON_KEY environment variables are required.');
+      print('[Supabase] Not configured. SUPABASE_URL and SUPABASE_ANON_KEY environment variables are required.');
       return;
     }
     
     try {
+      print('[Supabase] Initializing with URL: ${SupabaseConfig.supabaseUrl.substring(0, 30)}...');
       await Supabase.initialize(
         url: SupabaseConfig.supabaseUrl,
         anonKey: SupabaseConfig.supabaseAnonKey,
@@ -24,9 +30,10 @@ class SupabaseService {
       
       _client = Supabase.instance.client;
       _initialized = true;
-      print('Supabase initialized successfully');
-    } catch (e) {
-      print('Supabase initialization error: $e');
+      print('[Supabase] Initialized successfully');
+    } catch (e, stack) {
+      print('[Supabase] Initialization error: $e');
+      print('[Supabase] Stack trace:\n$stack');
       throw e; // エラーを再スローして上位でキャッチできるようにする
     }
   }
