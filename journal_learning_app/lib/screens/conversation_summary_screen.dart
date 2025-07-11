@@ -27,9 +27,12 @@ class ConversationSummaryScreen extends StatefulWidget {
 class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
   bool _isAnalyzing = true;
   String _summary = '';
+  String _summaryTranslation = '';
   List<String> _keyPhrases = [];
   List<String> _newWords = [];
   List<String> _corrections = [];
+  Map<String, bool> _addedToStudyCards = {};
+  Map<String, bool> _addedToVocabulary = {};
 
   @override
   void initState() {
@@ -51,8 +54,12 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
       );
 
       if (mounted) {
+        // 英文の要約を日本語に翻訳
+        final translatedSummary = await _translateSummary(analysis['summary'] ?? '');
+        
         setState(() {
           _summary = analysis['summary'] ?? '会話の要約を生成できませんでした。';
+          _summaryTranslation = translatedSummary;
           _keyPhrases = List<String>.from(analysis['keyPhrases'] ?? []);
           _newWords = List<String>.from(analysis['newWords'] ?? []);
           _corrections = List<String>.from(analysis['corrections'] ?? []);
@@ -70,59 +77,8 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
   }
 
   void _showWordDetailModal(String wordOrPhrase) async {
-    // 簡単な翻訳サービスを使用（実際のアプリでは辞書APIを使用）
-    String translation = '';
-    
-    // 英語から日本語への翻訳を試みる
-    final lowerWord = wordOrPhrase.toLowerCase();
-    final commonTranslations = {
-      // よく使われる単語の翻訳例
-      'hello': 'こんにちは',
-      'goodbye': 'さようなら',
-      'thank you': 'ありがとう',
-      'good morning': 'おはよう',
-      'good night': 'おやすみ',
-      // 他の単語はGemini APIで翻訳を取得することも可能
-    };
-    
-    translation = commonTranslations[lowerWord] ?? '意味を取得中...';
-    
-    // Gemini APIを使って翻訳を取得（オプション）
-    if (!commonTranslations.containsKey(lowerWord)) {
-      try {
-        // より多くの基本単語の翻訳を追加
-        final extendedTranslations = {
-          'today': '今日',
-          'tomorrow': '明日',
-          'yesterday': '昨日',
-          'work': '仕事',
-          'home': '家',
-          'school': '学校',
-          'friend': '友達',
-          'family': '家族',
-          'love': '愛',
-          'like': '好き',
-          'happy': '幸せ',
-          'sad': '悲しい',
-          'tired': '疲れた',
-          'hungry': '空腹',
-          'food': '食べ物',
-          'water': '水',
-          'time': '時間',
-          'money': 'お金',
-          'help': '助け',
-          'please': 'お願い',
-          'sorry': 'ごめん',
-          'yes': 'はい',
-          'no': 'いいえ',
-          'maybe': 'たぶん',
-        };
-        
-        translation = extendedTranslations[lowerWord] ?? '辞書で確認してください';
-      } catch (e) {
-        translation = '翻訳を取得できませんでした';
-      }
-    }
+    // 意味を取得
+    String translation = await _getWordMeaning(wordOrPhrase);
     
     if (!mounted) return;
     
@@ -198,12 +154,14 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
               
               const SizedBox(height: 20),
               
-              // アクションボタン
-              Row(
+              // アクションボタン（縦並び）
+              Column(
                 children: [
-                  Expanded(
+                  // 学習カードに追加
+                  SizedBox(
+                    width: double.infinity,
                     child: OutlinedButton.icon(
-                      onPressed: () async {
+                      onPressed: _addedToStudyCards[wordOrPhrase] == true ? null : () async {
                         // 学習カードに追加
                         final now = DateTime.now();
                         final flashcard = Flashcard(
@@ -218,6 +176,9 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
                         await StorageService.saveFlashcard(flashcard);
                         
                         if (context.mounted) {
+                          setState(() {
+                            _addedToStudyCards[wordOrPhrase] = true;
+                          });
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -231,11 +192,29 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
                           );
                         }
                       },
-                      icon: Icon(Icons.collections_bookmark, size: 20),
-                      label: Text('学習カードに追加'),
+                      icon: Icon(
+                        _addedToStudyCards[wordOrPhrase] == true 
+                          ? Icons.check_circle 
+                          : Icons.collections_bookmark, 
+                        size: 20,
+                        color: _addedToStudyCards[wordOrPhrase] == true 
+                          ? AppTheme.success 
+                          : null,
+                      ),
+                      label: Text(
+                        _addedToStudyCards[wordOrPhrase] == true 
+                          ? '学習カードに追加済み' 
+                          : '学習カードに追加',
+                      ),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppTheme.info,
-                        side: BorderSide(color: AppTheme.info),
+                        foregroundColor: _addedToStudyCards[wordOrPhrase] == true 
+                          ? AppTheme.success 
+                          : AppTheme.info,
+                        side: BorderSide(
+                          color: _addedToStudyCards[wordOrPhrase] == true 
+                            ? AppTheme.success 
+                            : AppTheme.info,
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -243,10 +222,12 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
+                  const SizedBox(height: 12),
+                  // 単語帳に追加
+                  SizedBox(
+                    width: double.infinity,
                     child: ElevatedButton.icon(
-                      onPressed: () async {
+                      onPressed: _addedToVocabulary[wordOrPhrase] == true ? null : () async {
                         // 単語帳に追加
                         final word = Word(
                           id: const Uuid().v4(),
@@ -258,6 +239,9 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
                         await StorageService.saveWord(word);
                         
                         if (context.mounted) {
+                          setState(() {
+                            _addedToVocabulary[wordOrPhrase] = true;
+                          });
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -271,10 +255,21 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
                           );
                         }
                       },
-                      icon: Icon(Icons.book, size: 20),
-                      label: Text('単語帳に追加'),
+                      icon: Icon(
+                        _addedToVocabulary[wordOrPhrase] == true 
+                          ? Icons.check_circle 
+                          : Icons.book, 
+                        size: 20,
+                      ),
+                      label: Text(
+                        _addedToVocabulary[wordOrPhrase] == true 
+                          ? '単語帳に追加済み' 
+                          : '単語帳に追加',
+                      ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.success,
+                        backgroundColor: _addedToVocabulary[wordOrPhrase] == true 
+                          ? AppTheme.success.withOpacity(0.8) 
+                          : AppTheme.success,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
@@ -403,12 +398,32 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
             ],
           ),
           const SizedBox(height: 16),
+          // 英文の要約
           Text(
             _summary,
             style: AppTheme.body1.copyWith(
               height: 1.6,
+              fontWeight: FontWeight.w500,
             ),
           ),
+          // 日本語訳
+          if (_summaryTranslation.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppTheme.backgroundSecondary,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                _summaryTranslation,
+                style: AppTheme.body2.copyWith(
+                  height: 1.5,
+                  color: AppTheme.textSecondary,
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     ).animate().slideX(begin: -0.1, end: 0, duration: 300.ms);
@@ -607,6 +622,7 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
                     initialContent: _generateDiaryContent(),
                     conversationSummary: {
                       'summary': _summary,
+                      'summaryTranslation': _summaryTranslation,
                       'keyPhrases': _keyPhrases,
                       'newWords': _newWords,
                     },
@@ -667,6 +683,112 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
   String _generateDiaryContent() {
     // 日記の初期テキストは空にする（会話内容は別カードで表示）
     return '';
+  }
+
+  Future<String> _translateSummary(String englishText) async {
+    if (englishText.isEmpty) return '';
+    
+    try {
+      final result = await GeminiService.correctAndTranslate(
+        englishText,
+        sourceLanguage: 'en',
+        targetLanguage: 'ja',
+      );
+      
+      return result['translation'] ?? '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  Future<String> _getWordMeaning(String word) async {
+    // 基本的な単語の意味
+    final basicMeanings = {
+      'hello': 'こんにちは',
+      'goodbye': 'さようなら',
+      'thank you': 'ありがとう',
+      'good morning': 'おはよう',
+      'good night': 'おやすみ',
+      'today': '今日',
+      'tomorrow': '明日',
+      'yesterday': '昨日',
+      'work': '仕事',
+      'home': '家',
+      'school': '学校',
+      'friend': '友達',
+      'family': '家族',
+      'love': '愛',
+      'like': '好き',
+      'happy': '幸せ',
+      'sad': '悲しい',
+      'tired': '疲れた',
+      'hungry': '空腹',
+      'food': '食べ物',
+      'water': '水',
+      'time': '時間',
+      'money': 'お金',
+      'help': '助け',
+      'please': 'お願い',
+      'sorry': 'ごめん',
+      'yes': 'はい',
+      'no': 'いいえ',
+      'maybe': 'たぶん',
+      'breakfast': '朝食',
+      'lunch': '昼食',
+      'dinner': '夕食',
+      'morning': '朝',
+      'afternoon': '午後',
+      'evening': '夕方',
+      'night': '夜',
+      'week': '週',
+      'month': '月',
+      'year': '年',
+      'study': '勉強',
+      'learn': '学ぶ',
+      'teach': '教える',
+      'read': '読む',
+      'write': '書く',
+      'speak': '話す',
+      'listen': '聞く',
+      'understand': '理解する',
+      'practice': '練習',
+      'exercise': '運動',
+      'hobby': '趣味',
+      'music': '音楽',
+      'movie': '映画',
+      'book': '本',
+      'game': 'ゲーム',
+      'sport': 'スポーツ',
+      'travel': '旅行',
+      'vacation': '休暇',
+      'weather': '天気',
+      'rain': '雨',
+      'snow': '雪',
+      'sunny': '晴れ',
+      'cloudy': '曇り',
+      'hot': '暑い',
+      'cold': '寒い',
+      'warm': '暖かい',
+      'cool': '涼しい',
+    };
+    
+    final lowerWord = word.toLowerCase();
+    if (basicMeanings.containsKey(lowerWord)) {
+      return basicMeanings[lowerWord]!;
+    }
+    
+    // Gemini APIで翻訳を試みる
+    try {
+      final result = await GeminiService.correctAndTranslate(
+        word,
+        sourceLanguage: 'en',
+        targetLanguage: 'ja',
+      );
+      
+      return result['translation'] ?? '意味を取得できませんでした';
+    } catch (e) {
+      return '意味を取得できませんでした';
+    }
   }
 }
 

@@ -301,11 +301,43 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: Text(
-                        message.text,
-                        style: AppTheme.body1.copyWith(
-                          color: isUser ? Colors.white : AppTheme.textPrimary,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Acoのメッセージの場合、英語と日本語を分けて表示
+                          if (!isUser && message.text.contains('\n\n')) ...[
+                            // 英語部分
+                            Text(
+                              message.text.split('\n\n')[0],
+                              style: AppTheme.body1.copyWith(
+                                color: AppTheme.textPrimary,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            // 日本語部分
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: AppTheme.backgroundSecondary,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                message.text.split('\n\n')[1],
+                                style: AppTheme.body2.copyWith(
+                                  color: AppTheme.textSecondary,
+                                ),
+                              ),
+                            ),
+                          ] else ...[
+                            // ユーザーのメッセージまたは通常のメッセージ
+                            Text(
+                              message.text,
+                              style: AppTheme.body1.copyWith(
+                                color: isUser ? Colors.white : AppTheme.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                   ],
