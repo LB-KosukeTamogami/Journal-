@@ -33,7 +33,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
     // 初期メッセージを追加
     _messages.add(
       ConversationMessage(
-        text: "Hi there! I'm Aco, your friendly English practice buddy. Let's have a quick 5-exchange conversation (5 messages from you, 5 from me). Don't worry about making mistakes - I'm here to help you learn!\n\nこんにちは！英語学習をサポートするAcoです。今日は5ラリー（あなたから5回、私から5回）の短い会話練習をしましょう！間違いを気にせず、リラックスして話してくださいね。",
+        text: "Hi there! I'm Aco, your friendly English practice buddy. Let's have a quick 5-exchange conversation (5 messages from you, 5 from me). Don't worry about making mistakes - I'm here to help you learn! If you're not sure how to say something in English, you can write in Japanese and I'll help you translate it.\n\nこんにちは！英語学習をサポートするAcoです。今日は5ラリー（あなたから5回、私から5回）の短い会話練習をしましょう！間違いを気にせず、リラックスして話してくださいね。英語で何と言えばいいかわからない時は、日本語で書いてもOKです。英語での表現をお教えします。",
         isUser: false,
         timestamp: DateTime.now(),
       ),

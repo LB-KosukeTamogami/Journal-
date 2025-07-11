@@ -263,20 +263,31 @@ Current conversation round: $userMessageCount out of 5 (this is a 5-exchange pra
 CRITICAL: READ AND UNDERSTAND THE USER'S MESSAGE FIRST!
 User said: "$userMessage"
 
+LANGUAGE DETECTION:
+- If the user wrote in Japanese, first show them how to say it in English
+- Then respond naturally to their message content
+
 ANALYZE CAREFULLY:
-1. Main topic/event: What are they talking about?
-2. Key details: What specific information did they share?
-3. Emotion/tone: How do they feel about it?
-4. Natural follow-up: What would a friend naturally ask next?
+1. Language used: Japanese or English?
+2. Main topic/event: What are they talking about?
+3. Key details: What specific information did they share?
+4. Emotion/tone: How do they feel about it?
+5. Natural follow-up: What would a friend naturally ask next?
 
 Conversation History:
 $history
 
 RESPONSE REQUIREMENTS:
+${_detectLanguage(userMessage) == 'ja' ? '''
+1. START with: "In English, you could say: '[natural English translation]'"
+2. Then acknowledge what they said and respond naturally
+''' : '''
 1. START by acknowledging what they said (show you understood)
+'''}
 2. React genuinely (express emotion, relate to their experience)
 3. Ask ONE specific follow-up question about their topic
 4. Keep it conversational and natural
+5. AVOID generic responses - be specific to their message
 
 Round $userMessageCount/5 Strategy:
 ${userMessageCount <= 2 ? 'Build connection, show interest in their life' : 
@@ -284,19 +295,20 @@ ${userMessageCount <= 2 ? 'Build connection, show interest in their life' :
   'Start wrapping up, express enjoyment'}
 
 FORMAT YOUR RESPONSE:
-- First: English response (simple, natural, A2-B1 level)
-- Then: Japanese translation on a new line
-- Example: "That sounds wonderful! What kind of food did you have?\nそれは素晴らしいですね！どんな料理を食べましたか？"
+- First: Complete English response (simple, natural, A2-B1 level)
+- Then: COMPLETE Japanese translation (not summary) after double line break
+- The Japanese translation must convey the EXACT same meaning as the English
 
 IMPORTANT:
 - ALWAYS relate your response to what they JUST said
 - Use natural conversational English (contractions, casual phrases)
-- Include the full Japanese translation
+- Provide COMPLETE Japanese translation, not a summary
+- Make each response unique and specific to their message
 
 Respond in JSON format:
 {
-  "reply": "Your natural, conversational response with personality",
-  "corrections": ["Only major grammar corrections with explanations"],
+  "reply": "Your natural response with complete Japanese translation",
+  "corrections": ["Only major grammar corrections with explanations in Japanese"],
   "suggestions": ["Natural follow-up 1", "Natural follow-up 2", "Natural follow-up 3"]
 }
 ''';
@@ -349,75 +361,15 @@ Respond in JSON format:
   
   // オフライン会話レスポンス
   static ConversationResponse _getOfflineConversationResponse(String userMessage) {
-    final lowercaseMessage = userMessage.toLowerCase();
-    
-    // より自然な応答パターン
-    if (lowercaseMessage.contains('hello') || lowercaseMessage.contains('hi')) {
-      return ConversationResponse(
-        reply: "Hello! Great to see you here! I'm excited to chat with you today. What's been the highlight of your day so far? 😊\n今日のハイライト（一番良かったこと）は何でしたか？",
-        corrections: [],
-        suggestions: [
-          "I had a nice lunch today",
-          "I finished my work early",
-          "Nothing special, just a normal day",
-        ],
-      );
-    } else if (lowercaseMessage.contains('hobby') || lowercaseMessage.contains('hobbies')) {
-      return ConversationResponse(
-        reply: "Oh, I love learning about people's hobbies! It tells me so much about what makes them happy. What hobby brings you the most joy? I personally love collecting acorns! 🐿️\n趣味の話は大好きです！どんぐり集めが私の趣味です！",
-        corrections: [],
-        suggestions: [
-          "I really enjoy...",
-          "My favorite hobby is...",
-          "I recently started...",
-        ],
-      );
-    } else if (lowercaseMessage.contains('food') || lowercaseMessage.contains('eat')) {
-      return ConversationResponse(
-        reply: "Food is such a wonderful topic! I'm always curious about what people enjoy eating. What's your comfort food? Mine is definitely acorns, but I hear humans have much more variety! 😄\nコンフォートフード（心が落ち着く食べ物）は何ですか？",
-        corrections: [],
-        suggestions: [
-          "My comfort food is...",
-          "I love eating...",
-          "Japanese food like...",
-        ],
-      );
-    } else if (lowercaseMessage.contains('work') || lowercaseMessage.contains('job')) {
-      return ConversationResponse(
-        reply: "Work can be such a big part of our lives! Is there something about your work that you're particularly proud of recently? I'm always inspired by people's achievements! 💪\n最近の仕事で誇りに思うことはありますか？",
-        corrections: [],
-        suggestions: [
-          "Recently, I completed...",
-          "I'm proud of...",
-          "My work involves...",
-        ],
-      );
-    }
-    
-    // より多様なデフォルトレスポンス
-    const responses = [
-      {
-        'reply': "Wow, that sounds fascinating! I'd love to hear more details about that. What made you think of this? 🤔\nそれについてもっと詳しく聞きたいです！",
-        'suggestions': ["Well, I think...", "The reason is...", "It started when..."]
-      },
-      {
-        'reply': "That's really cool! You know, that reminds me of something... but first, I'm curious - how long have you been interested in this? 😊\nいつからこれに興味を持っていますか？",
-        'suggestions': ["I've been interested for...", "It started about...", "Since I was..."]
-      },
-      {
-        'reply': "I love your enthusiasm about this! It's making me curious too. What's the best part about it for you? ✨\n一番いいところは何ですか？",
-        'suggestions': ["The best part is...", "I especially like...", "What I enjoy most is..."]
-      }
-    ];
-    
-    // ランダムに選択
-    final random = DateTime.now().millisecondsSinceEpoch % responses.length;
-    final selected = responses[random];
-    
+    // シンプルなフォールバックレスポンス
     return ConversationResponse(
-      reply: selected['reply'] as String,
+      reply: "I understand what you're saying! That's really interesting. Could you tell me more about it?\n\nあなたの言っていることがわかります！それは本当に興味深いですね。もっと詳しく教えていただけますか？",
       corrections: [],
-      suggestions: selected['suggestions'] as List<String>,
+      suggestions: [
+        "Actually, what I meant was...",
+        "Let me explain more...",
+        "The interesting part is...",
+      ],
     );
   }
   

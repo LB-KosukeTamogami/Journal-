@@ -1153,114 +1153,225 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
   }
 
   void _showWordDetail(String english, String japanese) {
-    showDialog(
+    // 既に追加されているかチェック
+    bool isAddedToFlashcard = false;
+    bool isAddedToVocabulary = _selectedWords.any((w) => w.english.toLowerCase() == english.toLowerCase());
+    
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.backgroundPrimary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Row(
-          children: [
-            Icon(
-              Icons.translate,
-              color: AppTheme.primaryBlue,
-              size: 24,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              '単語の意味',
-              style: AppTheme.headline3,
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppTheme.backgroundSecondary,
-                borderRadius: BorderRadius.circular(12),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          margin: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppTheme.backgroundPrimary,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, -5),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'English',
-                    style: AppTheme.caption.copyWith(
-                      color: AppTheme.textSecondary,
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ハンドル
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppTheme.textTertiary.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    english,
-                    style: AppTheme.headline3.copyWith(
-                      color: AppTheme.primaryBlue,
-                    ),
+                ),
+                const SizedBox(height: 20),
+                
+                // 単語
+                Text(
+                  english,
+                  style: AppTheme.headline2.copyWith(
+                    color: AppTheme.primaryColor,
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    '日本語',
-                    style: AppTheme.caption.copyWith(
-                      color: AppTheme.textSecondary,
-                    ),
+                ),
+                const SizedBox(height: 12),
+                
+                // 意味
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppTheme.backgroundSecondary,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    japanese,
-                    style: AppTheme.headline3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '意味',
+                        style: AppTheme.caption.copyWith(
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        japanese,
+                        style: AppTheme.body1,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  final word = Word(
-                    id: const Uuid().v4(),
-                    english: english,
-                    japanese: japanese,
-                    createdAt: DateTime.now(),
-                  );
-                  
-                  setState(() {
-                    _selectedWords.add(word);
-                  });
-                  
-                  Navigator.pop(context);
-                  
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('単語帳に追加しました'),
-                      backgroundColor: AppTheme.success,
-                      behavior: SnackBarBehavior.floating,
-                      margin: const EdgeInsets.all(16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                ),
+                
+                const SizedBox(height: 20),
+                
+                // アクションボタン（縦並び）
+                Column(
+                  children: [
+                    // 学習カードに追加
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: isAddedToFlashcard ? null : () async {
+                          final now = DateTime.now();
+                          final flashcard = Flashcard(
+                            id: const Uuid().v4(),
+                            word: english,
+                            meaning: japanese,
+                            createdAt: now,
+                            lastReviewed: now,
+                            nextReviewDate: now.add(const Duration(days: 1)),
+                          );
+                          
+                          await StorageService.saveFlashcard(flashcard);
+                          
+                          setModalState(() {
+                            isAddedToFlashcard = true;
+                          });
+                          
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text('学習カードに追加しました'),
+                              backgroundColor: AppTheme.success,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          );
+                        },
+                        icon: Icon(
+                          isAddedToFlashcard 
+                            ? Icons.check_circle 
+                            : Icons.collections_bookmark, 
+                          size: 20,
+                          color: isAddedToFlashcard 
+                            ? AppTheme.success 
+                            : null,
+                        ),
+                        label: Text(
+                          isAddedToFlashcard 
+                            ? '学習カードに追加済み' 
+                            : '学習カードに追加',
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: isAddedToFlashcard 
+                            ? AppTheme.success 
+                            : AppTheme.info,
+                          side: BorderSide(
+                            color: isAddedToFlashcard 
+                              ? AppTheme.success 
+                              : AppTheme.info,
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
                       ),
                     ),
-                  );
-                },
-                icon: const Icon(Icons.add),
-                label: const Text('単語帳に追加'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryBlue,
-                  foregroundColor: Colors.white,
+                    const SizedBox(height: 12),
+                    // 単語帳に追加
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: isAddedToVocabulary ? null : () {
+                          final word = Word(
+                            id: const Uuid().v4(),
+                            english: english,
+                            japanese: japanese,
+                            createdAt: DateTime.now(),
+                          );
+                          
+                          setState(() {
+                            _selectedWords.add(word);
+                          });
+                          
+                          setModalState(() {
+                            isAddedToVocabulary = true;
+                          });
+                          
+                          Navigator.pop(context);
+                          
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text('単語帳に追加しました'),
+                              backgroundColor: AppTheme.success,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          );
+                        },
+                        icon: Icon(
+                          isAddedToVocabulary 
+                            ? Icons.check_circle 
+                            : Icons.book, 
+                          size: 20,
+                        ),
+                        label: Text(
+                          isAddedToVocabulary 
+                            ? '単語帳に追加済み' 
+                            : '単語帳に追加',
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isAddedToVocabulary 
+                            ? AppTheme.success.withOpacity(0.8) 
+                            : AppTheme.success,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+                
+                const SizedBox(height: 16),
+                
+                // 閉じるボタン
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('閉じる'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppTheme.textSecondary,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('閉じる', style: AppTheme.body2),
           ),
-        ],
+        ),
       ),
     );
   }

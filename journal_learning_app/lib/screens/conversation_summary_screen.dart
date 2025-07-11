@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../theme/app_theme.dart';
 import '../models/conversation_message.dart';
 import '../models/word.dart';
@@ -8,6 +10,7 @@ import '../models/flashcard.dart';
 import '../services/gemini_service.dart';
 import '../services/storage_service.dart';
 import '../services/translation_service.dart';
+import '../config/api_config.dart';
 import 'diary_creation_screen.dart';
 
 class ConversationSummaryScreen extends StatefulWidget {
@@ -689,13 +692,48 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
     if (englishText.isEmpty) return '';
     
     try {
-      final result = await GeminiService.correctAndTranslate(
-        englishText,
-        sourceLanguage: 'en',
-        targetLanguage: 'ja',
-      );
+      // 完全な翻訳を要求するプロンプト
+      final apiKey = ApiConfig.getGeminiApiKey();
+      if (apiKey == null || apiKey.isEmpty) {
+        return '';
+      }
       
-      return result['translation'] ?? '';
+      final prompt = '''
+Translate the following English text to Japanese. 
+Provide a COMPLETE and ACCURATE translation, not a summary.
+Keep all details and nuances from the original text.
+
+English text:
+"$englishText"
+
+Provide only the Japanese translation, nothing else.
+''';
+
+      final response = await http.post(
+        Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=$apiKey'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'contents': [{
+            'parts': [{'text': prompt}]
+          }],
+          'generationConfig': {
+            'temperature': 0.3,
+            'maxOutputTokens': 1024,
+          },
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['candidates'] != null && 
+            data['candidates'].isNotEmpty &&
+            data['candidates'][0]['content'] != null) {
+          final text = data['candidates'][0]['content']['parts'][0]['text'];
+          return text.trim();
+        }
+      }
+      
+      return '';
     } catch (e) {
       return '';
     }
