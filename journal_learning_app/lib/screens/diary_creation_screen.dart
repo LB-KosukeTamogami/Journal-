@@ -136,12 +136,16 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
         print('[DiaryCreation] Checking Supabase availability...');
         print('[DiaryCreation] SupabaseService.isAvailable: ${SupabaseService.isAvailable}');
         
+        print('[DiaryCreation] Saving diary entry...');
         await StorageService.saveDiaryEntry(entry);
+        print('[DiaryCreation] Diary entry saved successfully');
         
         // 保存した単語も保存
+        print('[DiaryCreation] Saving ${_selectedWords.length} words...');
         for (final word in _selectedWords) {
           await StorageService.saveWord(word);
         }
+        print('[DiaryCreation] All words saved successfully');
       } catch (saveError) {
         // 保存エラーの詳細をログに出力
         print('[DiaryCreation] Storage error: $saveError');
@@ -160,11 +164,16 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
       if (mounted) {
         // 編集の場合は通常通り戻る
         if (widget.existingEntry != null) {
+          print('[DiaryCreation] Updating existing entry, popping back');
           Navigator.pop(context, entry);
           _showSnackBar('日記を更新しました', isError: false);
         } else {
           // 新規作成の場合はレビュー画面へ遷移
-          Navigator.push(
+          print('[DiaryCreation] New entry created, navigating to review screen');
+          print('[DiaryCreation] Entry ID: ${entry.id}');
+          print('[DiaryCreation] Detected language: $_detectedLanguage');
+          
+          await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => DiaryReviewScreen(
@@ -173,6 +182,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               ),
             ),
           );
+          print('[DiaryCreation] Returned from review screen');
         }
       }
     } catch (e) {

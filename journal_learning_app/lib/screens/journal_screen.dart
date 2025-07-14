@@ -505,14 +505,17 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
               
               // 日記作成カード
               AppCard(
-                onTap: () {
+                onTap: () async {
                   Navigator.pop(context);
-                  Navigator.push(
+                  print('[JournalScreen] Navigating to DiaryCreationScreen');
+                  final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const DiaryCreationScreen(),
+                      builder: (context) => DiaryCreationScreen(),
                     ),
-                  ).then((_) => _loadEntries());
+                  );
+                  print('[JournalScreen] Returned from diary creation/review, result: $result');
+                  _loadEntries();
                 },
                 child: Row(
                   children: [

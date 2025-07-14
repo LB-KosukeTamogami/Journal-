@@ -77,6 +77,9 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('[DiaryReviewScreen] Building with entry: ${widget.entry.id}');
+    print('[DiaryReviewScreen] Detected language: ${widget.detectedLanguage}');
+    
     return Scaffold(
       backgroundColor: AppTheme.backgroundSecondary,
       appBar: AppBar(
@@ -96,9 +99,15 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             child: ElevatedButton(
               onPressed: () {
                 // ジャーナル画面（日記一覧）に戻る
-                // DiaryCreationScreen と DiaryReviewScreen の2つをポップして日記一覧に戻る
-                Navigator.of(context).pop(); // DiaryReviewScreenをポップ
-                Navigator.of(context).pop(); // DiaryCreationScreenをポップ
+                // JournalScreen -> DiaryCreationScreen -> DiaryReviewScreen の順で遷移しているので
+                // JournalScreenまで戻る
+                print('[DiaryReviewScreen] Completion button pressed, navigating back to journal screen');
+                int count = 0;
+                Navigator.of(context).popUntil((route) {
+                  count++;
+                  print('[DiaryReviewScreen] Pop count: $count, route: ${route.settings.name}');
+                  return count == 3 || route.isFirst;
+                });
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.success,
