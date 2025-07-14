@@ -23,7 +23,22 @@ class TTSService {
       // HTML5 SpeechSynthesis API が利用可能かチェック
       if (js.context['speechSynthesis'] != null) {
         print('HTML5 SpeechSynthesis API is available');
+        
+        // 音声リストを強制的に読み込み
+        final speechSynthesis = js.context['speechSynthesis'];
+        final voices = speechSynthesis.callMethod('getVoices');
+        print('Initial voices count: ${voices?.length ?? 0}');
+        
+        // 音声が読み込まれるまで待機
+        if (voices == null || voices.length == 0) {
+          print('Waiting for voices to load...');
+          await Future.delayed(const Duration(milliseconds: 500));
+          final voicesAfterWait = speechSynthesis.callMethod('getVoices');
+          print('Voices after wait: ${voicesAfterWait?.length ?? 0}');
+        }
+        
         _isInitialized = true;
+        print('TTS Service initialized successfully');
       } else {
         print('HTML5 SpeechSynthesis API is not available');
       }
@@ -72,6 +87,9 @@ class TTSService {
         // 既存の発話を停止
         speechSynthesis.callMethod('cancel');
         
+        // 少し待ってからキャンセルが完了したことを確認
+        await Future.delayed(const Duration(milliseconds: 50));
+        
         // SpeechSynthesisUtterance を作成
         final utterance = js.context['SpeechSynthesisUtterance'].callMethod('constructor', [textToSpeak]);
         
@@ -83,32 +101,106 @@ class TTSService {
         
         // イベントハンドラーを設定
         utterance['onstart'] = js.allowInterop((_) {
+          print('TTS started: $textToSpeak');
           _isSpeaking = true;
           _speakStartTime = DateTime.now();
           _startProgressTracking();
         });
         
         utterance['onend'] = js.allowInterop((_) {
+          print('TTS ended: $textToSpeak');
           _isSpeaking = false;
           _speakStartTime = null;
           _progressHandler?.call(1.0);
         });
         
         utterance['onerror'] = js.allowInterop((event) {
+          print('TTS Error: $event');
           _isSpeaking = false;
           _speakStartTime = null;
-          print('TTS Error: $event');
         });
+        
+        // ユーザーインタラクション確認（ブラウザの自動再生ポリシー対応）
+        _ensureUserInteraction();
         
         // 読み上げ開始
         speechSynthesis.callMethod('speak', [utterance]);
-        print('HTML5 TTS started successfully');
+        print('HTML5 TTS speak command sent for: $textToSpeak');
+        
+        // 発話が開始されるまで少し待つ
+        await Future.delayed(const Duration(milliseconds: 100));
+        
+        // 発話が実際に開始されたかチェック
+        if (!_isSpeaking && speechSynthesis.callMethod('speaking') != true) {
+          print('TTS failed to start, trying alternative approach');
+          await _tryAlternativeTTS(textToSpeak, language);
+        }
       } else {
         print('SpeechSynthesis API is not available');
       }
     } catch (e) {
       print('TTS speak error: $e');
       _isSpeaking = false;
+    }
+  }
+
+  // ユーザーインタラクションを確保
+  void _ensureUserInteraction() {
+    try {
+      // ダミーの短い音声を再生してユーザーインタラクションを確立
+      final speechSynthesis = js.context['speechSynthesis'];
+      if (speechSynthesis != null) {
+        final testUtterance = js.context['SpeechSynthesisUtterance'].callMethod('constructor', ['']);
+        testUtterance['volume'] = 0.01;
+        speechSynthesis.callMethod('speak', [testUtterance]);
+        speechSynthesis.callMethod('cancel');
+      }
+    } catch (e) {
+      print('User interaction setup error: $e');
+    }
+  }
+
+  // 代替TTS手法
+  Future<void> _tryAlternativeTTS(String text, String language) async {
+    try {
+      final speechSynthesis = js.context['speechSynthesis'];
+      if (speechSynthesis == null) return;
+
+      // 利用可能な音声を取得
+      final voices = speechSynthesis.callMethod('getVoices');
+      if (voices != null && voices.length > 0) {
+        print('Available voices: ${voices.length}');
+        
+        final utterance = js.context['SpeechSynthesisUtterance'].callMethod('constructor', [text]);
+        utterance['lang'] = language;
+        utterance['rate'] = 0.8; // 少し遅く
+        utterance['pitch'] = 1.0;
+        utterance['volume'] = 1.0;
+        
+        // 適切な音声を選択
+        for (int i = 0; i < voices.length; i++) {
+          final voice = voices[i];
+          if (voice['lang'] != null && voice['lang'].toString().startsWith(language.substring(0, 2))) {
+            utterance['voice'] = voice;
+            print('Selected voice: ${voice['name']} (${voice['lang']})');
+            break;
+          }
+        }
+        
+        utterance['onstart'] = js.allowInterop((_) {
+          print('Alternative TTS started');
+          _isSpeaking = true;
+        });
+        
+        utterance['onend'] = js.allowInterop((_) {
+          print('Alternative TTS ended');
+          _isSpeaking = false;
+        });
+        
+        speechSynthesis.callMethod('speak', [utterance]);
+      }
+    } catch (e) {
+      print('Alternative TTS error: $e');
     }
   }
 
