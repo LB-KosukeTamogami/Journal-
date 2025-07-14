@@ -22,6 +22,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
   bool _isLoading = false;
   String? _conversationTopic;
   int _messageCount = 0; // Acoとユーザーのメッセージ数をカウント
+  Map<int, bool> _expandedMessages = {}; // メッセージごとの展開状態を管理
   
   @override
   void initState() {
@@ -30,10 +31,10 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
   }
   
   void _initializeConversation() {
-    // 初期メッセージを追加
+    // 初期メッセージを追加（タップヒントも含む）
     _messages.add(
       ConversationMessage(
-        text: "Hi there! I'm Aco, your friendly English practice buddy. Let's have a quick 5-exchange conversation (5 messages from you, 5 from me). Don't worry about making mistakes - I'm here to help you learn! If you're not sure how to say something in English, you can write in Japanese and I'll help you translate it.\n\nこんにちは！英語学習をサポートするAcoです。今日は5ラリー（あなたから5回、私から5回）の短い会話練習をしましょう！間違いを気にせず、リラックスして話してくださいね。英語で何と言えばいいかわからない時は、日本語で書いてもOKです。英語での表現をお教えします。",
+        text: "Hi there! I'm Aco, your friendly English practice buddy. Let's have a quick 5-exchange conversation (5 messages from you, 5 from me). Don't worry about making mistakes - I'm here to help you learn! If you're not sure how to say something in English, you can write in Japanese and I'll help you translate it.\n\nこんにちは！英語学習をサポートするAcoです。今日は5ラリー（あなたから5回、私から5回）の短い会話練習をしましょう！間違いを気にせず、リラックスして話してくださいね。英語で何と言えばいいかわからない時は、日本語で書いてもOKです。英語での表現をお教えします。\n\n💡 Tip: Tap my messages to see Japanese translation!",
         isUser: false,
         timestamp: DateTime.now(),
       ),
@@ -304,28 +305,80 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Acoのメッセージの場合、英語と日本語を分けて表示
-                          if (!isUser && message.text.contains('\n\n')) ...[
-                            // 英語部分
-                            Text(
-                              message.text.split('\n\n')[0],
-                              style: AppTheme.body1.copyWith(
-                                color: AppTheme.textPrimary,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            // 日本語部分
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: AppTheme.backgroundSecondary,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                message.text.split('\n\n')[1],
-                                style: AppTheme.body2.copyWith(
-                                  color: AppTheme.textSecondary,
-                                ),
+                          // Acoのメッセージの場合、英語のみ表示（タップで日本語表示）
+                          if (!isUser && message.text.contains('\n\n') && !message.text.contains('💡 Tip:')) ...[
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _expandedMessages[index] = !(_expandedMessages[index] ?? false);
+                                });
+                              },
+                              borderRadius: BorderRadius.circular(8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // 英語部分
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          message.text.split('\n\n')[0],
+                                          style: AppTheme.body1.copyWith(
+                                            color: AppTheme.textPrimary,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Icon(
+                                        _expandedMessages[index] ?? false
+                                          ? Icons.expand_less
+                                          : Icons.expand_more,
+                                        size: 20,
+                                        color: AppTheme.textSecondary,
+                                      ),
+                                    ],
+                                  ),
+                                  // 日本語部分（アコーディオン）
+                                  AnimatedCrossFade(
+                                    firstChild: const SizedBox.shrink(),
+                                    secondChild: Container(
+                                      margin: const EdgeInsets.only(top: 8),
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: AppTheme.backgroundSecondary,
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: AppTheme.borderColor,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Icon(
+                                            Icons.translate,
+                                            size: 16,
+                                            color: AppTheme.textSecondary,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              message.text.split('\n\n')[1],
+                                              style: AppTheme.body2.copyWith(
+                                                color: AppTheme.textSecondary,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    crossFadeState: _expandedMessages[index] ?? false
+                                      ? CrossFadeState.showSecond
+                                      : CrossFadeState.showFirst,
+                                    duration: const Duration(milliseconds: 200),
+                                  ),
+                                ],
                               ),
                             ),
                           ] else ...[
