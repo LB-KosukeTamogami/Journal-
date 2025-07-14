@@ -4,6 +4,7 @@ import '../../theme/app_theme.dart';
 import '../../services/supabase_service.dart';
 import '../../services/storage_service.dart';
 import '../../models/word.dart';
+import '../../models/diary_entry.dart';
 
 class SupabaseStatusScreen extends StatefulWidget {
   const SupabaseStatusScreen({super.key});
@@ -141,6 +142,76 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('同期エラー: $e')),
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _testSupabaseConnection() async {
+    setState(() {
+      _isLoading = true;
+      _debugLogs.clear();
+    });
+
+    try {
+      _addLog('Testing Supabase connection...');
+      
+      // 1. 接続状態を確認
+      _addLog('1. Checking connection status...');
+      final isAvailable = SupabaseService.isAvailable;
+      _addLog('   isAvailable: $isAvailable');
+      
+      if (!isAvailable) {
+        _addLog('   Connection not available. Stopping test.');
+        return;
+      }
+      
+      // 2. ユーザーIDを取得
+      _addLog('2. Getting user ID...');
+      final userId = await SupabaseService.getUserId();
+      _addLog('   User ID: $userId');
+      
+      // 3. テストデータを作成して保存
+      _addLog('3. Creating test diary entry...');
+      final testEntry = DiaryEntry(
+        id: 'test_${DateTime.now().millisecondsSinceEpoch}',
+        title: 'Test Entry',
+        content: 'This is a test entry',
+        translatedContent: '',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        wordCount: 5,
+        learnedWords: [],
+      );
+      
+      _addLog('4. Saving test entry to Supabase...');
+      try {
+        await SupabaseService.saveDiaryEntry(testEntry);
+        _addLog('   ✓ Test entry saved successfully');
+      } catch (e) {
+        _addLog('   ✗ Failed to save test entry: $e');
+      }
+      
+      // 4. 保存したデータを取得
+      _addLog('5. Retrieving entries from Supabase...');
+      try {
+        final entries = await SupabaseService.getDiaryEntries();
+        _addLog('   ✓ Retrieved ${entries.length} entries');
+        
+        // テストエントリーが含まれているか確認
+        final hasTestEntry = entries.any((e) => e.id == testEntry.id);
+        _addLog('   Test entry found: $hasTestEntry');
+      } catch (e) {
+        _addLog('   ✗ Failed to retrieve entries: $e');
+      }
+      
+      _addLog('Test completed.');
+      
+    } catch (e, stack) {
+      _addLog('Test error: $e');
+      _addLog('Stack trace: $stack');
     } finally {
       setState(() {
         _isLoading = false;
@@ -343,6 +414,21 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
                         ),
                       ),
                     ],
+                  ),
+                  
+                  const SizedBox(height: 8),
+                  
+                  // テストボタン
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _testSupabaseConnection,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.info,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('Supabase接続テスト'),
+                    ),
                   ),
                   
                   const SizedBox(height: 24),

@@ -164,14 +164,17 @@ class SupabaseService {
   // 日記を保存
   static Future<void> saveDiaryEntry(DiaryEntry entry) async {
     if (_client == null) {
-      print('[Supabase] Client not initialized, skipping diary save');
-      return;
+      print('[Supabase] Client not initialized, cannot save diary');
+      throw Exception('Supabase client not initialized');
     }
 
     try {
+      print('[Supabase] Getting user ID for diary save...');
       final userId = await getUserId();
+      print('[Supabase] User ID: $userId');
       
-      await _client!.from('diary_entries').upsert({
+      print('[Supabase] Preparing diary data...');
+      final data = {
         'id': entry.id,
         'user_id': userId,
         'title': entry.title,
@@ -181,11 +184,18 @@ class SupabaseService {
         'learned_words': entry.learnedWords,
         'created_at': entry.createdAt.toIso8601String(),
         'updated_at': entry.updatedAt.toIso8601String(),
-      }, onConflict: 'id');
+      };
       
-      print('[Supabase] Diary entry saved: ${entry.id}');
-    } catch (e) {
+      print('[Supabase] Saving diary with data: ${data.keys.join(', ')}');
+      
+      final response = await _client!.from('diary_entries').upsert(data, onConflict: 'id');
+      
+      print('[Supabase] Diary entry saved successfully: ${entry.id}');
+    } catch (e, stack) {
       print('[Supabase] Error saving diary entry: $e');
+      print('[Supabase] Stack trace: $stack');
+      // エラーを再スローして呼び出し元で処理できるようにする
+      rethrow;
     }
   }
 
@@ -242,14 +252,17 @@ class SupabaseService {
   // 単語を保存
   static Future<void> saveWord(Word word) async {
     if (_client == null) {
-      print('[Supabase] Client not initialized, skipping word save');
-      return;
+      print('[Supabase] Client not initialized, cannot save word');
+      throw Exception('Supabase client not initialized');
     }
 
     try {
+      print('[Supabase] Getting user ID for word save...');
       final userId = await getUserId();
+      print('[Supabase] User ID: $userId');
       
-      await _client!.from('words').upsert({
+      print('[Supabase] Preparing word data...');
+      final data = {
         'id': word.id,
         'user_id': userId,
         'english': word.english,
@@ -262,11 +275,18 @@ class SupabaseService {
         'mastery_level': word.masteryLevel,
         'category': word.category.name,
         'created_at': word.createdAt.toIso8601String(),
-      }, onConflict: 'id');
+      };
       
-      print('[Supabase] Word saved: ${word.english}');
-    } catch (e) {
+      print('[Supabase] Saving word with data: ${data.keys.join(', ')}');
+      
+      final response = await _client!.from('words').upsert(data, onConflict: 'id');
+      
+      print('[Supabase] Word saved successfully: ${word.english}');
+    } catch (e, stack) {
       print('[Supabase] Error saving word: $e');
+      print('[Supabase] Stack trace: $stack');
+      // エラーを再スローして呼び出し元で処理できるようにする
+      rethrow;
     }
   }
 
@@ -351,5 +371,9 @@ class SupabaseService {
   }
 
   // データ同期状態を確認
-  static bool get isAvailable => _client != null && _initialized;
+  static bool get isAvailable {
+    final available = _client != null && _initialized;
+    print('[Supabase] isAvailable check: client=${_client != null}, initialized=$_initialized, result=$available');
+    return available;
+  }
 }
