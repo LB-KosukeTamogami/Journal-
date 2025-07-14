@@ -153,8 +153,8 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('ローカルデータを削除'),
-        content: const Text('本当にローカルの単語データを削除しますか？\n\nSupabaseに保存されていないデータは失われます。'),
+        title: const Text('全ローカルデータを削除'),
+        content: const Text('本当にローカルの日記・単語データをすべて削除しますか？\n\nこれによりSupabaseのデータのみが使用されるようになります。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -178,7 +178,11 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
     });
 
     try {
-      _addLog('Clearing local data...');
+      _addLog('Clearing all local data...');
+      
+      // ローカルの日記データを削除
+      await StorageService.prefs.remove('diary_entries');
+      _addLog('Local diary data cleared');
       
       // ローカルの単語データを削除
       await StorageService.prefs.remove('words');
@@ -187,7 +191,7 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
       await _checkStatus(); // 状態を再確認
       
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ローカルデータを削除しました')),
+        const SnackBar(content: Text('全ローカルデータを削除しました')),
       );
     } catch (e) {
       _addLog('Clear error: $e');
@@ -335,7 +339,7 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
                             backgroundColor: AppTheme.error,
                             foregroundColor: Colors.white,
                           ),
-                          child: const Text('ローカルデータを削除'),
+                          child: const Text('全ローカルデータを削除'),
                         ),
                       ),
                     ],

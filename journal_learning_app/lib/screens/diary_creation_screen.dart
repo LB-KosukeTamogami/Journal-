@@ -163,7 +163,12 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
       }
     } catch (e) {
       if (mounted) {
-        _showSnackBar('保存に失敗しました', isError: true);
+        // エラーメッセージを詳細に表示
+        final errorMessage = e.toString().replaceFirst('Exception: ', '');
+        _showSnackBar(errorMessage, isError: true);
+        
+        // 保存失敗時のデバッグ情報を表示
+        print('[DiaryCreation] Save failed: $e');
       }
     } finally {
       if (mounted) {

@@ -72,35 +72,39 @@ class StorageService {
     print('[Storage] Saving diary entry: ${entry.title}');
     print('[Storage] SupabaseService.isAvailable: ${SupabaseService.isAvailable}');
     
-    // Supabaseに保存
+    // Supabaseに保存（必須）
     if (SupabaseService.isAvailable) {
       try {
         print('[Storage] Attempting to save diary to Supabase...');
         await SupabaseService.saveDiaryEntry(entry);
         print('[Storage] Successfully saved diary to Supabase');
+        
+        // Supabaseに保存成功した場合のみローカルにもキャッシュとして保存
+        print('[Storage] Caching diary to local storage...');
+        final entries = await _getLocalDiaryEntries();
+        
+        final existingIndex = entries.indexWhere((e) => e.id == entry.id);
+        if (existingIndex != -1) {
+          entries[existingIndex] = entry;
+        } else {
+          entries.add(entry);
+        }
+        
+        entries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        
+        final jsonString = json.encode(entries.map((e) => e.toJson()).toList());
+        await prefs.setString(_diaryEntriesKey, jsonString);
+        print('[Storage] Successfully cached diary to local storage');
+        
       } catch (e) {
         print('[Storage] Error saving diary to Supabase: $e');
+        // Supabaseへの保存に失敗した場合は例外を再スロー
+        throw Exception('日記の保存に失敗しました。ネットワーク接続を確認してください。\nエラー詳細: $e');
       }
     } else {
-      print('[Storage] Supabase not available, saving locally only');
+      print('[Storage] Supabase not available');
+      throw Exception('データベースに接続できません。ネットワーク接続を確認してください。');
     }
-
-    // ローカルストレージにも保存
-    print('[Storage] Saving diary to local storage...');
-    final entries = await _getLocalDiaryEntries();
-    
-    final existingIndex = entries.indexWhere((e) => e.id == entry.id);
-    if (existingIndex != -1) {
-      entries[existingIndex] = entry;
-    } else {
-      entries.add(entry);
-    }
-    
-    entries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    
-    final jsonString = json.encode(entries.map((e) => e.toJson()).toList());
-    await prefs.setString(_diaryEntriesKey, jsonString);
-    print('[Storage] Successfully saved diary to local storage');
   }
 
   static Future<void> deleteDiaryEntry(String id) async {
@@ -297,34 +301,39 @@ class StorageService {
     print('[Storage] Saving word: ${word.english}');
     print('[Storage] SupabaseService.isAvailable: ${SupabaseService.isAvailable}');
     
-    // Supabaseに保存
+    // Supabaseに保存（必須）
     if (SupabaseService.isAvailable) {
       try {
         print('[Storage] Attempting to save word to Supabase...');
         await SupabaseService.saveWord(word);
-        print('[Storage] Word saved to Supabase successfully');
+        print('[Storage] Successfully saved word to Supabase');
+        
+        // Supabaseに保存成功した場合のみローカルにもキャッシュとして保存
+        print('[Storage] Caching word to local storage...');
+        final words = await _getLocalWords();
+        
+        final existingIndex = words.indexWhere((w) => w.id == word.id);
+        if (existingIndex != -1) {
+          words[existingIndex] = word;
+          print('[Storage] Updated existing word in local cache');
+        } else {
+          words.add(word);
+          print('[Storage] Added new word to local cache');
+        }
+        
+        final jsonString = json.encode(words.map((w) => w.toJson()).toList());
+        await prefs.setString(_wordsKey, jsonString);
+        print('[Storage] Successfully cached word to local storage. Total: ${words.length}');
+        
       } catch (e) {
         print('[Storage] Error saving word to Supabase: $e');
+        // Supabaseへの保存に失敗した場合は例外を再スロー
+        throw Exception('単語の保存に失敗しました。ネットワーク接続を確認してください。\nエラー詳細: $e');
       }
     } else {
-      print('[Storage] Supabase not available, saving to local storage only');
+      print('[Storage] Supabase not available');
+      throw Exception('データベースに接続できません。ネットワーク接続を確認してください。');
     }
-
-    // ローカルストレージにも保存
-    final words = await _getLocalWords();
-    
-    final existingIndex = words.indexWhere((w) => w.id == word.id);
-    if (existingIndex != -1) {
-      words[existingIndex] = word;
-      print('[Storage] Updated existing word in local storage');
-    } else {
-      words.add(word);
-      print('[Storage] Added new word to local storage');
-    }
-    
-    final jsonString = json.encode(words.map((w) => w.toJson()).toList());
-    await prefs.setString(_wordsKey, jsonString);
-    print('[Storage] Word saved to local storage. Total words: ${words.length}');
   }
 
   static Future<void> saveWords(List<Word> words) async {
