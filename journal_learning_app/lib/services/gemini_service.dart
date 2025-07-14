@@ -231,8 +231,8 @@ IMPORTANT:
     return _getOfflineExamples(word, language);
   }
   
-  // 日本語WordNet APIから単語の意味を取得
-  static Future<String?> getWordMeaning(String word) async {
+  // 日本語WordNet APIから単語の意味と品詞を取得
+  static Future<Map<String, dynamic>?> getWordDefinition(String word) async {
     try {
       final url = Uri.parse('https://juman-drc.org/wordnet/jp/api/1.1/definitions');
       final response = await http.post(
@@ -247,16 +247,27 @@ IMPORTANT:
           // 最初の定義を取得
           final definition = data[0];
           if (definition['definitions'] != null && definition['definitions'].isNotEmpty) {
-            return definition['definitions'][0]['definition'];
+            final firstDef = definition['definitions'][0];
+            return {
+              'meaning': firstDef['definition'] ?? '',
+              'partOfSpeech': firstDef['pos'] ?? firstDef['part_of_speech'] ?? 'unknown',
+              'word': definition['word'] ?? word,
+            };
           }
         }
       }
       
       return null;
     } catch (e) {
-      print('Error fetching word meaning: $e');
+      print('Error fetching word definition: $e');
       return null;
     }
+  }
+
+  // 後方互換性のため既存メソッドを保持
+  static Future<String?> getWordMeaning(String word) async {
+    final definition = await getWordDefinition(word);
+    return definition?['meaning'];
   }
   
   // 会話ジャーナル用の応答生成

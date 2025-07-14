@@ -4,6 +4,7 @@ import '../theme/app_theme.dart';
 import '../models/word.dart';
 import '../models/flashcard.dart';
 import '../services/storage_service.dart';
+import '../services/gemini_service.dart';
 import '../widgets/text_to_speech_button.dart';
 import '../widgets/japanese_dictionary_dialog.dart';
 import 'flashcard_session_screen.dart' hide AppCard;
@@ -203,6 +204,12 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                     ),
                     const SizedBox(width: 8),
                     _buildFilterChip(
+                      label: '×',
+                      value: 0,
+                      color: AppTheme.error,
+                    ),
+                    const SizedBox(width: 8),
+                    _buildFilterChip(
                       label: '△',
                       value: 1,
                       color: AppTheme.warning,
@@ -366,233 +373,12 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: AppTheme.backgroundPrimary,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 20,
-              offset: const Offset(0, -5),
-            ),
-          ],
-        ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: AppTheme.textTertiary,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    word.english,
-                    style: AppTheme.headline2,
-                    softWrap: true,
-                    overflow: TextOverflow.visible,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                TextToSpeechButton(
-                  text: word.english,
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              word.japanese,
-              style: AppTheme.body1.copyWith(fontSize: 18),
-              softWrap: true,
-              overflow: TextOverflow.visible,
-            ),
-            const SizedBox(height: 20),
-            AppCard(
-              padding: const EdgeInsets.all(16),
-              backgroundColor: AppTheme.backgroundTertiary,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.format_quote,
-                        size: 16,
-                        color: AppTheme.primaryBlue,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '例文',
-                        style: AppTheme.body2.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.primaryBlue,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  if (word.example != null) ...[
-                    Text(
-                      word.example!,
-                      style: AppTheme.body1,
-                      softWrap: true,
-                      overflow: TextOverflow.visible,
-                    ),
-                  ] else
-                    Text(
-                      '例文なし',
-                      style: AppTheme.body2.copyWith(
-                        color: AppTheme.textTertiary,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            // ステータス変更セクション
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'ステータス',
-                  style: AppTheme.body2.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    _buildStatusButton(
-                      currentLevel: word.masteryLevel,
-                      targetLevel: 0,
-                      icon: Icons.close,
-                      label: '×',
-                      color: AppTheme.error,
-                      onTap: () async {
-                        await StorageService.updateWordReview(word.id, masteryLevel: 0);
-                        Navigator.pop(context);
-                        _loadWords();
-                      },
-                    ),
-                    const SizedBox(width: 8),
-                    _buildStatusButton(
-                      currentLevel: word.masteryLevel,
-                      targetLevel: 1,
-                      icon: Icons.change_history,
-                      label: '△',
-                      color: AppTheme.warning,
-                      onTap: () async {
-                        await StorageService.updateWordReview(word.id, masteryLevel: 1);
-                        Navigator.pop(context);
-                        _loadWords();
-                      },
-                    ),
-                    const SizedBox(width: 8),
-                    _buildStatusButton(
-                      currentLevel: word.masteryLevel,
-                      targetLevel: 2,
-                      icon: Icons.circle,
-                      label: '○',
-                      color: AppTheme.success,
-                      onTap: () async {
-                        await StorageService.updateWordReview(word.id, masteryLevel: 2);
-                        Navigator.pop(context);
-                        _loadWords();
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            // 単語帳に登録ボタン
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () async {
-                  // フラッシュカードに登録
-                  final flashcard = Flashcard(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    word: word.english,
-                    meaning: word.japanese,
-                    exampleSentence: word.example ?? '',
-                    createdAt: DateTime.now(),
-                    lastReviewed: DateTime.now(),
-                    nextReviewDate: DateTime.now().add(Duration(days: 1)),
-                    reviewCount: 0,
-                  );
-                  await StorageService.saveFlashcard(flashcard);
-                  Navigator.pop(context);
-                  
-                  // 成功メッセージを表示
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('単語帳に登録しました'),
-                      backgroundColor: AppTheme.success,
-                      behavior: SnackBarBehavior.floating,
-                      margin: const EdgeInsets.all(16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                icon: const Icon(Icons.bookmark_add, size: 20),
-                label: const Text('単語帳に登録'),
-              ),
-            ),
-            const SizedBox(height: 12),
-            // 削除ボタン
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _deleteWord(word);
-                },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppTheme.error,
-                  side: BorderSide(color: AppTheme.error),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                icon: Icon(Icons.delete_outline, size: 20, color: AppTheme.error),
-                label: Text(
-                  '削除',
-                  style: AppTheme.body2.copyWith(color: AppTheme.error),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
+      builder: (context) => _WordDetailModal(
+        word: word,
+        onUpdate: () {
+          _loadWords();
+        },
       ),
-    ),
     );
   }
 
@@ -1174,5 +960,411 @@ class _FlashcardItem extends StatelessWidget {
       ),
     );
   }
+}
+
+class _WordDetailModal extends StatefulWidget {
+  final Word word;
+  final VoidCallback onUpdate;
+
+  const _WordDetailModal({
+    required this.word,
+    required this.onUpdate,
+  });
+
+  @override
+  State<_WordDetailModal> createState() => _WordDetailModalState();
+}
+
+class _WordDetailModalState extends State<_WordDetailModal> {
+  Map<String, dynamic>? _wordNetData;
+  bool _isLoadingWordNet = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchWordNetData();
+  }
+
+  Future<void> _fetchWordNetData() async {
+    try {
+      final definition = await GeminiService.getWordDefinition(widget.word.english);
+      setState(() {
+        _wordNetData = definition;
+        _isLoadingWordNet = false;
+      });
+    } catch (e) {
+      print('Error fetching WordNet data: $e');
+      setState(() {
+        _isLoadingWordNet = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.backgroundPrimary,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppTheme.textTertiary,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.word.english,
+                    style: AppTheme.headline2,
+                    softWrap: true,
+                    overflow: TextOverflow.visible,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                TextToSpeechButton(
+                  text: widget.word.english,
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              widget.word.japanese,
+              style: AppTheme.body1.copyWith(fontSize: 18),
+              softWrap: true,
+              overflow: TextOverflow.visible,
+            ),
+            
+            // WordNet 情報セクション
+            const SizedBox(height: 20),
+            AppCard(
+              padding: const EdgeInsets.all(16),
+              backgroundColor: AppTheme.backgroundTertiary,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.book,
+                        size: 16,
+                        color: AppTheme.primaryBlue,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '辞書情報',
+                        style: AppTheme.body2.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.primaryBlue,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  if (_isLoadingWordNet)
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(
+                          color: AppTheme.primaryColor,
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    )
+                  else if (_wordNetData != null) ...[
+                    if (_wordNetData!['partOfSpeech'] != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppTheme.primaryBlue.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                _wordNetData!['partOfSpeech'],
+                                style: AppTheme.caption.copyWith(
+                                  color: AppTheme.primaryBlue,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    Text(
+                      _wordNetData!['meaning'] ?? '意味が見つかりませんでした',
+                      style: AppTheme.body1,
+                      softWrap: true,
+                      overflow: TextOverflow.visible,
+                    ),
+                  ] else
+                    Text(
+                      '辞書情報を取得できませんでした',
+                      style: AppTheme.body2.copyWith(
+                        color: AppTheme.textTertiary,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 20),
+            // ステータス変更セクション
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'ステータス',
+                  style: AppTheme.body2.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    _buildStatusButton(
+                      currentLevel: widget.word.masteryLevel,
+                      targetLevel: 0,
+                      icon: Icons.close,
+                      label: '×',
+                      color: AppTheme.error,
+                      onTap: () async {
+                        await StorageService.updateWordReview(widget.word.id, masteryLevel: 0);
+                        Navigator.pop(context);
+                        widget.onUpdate();
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    _buildStatusButton(
+                      currentLevel: widget.word.masteryLevel,
+                      targetLevel: 1,
+                      icon: Icons.change_history,
+                      label: '△',
+                      color: AppTheme.warning,
+                      onTap: () async {
+                        await StorageService.updateWordReview(widget.word.id, masteryLevel: 1);
+                        Navigator.pop(context);
+                        widget.onUpdate();
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    _buildStatusButton(
+                      currentLevel: widget.word.masteryLevel,
+                      targetLevel: 2,
+                      icon: Icons.circle,
+                      label: '○',
+                      color: AppTheme.success,
+                      onTap: () async {
+                        await StorageService.updateWordReview(widget.word.id, masteryLevel: 2);
+                        Navigator.pop(context);
+                        widget.onUpdate();
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            // 単語帳に登録ボタン
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  // フラッシュカードに登録
+                  final flashcard = Flashcard(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    word: widget.word.english,
+                    meaning: widget.word.japanese,
+                    exampleSentence: '', // 例文は削除
+                    createdAt: DateTime.now(),
+                    lastReviewed: DateTime.now(),
+                    nextReviewDate: DateTime.now().add(Duration(days: 1)),
+                    reviewCount: 0,
+                  );
+                  await StorageService.saveFlashcard(flashcard);
+                  Navigator.pop(context);
+                  
+                  // 成功メッセージを表示
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('単語帳に登録しました'),
+                      backgroundColor: AppTheme.success,
+                      behavior: SnackBarBehavior.floating,
+                      margin: const EdgeInsets.all(16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                icon: const Icon(Icons.bookmark_add, size: 20),
+                label: const Text('単語帳に登録'),
+              ),
+            ),
+            const SizedBox(height: 12),
+            // 削除ボタン
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _deleteWord(widget.word);
+                },
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppTheme.error,
+                  side: BorderSide(color: AppTheme.error),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                icon: Icon(Icons.delete_outline, size: 20, color: AppTheme.error),
+                label: Text(
+                  '削除',
+                  style: AppTheme.body2.copyWith(color: AppTheme.error),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusButton({
+    required int currentLevel,
+    required int targetLevel,
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    final isSelected = currentLevel == targetLevel;
+    
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: isSelected ? color : AppTheme.backgroundTertiary,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected ? color : AppTheme.borderColor,
+              width: isSelected ? 2 : 1,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: AppTheme.body1.copyWith(
+                  color: isSelected ? Colors.white : color,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label == '×' ? '未学習' :
+                label == '△' ? '学習中' : '習得済み',
+                style: AppTheme.caption.copyWith(
+                  color: isSelected ? Colors.white : AppTheme.textSecondary,
+                  fontSize: 10,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _deleteWord(Word word) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.backgroundPrimary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Text(
+          '削除の確認',
+          style: AppTheme.headline3,
+        ),
+        content: Text(
+          '「${word.english}」を削除しますか？',
+          style: AppTheme.body1,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'キャンセル',
+              style: AppTheme.body1.copyWith(color: AppTheme.textSecondary),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              await StorageService.deleteWord(word.id);
+              Navigator.pop(context);
+              widget.onUpdate();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    '削除しました',
+                    style: AppTheme.body2.copyWith(color: Colors.white),
+                  ),
+                  backgroundColor: AppTheme.textSecondary,
+                ),
+              );
+            },
+            child: Text(
+              '削除',
+              style: AppTheme.body1.copyWith(color: AppTheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 }

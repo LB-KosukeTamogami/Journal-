@@ -32,6 +32,11 @@ void main() async {
       await StorageService.deleteJapaneseWords();
       print('[Main] Japanese words cleanup completed');
       
+      // 熟語を削除（一度だけ実行）
+      print('[Main] Cleaning up phrases...');
+      await StorageService.deletePhrases();
+      print('[Main] Phrases cleanup completed');
+      
       // サンプルデータの初期化は削除（本番環境では不要）
       // print('[Main] Initializing sample data...');
       // await StorageService.initializeSampleData();
