@@ -965,7 +965,7 @@ class _FlashcardItem extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      if (word.masteryLevel == 0)
+                      if (word.reviewCount == 0 && word.lastReviewedAt == null)
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
@@ -990,6 +990,21 @@ class _FlashcardItem extends StatelessWidget {
                                 ),
                               ),
                             ],
+                          ),
+                        )
+                      else if (word.masteryLevel == 0 && (word.reviewCount > 0 || word.lastReviewedAt != null))
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppTheme.error.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            '×',
+                            style: AppTheme.caption.copyWith(
+                              color: AppTheme.error,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         )
                       else if (word.masteryLevel == 1)
