@@ -14,36 +14,44 @@ class TTSService {
   double _speechRate = 0.9;
   double _pitch = 1.0;
   String? _language;
+  bool _userInteractionDone = false;
 
   // 初期化
   Future<void> initialize() async {
     if (_isInitialized) return;
 
     try {
-      // HTML5 SpeechSynthesis API が利用可能かチェック
-      if (js.context['speechSynthesis'] != null) {
-        print('HTML5 SpeechSynthesis API is available');
-        
-        // 音声リストを強制的に読み込み
-        final speechSynthesis = js.context['speechSynthesis'];
-        final voices = speechSynthesis.callMethod('getVoices');
-        print('Initial voices count: ${voices?.length ?? 0}');
-        
-        // 音声が読み込まれるまで待機
-        if (voices == null || voices.length == 0) {
-          print('Waiting for voices to load...');
-          await Future.delayed(const Duration(milliseconds: 500));
-          final voicesAfterWait = speechSynthesis.callMethod('getVoices');
-          print('Voices after wait: ${voicesAfterWait?.length ?? 0}');
-        }
-        
+      print('[TTS] Initializing TTS Service...');
+      
+      // SpeechSynthesis APIの可用性をチェック
+      if (html.window.speechSynthesis != null) {
+        print('[TTS] SpeechSynthesis API is available');
         _isInitialized = true;
-        print('TTS Service initialized successfully');
+        
+        // 音声リストを事前に読み込み
+        _loadVoices();
+        
+        print('[TTS] TTS Service initialized successfully');
       } else {
-        print('HTML5 SpeechSynthesis API is not available');
+        print('[TTS] SpeechSynthesis API is not available');
       }
     } catch (e) {
-      print('TTS initialization error: $e');
+      print('[TTS] Initialization error: $e');
+    }
+  }
+
+  // 音声リストを読み込む
+  void _loadVoices() {
+    try {
+      final voices = html.window.speechSynthesis!.getVoices();
+      print('[TTS] Loaded ${voices.length} voices');
+      
+      // 利用可能な音声をログ出力
+      for (var voice in voices.take(5)) {
+        print('[TTS] Voice: ${voice.name} (${voice.lang})');
+      }
+    } catch (e) {
+      print('[TTS] Error loading voices: $e');
     }
   }
 
@@ -56,162 +64,154 @@ class TTSService {
 
   // テキストを読み上げる
   Future<void> speak(String text) async {
+    print('[TTS] Speak called with text: "$text"');
+    
     if (!_isInitialized) {
+      print('[TTS] Not initialized, initializing...');
       await initialize();
+    }
+
+    if (html.window.speechSynthesis == null) {
+      print('[TTS] SpeechSynthesis not available');
+      return;
     }
 
     // 既に読み上げ中の場合は停止
     if (_isSpeaking) {
+      print('[TTS] Already speaking, stopping...');
       await stop();
     }
 
     // テキストが空の場合は何もしない
-    if (text.trim().isEmpty) return;
-
-    // 最大200文字に制限
-    String textToSpeak = text;
-    if (text.length > 200) {
-      textToSpeak = text.substring(0, 200);
+    if (text.trim().isEmpty) {
+      print('[TTS] Empty text, skipping');
+      return;
     }
 
     try {
       // 言語を自動検出
-      String language = _detectLanguage(textToSpeak);
+      String language = _detectLanguage(text);
+      print('[TTS] Detected language: $language');
       
-      _totalCharacters = textToSpeak.length;
-      print('Speaking in $language: $textToSpeak (${_totalCharacters} characters)');
+      // 既存の発話を確実に停止
+      html.window.speechSynthesis!.cancel();
+      await Future.delayed(const Duration(milliseconds: 100));
       
-      // HTML5 SpeechSynthesis API を使用
-      final speechSynthesis = js.context['speechSynthesis'];
-      if (speechSynthesis != null) {
-        // 既存の発話を停止
-        speechSynthesis.callMethod('cancel');
+      // SpeechSynthesisUtterance を作成
+      final utterance = html.SpeechSynthesisUtterance(text);
+      
+      // 基本設定
+      utterance.lang = language;
+      utterance.rate = _speechRate;
+      utterance.pitch = _pitch;
+      utterance.volume = 1.0;
+      
+      print('[TTS] Created utterance with settings: lang=$language, rate=$_speechRate, pitch=$_pitch');
+      
+      // 適切な音声を選択
+      final voices = html.window.speechSynthesis!.getVoices();
+      for (var voice in voices) {
+        if (voice.lang.startsWith(language.substring(0, 2))) {
+          utterance.voice = voice;
+          print('[TTS] Selected voice: ${voice.name} (${voice.lang})');
+          break;
+        }
+      }
+      
+      // イベントハンドラーを設定
+      utterance.onStart.listen((_) {
+        print('[TTS] Speech started: "$text"');
+        _isSpeaking = true;
+        _speakStartTime = DateTime.now();
+      });
+      
+      utterance.onEnd.listen((_) {
+        print('[TTS] Speech ended: "$text"');
+        _isSpeaking = false;
+        _speakStartTime = null;
+        _progressHandler?.call(1.0);
+      });
+      
+      utterance.onError.listen((event) {
+        print('[TTS] Speech error: $event');
+        _isSpeaking = false;
+        _speakStartTime = null;
+      });
+      
+      // ユーザーインタラクションを一度確保
+      if (!_userInteractionDone) {
+        print('[TTS] Ensuring user interaction...');
+        await _ensureUserInteraction();
+      }
+      
+      // 読み上げ開始
+      print('[TTS] Starting speech synthesis...');
+      html.window.speechSynthesis!.speak(utterance);
+      
+      // 少し待って開始を確認
+      await Future.delayed(const Duration(milliseconds: 200));
+      
+      if (!_isSpeaking && !html.window.speechSynthesis!.speaking) {
+        print('[TTS] Speech failed to start, trying again...');
+        // 再試行
+        html.window.speechSynthesis!.speak(utterance);
+        await Future.delayed(const Duration(milliseconds: 200));
         
-        // 少し待ってからキャンセルが完了したことを確認
-        await Future.delayed(const Duration(milliseconds: 50));
-        
-        // SpeechSynthesisUtterance を作成
-        final utterance = js.context['SpeechSynthesisUtterance'].callMethod('constructor', [textToSpeak]);
-        
-        // 言語設定
-        utterance['lang'] = _language ?? language;
-        utterance['rate'] = _speechRate;
-        utterance['pitch'] = _pitch;
-        utterance['volume'] = 1.0;
-        
-        // イベントハンドラーを設定
-        utterance['onstart'] = js.allowInterop((_) {
-          print('TTS started: $textToSpeak');
-          _isSpeaking = true;
-          _speakStartTime = DateTime.now();
-          _startProgressTracking();
-        });
-        
-        utterance['onend'] = js.allowInterop((_) {
-          print('TTS ended: $textToSpeak');
-          _isSpeaking = false;
-          _speakStartTime = null;
-          _progressHandler?.call(1.0);
-        });
-        
-        utterance['onerror'] = js.allowInterop((event) {
-          print('TTS Error: $event');
-          _isSpeaking = false;
-          _speakStartTime = null;
-        });
-        
-        // ユーザーインタラクション確認（ブラウザの自動再生ポリシー対応）
-        _ensureUserInteraction();
-        
-        // 読み上げ開始
-        speechSynthesis.callMethod('speak', [utterance]);
-        print('HTML5 TTS speak command sent for: $textToSpeak');
-        
-        // 発話が開始されるまで少し待つ
-        await Future.delayed(const Duration(milliseconds: 100));
-        
-        // 発話が実際に開始されたかチェック
-        if (!_isSpeaking && speechSynthesis.callMethod('speaking') != true) {
-          print('TTS failed to start, trying alternative approach');
-          await _tryAlternativeTTS(textToSpeak, language);
+        if (!_isSpeaking && !html.window.speechSynthesis!.speaking) {
+          print('[TTS] Speech failed to start after retry');
+        } else {
+          print('[TTS] Speech started successfully on retry');
         }
       } else {
-        print('SpeechSynthesis API is not available');
+        print('[TTS] Speech started successfully');
       }
-    } catch (e) {
-      print('TTS speak error: $e');
+      
+    } catch (e, stack) {
+      print('[TTS] Error in speak method: $e');
+      print('[TTS] Stack trace: $stack');
       _isSpeaking = false;
     }
   }
 
   // ユーザーインタラクションを確保
-  void _ensureUserInteraction() {
+  Future<void> _ensureUserInteraction() async {
     try {
-      // ダミーの短い音声を再生してユーザーインタラクションを確立
-      final speechSynthesis = js.context['speechSynthesis'];
-      if (speechSynthesis != null) {
-        final testUtterance = js.context['SpeechSynthesisUtterance'].callMethod('constructor', ['']);
-        testUtterance['volume'] = 0.01;
-        speechSynthesis.callMethod('speak', [testUtterance]);
-        speechSynthesis.callMethod('cancel');
+      print('[TTS] Ensuring user interaction...');
+      
+      if (html.window.speechSynthesis == null) {
+        print('[TTS] SpeechSynthesis not available for user interaction');
+        return;
       }
+      
+      // 無音の短い発話でユーザーインタラクションを確立
+      final testUtterance = html.SpeechSynthesisUtterance(' ');
+      testUtterance.volume = 0.01;
+      testUtterance.rate = 10.0; // 非常に速く
+      
+      html.window.speechSynthesis!.speak(testUtterance);
+      await Future.delayed(const Duration(milliseconds: 100));
+      html.window.speechSynthesis!.cancel();
+      
+      _userInteractionDone = true;
+      print('[TTS] User interaction established');
     } catch (e) {
-      print('User interaction setup error: $e');
-    }
-  }
-
-  // 代替TTS手法
-  Future<void> _tryAlternativeTTS(String text, String language) async {
-    try {
-      final speechSynthesis = js.context['speechSynthesis'];
-      if (speechSynthesis == null) return;
-
-      // 利用可能な音声を取得
-      final voices = speechSynthesis.callMethod('getVoices');
-      if (voices != null && voices.length > 0) {
-        print('Available voices: ${voices.length}');
-        
-        final utterance = js.context['SpeechSynthesisUtterance'].callMethod('constructor', [text]);
-        utterance['lang'] = language;
-        utterance['rate'] = 0.8; // 少し遅く
-        utterance['pitch'] = 1.0;
-        utterance['volume'] = 1.0;
-        
-        // 適切な音声を選択
-        for (int i = 0; i < voices.length; i++) {
-          final voice = voices[i];
-          if (voice['lang'] != null && voice['lang'].toString().startsWith(language.substring(0, 2))) {
-            utterance['voice'] = voice;
-            print('Selected voice: ${voice['name']} (${voice['lang']})');
-            break;
-          }
-        }
-        
-        utterance['onstart'] = js.allowInterop((_) {
-          print('Alternative TTS started');
-          _isSpeaking = true;
-        });
-        
-        utterance['onend'] = js.allowInterop((_) {
-          print('Alternative TTS ended');
-          _isSpeaking = false;
-        });
-        
-        speechSynthesis.callMethod('speak', [utterance]);
-      }
-    } catch (e) {
-      print('Alternative TTS error: $e');
+      print('[TTS] User interaction setup error: $e');
     }
   }
 
   // 読み上げを停止
   Future<void> stop() async {
-    if (_isSpeaking) {
-      final speechSynthesis = js.context['speechSynthesis'];
-      if (speechSynthesis != null) {
-        speechSynthesis.callMethod('cancel');
+    print('[TTS] Stop called');
+    
+    try {
+      if (html.window.speechSynthesis != null) {
+        html.window.speechSynthesis!.cancel();
+        print('[TTS] Speech cancelled');
       }
       _isSpeaking = false;
+      _speakStartTime = null;
+    } catch (e) {
+      print('[TTS] Error stopping speech: $e');
     }
   }
 
@@ -220,60 +220,61 @@ class TTSService {
 
   // 速度を設定（0.0 - 1.0）
   Future<void> setSpeechRate(double rate) async {
-    _speechRate = rate;
-    print('Speech rate set to: $rate');
+    _speechRate = rate.clamp(0.1, 2.0);
+    print('[TTS] Speech rate set to: $_speechRate');
   }
 
   // ピッチを設定（0.5 - 2.0）
   Future<void> setPitch(double pitch) async {
-    _pitch = pitch;
-    print('Pitch set to: $pitch');
+    _pitch = pitch.clamp(0.5, 2.0);
+    print('[TTS] Pitch set to: $_pitch');
   }
 
   // 言語を手動設定
   Future<void> setLanguage(String languageCode) async {
     _language = languageCode;
-    print('Language set to: $languageCode');
+    print('[TTS] Language set to: $languageCode');
   }
 
   // リソースを解放
   void dispose() {
-    final speechSynthesis = js.context['speechSynthesis'];
-    if (speechSynthesis != null) {
-      speechSynthesis.callMethod('cancel');
+    print('[TTS] Disposing TTS service');
+    try {
+      if (html.window.speechSynthesis != null) {
+        html.window.speechSynthesis!.cancel();
+      }
+    } catch (e) {
+      print('[TTS] Error during disposal: $e');
     }
     _isInitialized = false;
     _isSpeaking = false;
     _progressHandler = null;
+    _userInteractionDone = false;
   }
 
   // プログレスハンドラーを設定
   void setProgressHandler(Function(double) handler) {
     _progressHandler = handler;
+    print('[TTS] Progress handler set');
   }
 
   // プログレスハンドラーを解除
   void removeProgressHandler() {
     _progressHandler = null;
+    print('[TTS] Progress handler removed');
   }
 
-  // プログレストラッキングを開始
-  void _startProgressTracking() {
-    if (_speakStartTime == null || _totalCharacters == 0) return;
-    
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (!_isSpeaking || _speakStartTime == null) return;
-      
-      // 推定進行率を計算（1文字あたり約0.15秒と仮定）
-      final elapsed = DateTime.now().difference(_speakStartTime!).inMilliseconds / 1000.0;
-      final estimatedDuration = _totalCharacters * 0.15;
-      final progress = (elapsed / estimatedDuration).clamp(0.0, 1.0);
-      
-      _progressHandler?.call(progress);
-      
-      if (_isSpeaking && progress < 1.0) {
-        _startProgressTracking();
-      }
-    });
+  // デバッグ用: TTS状態を取得
+  Map<String, dynamic> getStatus() {
+    return {
+      'isInitialized': _isInitialized,
+      'isSpeaking': _isSpeaking,
+      'userInteractionDone': _userInteractionDone,
+      'speechRate': _speechRate,
+      'pitch': _pitch,
+      'language': _language,
+      'apiAvailable': html.window.speechSynthesis != null,
+      'voicesCount': html.window.speechSynthesis?.getVoices().length ?? 0,
+    };
   }
 }

@@ -52,44 +52,65 @@ class _TextToSpeechButtonState extends State<TextToSpeechButton> with SingleTick
   }
 
   Future<void> _handlePress() async {
+    print('[TTS Button] Button pressed for text: "${widget.text}"');
+    
     if (_isSpeaking) {
       // 読み上げ中の場合は停止
+      print('[TTS Button] Stopping current speech');
       await _ttsService.stop();
       setState(() {
         _isSpeaking = false;
       });
-    } else {
+      return;
+    }
+
+    try {
       // アニメーション実行
       await _animationController.forward();
       await _animationController.reverse();
 
       // 読み上げ開始
+      print('[TTS Button] Starting speech for: "${widget.text}"');
       setState(() {
         _isSpeaking = true;
       });
 
+      // TTSサービスの状態をログ出力
+      final status = _ttsService.getStatus();
+      print('[TTS Button] TTS Service status: $status');
+
       await _ttsService.speak(widget.text);
 
-      // 読み上げ完了を待つ
-      // TTSサービスのコールバックで状態が更新されるまで待機
-      Future.delayed(const Duration(milliseconds: 500), () {
-        if (mounted && !_ttsService.isSpeaking) {
+      // 読み上げ状態の監視
+      _monitorSpeechStatus();
+
+    } catch (e) {
+      print('[TTS Button] Error during speech: $e');
+      setState(() {
+        _isSpeaking = false;
+      });
+    }
+  }
+
+  void _monitorSpeechStatus() {
+    // 定期的に読み上げ状態をチェック
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        final isSpeaking = _ttsService.isSpeaking;
+        print('[TTS Button] Speech status check: $isSpeaking');
+        
+        if (_isSpeaking != isSpeaking) {
           setState(() {
-            _isSpeaking = false;
+            _isSpeaking = isSpeaking;
           });
         }
-      });
-
-      // 長いテキストの場合は定期的にチェック
-      while (_ttsService.isSpeaking && mounted) {
-        await Future.delayed(const Duration(milliseconds: 500));
-        if (mounted) {
-          setState(() {
-            _isSpeaking = _ttsService.isSpeaking;
-          });
+        
+        // まだ読み上げ中の場合は継続監視
+        if (isSpeaking) {
+          _monitorSpeechStatus();
         }
       }
-    }
+    });
   }
 
   @override
