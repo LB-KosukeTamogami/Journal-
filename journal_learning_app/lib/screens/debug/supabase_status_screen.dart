@@ -18,6 +18,8 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
   String _userId = 'Unknown';
   List<Word> _localWords = [];
   List<Word> _supabaseWords = [];
+  List<dynamic> _localDiaries = [];
+  List<dynamic> _supabaseDiaries = [];
   List<String> _debugLogs = [];
 
   @override
@@ -54,8 +56,14 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
         final supabaseWords = await SupabaseService.getWords();
         _addLog('Got ${supabaseWords.length} words from Supabase');
         
+        // Supabaseから日記を取得
+        _addLog('Fetching diaries from Supabase...');
+        final supabaseDiaries = await SupabaseService.getDiaryEntries();
+        _addLog('Got ${supabaseDiaries.length} diaries from Supabase');
+        
         setState(() {
           _supabaseWords = supabaseWords;
+          _supabaseDiaries = supabaseDiaries;
         });
       }
 
@@ -64,8 +72,14 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
       final localWords = await _getLocalWords();
       _addLog('Got ${localWords.length} words from local storage');
       
+      // ローカルから日記を取得
+      _addLog('Fetching diaries from local storage...');
+      final localDiaries = await _getLocalDiaries();
+      _addLog('Got ${localDiaries.length} diaries from local storage');
+      
       setState(() {
         _localWords = localWords;
+        _localDiaries = localDiaries;
       });
 
     } catch (e) {
@@ -87,6 +101,15 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
     
     final List<dynamic> jsonList = json.decode(jsonString);
     return jsonList.map((json) => Word.fromJson(json)).toList();
+  }
+
+  Future<List<dynamic>> _getLocalDiaries() async {
+    // ローカルストレージから直接日記を取得
+    final jsonString = StorageService.prefs.getString('diary_entries');
+    if (jsonString == null) return [];
+    
+    final List<dynamic> jsonList = json.decode(jsonString);
+    return jsonList;
   }
 
   void _addLog(String message) {
@@ -248,7 +271,18 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
                           'Supabase単語数: ${_supabaseWords.length}',
                           style: AppTheme.body2,
                         ),
-                        if (_localWords.length != _supabaseWords.length)
+                        const SizedBox(height: 8),
+                        Text(
+                          'ローカル日記数: ${_localDiaries.length}',
+                          style: AppTheme.body2,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Supabase日記数: ${_supabaseDiaries.length}',
+                          style: AppTheme.body2,
+                        ),
+                        if (_localWords.length != _supabaseWords.length || 
+                            _localDiaries.length != _supabaseDiaries.length)
                           Padding(
                             padding: const EdgeInsets.only(top: 8),
                             child: Text(

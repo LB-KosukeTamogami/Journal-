@@ -29,14 +29,21 @@ class StorageService {
   }
 
   static Future<List<DiaryEntry>> getDiaryEntries() async {
+    print('[Storage] Getting diary entries...');
+    print('[Storage] SupabaseService.isAvailable: ${SupabaseService.isAvailable}');
+    
     // Supabaseからデータを取得
     List<DiaryEntry> supabaseEntries = [];
     if (SupabaseService.isAvailable) {
       try {
+        print('[Storage] Fetching diaries from Supabase...');
         supabaseEntries = await SupabaseService.getDiaryEntries();
+        print('[Storage] Got ${supabaseEntries.length} diaries from Supabase');
       } catch (e) {
         print('[Storage] Error getting Supabase diary entries: $e');
       }
+    } else {
+      print('[Storage] Supabase not available, using local storage only');
     }
 
     // ローカルデータを取得
@@ -45,30 +52,41 @@ class StorageService {
     if (jsonString != null) {
       final List<dynamic> jsonList = json.decode(jsonString);
       localEntries = jsonList.map((json) => DiaryEntry.fromJson(json)).toList();
+      print('[Storage] Got ${localEntries.length} diaries from local storage');
     }
 
     // Supabaseデータがある場合はそちらを優先、なければローカルデータを使用
     if (supabaseEntries.isNotEmpty) {
+      print('[Storage] Using Supabase data and caching locally');
       // Supabaseデータをローカルにも保存（キャッシュ）
       final jsonString = json.encode(supabaseEntries.map((e) => e.toJson()).toList());
       await prefs.setString(_diaryEntriesKey, jsonString);
       return supabaseEntries;
     }
     
+    print('[Storage] Using local data (${localEntries.length} diaries)');
     return localEntries;
   }
 
   static Future<void> saveDiaryEntry(DiaryEntry entry) async {
+    print('[Storage] Saving diary entry: ${entry.title}');
+    print('[Storage] SupabaseService.isAvailable: ${SupabaseService.isAvailable}');
+    
     // Supabaseに保存
     if (SupabaseService.isAvailable) {
       try {
+        print('[Storage] Attempting to save diary to Supabase...');
         await SupabaseService.saveDiaryEntry(entry);
+        print('[Storage] Successfully saved diary to Supabase');
       } catch (e) {
-        print('[Storage] Error saving to Supabase: $e');
+        print('[Storage] Error saving diary to Supabase: $e');
       }
+    } else {
+      print('[Storage] Supabase not available, saving locally only');
     }
 
     // ローカルストレージにも保存
+    print('[Storage] Saving diary to local storage...');
     final entries = await _getLocalDiaryEntries();
     
     final existingIndex = entries.indexWhere((e) => e.id == entry.id);
@@ -82,6 +100,7 @@ class StorageService {
     
     final jsonString = json.encode(entries.map((e) => e.toJson()).toList());
     await prefs.setString(_diaryEntriesKey, jsonString);
+    print('[Storage] Successfully saved diary to local storage');
   }
 
   static Future<void> deleteDiaryEntry(String id) async {

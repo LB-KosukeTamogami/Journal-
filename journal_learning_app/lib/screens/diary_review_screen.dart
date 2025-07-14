@@ -94,7 +94,12 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
           Container(
             margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
             child: ElevatedButton(
-              onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
+              onPressed: () {
+                // ジャーナル画面（日記一覧）に戻る
+                // 2回popすることで diary_creation_screen と diary_review_screen を両方閉じる
+                Navigator.pop(context); // diary_review_screen を閉じる
+                Navigator.pop(context); // diary_creation_screen を閉じる
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.success,
                 foregroundColor: Colors.white,
