@@ -323,7 +323,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          message.text.split('\n\n')[0],
+                                          _getEnglishPart(message.text),
                                           style: AppTheme.body1.copyWith(
                                             color: AppTheme.textPrimary,
                                           ),
@@ -364,7 +364,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                                           const SizedBox(width: 8),
                                           Expanded(
                                             child: Text(
-                                              message.text.split('\n\n')[1],
+                                              _getJapanesePart(message.text),
                                               style: AppTheme.body2.copyWith(
                                                 color: AppTheme.textSecondary,
                                               ),
@@ -618,5 +618,50 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
         ),
       ),
     );
+  }
+
+  String _getEnglishPart(String text) {
+    // 英語と日本語の境界を見つける
+    // 最後の\n\nを境界として使用
+    final parts = text.split('\n\n');
+    if (parts.length >= 2) {
+      // 日本語が含まれる部分を除外
+      final englishParts = [];
+      for (int i = 0; i < parts.length; i++) {
+        if (!_containsJapanese(parts[i])) {
+          englishParts.add(parts[i]);
+        } else {
+          break; // 日本語が見つかったら停止
+        }
+      }
+      return englishParts.join('\n\n');
+    }
+    return text;
+  }
+
+  String _getJapanesePart(String text) {
+    // 英語と日本語の境界を見つける
+    final parts = text.split('\n\n');
+    if (parts.length >= 2) {
+      // 日本語が含まれる部分を抽出
+      final japaneseParts = [];
+      bool foundJapanese = false;
+      for (int i = 0; i < parts.length; i++) {
+        if (_containsJapanese(parts[i])) {
+          foundJapanese = true;
+          japaneseParts.add(parts[i]);
+        } else if (foundJapanese) {
+          // 日本語セクションの後の英語も含める（混在の場合）
+          japaneseParts.add(parts[i]);
+        }
+      }
+      return japaneseParts.join('\n\n');
+    }
+    return '';
+  }
+
+  bool _containsJapanese(String text) {
+    final japanesePattern = RegExp(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]');
+    return japanesePattern.hasMatch(text);
   }
 }
