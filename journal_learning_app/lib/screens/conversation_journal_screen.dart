@@ -34,7 +34,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
     // 初期メッセージを追加
     _messages.add(
       ConversationMessage(
-        text: "Hi there! I'm Aco, your friendly English practice buddy. Let's have a quick 5-exchange conversation (5 messages from you, 5 from me). Don't worry about making mistakes - I'm here to help you learn! If you're not sure how to say something in English, you can write in Japanese and I'll help you translate it.\n\nこんにちは！英語学習をサポートするAcoです。今日は5ラリー（あなたから5回、私から5回）の短い会話練習をしましょう！間違いを気にせず、リラックスして話してくださいね。英語で何と言えばいいかわからない時は、日本語で書いてもOKです。英語での表現をお教えします。",
+        text: "Hello! I'm Aco! Let's have a short conversation (5 exchanges) to find topics for your journal! Don't worry about making mistakes - just relax and chat with me. If you're not sure how to say something in English, feel free to write in Japanese!\n\nこんにちは！Acoです！短い会話（5ラリー）で日記の話題を見つけましょう！間違いを気にせず、リラックスして話してくださいね。英語でなんと言えばいいかわからない時は、日本語で書いてもOKです！",
         isUser: false,
         timestamp: DateTime.now(),
       ),
@@ -43,7 +43,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
     // トピック提案を追加
     _messages.add(
       ConversationMessage(
-        text: "Here are some topics we can discuss:\n• Daily activities\n• Hobbies\n• Food and cooking\n• Travel experiences\n• Work or study\n\nOr we can talk about anything you'd like!\n\nこれらのトピックについて話すことができます：\n• 日常の活動\n• 趣味\n• 食べ物と料理\n• 旅行の経験\n• 仕事や勉強\n\nまたは、あなたが話したいことなら何でも大丈夫です！",
+        text: "What shall we talk about today?\n\nFor example:\n• Daily activities\n• Hobbies\n• Food and cooking\n• Travel and experiences\n• Work or study\n\nFeel free to talk about anything you'd like!\n\n今日は何について話しましょうか？\n\n例）\n• 日常の活動\n• 趣味\n• 食べ物と料理\n• 旅行と経験\n• 仕事や勉強\n\nあなたが話したいことをなんでも話してください！",
         isUser: false,
         timestamp: DateTime.now(),
         suggestions: [
