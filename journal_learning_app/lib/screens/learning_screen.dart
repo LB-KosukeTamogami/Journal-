@@ -1366,5 +1366,3 @@ class _WordDetailModalState extends State<_WordDetailModal> {
     );
   }
 }
-
-}
