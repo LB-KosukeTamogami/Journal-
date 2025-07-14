@@ -111,7 +111,7 @@ class TTSService {
       // 適切な音声を選択
       final voices = html.window.speechSynthesis!.getVoices();
       for (var voice in voices) {
-        if (voice.lang.startsWith(language.substring(0, 2))) {
+        if (voice.lang?.startsWith(language.substring(0, 2)) == true) {
           utterance.voice = voice;
           print('[TTS] Selected voice: ${voice.name} (${voice.lang})');
           break;
@@ -151,13 +151,15 @@ class TTSService {
       // 少し待って開始を確認
       await Future.delayed(const Duration(milliseconds: 200));
       
-      if (!_isSpeaking && !html.window.speechSynthesis!.speaking) {
+      final isSpeaking = html.window.speechSynthesis!.speaking ?? false;
+      if (!_isSpeaking && !isSpeaking) {
         print('[TTS] Speech failed to start, trying again...');
         // 再試行
         html.window.speechSynthesis!.speak(utterance);
         await Future.delayed(const Duration(milliseconds: 200));
         
-        if (!_isSpeaking && !html.window.speechSynthesis!.speaking) {
+        final isRetrySuccess = html.window.speechSynthesis!.speaking ?? false;
+        if (!_isSpeaking && !isRetrySuccess) {
           print('[TTS] Speech failed to start after retry');
         } else {
           print('[TTS] Speech started successfully on retry');
