@@ -470,11 +470,12 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                   // フラッシュカードに登録
                   final flashcard = Flashcard(
                     id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    englishWord: word.english,
-                    japaneseTranslation: word.japanese,
-                    exampleSentence: word.example,
+                    word: word.english,
+                    meaning: word.japanese,
+                    exampleSentence: word.example ?? '',
                     createdAt: DateTime.now(),
-                    masteryLevel: word.masteryLevel,
+                    lastReviewed: DateTime.now(),
+                    nextReviewDate: DateTime.now().add(Duration(days: 1)),
                     reviewCount: 0,
                   );
                   await StorageService.saveFlashcard(flashcard);
