@@ -188,8 +188,20 @@ class SupabaseService {
       
       print('[Supabase] Saving diary with data: ${data.keys.join(', ')}');
       
-      final response = await _client!.from('diary_entries').upsert(data, onConflict: 'id');
+      print('[Supabase] Executing upsert to diary_entries table...');
       
+      // upsertメソッドは成功時に何も返さない（エラー時は例外がスローされる）
+      await _client!.from('diary_entries').upsert(data, onConflict: 'id');
+      
+      print('[Supabase] Upsert completed without error');
+      
+      // 保存されたデータを確認
+      final verifyResponse = await _client!.from('diary_entries')
+          .select()
+          .eq('id', entry.id)
+          .single();
+      
+      print('[Supabase] Verification query result: ${verifyResponse != null ? "Entry found" : "Entry not found"}');
       print('[Supabase] Diary entry saved successfully: ${entry.id}');
     } catch (e, stack) {
       print('[Supabase] Error saving diary entry: $e');

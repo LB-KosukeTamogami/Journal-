@@ -173,8 +173,18 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
       final userId = await SupabaseService.getUserId();
       _addLog('   User ID: $userId');
       
-      // 3. テストデータを作成して保存
-      _addLog('3. Creating test diary entry...');
+      // 3. テーブルの存在確認
+      _addLog('3. Checking if tables exist...');
+      try {
+        // diary_entriesテーブルの存在確認
+        final tableCheck = await SupabaseService.client!.from('diary_entries').select('id').limit(1);
+        _addLog('   ✓ diary_entries table exists');
+      } catch (e) {
+        _addLog('   ✗ diary_entries table error: $e');
+      }
+      
+      // 4. テストデータを作成して保存
+      _addLog('4. Creating test diary entry...');
       final testEntry = DiaryEntry(
         id: 'test_${DateTime.now().millisecondsSinceEpoch}',
         title: 'Test Entry',
@@ -186,12 +196,25 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
         learnedWords: [],
       );
       
-      _addLog('4. Saving test entry to Supabase...');
+      _addLog('5. Saving test entry to Supabase...');
       try {
         await SupabaseService.saveDiaryEntry(testEntry);
         _addLog('   ✓ Test entry saved successfully');
+        
+        // 直接SQLで確認
+        _addLog('6. Verifying with direct SQL...');
+        final verifyData = await SupabaseService.client!.from('diary_entries')
+            .select('id')
+            .eq('id', testEntry.id);
+        _addLog('   Found ${verifyData.length} entries with test ID');
+        
       } catch (e) {
         _addLog('   ✗ Failed to save test entry: $e');
+        _addLog('   Error type: ${e.runtimeType}');
+        if (e.toString().contains('permission')) {
+          _addLog('   => This looks like a Row Level Security (RLS) issue');
+          _addLog('   => Please check your Supabase RLS policies');
+        }
       }
       
       // 4. 保存したデータを取得
