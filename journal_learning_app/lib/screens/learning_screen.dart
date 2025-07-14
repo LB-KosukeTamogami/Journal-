@@ -378,11 +378,12 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
             ),
           ],
         ),
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             Center(
               child: Container(
                 width: 40,
@@ -395,12 +396,17 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
             ),
             const SizedBox(height: 20),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  word.english,
-                  style: AppTheme.headline2,
+                Expanded(
+                  child: Text(
+                    word.english,
+                    style: AppTheme.headline2,
+                    softWrap: true,
+                    overflow: TextOverflow.visible,
+                  ),
                 ),
+                const SizedBox(width: 12),
                 TextToSpeechButton(
                   text: word.english,
                 ),
@@ -410,6 +416,8 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
             Text(
               word.japanese,
               style: AppTheme.body1.copyWith(fontSize: 18),
+              softWrap: true,
+              overflow: TextOverflow.visible,
             ),
             const SizedBox(height: 20),
             AppCard(
@@ -440,11 +448,8 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                     Text(
                       word.example!,
                       style: AppTheme.body1,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '例文',
-                      style: AppTheme.body2,
+                      softWrap: true,
+                      overflow: TextOverflow.visible,
                     ),
                   ] else
                     Text(
@@ -587,6 +592,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           ],
         ),
       ),
+    ),
     );
   }
 
