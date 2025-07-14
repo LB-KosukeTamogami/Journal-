@@ -231,6 +231,34 @@ IMPORTANT:
     return _getOfflineExamples(word, language);
   }
   
+  // 日本語WordNet APIから単語の意味を取得
+  static Future<String?> getWordMeaning(String word) async {
+    try {
+      final url = Uri.parse('https://juman-drc.org/wordnet/jp/api/1.1/definitions');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: {'word': word.toLowerCase()},
+      );
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data is List && data.isNotEmpty) {
+          // 最初の定義を取得
+          final definition = data[0];
+          if (definition['definitions'] != null && definition['definitions'].isNotEmpty) {
+            return definition['definitions'][0]['definition'];
+          }
+        }
+      }
+      
+      return null;
+    } catch (e) {
+      print('Error fetching word meaning: $e');
+      return null;
+    }
+  }
+  
   // 会話ジャーナル用の応答生成
   static Future<ConversationResponse> generateConversationResponse({
     required String userMessage,
@@ -536,14 +564,16 @@ $conversationText
 Please respond in the following JSON format:
 {
   "summary": "A 2-3 sentence summary IN ENGLISH describing what was discussed and what the learner practiced",
-  "keyPhrases": ["Up to 5 important ENGLISH phrases or expressions used (exclude Japanese)"],
-  "newWords": ["Up to 5 new or difficult ENGLISH words used (exclude Japanese)"],
+  "keyPhrases": [],
+  "newWords": ["Up to 5 new or difficult ENGLISH single words only (no phrases, exclude Japanese)"],
   "corrections": ["Up to 3 specific ENGLISH WRITING TIPS in Japanese (focus on grammar, word choice, sentence structure)"]
 }
 
 Note:
 - Write the summary from the learner's perspective in English
-- Extract ONLY English phrases/words (if user wrote in Japanese, use the English translation provided)
+- Extract ONLY English single words (no multi-word phrases or expressions)
+- Words should be individual vocabulary items like "beautiful", "understand", "important"
+- Do NOT include phrases like "thank you", "good morning", or any multi-word expressions
 - For corrections, provide specific advice about English writing (e.g., "過去形を使う時は動詞にedを付けます", "aとtheの使い分けに注意しましょう")
 - Do NOT include general conversation feedback, focus on English language learning''';
 

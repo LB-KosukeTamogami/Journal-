@@ -1,11 +1,11 @@
-import 'package:flutter_tts/flutter_tts.dart';
+import 'dart:html' as html;
+import 'dart:js' as js;
 
 class TTSService {
   static final TTSService _instance = TTSService._internal();
   factory TTSService() => _instance;
   TTSService._internal();
 
-  final FlutterTts _flutterTts = FlutterTts();
   bool _isInitialized = false;
   bool _isSpeaking = false;
   Function(double)? _progressHandler;
@@ -17,43 +17,13 @@ class TTSService {
     if (_isInitialized) return;
 
     try {
-      // 基本設定
-      await _flutterTts.setVolume(1.0);
-      await _flutterTts.setSpeechRate(0.9); // 少し遅めに設定
-      await _flutterTts.setPitch(1.0);
-
-      // Webプラットフォーム対応
-      await _flutterTts.awaitSpeakCompletion(true);
-
-      // 利用可能な言語を取得
-      List<dynamic> languages = await _flutterTts.getLanguages;
-      print('Available TTS languages: $languages');
-
-      // コールバック設定
-      _flutterTts.setStartHandler(() {
-        _isSpeaking = true;
-        _speakStartTime = DateTime.now();
-        _startProgressTracking();
-      });
-
-      _flutterTts.setCompletionHandler(() {
-        _isSpeaking = false;
-        _speakStartTime = null;
-        _progressHandler?.call(1.0);
-      });
-
-      _flutterTts.setCancelHandler(() {
-        _isSpeaking = false;
-        _speakStartTime = null;
-      });
-
-      _flutterTts.setErrorHandler((msg) {
-        _isSpeaking = false;
-        _speakStartTime = null;
-        print('TTS Error: $msg');
-      });
-
-      _isInitialized = true;
+      // HTML5 SpeechSynthesis API が利用可能かチェック
+      if (js.context['speechSynthesis'] != null) {
+        print('HTML5 SpeechSynthesis API is available');
+        _isInitialized = true;
+      } else {
+        print('HTML5 SpeechSynthesis API is not available');
+      }
     } catch (e) {
       print('TTS initialization error: $e');
     }
@@ -87,19 +57,51 @@ class TTSService {
     }
 
     try {
-      // 言語を自動検出して設定
+      // 言語を自動検出
       String language = _detectLanguage(textToSpeak);
-      await _flutterTts.setLanguage(language);
       
       _totalCharacters = textToSpeak.length;
       print('Speaking in $language: $textToSpeak (${_totalCharacters} characters)');
       
-      // 読み上げ実行
-      var result = await _flutterTts.speak(textToSpeak);
-      if (result == 1) {
-        print('TTS started successfully');
+      // HTML5 SpeechSynthesis API を使用
+      final speechSynthesis = js.context['speechSynthesis'];
+      if (speechSynthesis != null) {
+        // 既存の発話を停止
+        speechSynthesis.callMethod('cancel');
+        
+        // SpeechSynthesisUtterance を作成
+        final utterance = js.context['SpeechSynthesisUtterance'].callMethod('constructor', [textToSpeak]);
+        
+        // 言語設定
+        utterance['lang'] = language;
+        utterance['rate'] = 0.9;
+        utterance['pitch'] = 1.0;
+        utterance['volume'] = 1.0;
+        
+        // イベントハンドラーを設定
+        utterance['onstart'] = js.allowInterop((_) {
+          _isSpeaking = true;
+          _speakStartTime = DateTime.now();
+          _startProgressTracking();
+        });
+        
+        utterance['onend'] = js.allowInterop((_) {
+          _isSpeaking = false;
+          _speakStartTime = null;
+          _progressHandler?.call(1.0);
+        });
+        
+        utterance['onerror'] = js.allowInterop((event) {
+          _isSpeaking = false;
+          _speakStartTime = null;
+          print('TTS Error: $event');
+        });
+        
+        // 読み上げ開始
+        speechSynthesis.callMethod('speak', [utterance]);
+        print('HTML5 TTS started successfully');
       } else {
-        print('TTS failed to start');
+        print('SpeechSynthesis API is not available');
       }
     } catch (e) {
       print('TTS speak error: $e');
@@ -110,7 +112,10 @@ class TTSService {
   // 読み上げを停止
   Future<void> stop() async {
     if (_isSpeaking) {
-      await _flutterTts.stop();
+      final speechSynthesis = js.context['speechSynthesis'];
+      if (speechSynthesis != null) {
+        speechSynthesis.callMethod('cancel');
+      }
       _isSpeaking = false;
     }
   }
@@ -118,33 +123,12 @@ class TTSService {
   // 読み上げ中かどうか
   bool get isSpeaking => _isSpeaking;
 
-  // 言語を手動設定
-  Future<void> setLanguage(String languageCode) async {
-    if (!_isInitialized) {
-      await initialize();
-    }
-    await _flutterTts.setLanguage(languageCode);
-  }
-
-  // 速度を設定（0.0 - 1.0）
-  Future<void> setSpeechRate(double rate) async {
-    if (!_isInitialized) {
-      await initialize();
-    }
-    await _flutterTts.setSpeechRate(rate);
-  }
-
-  // ピッチを設定（0.5 - 2.0）
-  Future<void> setPitch(double pitch) async {
-    if (!_isInitialized) {
-      await initialize();
-    }
-    await _flutterTts.setPitch(pitch);
-  }
-
   // リソースを解放
   void dispose() {
-    _flutterTts.stop();
+    final speechSynthesis = js.context['speechSynthesis'];
+    if (speechSynthesis != null) {
+      speechSynthesis.callMethod('cancel');
+    }
     _isInitialized = false;
     _isSpeaking = false;
     _progressHandler = null;
