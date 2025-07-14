@@ -50,17 +50,28 @@ https://lb-kosuketamogami.github.io/Journal-/
 
 ### 環境変数の設定
 
-このアプリはGemini APIを使用します。以下の手順で環境変数を設定してください：
+このアプリはSupabaseとGemini APIを使用します。以下の手順で環境変数を設定してください：
 
 1. `.env.example`をコピーして`.env`ファイルを作成:
 ```bash
 cp .env.example .env
 ```
 
-2. `.env`ファイルを編集してAPIキーを設定:
+2. `.env`ファイルを編集して必要な設定を追加:
 ```
+# Supabase設定（必須）
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key-here
+
+# Gemini API設定（オプション）
 GEMINI_API_KEY=your_api_key_here
 ```
+
+**Supabaseの設定方法:**
+1. [Supabase](https://supabase.com)でプロジェクトを作成
+2. Project Settings > API から以下を取得:
+   - Project URL → `SUPABASE_URL`
+   - Project API keys > anon public → `SUPABASE_ANON_KEY`
 
 3. ローカル開発時の実行:
 ```bash

@@ -1,50 +1,65 @@
-# Deployment Guide
+# デプロイメントガイド / Deployment Guide
 
-## Required Environment Variables
+## 必要な環境変数 / Required Environment Variables
 
-### Vercel Environment Variables
+### Vercel環境変数の設定
 
-The following environment variables must be set in Vercel:
+Vercelで以下の環境変数を設定する必要があります：
 
 1. **SUPABASE_URL**
-   - Your Supabase project URL
-   - Format: `https://xxxxx.supabase.co`
-   - Do NOT include trailing slash
-   - ✅ Correct in your setup
+   - Supabaseプロジェクトの URL
+   - 形式: `https://xxxxx.supabase.co`
+   - 末尾のスラッシュは含めない
 
 2. **SUPABASE_ANON_KEY**
-   - Your Supabase anon/public key
-   - This is the public key, NOT the service_role key
-   - ⚠️ **IMPORTANT**: The variable name must be exactly `SUPABASE_ANON_KEY` (not `SUPABASE_ANON_KEY`)
+   - Supabaseの anon/public キー
+   - これは公開キーです（service_role キーではありません）
 
-### How to Set Environment Variables in Vercel
+3. **GEMINI_API_KEY** (オプション)
+   - Google AI StudioのAPIキー
+   - AI機能を使用する場合のみ必要
 
-1. Go to your Vercel project dashboard
-2. Navigate to Settings → Environment Variables
-3. Add the following variables:
-   - Name: `SUPABASE_URL`
-   - Value: Your Supabase URL
-   - Environment: Production, Preview, Development
-   
-4. Add another variable:
-   - Name: `SUPABASE_ANON_KEY`
-   - Value: Your Supabase anon key
-   - Environment: Production, Preview, Development
+### Vercelでの環境変数設定方法
 
-5. Redeploy your project
+1. [Vercelダッシュボード](https://vercel.com/dashboard)にアクセス
+2. プロジェクトを選択
+3. Settings → Environment Variables に移動
+4. 以下の変数を追加：
 
-### Common Issues
+| Variable Name | Value | Environment |
+|--------------|-------|-------------|
+| `SUPABASE_URL` | `https://your-project.supabase.co` | Production, Preview, Development |
+| `SUPABASE_ANON_KEY` | `eyJhbGciOi...（実際のキー）` | Production, Preview, Development |
+| `GEMINI_API_KEY` | `AIzaSy...（実際のキー）` | Production, Preview, Development |
 
-- **SPELLING**: Make sure the variable name is spelled correctly: `SUPABASE_ANON_KEY` not `SUPABASE_ANON_KEY`
-- **DO NOT** use `SUPABASE_SERVICE_ROLE_KEY` - this is for server-side only
-- **DO NOT** use `NEXT_PUBLIC_` prefix unless specifically required
-- Make sure there are no quotes around the values in Vercel
-- Make sure the URL does not have a trailing slash
-- Remove any other Supabase-related variables (like GEMINI_API_KEY if not using Gemini)
+5. プロジェクトを再デプロイ
 
-### Verifying Environment Variables
+### よくある問題
 
-After deployment, you can check if environment variables are loaded correctly:
-1. Visit your deployed app
-2. Click on "🔧 環境設定を確認" button on the auth landing page
-3. Check if both variables show as "設定済み"
+- **スペルミス**: 変数名は正確に入力してください
+- **使用しないキー**: `SUPABASE_SERVICE_ROLE_KEY`は使用しない（サーバーサイド専用）
+- **プレフィックス**: `NEXT_PUBLIC_`プレフィックスは不要
+- **引用符**: Vercelでは値を引用符で囲まない
+- **末尾のスラッシュ**: URLに末尾のスラッシュを含めない
+
+### 環境変数の確認方法
+
+デプロイ後、環境変数が正しく読み込まれているか確認：
+1. デプロイされたアプリにアクセス
+2. デバッグメニューから「環境設定を確認」を選択
+3. 両方の変数が「設定済み」と表示されることを確認
+
+## ローカル開発環境
+
+ローカルでの開発については、[SETUP_LOCAL.md](./SETUP_LOCAL.md)を参照してください。
+
+## GitHub Actionsでのデプロイ
+
+GitHub Pagesへの自動デプロイは`.github/workflows/deploy.yml`で設定されています。
+
+### GitHub Secretsの設定
+1. リポジトリのSettings → Secrets and variables → Actions
+2. New repository secretで以下を追加：
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
+   - `GEMINI_API_KEY` (オプション)

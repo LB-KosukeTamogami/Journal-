@@ -8,9 +8,10 @@ import '../services/storage_service.dart';
 import '../services/translation_service.dart';
 import '../services/mission_service.dart';
 import '../services/gemini_service.dart';
+import '../services/supabase_service.dart';
 import '../theme/app_theme.dart';
 import '../models/word.dart';
-import 'diary_review_screen.dart';
+// import 'diary_review_screen.dart'; // レビュー画面への遷移を削除
 import 'conversation_journal_screen.dart';
 
 class DiaryCreationScreen extends StatefulWidget {
@@ -130,11 +131,24 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
         learnedWords: _selectedWords.map((w) => w.id).toList(),
       );
 
-      await StorageService.saveDiaryEntry(entry);
-      
-      // 保存した単語も保存
-      for (final word in _selectedWords) {
-        await StorageService.saveWord(word);
+      try {
+        // Supabaseの接続状態を確認
+        print('[DiaryCreation] Checking Supabase availability...');
+        print('[DiaryCreation] SupabaseService.isAvailable: ${SupabaseService.isAvailable}');
+        
+        await StorageService.saveDiaryEntry(entry);
+        
+        // 保存した単語も保存
+        for (final word in _selectedWords) {
+          await StorageService.saveWord(word);
+        }
+      } catch (saveError) {
+        // 保存エラーの詳細をログに出力
+        print('[DiaryCreation] Storage error: $saveError');
+        print('[DiaryCreation] Error type: ${saveError.runtimeType}');
+        print('[DiaryCreation] Stack trace: ${StackTrace.current}');
+        // エラーを再スローして上位のcatchで処理
+        rethrow;
       }
 
       // ミッションの自動判定
@@ -149,16 +163,12 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
           Navigator.pop(context, entry);
           _showSnackBar('日記を更新しました', isError: false);
         } else {
-          // 新規作成の場合はレビュー画面に遷移
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DiaryReviewScreen(
-                entry: entry,
-                detectedLanguage: _detectedLanguage,
-              ),
-            ),
-          );
+          // 新規作成の場合も前の画面（ジャーナル画面）に戻る
+          Navigator.pop(context);
+          _showSnackBar('日記を保存しました', isError: false);
+          
+          // レビュー画面への遷移はオプショナルにする
+          // もしレビュー画面を表示したい場合は、ここでダイアログを表示して選択させることも可能
         }
       }
     } catch (e) {
