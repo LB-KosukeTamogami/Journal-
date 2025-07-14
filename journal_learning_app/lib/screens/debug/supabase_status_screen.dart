@@ -125,6 +125,59 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
     }
   }
 
+  Future<void> _clearLocalData() async {
+    // 確認ダイアログを表示
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('ローカルデータを削除'),
+        content: const Text('本当にローカルの単語データを削除しますか？\n\nSupabaseに保存されていないデータは失われます。'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('キャンセル'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+            ),
+            child: const Text('削除'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      _addLog('Clearing local data...');
+      
+      // ローカルの単語データを削除
+      await StorageService.prefs.remove('words');
+      _addLog('Local word data cleared');
+      
+      await _checkStatus(); // 状態を再確認
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ローカルデータを削除しました')),
+      );
+    } catch (e) {
+      _addLog('Clear error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('削除エラー: $e')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -212,27 +265,43 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
                   const SizedBox(height: 16),
                   
                   // アクションボタン
-                  Row(
+                  Column(
                     children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: _checkStatus,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.primaryColor,
-                            foregroundColor: Colors.white,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: _checkStatus,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppTheme.primaryColor,
+                                foregroundColor: Colors.white,
+                              ),
+                              child: const Text('状態を更新'),
+                            ),
                           ),
-                          child: const Text('状態を更新'),
-                        ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: _syncFromSupabase,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppTheme.success,
+                                foregroundColor: Colors.white,
+                              ),
+                              child: const Text('Supabaseから強制同期'),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: _syncFromSupabase,
+                          onPressed: _clearLocalData,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.success,
+                            backgroundColor: AppTheme.error,
                             foregroundColor: Colors.white,
                           ),
-                          child: const Text('Supabaseから強制同期'),
+                          child: const Text('ローカルデータを削除'),
                         ),
                       ),
                     ],
