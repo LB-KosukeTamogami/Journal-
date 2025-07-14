@@ -11,7 +11,7 @@ import '../services/gemini_service.dart';
 import '../services/supabase_service.dart';
 import '../theme/app_theme.dart';
 import '../models/word.dart';
-// import 'diary_review_screen.dart'; // レビュー画面への遷移を削除
+import 'diary_review_screen.dart';
 import 'conversation_journal_screen.dart';
 
 class DiaryCreationScreen extends StatefulWidget {
@@ -163,12 +163,16 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
           Navigator.pop(context, entry);
           _showSnackBar('日記を更新しました', isError: false);
         } else {
-          // 新規作成の場合も前の画面（ジャーナル画面）に戻る
-          Navigator.pop(context);
-          _showSnackBar('日記を保存しました', isError: false);
-          
-          // レビュー画面への遷移はオプショナルにする
-          // もしレビュー画面を表示したい場合は、ここでダイアログを表示して選択させることも可能
+          // 新規作成の場合はレビュー画面へ遷移
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DiaryReviewScreen(
+                entry: entry,
+                detectedLanguage: _detectedLanguage,
+              ),
+            ),
+          );
         }
       }
     } catch (e) {
