@@ -11,6 +11,9 @@ class TTSService {
   Function(double)? _progressHandler;
   DateTime? _speakStartTime;
   int _totalCharacters = 0;
+  double _speechRate = 0.9;
+  double _pitch = 1.0;
+  String? _language;
 
   // 初期化
   Future<void> initialize() async {
@@ -73,9 +76,9 @@ class TTSService {
         final utterance = js.context['SpeechSynthesisUtterance'].callMethod('constructor', [textToSpeak]);
         
         // 言語設定
-        utterance['lang'] = language;
-        utterance['rate'] = 0.9;
-        utterance['pitch'] = 1.0;
+        utterance['lang'] = _language ?? language;
+        utterance['rate'] = _speechRate;
+        utterance['pitch'] = _pitch;
         utterance['volume'] = 1.0;
         
         // イベントハンドラーを設定
@@ -122,6 +125,24 @@ class TTSService {
 
   // 読み上げ中かどうか
   bool get isSpeaking => _isSpeaking;
+
+  // 速度を設定（0.0 - 1.0）
+  Future<void> setSpeechRate(double rate) async {
+    _speechRate = rate;
+    print('Speech rate set to: $rate');
+  }
+
+  // ピッチを設定（0.5 - 2.0）
+  Future<void> setPitch(double pitch) async {
+    _pitch = pitch;
+    print('Pitch set to: $pitch');
+  }
+
+  // 言語を手動設定
+  Future<void> setLanguage(String languageCode) async {
+    _language = languageCode;
+    print('Language set to: $languageCode');
+  }
 
   // リソースを解放
   void dispose() {
