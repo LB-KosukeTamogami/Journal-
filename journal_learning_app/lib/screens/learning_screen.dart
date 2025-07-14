@@ -1054,6 +1054,9 @@ class _WordDetailModalState extends State<_WordDetailModal> {
 
   @override
   Widget build(BuildContext context) {
+    // NEWステータスかどうかを判定（masteryLevel = 0 かつ reviewCount = 0）
+    final isNewStatus = widget.word.masteryLevel == 0 && widget.word.reviewCount == 0;
+    
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.backgroundPrimary,
@@ -1125,7 +1128,7 @@ class _WordDetailModalState extends State<_WordDetailModal> {
                 Row(
                   children: [
                     _buildStatusButton(
-                      currentLevel: widget.word.masteryLevel,
+                      currentLevel: isNewStatus ? -1 : widget.word.masteryLevel, // NEWの場合は-1を渡して何も選択されていない状態に
                       targetLevel: 0,
                       icon: Icons.close,
                       label: '×',
@@ -1138,7 +1141,7 @@ class _WordDetailModalState extends State<_WordDetailModal> {
                     ),
                     const SizedBox(width: 8),
                     _buildStatusButton(
-                      currentLevel: widget.word.masteryLevel,
+                      currentLevel: isNewStatus ? -1 : widget.word.masteryLevel, // NEWの場合は-1を渡して何も選択されていない状態に
                       targetLevel: 1,
                       icon: Icons.change_history,
                       label: '△',
@@ -1151,7 +1154,7 @@ class _WordDetailModalState extends State<_WordDetailModal> {
                     ),
                     const SizedBox(width: 8),
                     _buildStatusButton(
-                      currentLevel: widget.word.masteryLevel,
+                      currentLevel: isNewStatus ? -1 : widget.word.masteryLevel, // NEWの場合は-1を渡して何も選択されていない状態に
                       targetLevel: 2,
                       icon: Icons.circle,
                       label: '○',
