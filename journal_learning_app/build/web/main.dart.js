@@ -100213,7 +100213,7 @@ A.I8.prototype={
 al(){this.aE()
 this.Tu()},
 Tu(){var s=this.r
-s.push(new A.hu("Hi there! I'm Aco, your friendly English practice buddy. Let's have a quick 5-exchange conversation (5 messages from you, 5 from me). Don't worry about making mistakes - I'm here to help you learn! If you're not sure how to say something in English, you can write in Japanese and I'll help you translate it.\n\n\u3053\u3093\u306b\u3061\u306f\uff01\u82f1\u8a9e\u5b66\u7fd2\u3092\u30b5\u30dd\u30fc\u30c8\u3059\u308bAco\u3067\u3059\u3002\u4eca\u65e5\u306f5\u30e9\u30ea\u30fc\uff08\u3042\u306a\u305f\u304b\u30895\u56de\u3001\u79c1\u304b\u30895\u56de\uff09\u306e\u77ed\u3044\u4f1a\u8a71\u7df4\u7fd2\u3092\u3057\u307e\u3057\u3087\u3046\uff01\u9593\u9055\u3044\u3092\u6c17\u306b\u305b\u305a\u3001\u30ea\u30e9\u30c3\u30af\u30b9\u3057\u3066\u8a71\u3057\u3066\u304f\u3060\u3055\u3044\u306d\u3002\u82f1\u8a9e\u3067\u4f55\u3068\u8a00\u3048\u3070\u3044\u3044\u304b\u308f\u304b\u3089\u306a\u3044\u6642\u306f\u3001\u65e5\u672c\u8a9e\u3067\u66f8\u3044\u3066\u3082OK\u3067\u3059\u3002\u82f1\u8a9e\u3067\u306e\u8868\u73fe\u3092\u304a\u6559\u3048\u3057\u307e\u3059\u3002\n\n\ud83d\udca1 Tip: Tap my messages to see Japanese translation!",!1,new A.aS(Date.now(),0,!1),null,null,!1))
+s.push(new A.hu("Hi there! I'm Aco, your friendly English practice buddy. Let's have a quick 5-exchange conversation (5 messages from you, 5 from me). Don't worry about making mistakes - I'm here to help you learn! If you're not sure how to say something in English, you can write in Japanese and I'll help you translate it.\n\n\u3053\u3093\u306b\u3061\u306f\uff01\u82f1\u8a9e\u5b66\u7fd2\u3092\u30b5\u30dd\u30fc\u30c8\u3059\u308bAco\u3067\u3059\u3002\u4eca\u65e5\u306f5\u30e9\u30ea\u30fc\uff08\u3042\u306a\u305f\u304b\u30895\u56de\u3001\u79c1\u304b\u30895\u56de\uff09\u306e\u77ed\u3044\u4f1a\u8a71\u7df4\u7fd2\u3092\u3057\u307e\u3057\u3087\u3046\uff01\u9593\u9055\u3044\u3092\u6c17\u306b\u305b\u305a\u3001\u30ea\u30e9\u30c3\u30af\u30b9\u3057\u3066\u8a71\u3057\u3066\u304f\u3060\u3055\u3044\u306d\u3002\u82f1\u8a9e\u3067\u4f55\u3068\u8a00\u3048\u3070\u3044\u3044\u304b\u308f\u304b\u3089\u306a\u3044\u6642\u306f\u3001\u65e5\u672c\u8a9e\u3067\u66f8\u3044\u3066\u3082OK\u3067\u3059\u3002\u82f1\u8a9e\u3067\u306e\u8868\u73fe\u3092\u304a\u6559\u3048\u3057\u307e\u3059\u3002",!1,new A.aS(Date.now(),0,!1),null,null,!1))
 s.push(new A.hu("Here are some topics we can discuss:\n\u2022 Daily activities (\u65e5\u5e38\u306e\u6d3b\u52d5)\n\u2022 Hobbies (\u8da3\u5473)\n\u2022 Food and cooking (\u98df\u3079\u7269\u3068\u6599\u7406)\n\u2022 Travel experiences (\u65c5\u884c\u306e\u7d4c\u9a13)\n\u2022 Work or study (\u4ed5\u4e8b\u3084\u52c9\u5f37)\n\nOr we can talk about anything you'd like!",!1,new A.aS(Date.now(),0,!1),null,A.a(["Let's talk about hobbies","I want to discuss food","Tell me about travel","Free conversation"],t.s),!1))},
 m(){var s=this,r=s.d
 r.I$=$.ao()
@@ -100276,8 +100276,7 @@ q=g?B.fo:B.cO
 r=r.Z1(q,g?B.cO:B.fo)
 q=$.aLW()
 p=A.a([],c)
-if(a){a=a0.a
-a=B.c.n(a,"\n\n")&&!B.c.n(a,"\ud83d\udca1 Tip:")}else a=!1
+a=a&&B.c.n(a0.a,"\n\n")
 o=a0.a
 if(a){a=A.a4(8)
 n=A.ba(A.o(o.split("\n\n")[0],i,i,i,i,$.bt().a3(B.a7),i,i,i),1,i)
