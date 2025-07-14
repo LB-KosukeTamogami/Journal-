@@ -976,29 +976,6 @@ class _WordDetailModal extends StatefulWidget {
 }
 
 class _WordDetailModalState extends State<_WordDetailModal> {
-  Map<String, dynamic>? _wordNetData;
-  bool _isLoadingWordNet = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchWordNetData();
-  }
-
-  Future<void> _fetchWordNetData() async {
-    try {
-      final definition = await GeminiService.getWordDefinition(widget.word.english);
-      setState(() {
-        _wordNetData = definition;
-        _isLoadingWordNet = false;
-      });
-    } catch (e) {
-      print('Error fetching WordNet data: $e');
-      setState(() {
-        _isLoadingWordNet = false;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1056,82 +1033,6 @@ class _WordDetailModalState extends State<_WordDetailModal> {
               overflow: TextOverflow.visible,
             ),
             
-            // WordNet 情報セクション
-            const SizedBox(height: 20),
-            AppCard(
-              padding: const EdgeInsets.all(16),
-              backgroundColor: AppTheme.backgroundTertiary,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.book,
-                        size: 16,
-                        color: AppTheme.primaryBlue,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '辞書情報',
-                        style: AppTheme.body2.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.primaryBlue,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  if (_isLoadingWordNet)
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: CircularProgressIndicator(
-                          color: AppTheme.primaryColor,
-                          strokeWidth: 2,
-                        ),
-                      ),
-                    )
-                  else if (_wordNetData != null) ...[
-                    if (_wordNetData!['partOfSpeech'] != null)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: AppTheme.primaryBlue.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                _wordNetData!['partOfSpeech'],
-                                style: AppTheme.caption.copyWith(
-                                  color: AppTheme.primaryBlue,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    Text(
-                      _wordNetData!['meaning'] ?? '意味が見つかりませんでした',
-                      style: AppTheme.body1,
-                      softWrap: true,
-                      overflow: TextOverflow.visible,
-                    ),
-                  ] else
-                    Text(
-                      '辞書情報を取得できませんでした',
-                      style: AppTheme.body2.copyWith(
-                        color: AppTheme.textTertiary,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                ],
-              ),
-            ),
             
             const SizedBox(height: 20),
             // ステータス変更セクション
