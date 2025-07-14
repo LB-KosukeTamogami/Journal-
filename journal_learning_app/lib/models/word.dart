@@ -59,14 +59,15 @@ class Word {
       english: json['english'],
       japanese: json['japanese'],
       example: json['example'],
-      diaryEntryId: json['diaryEntryId'],
-      createdAt: DateTime.parse(json['createdAt']),
-      reviewCount: json['reviewCount'] ?? 0,
-      lastReviewedAt: json['lastReviewedAt'] != null 
-          ? DateTime.parse(json['lastReviewedAt']) 
+      // Supabaseからのデータはスネークケース、ローカルはキャメルケース
+      diaryEntryId: json['diaryEntryId'] ?? json['diary_entry_id'],
+      createdAt: DateTime.parse(json['createdAt'] ?? json['created_at']),
+      reviewCount: json['reviewCount'] ?? json['review_count'] ?? 0,
+      lastReviewedAt: (json['lastReviewedAt'] ?? json['last_reviewed_at']) != null 
+          ? DateTime.parse(json['lastReviewedAt'] ?? json['last_reviewed_at']) 
           : null,
-      isMastered: json['isMastered'] ?? false,
-      masteryLevel: json['masteryLevel'] ?? 0,
+      isMastered: json['isMastered'] ?? json['is_mastered'] ?? false,
+      masteryLevel: json['masteryLevel'] ?? json['mastery_level'] ?? 0,
       category: json['category'] != null
           ? WordCategory.values.firstWhere(
               (e) => e.name == json['category'],

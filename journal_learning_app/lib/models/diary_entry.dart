@@ -46,14 +46,15 @@ class DiaryEntry {
       id: json['id'],
       title: json['title'],
       content: json['content'],
-      translatedTitle: json['translatedTitle'],
-      translatedContent: json['translatedContent'],
-      originalLanguage: json['originalLanguage'],
-      learnedWords: List<String>.from(json['learnedWords'] ?? []),
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
-      isCompleted: json['isCompleted'] ?? false,
-      wordCount: json['wordCount'] ?? 0,
+      // Supabaseからのデータはスネークケース、ローカルはキャメルケース
+      translatedTitle: json['translatedTitle'] ?? json['translated_title'],
+      translatedContent: json['translatedContent'] ?? json['translated_content'],
+      originalLanguage: json['originalLanguage'] ?? json['original_language'],
+      learnedWords: List<String>.from(json['learnedWords'] ?? json['learned_words'] ?? []),
+      createdAt: DateTime.parse(json['createdAt'] ?? json['created_at']),
+      updatedAt: DateTime.parse(json['updatedAt'] ?? json['updated_at']),
+      isCompleted: json['isCompleted'] ?? json['is_completed'] ?? false,
+      wordCount: json['wordCount'] ?? json['word_count'] ?? 0,
     );
   }
 

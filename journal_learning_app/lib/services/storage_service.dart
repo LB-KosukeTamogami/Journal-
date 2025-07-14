@@ -29,7 +29,7 @@ class StorageService {
   }
 
   static Future<List<DiaryEntry>> getDiaryEntries() async {
-    print('[Storage] Getting diary entries...');
+    print('[Storage] ========== Getting diary entries ==========');
     print('[Storage] SupabaseService.isAvailable: ${SupabaseService.isAvailable}');
     
     // Supabaseからデータを取得
@@ -38,12 +38,24 @@ class StorageService {
     
     if (SupabaseService.isAvailable) {
       try {
-        print('[Storage] Fetching diaries from Supabase...');
+        print('[Storage] Attempting to fetch diaries from Supabase...');
+        final startTime = DateTime.now();
         supabaseEntries = await SupabaseService.getDiaryEntries();
+        final endTime = DateTime.now();
+        final duration = endTime.difference(startTime).inMilliseconds;
+        print('[Storage] Supabase fetch completed in ${duration}ms');
         print('[Storage] Got ${supabaseEntries.length} diaries from Supabase');
+        
+        // データの内容を確認
+        if (supabaseEntries.isNotEmpty) {
+          print('[Storage] First entry title: ${supabaseEntries.first.title}');
+          print('[Storage] First entry created at: ${supabaseEntries.first.createdAt}');
+        }
+        
         supabaseSuccess = true;
-      } catch (e) {
-        print('[Storage] Error getting Supabase diary entries: $e');
+      } catch (e, stack) {
+        print('[Storage] ERROR getting Supabase diary entries: $e');
+        print('[Storage] Stack trace: $stack');
         print('[Storage] Will try to use cached data');
       }
     } else {
@@ -67,12 +79,14 @@ class StorageService {
       final jsonString = json.encode(supabaseEntries.map((e) => e.toJson()).toList());
       await prefs.setString(_diaryEntriesKey, jsonString);
       print('[Storage] Cached ${supabaseEntries.length} entries from Supabase to local');
+      print('[Storage] ========== Returning Supabase data ==========');
       
       return supabaseEntries;
     }
     
     // Supabaseに接続できなかった場合はローカルデータを使用
     print('[Storage] Using local cached data (${localEntries.length} diaries)');
+    print('[Storage] ========== Returning local data ==========');
     return localEntries;
   }
 
