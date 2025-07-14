@@ -183,8 +183,13 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     // 新しいフィルタリングロジック
     final filteredWords = learningWords.where((word) {
       if (word.masteryLevel == 0) {
-        // masteryLevel 0の場合、NEWまたは×のフラグをチェック
-        return _showNew || _showFailed;
+        // NEWステータス（reviewCount = 0 かつ lastReviewedAt = null）と×ステータスを区別
+        final isNewStatus = word.reviewCount == 0 && word.lastReviewedAt == null;
+        if (isNewStatus) {
+          return _showNew; // NEWフィルターでのみ表示
+        } else {
+          return _showFailed; // ×フィルターでのみ表示
+        }
       } else {
         // masteryLevel 1の場合、△のフラグをチェック
         return _selectedMasteryLevels.contains(word.masteryLevel);
@@ -865,7 +870,12 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
       final learningWords = _getFilteredWords(_allWords).where((word) => word.masteryLevel < 2).toList();
       sessionWords = learningWords.where((word) {
         if (word.masteryLevel == 0) {
-          return _showNew || _showFailed;
+          final isNewStatus = word.reviewCount == 0 && word.lastReviewedAt == null;
+          if (isNewStatus) {
+            return _showNew;
+          } else {
+            return _showFailed;
+          }
         } else {
           return _selectedMasteryLevels.contains(word.masteryLevel);
         }
@@ -1054,8 +1064,8 @@ class _WordDetailModalState extends State<_WordDetailModal> {
 
   @override
   Widget build(BuildContext context) {
-    // NEWステータスかどうかを判定（masteryLevel = 0 かつ reviewCount = 0）
-    final isNewStatus = widget.word.masteryLevel == 0 && widget.word.reviewCount == 0;
+    // NEWステータスかどうかを判定（reviewCount = 0 かつ lastReviewedAt = null）
+    final isNewStatus = widget.word.reviewCount == 0 && widget.word.lastReviewedAt == null;
     
     return Container(
       decoration: BoxDecoration(
