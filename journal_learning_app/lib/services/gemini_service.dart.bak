@@ -338,6 +338,10 @@ Respond in JSON format:
   }
   
   // 言語検出
+  static String _detectLanguage(String text) {
+    final japanesePattern = RegExp(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]');
+    return japanesePattern.hasMatch(text) ? 'ja' : 'en';
+  }
   
   // 改善点の検証
   static List<String> _validateImprovements(List improvements) {

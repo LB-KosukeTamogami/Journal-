@@ -512,7 +512,6 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     try {
       final result = await GeminiService.correctAndTranslate(
         word,
-        sourceLanguage: 'en',
         targetLanguage: 'ja',
       );
       

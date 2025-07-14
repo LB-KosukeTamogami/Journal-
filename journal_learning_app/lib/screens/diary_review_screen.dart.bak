@@ -264,6 +264,152 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
+  Widget _buildTranslationSection() {
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.translate,
+                    color: AppTheme.success,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '英語翻訳',
+                    style: AppTheme.body1.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.success,
+                    ),
+                  ),
+                ],
+              ),
+              TextToSpeechButton(
+                text: _translatedContent,
+                size: 20,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            _translatedContent,
+            style: AppTheme.body1.copyWith(
+              height: 1.6,
+              color: AppTheme.success,
+            ),
+          ),
+        ],
+      ),
+    ).animate().fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+  }
+
+  Widget _buildCorrectionSection() {
+    return Column(
+      children: [
+        // 添削後の文章
+        AppCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.check_circle,
+                        color: AppTheme.success,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '添削後',
+                        style: AppTheme.body1.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.success,
+                        ),
+                      ),
+                    ],
+                  ),
+                  TextToSpeechButton(
+                    text: _correctedContent,
+                    size: 20,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                _correctedContent,
+                style: AppTheme.body1.copyWith(
+                  height: 1.6,
+                  color: AppTheme.success,
+                ),
+              ),
+            ],
+          ),
+        ).animate().fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+        
+        if (_corrections.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          // 修正箇所
+          AppCard(
+            backgroundColor: AppTheme.warning.withOpacity(0.1),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.lightbulb,
+                      color: AppTheme.warning,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '修正箇所',
+                      style: AppTheme.body1.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.warning,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                ..._corrections.map((correction) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        margin: const EdgeInsets.only(top: 8, right: 12),
+                        decoration: BoxDecoration(
+                          color: AppTheme.warning,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          correction,
+                          style: AppTheme.body2.copyWith(height: 1.5),
+                        ),
+                      ),
+                    ],
+                  ),
+                )),
+              ],
+            ),
+          ).animate().fadeIn(delay: 400.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+        ],
+      ],
+    );
+  }
 
   // 判定結果の表示
   Widget _buildJudgmentSection() {
@@ -343,7 +489,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               // TTS ボタン
               TextToSpeechButton(
                 text: _outputText,
-                size: 20,
+                isCompact: true,
               ),
             ],
           ),

@@ -819,7 +819,6 @@ Provide only the Japanese translation, nothing else.
     try {
       final result = await GeminiService.correctAndTranslate(
         word,
-        sourceLanguage: 'en',
         targetLanguage: 'ja',
       );
       
