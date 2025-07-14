@@ -234,14 +234,22 @@ class StorageService {
 
   // 単語関連のメソッド
   static Future<List<Word>> getWords() async {
+    // デバッグ情報を出力
+    print('[Storage] Getting words...');
+    print('[Storage] SupabaseService.isAvailable: ${SupabaseService.isAvailable}');
+    
     // Supabaseからデータを取得
     List<Word> supabaseWords = [];
     if (SupabaseService.isAvailable) {
       try {
+        print('[Storage] Attempting to get words from Supabase...');
         supabaseWords = await SupabaseService.getWords();
+        print('[Storage] Got ${supabaseWords.length} words from Supabase');
       } catch (e) {
         print('[Storage] Error getting Supabase words: $e');
       }
+    } else {
+      print('[Storage] Supabase not available, using local storage only');
     }
 
     // ローカルデータを取得
@@ -250,27 +258,37 @@ class StorageService {
     if (jsonString != null) {
       final List<dynamic> jsonList = json.decode(jsonString);
       localWords = jsonList.map((json) => Word.fromJson(json)).toList();
+      print('[Storage] Got ${localWords.length} words from local storage');
     }
 
     // Supabaseデータがある場合はそちらを優先、なければローカルデータを使用
     if (supabaseWords.isNotEmpty) {
       // Supabaseデータをローカルにも保存（キャッシュ）
+      print('[Storage] Using Supabase data and caching locally');
       final jsonString = json.encode(supabaseWords.map((w) => w.toJson()).toList());
       await prefs.setString(_wordsKey, jsonString);
       return supabaseWords;
     }
     
+    print('[Storage] Using local data (${localWords.length} words)');
     return localWords;
   }
 
   static Future<void> saveWord(Word word) async {
+    print('[Storage] Saving word: ${word.english}');
+    print('[Storage] SupabaseService.isAvailable: ${SupabaseService.isAvailable}');
+    
     // Supabaseに保存
     if (SupabaseService.isAvailable) {
       try {
+        print('[Storage] Attempting to save word to Supabase...');
         await SupabaseService.saveWord(word);
+        print('[Storage] Word saved to Supabase successfully');
       } catch (e) {
         print('[Storage] Error saving word to Supabase: $e');
       }
+    } else {
+      print('[Storage] Supabase not available, saving to local storage only');
     }
 
     // ローカルストレージにも保存
@@ -279,12 +297,15 @@ class StorageService {
     final existingIndex = words.indexWhere((w) => w.id == word.id);
     if (existingIndex != -1) {
       words[existingIndex] = word;
+      print('[Storage] Updated existing word in local storage');
     } else {
       words.add(word);
+      print('[Storage] Added new word to local storage');
     }
     
     final jsonString = json.encode(words.map((w) => w.toJson()).toList());
     await prefs.setString(_wordsKey, jsonString);
+    print('[Storage] Word saved to local storage. Total words: ${words.length}');
   }
 
   static Future<void> saveWords(List<Word> words) async {

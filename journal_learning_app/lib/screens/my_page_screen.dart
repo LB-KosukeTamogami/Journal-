@@ -5,6 +5,7 @@ import '../services/auth_service.dart';
 import '../services/storage_service.dart';
 import 'auth/login_screen.dart';
 import 'profile_edit_screen.dart';
+import 'debug/supabase_status_screen.dart';
 
 class MyPageScreen extends StatefulWidget {
   const MyPageScreen({super.key});
@@ -221,6 +222,24 @@ class _MyPageScreenState extends State<MyPageScreen> {
                     title: const Text('利用規約'),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {},
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.bug_report, color: Colors.deepPurple),
+                    title: const Text('Supabase接続状態'),
+                    subtitle: const Text(
+                      'デバッグ用：データ同期の確認',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SupabaseStatusScreen(),
+                        ),
+                      );
+                    },
                   ),
                   const Divider(height: 1),
                   ListTile(
