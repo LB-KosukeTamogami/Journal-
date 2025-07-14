@@ -195,10 +195,11 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
               Expanded(
                 child: Row(
                   children: [
-                    _buildFilterChip(
-                      label: '×',
+                    _buildIconFilterChip(
+                      icon: Icons.new_releases,
+                      label: 'NEW',
                       value: 0,
-                      color: AppTheme.error,
+                      color: AppTheme.primaryBlue,
                     ),
                     const SizedBox(width: 8),
                     _buildFilterChip(
@@ -219,6 +220,58 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     );
   }
 
+
+  Widget _buildIconFilterChip({
+    required IconData icon,
+    required String label,
+    required int value,
+    required Color color,
+  }) {
+    final isSelected = _selectedMasteryLevels.contains(value);
+    
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          if (isSelected) {
+            _selectedMasteryLevels.remove(value);
+          } else {
+            _selectedMasteryLevels.add(value);
+          }
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? color.withOpacity(0.15) : AppTheme.backgroundTertiary,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? color : AppTheme.borderColor,
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: isSelected ? color : AppTheme.textTertiary,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: AppTheme.body1.copyWith(
+                color: isSelected ? color : AppTheme.textTertiary,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _buildFilterChip({
     required String label,
@@ -1021,15 +1074,16 @@ class _FlashcardItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
+                      Flexible(
                         child: Text(
                           word.english,
                           style: AppTheme.body1.copyWith(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
                           ),
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
