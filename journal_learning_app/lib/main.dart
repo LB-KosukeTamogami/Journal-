@@ -27,6 +27,11 @@ void main() async {
       await StorageService.init();
       print('[Main] StorageService initialized successfully');
       
+      // 日本語の単語を削除（一度だけ実行）
+      print('[Main] Cleaning up Japanese words...');
+      await StorageService.deleteJapaneseWords();
+      print('[Main] Japanese words cleanup completed');
+      
       // サンプルデータの初期化は削除（本番環境では不要）
       // print('[Main] Initializing sample data...');
       // await StorageService.initializeSampleData();

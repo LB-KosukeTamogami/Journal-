@@ -194,9 +194,10 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
               Expanded(
                 child: Row(
                   children: [
-                    _buildNewFilterChip(
+                    _buildFilterChip(
+                      label: '×',
                       value: 0,
-                      color: AppTheme.primaryBlue,
+                      color: AppTheme.error,
                     ),
                     const SizedBox(width: 8),
                     _buildFilterChip(
@@ -217,55 +218,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     );
   }
 
-  Widget _buildNewFilterChip({
-    required int value,
-    required Color color,
-  }) {
-    final isSelected = _selectedMasteryLevels.contains(value);
-    
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          if (isSelected) {
-            _selectedMasteryLevels.remove(value);
-          } else {
-            _selectedMasteryLevels.add(value);
-          }
-        });
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.15) : AppTheme.backgroundTertiary,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? color : AppTheme.borderColor,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.new_releases,
-              size: 16,
-              color: isSelected ? color : AppTheme.textTertiary,
-            ),
-            const SizedBox(width: 4),
-            Text(
-              'NEW',
-              style: AppTheme.body1.copyWith(
-                color: isSelected ? color : AppTheme.textTertiary,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                fontSize: 16,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildFilterChip({
     required String label,
@@ -452,56 +404,95 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
               ),
             ),
             const SizedBox(height: 20),
-            Row(
+            // ステータス変更セクション
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      JapaneseDictionaryDialog.show(context, word.english);
-                    },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppTheme.primaryBlue,
-                      side: BorderSide(color: AppTheme.primaryBlue),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    icon: const Icon(Icons.menu_book, size: 20),
-                    label: const Text('辞書'),
+                Text(
+                  'ステータス',
+                  style: AppTheme.body2.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textSecondary,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () async {
-                      // Toggle between mastered (2) and not mastered (0)
-                      final newLevel = word.masteryLevel == 2 ? 0 : 2;
-                      await StorageService.updateWordReview(word.id, masteryLevel: newLevel);
-                      Navigator.pop(context);
-                      _loadWords();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: word.isMastered 
-                          ? AppTheme.warning
-                          : AppTheme.success,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    _buildStatusButton(
+                      currentLevel: word.masteryLevel,
+                      targetLevel: 0,
+                      icon: Icons.new_releases,
+                      label: 'NEW',
+                      color: AppTheme.primaryBlue,
+                      onTap: () async {
+                        await StorageService.updateWordReview(word.id, masteryLevel: 0);
+                        Navigator.pop(context);
+                        _loadWords();
+                      },
                     ),
-                    icon: Icon(
-                      word.isMastered ? Icons.close : Icons.check,
-                      size: 20,
+                    const SizedBox(width: 8),
+                    _buildStatusButton(
+                      currentLevel: word.masteryLevel,
+                      targetLevel: 0,
+                      icon: Icons.close,
+                      label: '×',
+                      color: AppTheme.error,
+                      onTap: () async {
+                        await StorageService.updateWordReview(word.id, masteryLevel: 0);
+                        Navigator.pop(context);
+                        _loadWords();
+                      },
                     ),
-                    label: Text(
-                      word.isMastered ? '未習得に戻す' : '習得済みにする',
-                      style: const TextStyle(fontSize: 12),
+                    const SizedBox(width: 8),
+                    _buildStatusButton(
+                      currentLevel: word.masteryLevel,
+                      targetLevel: 1,
+                      icon: Icons.change_history,
+                      label: '△',
+                      color: AppTheme.warning,
+                      onTap: () async {
+                        await StorageService.updateWordReview(word.id, masteryLevel: 1);
+                        Navigator.pop(context);
+                        _loadWords();
+                      },
                     ),
-                  ),
+                    const SizedBox(width: 8),
+                    _buildStatusButton(
+                      currentLevel: word.masteryLevel,
+                      targetLevel: 2,
+                      icon: Icons.circle,
+                      label: '○',
+                      color: AppTheme.success,
+                      onTap: () async {
+                        await StorageService.updateWordReview(word.id, masteryLevel: 2);
+                        Navigator.pop(context);
+                        _loadWords();
+                      },
+                    ),
+                  ],
                 ),
               ],
+            ),
+            const SizedBox(height: 20),
+            // 辞書ボタン
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  JapaneseDictionaryDialog.show(context, word.english);
+                },
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppTheme.primaryBlue,
+                  side: BorderSide(color: AppTheme.primaryBlue),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                icon: const Icon(Icons.menu_book, size: 20),
+                label: const Text('辞書で調べる'),
+              ),
             ),
             const SizedBox(height: 12),
             // 削除ボタン
@@ -529,6 +520,65 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
             ),
             const SizedBox(height: 20),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusButton({
+    required int currentLevel,
+    required int targetLevel,
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    final isSelected = currentLevel == targetLevel;
+    
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: isSelected ? color : AppTheme.backgroundTertiary,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected ? color : AppTheme.borderColor,
+              width: isSelected ? 2 : 1,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (label == 'NEW')
+                Icon(
+                  icon,
+                  size: 20,
+                  color: isSelected ? Colors.white : color,
+                )
+              else
+                Text(
+                  label,
+                  style: AppTheme.body1.copyWith(
+                    color: isSelected ? Colors.white : color,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                  ),
+                ),
+              const SizedBox(height: 4),
+              Text(
+                label == 'NEW' ? 'NEW' : 
+                label == '×' ? '未学習' :
+                label == '△' ? '学習中' : '習得済み',
+                style: AppTheme.caption.copyWith(
+                  color: isSelected ? Colors.white : AppTheme.textSecondary,
+                  fontSize: 10,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -224,6 +224,16 @@ class StorageService {
     final jsonString = json.encode(words.map((w) => w.toJson()).toList());
     await prefs.setString(_wordsKey, jsonString);
   }
+  
+  static Future<void> deleteJapaneseWords() async {
+    final words = await getWords();
+    // 日本語の文字（ひらがな、カタカナ、漢字）を含む単語を削除
+    final japanesePattern = RegExp(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]');
+    words.removeWhere((w) => japanesePattern.hasMatch(w.english));
+    
+    final jsonString = json.encode(words.map((w) => w.toJson()).toList());
+    await prefs.setString(_wordsKey, jsonString);
+  }
 
   static Future<List<Word>> getWordsByDiaryEntry(String diaryEntryId) async {
     final words = await getWords();
