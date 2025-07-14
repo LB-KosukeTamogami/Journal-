@@ -43,7 +43,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
     // トピック提案を追加
     _messages.add(
       ConversationMessage(
-        text: "Here are some topics we can discuss:\n• Daily activities (日常の活動)\n• Hobbies (趣味)\n• Food and cooking (食べ物と料理)\n• Travel experiences (旅行の経験)\n• Work or study (仕事や勉強)\n\nOr we can talk about anything you'd like!",
+        text: "Here are some topics we can discuss:\n• Daily activities\n• Hobbies\n• Food and cooking\n• Travel experiences\n• Work or study\n\nOr we can talk about anything you'd like!\n\nこれらのトピックについて話すことができます：\n• 日常の活動\n• 趣味\n• 食べ物と料理\n• 旅行の経験\n• 仕事や勉強\n\nまたは、あなたが話したいことなら何でも大丈夫です！",
         isUser: false,
         timestamp: DateTime.now(),
         suggestions: [
