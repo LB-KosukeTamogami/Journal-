@@ -144,15 +144,27 @@ class SupabaseService {
     }
 
     try {
+      // 現在のセッションを確認
       final session = _client!.auth.currentSession;
       if (session != null) {
+        print('[Supabase] Using existing session user ID: ${session.user.id}');
         return session.user.id;
       }
 
-      // 匿名サインイン
+      // 保存されたセッションから復元を試みる
+      print('[Supabase] No current session, attempting to restore...');
+      
+      // セッションがない場合は匿名サインイン
       print('[Supabase] Signing in anonymously...');
-      final response = await _client!.auth.signInAnonymously();
-      return response.user?.id ?? 'local_user';
+      final response = await _client!.auth.signInAnonymously(
+        data: {
+          'persist_session': true,  // セッションを永続化
+        },
+      );
+      
+      final userId = response.user?.id ?? 'local_user';
+      print('[Supabase] New anonymous user created: $userId');
+      return userId;
     } catch (e) {
       print('[Supabase] Error getting user ID: $e');
       return 'local_user';
@@ -220,12 +232,24 @@ class SupabaseService {
 
     try {
       final userId = await getUserId();
+      print('[Supabase] Getting diary entries for user: $userId');
       
+      // まず全てのエントリを取得してデバッグ
+      final allResponse = await _client!
+          .from('diary_entries')
+          .select()
+          .order('created_at', ascending: false);
+      
+      print('[Supabase] Total entries in table: ${allResponse.length}');
+      
+      // user_idでフィルタリング
       final response = await _client!
           .from('diary_entries')
           .select()
           .eq('user_id', userId)
           .order('created_at', ascending: false);
+      
+      print('[Supabase] Entries for current user ($userId): ${response.length}');
       
       final List<DiaryEntry> entries = [];
       for (final data in response) {
@@ -233,13 +257,15 @@ class SupabaseService {
           entries.add(DiaryEntry.fromJson(data));
         } catch (e) {
           print('[Supabase] Error parsing diary entry: $e');
+          print('[Supabase] Problem data: $data');
         }
       }
       
-      print('[Supabase] Retrieved ${entries.length} diary entries');
+      print('[Supabase] Successfully parsed ${entries.length} diary entries');
       return entries;
     } catch (e) {
       print('[Supabase] Error getting diary entries: $e');
+      print('[Supabase] Stack trace: ${StackTrace.current}');
       return [];
     }
   }

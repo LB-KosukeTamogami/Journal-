@@ -3,6 +3,7 @@ import 'dart:convert';
 import '../../theme/app_theme.dart';
 import '../../services/supabase_service.dart';
 import '../../services/storage_service.dart';
+import '../../services/debug_service.dart';
 import '../../models/word.dart';
 import '../../models/diary_entry.dart';
 
@@ -22,6 +23,7 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
   List<dynamic> _localDiaries = [];
   List<dynamic> _supabaseDiaries = [];
   List<String> _debugLogs = [];
+  Set<String> _allUserIds = {};
 
   @override
   void initState() {
@@ -62,9 +64,19 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
         final supabaseDiaries = await SupabaseService.getDiaryEntries();
         _addLog('Got ${supabaseDiaries.length} diaries from Supabase');
         
+        // 全てのユーザーIDを取得
+        _addLog('Getting all user IDs...');
+        final userIds = await DebugService.getAllUserIds();
+        _addLog('Found user IDs: ${userIds.join(', ')}');
+        
+        // 全てのエントリ数を確認
+        final allEntries = await DebugService.getAllDiaryEntries();
+        _addLog('Total entries in database: ${allEntries.length}');
+        
         setState(() {
           _supabaseWords = supabaseWords;
           _supabaseDiaries = supabaseDiaries;
+          _allUserIds = userIds;
         });
       }
 

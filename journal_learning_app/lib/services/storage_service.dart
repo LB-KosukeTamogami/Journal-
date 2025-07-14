@@ -34,13 +34,17 @@ class StorageService {
     
     // Supabaseからデータを取得
     List<DiaryEntry> supabaseEntries = [];
+    bool supabaseSuccess = false;
+    
     if (SupabaseService.isAvailable) {
       try {
         print('[Storage] Fetching diaries from Supabase...');
         supabaseEntries = await SupabaseService.getDiaryEntries();
         print('[Storage] Got ${supabaseEntries.length} diaries from Supabase');
+        supabaseSuccess = true;
       } catch (e) {
         print('[Storage] Error getting Supabase diary entries: $e');
+        print('[Storage] Will try to use cached data');
       }
     } else {
       print('[Storage] Supabase not available, using local storage only');
@@ -55,16 +59,20 @@ class StorageService {
       print('[Storage] Got ${localEntries.length} diaries from local storage');
     }
 
-    // Supabaseデータがある場合はそちらを優先、なければローカルデータを使用
-    if (supabaseEntries.isNotEmpty) {
-      print('[Storage] Using Supabase data and caching locally');
-      // Supabaseデータをローカルにも保存（キャッシュ）
+    // Supabaseが正常に接続できた場合
+    if (supabaseSuccess) {
+      print('[Storage] Supabase connection successful');
+      
+      // Supabaseのデータをローカルにキャッシュ
       final jsonString = json.encode(supabaseEntries.map((e) => e.toJson()).toList());
       await prefs.setString(_diaryEntriesKey, jsonString);
+      print('[Storage] Cached ${supabaseEntries.length} entries from Supabase to local');
+      
       return supabaseEntries;
     }
     
-    print('[Storage] Using local data (${localEntries.length} diaries)');
+    // Supabaseに接続できなかった場合はローカルデータを使用
+    print('[Storage] Using local cached data (${localEntries.length} diaries)');
     return localEntries;
   }
 
