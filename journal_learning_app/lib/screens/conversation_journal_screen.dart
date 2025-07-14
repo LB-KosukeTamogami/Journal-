@@ -107,7 +107,18 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
       
       if (mounted) {
         setState(() {
-          // 5ラリー目（ユーザーメッセージが5つ）の場合は終了メッセージ
+          // 常にGeminiのレスポンスを追加
+          _messages.add(
+            ConversationMessage(
+              text: response.reply,
+              isUser: false,
+              timestamp: DateTime.now(),
+              corrections: response.corrections,
+              suggestions: response.suggestions,
+            ),
+          );
+          
+          // 5ラリー目の場合は、さらに締めくくりメッセージを追加
           if (_messageCount >= 5) {
             _messages.add(
               ConversationMessage(
@@ -116,17 +127,8 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                 timestamp: DateTime.now(),
               ),
             );
-          } else {
-            _messages.add(
-              ConversationMessage(
-                text: response.reply,
-                isUser: false,
-                timestamp: DateTime.now(),
-                corrections: response.corrections,
-                suggestions: response.suggestions,
-              ),
-            );
           }
+          
           _isLoading = false;
         });
         
