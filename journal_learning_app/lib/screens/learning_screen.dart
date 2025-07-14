@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 import '../models/word.dart';
+import '../models/flashcard.dart';
 import '../services/storage_service.dart';
 import '../widgets/text_to_speech_button.dart';
 import '../widgets/japanese_dictionary_dialog.dart';
@@ -421,19 +422,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                     _buildStatusButton(
                       currentLevel: word.masteryLevel,
                       targetLevel: 0,
-                      icon: Icons.new_releases,
-                      label: 'NEW',
-                      color: AppTheme.primaryBlue,
-                      onTap: () async {
-                        await StorageService.updateWordReview(word.id, masteryLevel: 0);
-                        Navigator.pop(context);
-                        _loadWords();
-                      },
-                    ),
-                    const SizedBox(width: 8),
-                    _buildStatusButton(
-                      currentLevel: word.masteryLevel,
-                      targetLevel: 0,
                       icon: Icons.close,
                       label: '×',
                       color: AppTheme.error,
@@ -474,24 +462,47 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
               ],
             ),
             const SizedBox(height: 20),
-            // 辞書ボタン
+            // 単語帳に登録ボタン
             SizedBox(
               width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () {
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  // フラッシュカードに登録
+                  final flashcard = Flashcard(
+                    id: DateTime.now().millisecondsSinceEpoch.toString(),
+                    englishWord: word.english,
+                    japaneseTranslation: word.japanese,
+                    exampleSentence: word.example,
+                    createdAt: DateTime.now(),
+                    masteryLevel: word.masteryLevel,
+                    reviewCount: 0,
+                  );
+                  await StorageService.saveFlashcard(flashcard);
                   Navigator.pop(context);
-                  JapaneseDictionaryDialog.show(context, word.english);
+                  
+                  // 成功メッセージを表示
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('単語帳に登録しました'),
+                      backgroundColor: AppTheme.success,
+                      behavior: SnackBarBehavior.floating,
+                      margin: const EdgeInsets.all(16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  );
                 },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppTheme.primaryBlue,
-                  side: BorderSide(color: AppTheme.primaryBlue),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryColor,
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                icon: const Icon(Icons.menu_book, size: 20),
-                label: const Text('辞書で調べる'),
+                icon: const Icon(Icons.bookmark_add, size: 20),
+                label: const Text('単語帳に登録'),
               ),
             ),
             const SizedBox(height: 12),
@@ -552,24 +563,16 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (label == 'NEW')
-                Icon(
-                  icon,
-                  size: 20,
+              Text(
+                label,
+                style: AppTheme.body1.copyWith(
                   color: isSelected ? Colors.white : color,
-                )
-              else
-                Text(
-                  label,
-                  style: AppTheme.body1.copyWith(
-                    color: isSelected ? Colors.white : color,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18,
-                  ),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18,
                 ),
+              ),
               const SizedBox(height: 4),
               Text(
-                label == 'NEW' ? 'NEW' : 
                 label == '×' ? '未学習' :
                 label == '△' ? '学習中' : '習得済み',
                 style: AppTheme.caption.copyWith(
