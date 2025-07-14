@@ -21,6 +21,8 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
   List<Word> _allWords = [];
   bool _isLoading = true;
   Set<int> _selectedMasteryLevels = {0, 1}; // Default: show × and △ only
+  bool _showNew = true; // NEW表示フラグ
+  bool _showFailed = true; // ×表示フラグ
   
   // フィルター関連の状態
   Set<WordCategory> _selectedCategories = WordCategory.values.toSet();
@@ -177,9 +179,17 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
 
   Widget _buildLearningTab() {
     final learningWords = _getFilteredWords(_allWords).where((word) => word.masteryLevel < 2).toList();
-    final filteredWords = learningWords.where((word) => 
-      _selectedMasteryLevels.contains(word.masteryLevel)
-    ).toList();
+    
+    // 新しいフィルタリングロジック
+    final filteredWords = learningWords.where((word) {
+      if (word.masteryLevel == 0) {
+        // masteryLevel 0の場合、NEWまたは×のフラグをチェック
+        return _showNew || _showFailed;
+      } else {
+        // masteryLevel 1の場合、△のフラグをチェック
+        return _selectedMasteryLevels.contains(word.masteryLevel);
+      }
+    }).toList();
 
     return Column(
       children: [
@@ -196,18 +206,9 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
               Expanded(
                 child: Row(
                   children: [
-                    _buildIconFilterChip(
-                      icon: Icons.new_releases,
-                      label: 'NEW',
-                      value: 0,
-                      color: AppTheme.primaryBlue,
-                    ),
+                    _buildNewFilterChip(),
                     const SizedBox(width: 8),
-                    _buildFilterChip(
-                      label: '×',
-                      value: 0,
-                      color: AppTheme.error,
-                    ),
+                    _buildFailedFilterChip(),
                     const SizedBox(width: 8),
                     _buildFilterChip(
                       label: '△',
@@ -227,6 +228,76 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     );
   }
 
+  Widget _buildNewFilterChip() {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _showNew = !_showNew;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: _showNew ? AppTheme.primaryBlue.withOpacity(0.15) : AppTheme.backgroundTertiary,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: _showNew ? AppTheme.primaryBlue : AppTheme.borderColor,
+            width: _showNew ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.new_releases,
+              size: 16,
+              color: _showNew ? AppTheme.primaryBlue : AppTheme.textTertiary,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              'NEW',
+              style: AppTheme.body1.copyWith(
+                color: _showNew ? AppTheme.primaryBlue : AppTheme.textTertiary,
+                fontWeight: _showNew ? FontWeight.w600 : FontWeight.normal,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFailedFilterChip() {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _showFailed = !_showFailed;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: _showFailed ? AppTheme.error.withOpacity(0.15) : AppTheme.backgroundTertiary,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: _showFailed ? AppTheme.error : AppTheme.borderColor,
+            width: _showFailed ? 2 : 1,
+          ),
+        ),
+        child: Text(
+          '×',
+          style: AppTheme.body1.copyWith(
+            color: _showFailed ? AppTheme.error : AppTheme.textTertiary,
+            fontWeight: _showFailed ? FontWeight.w600 : FontWeight.normal,
+            fontSize: 16,
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _buildIconFilterChip({
     required IconData icon,
@@ -792,9 +863,13 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     if (_tabController.index == 1) {
       // Learning tab with filters
       final learningWords = _getFilteredWords(_allWords).where((word) => word.masteryLevel < 2).toList();
-      sessionWords = learningWords.where((word) => 
-        _selectedMasteryLevels.contains(word.masteryLevel)
-      ).toList();
+      sessionWords = learningWords.where((word) {
+        if (word.masteryLevel == 0) {
+          return _showNew || _showFailed;
+        } else {
+          return _selectedMasteryLevels.contains(word.masteryLevel);
+        }
+      }).toList();
     } else if (_tabController.index == 2) {
       // Mastered tab
       sessionWords = _getFilteredWords(_allWords).where((word) => word.masteryLevel == 2).toList();
