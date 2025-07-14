@@ -107,24 +107,27 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
       
       if (mounted) {
         setState(() {
-          // 常にGeminiのレスポンスを追加
-          _messages.add(
-            ConversationMessage(
-              text: response.reply,
-              isUser: false,
-              timestamp: DateTime.now(),
-              corrections: response.corrections,
-              suggestions: response.suggestions,
-            ),
-          );
-          
-          // 5ラリー目の場合は、さらに締めくくりメッセージを追加
+          // 5ラリー目の場合は、応答と締めくくりを統合
           if (_messageCount >= 5) {
+            final combinedText = "${response.reply}\n\nGreat job practicing today! You're making wonderful progress. Let's chat again tomorrow!\n\n今日はよく頑張りましたね！素晴らしい進歩です。また明日お話ししましょう！";
             _messages.add(
               ConversationMessage(
-                text: "Great job practicing today! You're making wonderful progress. Let's chat again tomorrow!\n\n今日はよく頑張りましたね！素晴らしい進歩です。また明日お話ししましょう！",
+                text: combinedText,
                 isUser: false,
                 timestamp: DateTime.now(),
+                corrections: response.corrections,
+                suggestions: response.suggestions,
+              ),
+            );
+          } else {
+            // 通常のGeminiレスポンスを追加
+            _messages.add(
+              ConversationMessage(
+                text: response.reply,
+                isUser: false,
+                timestamp: DateTime.now(),
+                corrections: response.corrections,
+                suggestions: response.suggestions,
               ),
             );
           }
