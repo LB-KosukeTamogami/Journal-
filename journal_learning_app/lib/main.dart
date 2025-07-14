@@ -54,6 +54,13 @@ void main() async {
       print('[Main] Initializing SupabaseService...');
       await SupabaseService.initialize();
       print('[Main] SupabaseService initialization completed');
+      
+      // アプリ起動時にデータ同期を実行
+      if (SupabaseService.isAvailable) {
+        print('[Main] Starting data synchronization...');
+        await _performInitialDataSync();
+        print('[Main] Data synchronization completed');
+      }
     } catch (e, stack) {
       print('[Main] Supabase initialization error: $e');
       print('[Main] Stack trace:\n$stack');
@@ -73,6 +80,22 @@ void main() async {
         ),
       ),
     ));
+  }
+}
+
+// アプリ起動時のデータ同期処理
+Future<void> _performInitialDataSync() async {
+  try {
+    print('[Sync] Starting initial data synchronization...');
+    
+    // Supabaseからデータを取得して、ローカルと同期
+    // この処理は既にStorageService.getDiaryEntries()とgetWords()で実装済み
+    final diaryEntries = await StorageService.getDiaryEntries();
+    final words = await StorageService.getWords();
+    
+    print('[Sync] Synchronized ${diaryEntries.length} diary entries and ${words.length} words');
+  } catch (e) {
+    print('[Sync] Error during initial synchronization: $e');
   }
 }
 

@@ -5,6 +5,7 @@ import '../models/user_profile.dart';
 import '../models/mission.dart';
 import '../models/flashcard.dart';
 import '../models/word.dart';
+import 'supabase_service.dart';
 
 class StorageService {
   static const String _diaryEntriesKey = 'diary_entries';
@@ -28,15 +29,47 @@ class StorageService {
   }
 
   static Future<List<DiaryEntry>> getDiaryEntries() async {
-    final jsonString = prefs.getString(_diaryEntriesKey);
-    if (jsonString == null) return [];
+    // Supabaseからデータを取得
+    List<DiaryEntry> supabaseEntries = [];
+    if (SupabaseService.isAvailable) {
+      try {
+        supabaseEntries = await SupabaseService.getDiaryEntries();
+      } catch (e) {
+        print('[Storage] Error getting Supabase diary entries: $e');
+      }
+    }
 
-    final List<dynamic> jsonList = json.decode(jsonString);
-    return jsonList.map((json) => DiaryEntry.fromJson(json)).toList();
+    // ローカルデータを取得
+    final jsonString = prefs.getString(_diaryEntriesKey);
+    List<DiaryEntry> localEntries = [];
+    if (jsonString != null) {
+      final List<dynamic> jsonList = json.decode(jsonString);
+      localEntries = jsonList.map((json) => DiaryEntry.fromJson(json)).toList();
+    }
+
+    // Supabaseデータがある場合はそちらを優先、なければローカルデータを使用
+    if (supabaseEntries.isNotEmpty) {
+      // Supabaseデータをローカルにも保存（キャッシュ）
+      final jsonString = json.encode(supabaseEntries.map((e) => e.toJson()).toList());
+      await prefs.setString(_diaryEntriesKey, jsonString);
+      return supabaseEntries;
+    }
+    
+    return localEntries;
   }
 
   static Future<void> saveDiaryEntry(DiaryEntry entry) async {
-    final entries = await getDiaryEntries();
+    // Supabaseに保存
+    if (SupabaseService.isAvailable) {
+      try {
+        await SupabaseService.saveDiaryEntry(entry);
+      } catch (e) {
+        print('[Storage] Error saving to Supabase: $e');
+      }
+    }
+
+    // ローカルストレージにも保存
+    final entries = await _getLocalDiaryEntries();
     
     final existingIndex = entries.indexWhere((e) => e.id == entry.id);
     if (existingIndex != -1) {
@@ -52,7 +85,17 @@ class StorageService {
   }
 
   static Future<void> deleteDiaryEntry(String id) async {
-    final entries = await getDiaryEntries();
+    // Supabaseから削除
+    if (SupabaseService.isAvailable) {
+      try {
+        await SupabaseService.deleteDiaryEntry(id);
+      } catch (e) {
+        print('[Storage] Error deleting from Supabase: $e');
+      }
+    }
+
+    // ローカルストレージからも削除
+    final entries = await _getLocalDiaryEntries();
     entries.removeWhere((e) => e.id == id);
     
     final jsonString = json.encode(entries.map((e) => e.toJson()).toList());
@@ -191,15 +234,47 @@ class StorageService {
 
   // 単語関連のメソッド
   static Future<List<Word>> getWords() async {
-    final jsonString = prefs.getString(_wordsKey);
-    if (jsonString == null) return [];
+    // Supabaseからデータを取得
+    List<Word> supabaseWords = [];
+    if (SupabaseService.isAvailable) {
+      try {
+        supabaseWords = await SupabaseService.getWords();
+      } catch (e) {
+        print('[Storage] Error getting Supabase words: $e');
+      }
+    }
 
-    final List<dynamic> jsonList = json.decode(jsonString);
-    return jsonList.map((json) => Word.fromJson(json)).toList();
+    // ローカルデータを取得
+    final jsonString = prefs.getString(_wordsKey);
+    List<Word> localWords = [];
+    if (jsonString != null) {
+      final List<dynamic> jsonList = json.decode(jsonString);
+      localWords = jsonList.map((json) => Word.fromJson(json)).toList();
+    }
+
+    // Supabaseデータがある場合はそちらを優先、なければローカルデータを使用
+    if (supabaseWords.isNotEmpty) {
+      // Supabaseデータをローカルにも保存（キャッシュ）
+      final jsonString = json.encode(supabaseWords.map((w) => w.toJson()).toList());
+      await prefs.setString(_wordsKey, jsonString);
+      return supabaseWords;
+    }
+    
+    return localWords;
   }
 
   static Future<void> saveWord(Word word) async {
-    final words = await getWords();
+    // Supabaseに保存
+    if (SupabaseService.isAvailable) {
+      try {
+        await SupabaseService.saveWord(word);
+      } catch (e) {
+        print('[Storage] Error saving word to Supabase: $e');
+      }
+    }
+
+    // ローカルストレージにも保存
+    final words = await _getLocalWords();
     
     final existingIndex = words.indexWhere((w) => w.id == word.id);
     if (existingIndex != -1) {
@@ -213,12 +288,32 @@ class StorageService {
   }
 
   static Future<void> saveWords(List<Word> words) async {
+    // Supabaseに保存
+    if (SupabaseService.isAvailable) {
+      try {
+        await SupabaseService.saveWords(words);
+      } catch (e) {
+        print('[Storage] Error saving words to Supabase: $e');
+      }
+    }
+
+    // ローカルストレージにも保存
     final jsonString = json.encode(words.map((w) => w.toJson()).toList());
     await prefs.setString(_wordsKey, jsonString);
   }
 
   static Future<void> deleteWord(String id) async {
-    final words = await getWords();
+    // Supabaseから削除
+    if (SupabaseService.isAvailable) {
+      try {
+        await SupabaseService.deleteWord(id);
+      } catch (e) {
+        print('[Storage] Error deleting word from Supabase: $e');
+      }
+    }
+
+    // ローカルストレージからも削除
+    final words = await _getLocalWords();
     words.removeWhere((w) => w.id == id);
     
     final jsonString = json.encode(words.map((w) => w.toJson()).toList());
@@ -240,13 +335,30 @@ class StorageService {
     // スペースを含む（複数語の）熟語を削除
     words.removeWhere((w) => w.english.trim().contains(' '));
     
-    final jsonString = json.encode(words.map((w) => w.toJson()).toList());
-    await prefs.setString(_wordsKey, jsonString);
+    // 更新されたリストを保存
+    await saveWords(words);
   }
 
   static Future<List<Word>> getWordsByDiaryEntry(String diaryEntryId) async {
     final words = await getWords();
     return words.where((w) => w.diaryEntryId == diaryEntryId).toList();
+  }
+
+  // ローカルデータのみを取得するヘルパーメソッド
+  static Future<List<DiaryEntry>> _getLocalDiaryEntries() async {
+    final jsonString = prefs.getString(_diaryEntriesKey);
+    if (jsonString == null) return [];
+
+    final List<dynamic> jsonList = json.decode(jsonString);
+    return jsonList.map((json) => DiaryEntry.fromJson(json)).toList();
+  }
+
+  static Future<List<Word>> _getLocalWords() async {
+    final jsonString = prefs.getString(_wordsKey);
+    if (jsonString == null) return [];
+
+    final List<dynamic> jsonList = json.decode(jsonString);
+    return jsonList.map((json) => Word.fromJson(json)).toList();
   }
 
   static Future<void> updateWordReview(String wordId, {required int masteryLevel}) async {
@@ -261,10 +373,9 @@ class StorageService {
         isMastered: masteryLevel == 2, // Keep backward compatibility
         masteryLevel: masteryLevel,
       );
-      words[index] = updatedWord;
       
-      final jsonString = json.encode(words.map((w) => w.toJson()).toList());
-      await prefs.setString(_wordsKey, jsonString);
+      // 更新された単語を保存
+      await saveWord(updatedWord);
     }
   }
 
