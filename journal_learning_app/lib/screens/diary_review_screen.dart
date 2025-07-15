@@ -481,15 +481,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               );
             }
           },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: 0,
-          ),
+          style: AppButtonStyles.primaryButton,
           icon: const Icon(Icons.add_card, color: Colors.white),
           label: Text('学習カードにすべて追加', style: AppTheme.button),
         ),
@@ -893,12 +885,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                                 BorderSide(color: AppTheme.success, width: 2),
                                               ),
                                             )
-                                          : AppButtonStyles.secondaryButton.copyWith(
-                                              foregroundColor: MaterialStateProperty.all(AppTheme.info),
-                                              side: MaterialStateProperty.all(
-                                                BorderSide(color: AppTheme.info, width: 2),
-                                              ),
-                                            ),
+                                          : AppButtonStyles.secondaryButton,
                                         icon: Icon(
                                           isAddedToFlashcard ? Icons.check_circle : Icons.collections_bookmark,
                                           size: 20,
