@@ -689,10 +689,10 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     ).animate().fadeIn(delay: 500.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
-  // 重要単語
+  // 抽出した単語
   Widget _buildLearningWordsSection() {
     return AppCard(
-      backgroundColor: AppTheme.info.withOpacity(0.05),
+      backgroundColor: AppTheme.primaryBlue.withOpacity(0.05),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -700,15 +700,15 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             children: [
               Icon(
                 Icons.school,
-                color: AppTheme.info,
+                color: AppTheme.primaryBlue,
                 size: 20,
               ),
               const SizedBox(width: 8),
               Text(
-                '重要単語',
+                '抽出した単語',
                 style: AppTheme.body1.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.info,
+                  color: AppTheme.primaryBlue,
                 ),
               ),
             ],
@@ -717,33 +717,90 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: _learnedWords.map((wordData) => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: AppTheme.info.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppTheme.info.withOpacity(0.3)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    wordData['english'] ?? '',
-                    style: AppTheme.body2.copyWith(
-                      color: AppTheme.info,
-                      fontWeight: FontWeight.w600,
+            children: _learnedWords.map((wordData) {
+              final english = wordData['english'] ?? '';
+              final japanese = wordData['japanese'] ?? '';
+              
+              return GestureDetector(
+                onTap: () {
+                  // モーダルを下から表示
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => Container(
+                      margin: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppTheme.backgroundPrimary,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const SizedBox(height: 16),
+                          Container(
+                            width: 40,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: AppTheme.textSecondary.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          Text(
+                            english,
+                            style: AppTheme.headline2.copyWith(
+                              color: AppTheme.primaryBlue,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            japanese,
+                            style: AppTheme.body1.copyWith(
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryBlue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: AppTheme.primaryBlue.withOpacity(0.3),
                     ),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    wordData['japanese'] ?? '',
-                    style: AppTheme.caption.copyWith(
-                      color: AppTheme.info.withOpacity(0.8),
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 12, top: 8, bottom: 8, right: 12),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          english,
+                          style: AppTheme.body2.copyWith(
+                            color: AppTheme.primaryBlue,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        if (japanese.isNotEmpty) ...[
+                          const SizedBox(width: 8),
+                          Text(
+                            '• $japanese',
+                            style: AppTheme.caption.copyWith(
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
-                ],
-              ),
-            )).toList(),
+                ),
+              );
+            }).toList(),
           ),
         ],
       ),
