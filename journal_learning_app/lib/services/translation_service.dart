@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/word.dart';
+import 'word_cache_service.dart';
 
 class TranslationService {
   // 簡易的な翻訳マッピング（オフライン用）
@@ -184,14 +185,16 @@ class TranslationService {
     '妹': 'younger sister',
   };
 
-  /// テキストを翻訳する
+  /// テキストを翻訳する（キャッシュ機能付き）
   /// [text] 翻訳するテキスト
   /// [targetLanguage] 翻訳先言語 ('ja' または 'en')
   /// [useOnlineService] オンライン翻訳サービスを使用するか
+  /// [useCache] キャッシュを使用するか
   static Future<TranslationResult> translate(
     String text, {
     required String targetLanguage,
     bool useOnlineService = false,
+    bool useCache = true,
   }) async {
     if (text.trim().isEmpty) {
       return TranslationResult(
@@ -204,6 +207,20 @@ class TranslationService {
     }
 
     try {
+      // 単語の場合のみキャッシュを使用
+      if (useCache && !text.contains(' ') && targetLanguage == 'en') {
+        // キャッシュから検索
+        final cached = await WordCacheService.fetchCachedWord(text);
+        if (cached != null) {
+          return TranslationResult(
+            originalText: text,
+            translatedText: cached['en_word'] ?? text,
+            targetLanguage: targetLanguage,
+            success: true,
+          );
+        }
+      }
+
       if (useOnlineService) {
         // 将来的にGoogle Translate APIなどを使用
         return await _translateOnline(text, targetLanguage);

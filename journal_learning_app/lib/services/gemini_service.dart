@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/diary_entry.dart';
 import '../models/conversation_message.dart';
 import '../config/api_config.dart';
+import 'word_cache_service.dart';
 
 // 会話レスポンスクラス
 class ConversationResponse {
@@ -88,9 +89,16 @@ class GeminiService {
     return _getOfflineExamples(word, language);
   }
   
-  // 日本語WordNet APIから単語の意味と品詞を取得
+  // 日本語WordNet APIから単語の意味と品詞を取得（キャッシュ機能付き）
   static Future<Map<String, dynamic>?> getWordDefinition(String word) async {
     try {
+      // まずキャッシュを確認
+      final cached = await _getCachedWordDefinition(word);
+      if (cached != null) {
+        return cached;
+      }
+
+      // キャッシュになければAPIから取得
       final url = Uri.parse('https://juman-drc.org/wordnet/jp/api/1.1/definitions');
       final response = await http.post(
         url,
@@ -105,11 +113,16 @@ class GeminiService {
           final definition = data[0];
           if (definition['definitions'] != null && definition['definitions'].isNotEmpty) {
             final firstDef = definition['definitions'][0];
-            return {
+            final result = {
               'meaning': firstDef['definition'] ?? '',
               'partOfSpeech': firstDef['pos'] ?? firstDef['part_of_speech'] ?? 'unknown',
               'word': definition['word'] ?? word,
             };
+            
+            // キャッシュに保存
+            await _cacheWordDefinition(word, result);
+            
+            return result;
           }
         }
       }
@@ -119,6 +132,29 @@ class GeminiService {
       print('Error fetching word definition: $e');
       return null;
     }
+  }
+
+  // キャッシュから単語定義を取得
+  static Future<Map<String, dynamic>?> _getCachedWordDefinition(String word) async {
+    final cached = await WordCacheService.fetchCachedWord(word);
+    if (cached != null) {
+      return {
+        'meaning': cached['definition'] ?? '',
+        'partOfSpeech': 'unknown', // キャッシュには品詞情報がない
+        'word': cached['ja_word'] ?? word,
+      };
+    }
+    return null;
+  }
+
+  // 単語定義をキャッシュに保存
+  static Future<void> _cacheWordDefinition(String word, Map<String, dynamic> definition) async {
+    await WordCacheService.cacheWordTranslation(
+      jaWord: word,
+      enWord: definition['word'] ?? word, // 英訳がない場合は元の単語を使用
+      definition: definition['meaning'],
+      source: 'wordnet',
+    );
   }
 
   // 後方互換性のため既存メソッドを保持

@@ -12,6 +12,7 @@ import '../services/storage_service.dart';
 import '../services/translation_service.dart';
 import '../config/api_config.dart';
 import 'diary_creation_screen.dart';
+import '../services/word_cache_service.dart';
 
 class ConversationSummaryScreen extends StatefulWidget {
   final List<ConversationMessage> messages;
@@ -740,6 +741,12 @@ Provide only the Japanese translation, nothing else.
   }
 
   Future<String> _getWordMeaning(String word) async {
+    // まずキャッシュから検索
+    final cached = await WordCacheService.fetchCachedWord(word.toLowerCase());
+    if (cached != null && cached['definition'] != null) {
+      return cached['definition']!;
+    }
+    
     // 基本的な単語の意味
     final basicMeanings = {
       'hello': 'こんにちは',
@@ -812,7 +819,17 @@ Provide only the Japanese translation, nothing else.
     
     final lowerWord = word.toLowerCase();
     if (basicMeanings.containsKey(lowerWord)) {
-      return basicMeanings[lowerWord]!;
+      final meaning = basicMeanings[lowerWord]!;
+      
+      // キャッシュに保存
+      await WordCacheService.cacheWordTranslation(
+        jaWord: lowerWord,
+        enWord: lowerWord,
+        definition: meaning,
+        source: 'basic',
+      );
+      
+      return meaning;
     }
     
     // Gemini APIで翻訳を試みる
@@ -822,7 +839,19 @@ Provide only the Japanese translation, nothing else.
         targetLanguage: 'ja',
       );
       
-      return result['translation'] ?? '意味を取得できませんでした';
+      final translation = result['translation'] ?? '意味を取得できませんでした';
+      
+      // 成功した場合はキャッシュに保存
+      if (translation != '意味を取得できませんでした') {
+        await WordCacheService.cacheWordTranslation(
+          jaWord: lowerWord,
+          enWord: lowerWord,
+          definition: translation,
+          source: 'gemini',
+        );
+      }
+      
+      return translation;
     } catch (e) {
       return '意味を取得できませんでした';
     }
