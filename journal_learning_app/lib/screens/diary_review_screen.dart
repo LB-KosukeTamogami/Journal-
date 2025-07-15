@@ -842,15 +842,10 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                               const SizedBox(height: 24),
                               
                               // アクションボタン（統一デザイン）
-                              Row(
+                              Column(
                                 children: [
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        boxShadow: AppTheme.buttonShadow,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: ElevatedButton.icon(
+                                  AppButtonStyles.withShadow(
+                                    OutlinedButton.icon(
                                         onPressed: isAddedToFlashcard ? null : () async {
                                           // 学習カードに追加
                                           try {
@@ -891,36 +886,31 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                             );
                                           }
                                         },
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: isAddedToFlashcard 
-                                            ? AppTheme.success.withOpacity(0.8) 
-                                            : AppTheme.success,
-                                          foregroundColor: Colors.white,
-                                          padding: const EdgeInsets.symmetric(vertical: 16),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          elevation: 0,
-                                        ),
+                                        style: isAddedToFlashcard
+                                          ? AppButtonStyles.secondaryButton.copyWith(
+                                              foregroundColor: MaterialStateProperty.all(AppTheme.success),
+                                              side: MaterialStateProperty.all(
+                                                BorderSide(color: AppTheme.success, width: 2),
+                                              ),
+                                            )
+                                          : AppButtonStyles.secondaryButton.copyWith(
+                                              foregroundColor: MaterialStateProperty.all(AppTheme.info),
+                                              side: MaterialStateProperty.all(
+                                                BorderSide(color: AppTheme.info, width: 2),
+                                              ),
+                                            ),
                                         icon: Icon(
-                                          isAddedToFlashcard ? Icons.check : Icons.add_card,
+                                          isAddedToFlashcard ? Icons.check_circle : Icons.collections_bookmark,
                                           size: 20,
                                         ),
                                         label: Text(
-                                          isAddedToFlashcard ? '追加済み' : '学習カード',
-                                          style: AppTheme.button,
+                                          isAddedToFlashcard ? '学習カードに追加済み' : '学習カードに追加',
                                         ),
                                       ),
-                                    ),
                                   ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        boxShadow: AppTheme.buttonShadow,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: ElevatedButton.icon(
+                                  const SizedBox(height: 12),
+                                  AppButtonStyles.withShadow(
+                                    ElevatedButton.icon(
                                         onPressed: isAddedToVocabulary ? null : () async {
                                           // 単語帳に追加
                                           try {
@@ -960,27 +950,23 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                             );
                                           }
                                         },
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: isAddedToVocabulary 
-                                            ? AppTheme.primaryBlue.withOpacity(0.8) 
-                                            : AppTheme.primaryBlue,
-                                          foregroundColor: Colors.white,
-                                          padding: const EdgeInsets.symmetric(vertical: 16),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          elevation: 0,
-                                        ),
+                                        style: isAddedToVocabulary
+                                          ? AppButtonStyles.primaryButton.copyWith(
+                                              backgroundColor: MaterialStateProperty.all(
+                                                AppTheme.success.withOpacity(0.8),
+                                              ),
+                                            )
+                                          : AppButtonStyles.primaryButton.copyWith(
+                                              backgroundColor: MaterialStateProperty.all(AppTheme.success),
+                                            ),
                                         icon: Icon(
-                                          isAddedToVocabulary ? Icons.check : Icons.bookmark_add,
+                                          isAddedToVocabulary ? Icons.check_circle : Icons.book,
                                           size: 20,
                                         ),
                                         label: Text(
-                                          isAddedToVocabulary ? '追加済み' : '単語帳',
-                                          style: AppTheme.button,
+                                          isAddedToVocabulary ? '単語帳に追加済み' : '単語帳に追加',
                                         ),
                                       ),
-                                    ),
                                   ),
                                 ],
                               ),
