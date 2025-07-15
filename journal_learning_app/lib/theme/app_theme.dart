@@ -222,6 +222,11 @@ class PrimaryButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          minimumSize: const Size(double.infinity, 56), // 高さ56pxを確保
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 0,
         ),
         child: isLoading
             ? const SizedBox(
@@ -279,9 +284,11 @@ class SecondaryButton extends StatelessWidget {
           foregroundColor: AppTheme.primaryColor,
           side: BorderSide(color: AppTheme.primaryColor, width: 2),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          minimumSize: const Size(double.infinity, 56), // 高さ56pxを確保
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
+          elevation: 0,
         ),
         child: isLoading
             ? SizedBox(
@@ -318,6 +325,7 @@ class AppButtonStyles {
     backgroundColor: AppTheme.primaryColor,
     foregroundColor: Colors.white,
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+    minimumSize: const Size(double.infinity, 56), // 高さ56pxを確保
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12),
     ),
@@ -330,6 +338,7 @@ class AppButtonStyles {
     foregroundColor: AppTheme.primaryColor,
     side: BorderSide(color: AppTheme.primaryColor, width: 2),
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+    minimumSize: const Size(double.infinity, 56), // 高さ56pxを確保
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12),
     ),
@@ -341,6 +350,7 @@ class AppButtonStyles {
     backgroundColor: AppTheme.primaryColor,
     foregroundColor: Colors.white,
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    minimumSize: const Size(0, 44), // 小さいボタンは高さ44px
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12),
     ),
