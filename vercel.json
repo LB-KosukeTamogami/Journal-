@@ -1,7 +1,7 @@
 {
   "version": 2,
   "buildCommand": "./vercel-build-simple.sh",
-  "outputDirectory": "journal_learning_app/build/web",
+  "outputDirectory": "build/web",
   "installCommand": "echo 'Skipping install'",
   "framework": null,
   "rewrites": [
