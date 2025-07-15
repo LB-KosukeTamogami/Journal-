@@ -26,7 +26,6 @@ class DiaryReviewScreen extends StatefulWidget {
 class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   String _judgment = '';
   String _outputText = '';
-  String _originalText = '';
   List<String> _corrections = [];
   List<String> _improvements = [];
   List<Map<String, String>> _learnedWords = [];
@@ -51,7 +50,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
         _judgment = result['judgment'] ?? '';
         _detectedLanguage = result['detected_language'] ?? widget.detectedLanguage;
         _outputText = result['corrected'] ?? widget.entry.content;
-        _originalText = widget.entry.content;
         _corrections = List<String>.from(result['corrections'] ?? []);
         _improvements = List<String>.from(result['improvements'] ?? []);
         
@@ -69,7 +67,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
         _judgment = 'エラー';
         _detectedLanguage = widget.detectedLanguage;
         _outputText = widget.entry.content;
-        _originalText = widget.entry.content;
         _isLoading = false;
       });
     }
@@ -533,10 +530,16 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
         judgmentColor = AppTheme.warning;
         judgmentIcon = Icons.edit_note;
         break;
+      case 'エラー':
+        judgmentDisplay = 'エラーが発生しました';
+        judgmentColor = AppTheme.error;
+        judgmentIcon = Icons.error_outline;
+        break;
       default:
-        judgmentDisplay = '処理中...';
+        // 想定外の値の場合
+        judgmentDisplay = '判定中';
         judgmentColor = AppTheme.textSecondary;
-        judgmentIcon = Icons.hourglass_empty;
+        judgmentIcon = Icons.info_outline;
     }
 
     return Container(
