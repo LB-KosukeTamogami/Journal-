@@ -836,7 +836,8 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                               // アクションボタン（統一デザイン）
                               Column(
                                 children: [
-                                  OutlinedButton.icon(
+                                  AppButtonStyles.withShadow(
+                                    OutlinedButton.icon(
                                         onPressed: isAddedToFlashcard ? null : () async {
                                           // 学習カードに追加
                                           try {
@@ -878,13 +879,13 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                           }
                                         },
                                         style: isAddedToFlashcard
-                                          ? AppButtonStyles.secondaryButton.copyWith(
+                                          ? AppButtonStyles.modalSecondaryButton.copyWith(
                                               foregroundColor: MaterialStateProperty.all(AppTheme.success),
                                               side: MaterialStateProperty.all(
                                                 BorderSide(color: AppTheme.success, width: 2),
                                               ),
                                             )
-                                          : AppButtonStyles.secondaryButton,
+                                          : AppButtonStyles.modalSecondaryButton,
                                         icon: Icon(
                                           isAddedToFlashcard ? Icons.check_circle : Icons.collections_bookmark,
                                           size: 20,
@@ -893,8 +894,10 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                           isAddedToFlashcard ? '学習カードに追加済み' : '学習カードに追加',
                                         ),
                                       ),
+                                  ),
                                   const SizedBox(height: 12),
-                                  ElevatedButton.icon(
+                                  AppButtonStyles.withShadow(
+                                    ElevatedButton.icon(
                                         onPressed: isAddedToVocabulary ? null : () async {
                                           // 単語帳に追加
                                           try {
@@ -935,12 +938,12 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                           }
                                         },
                                         style: isAddedToVocabulary
-                                          ? AppButtonStyles.primaryButton.copyWith(
+                                          ? AppButtonStyles.modalPrimaryButton.copyWith(
                                               backgroundColor: MaterialStateProperty.all(
                                                 AppTheme.success.withOpacity(0.8),
                                               ),
                                             )
-                                          : AppButtonStyles.primaryButton.copyWith(
+                                          : AppButtonStyles.modalPrimaryButton.copyWith(
                                               backgroundColor: MaterialStateProperty.all(AppTheme.success),
                                             ),
                                         icon: Icon(
@@ -951,6 +954,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                           isAddedToVocabulary ? '単語帳に追加済み' : '単語帳に追加',
                                         ),
                                       ),
+                                  ),
                                 ],
                               ),
                               

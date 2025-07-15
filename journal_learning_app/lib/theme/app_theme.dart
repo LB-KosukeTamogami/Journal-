@@ -358,6 +358,32 @@ class AppButtonStyles {
     textStyle: AppTheme.button.copyWith(fontSize: 14),
   );
 
+  // モーダル専用プライマリボタンスタイル（不透明な背景）
+  static ButtonStyle modalPrimaryButton = ElevatedButton.styleFrom(
+    backgroundColor: AppTheme.primaryColor,
+    foregroundColor: Colors.white,
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+    minimumSize: const Size(double.infinity, 56), // 高さ56pxを確保
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    elevation: 0,
+    textStyle: AppTheme.button,
+  );
+
+  // モーダル専用セカンダリボタンスタイル（不透明な白い背景）
+  static ButtonStyle modalSecondaryButton = OutlinedButton.styleFrom(
+    backgroundColor: Colors.white, // 不透明な白い背景
+    foregroundColor: AppTheme.primaryColor,
+    side: BorderSide(color: AppTheme.primaryColor, width: 2),
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+    minimumSize: const Size(double.infinity, 56), // 高さ56pxを確保
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    textStyle: AppTheme.button.copyWith(color: AppTheme.primaryColor),
+  );
+
   // 影付きコンテナでボタンをラップするヘルパー
   static Widget withShadow(Widget button) {
     return Container(
