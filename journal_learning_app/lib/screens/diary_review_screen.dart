@@ -33,6 +33,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   bool _isLoading = true;
   String _detectedLanguage = '';
   bool _isAllAddedToCards = false;
+  Set<String> _addedWords = {}; // 追加された単語を管理
 
   @override
   void initState() {
@@ -448,6 +449,10 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                   
                   // StorageServiceを通じてSupabaseに保存
                   await StorageService.saveWord(word);
+                  
+                  // 追加された単語としてマーク
+                  _addedWords.add(english.toLowerCase());
+                  
                   addedCount++;
                   print('[DiaryReviewScreen] Added word to storage: $english - $japanese');
                 } catch (e) {
@@ -741,6 +746,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             children: _learnedWords.map((wordData) {
               final english = wordData['english'] ?? '';
               final japanese = wordData['japanese'] ?? '';
+              final isAdded = _addedWords.contains(english.toLowerCase());
               
               return GestureDetector(
                 onTap: () {
@@ -870,6 +876,11 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                             
                                             await StorageService.saveWord(word);
                                             
+                                            // メインの状態も更新
+                                            setState(() {
+                                              _addedWords.add(english.toLowerCase());
+                                            });
+                                            
                                             setModalState(() {
                                               isAddedToFlashcard = true;
                                             });
@@ -991,10 +1002,14 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryBlue.withOpacity(0.1),
+                    color: isAdded
+                        ? AppTheme.success.withOpacity(0.05)
+                        : AppTheme.primaryBlue.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: AppTheme.primaryBlue.withOpacity(0.3),
+                      color: isAdded
+                          ? AppTheme.success.withOpacity(0.5)
+                          : AppTheme.primaryBlue.withOpacity(0.3),
                     ),
                   ),
                   child: Row(
@@ -1002,34 +1017,19 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                     children: [
                       Container(
                         padding: const EdgeInsets.only(left: 12, top: 8, bottom: 8, right: 4),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              english,
-                              style: AppTheme.body2.copyWith(
-                                color: AppTheme.primaryBlue,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            if (japanese.isNotEmpty) ...[
-                              const SizedBox(height: 2),
-                              Text(
-                                japanese,
-                                style: AppTheme.caption.copyWith(
-                                  color: AppTheme.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ],
+                        child: Text(
+                          english,
+                          style: AppTheme.body2.copyWith(
+                            color: isAdded ? AppTheme.success : AppTheme.primaryBlue,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                       Container(
                         padding: const EdgeInsets.only(left: 4, top: 8, bottom: 8, right: 12),
                         child: Icon(
-                          Icons.add,
-                          color: AppTheme.primaryBlue,
+                          isAdded ? Icons.check : Icons.add,
+                          color: isAdded ? AppTheme.success : AppTheme.primaryBlue,
                           size: 16,
                         ),
                       ),
