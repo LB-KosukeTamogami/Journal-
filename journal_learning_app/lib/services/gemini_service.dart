@@ -537,14 +537,18 @@ $content
   "original_text": "入力文（変更なし）",
   "corrections": ["添削コメント1", "添削コメント2", ...],
   "improvements": ["改善点1", "改善点2", ...],
-  "learned_phrases": ["学習フレーズ1", "学習フレーズ2", ...]
+  "learned_words": [
+    {"english": "word1", "japanese": "単語1の意味"},
+    {"english": "word2", "japanese": "単語2の意味"}
+  ]
 }
 
 注意事項：
 - 日本語の場合は自然な英訳を提供
 - 英語で正しい場合は、corrections配列は空
 - 英語で添削が必要な場合は、具体的な改善点を含める
-- learned_phrasesには重要なフレーズや表現を含める
+- learned_wordsには重要な単語（単一の単語のみ）を英語と日本語のペアで含める
+- フレーズや熟語は含めない、単語のみ抽出
 ''';
 
       final requestBody = {
@@ -609,6 +613,19 @@ $content
           final judgment = result['judgment'] ?? '';
           final outputText = result['output_text'] ?? content;
           
+          // learned_wordsを処理
+          final learnedWords = <Map<String, String>>[];
+          if (result['learned_words'] != null) {
+            for (final word in result['learned_words']) {
+              if (word is Map && word['english'] != null && word['japanese'] != null) {
+                learnedWords.add({
+                  'english': word['english'].toString(),
+                  'japanese': word['japanese'].toString(),
+                });
+              }
+            }
+          }
+          
           return {
             'judgment': judgment,
             'detected_language': result['detected_language'] ?? 'en',
@@ -617,7 +634,8 @@ $content
             'original': content,
             'corrections': List<String>.from(result['corrections'] ?? []),
             'improvements': List<String>.from(result['improvements'] ?? []),
-            'learned_phrases': List<String>.from(result['learned_phrases'] ?? []),
+            'learned_words': learnedWords,
+            'learned_phrases': [], // 後方互換性のため空配列を保持
           };
         }
       }

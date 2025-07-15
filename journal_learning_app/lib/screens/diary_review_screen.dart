@@ -29,7 +29,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   String _originalText = '';
   List<String> _corrections = [];
   List<String> _improvements = [];
-  List<String> _learnedPhrases = [];
+  List<Map<String, String>> _learnedWords = [];
   bool _isLoading = true;
   String _detectedLanguage = '';
 
@@ -54,7 +54,12 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
         _originalText = widget.entry.content;
         _corrections = List<String>.from(result['corrections'] ?? []);
         _improvements = List<String>.from(result['improvements'] ?? []);
-        _learnedPhrases = List<String>.from(result['learned_phrases'] ?? []);
+        
+        // learned_wordsを処理
+        if (result['learned_words'] != null) {
+          _learnedWords = List<Map<String, String>>.from(result['learned_words']);
+        }
+        
         _isLoading = false;
       });
     } catch (e) {
@@ -162,15 +167,15 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                   if (_corrections.isNotEmpty || _improvements.isNotEmpty)
                     const SizedBox(height: 20),
                   
-                  // 学習フレーズ（ある場合）
-                  if (_learnedPhrases.isNotEmpty)
-                    _buildLearningPhrasesSection(),
+                  // 重要単語（ある場合）
+                  if (_learnedWords.isNotEmpty)
+                    _buildLearningWordsSection(),
                   
-                  if (_learnedPhrases.isNotEmpty)
+                  if (_learnedWords.isNotEmpty)
                     const SizedBox(height: 20),
                   
                   // 単語を学習カードに追加するボタン
-                  if (_learnedPhrases.isNotEmpty)
+                  if (_learnedWords.isNotEmpty)
                     _buildAddToCardsButton(),
                 ],
               ),
@@ -183,37 +188,74 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: () async {
-          // 重要フレーズを単語カードとして保存
+          // ローディング表示
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => Center(
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppTheme.backgroundPrimary,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(color: AppTheme.primaryBlue),
+                    const SizedBox(height: 16),
+                    Text('単語を追加中...', style: AppTheme.body2),
+                  ],
+                ),
+              ),
+            ),
+          );
+          
+          // すべての重要単語を学習カードとして保存
           int addedCount = 0;
-          for (final phrase in _learnedPhrases) {
-            // フレーズを解析して英語と日本語に分離
-            final match = RegExp(r'^(.+?)\s*\((.+?)\)$').firstMatch(phrase);
-            if (match != null) {
-              final english = match.group(1)?.trim() ?? '';
-              final japanese = match.group(2)?.trim() ?? '';
-              
-              if (english.isNotEmpty && japanese.isNotEmpty) {
+          for (final wordData in _learnedWords) {
+            final english = wordData['english'] ?? '';
+            final japanese = wordData['japanese'] ?? '';
+            
+            if (english.isNotEmpty && japanese.isNotEmpty) {
+              try {
                 final word = Word(
                   id: const Uuid().v4(),
                   english: english,
                   japanese: japanese,
+                  diaryEntryId: widget.entry.id,
                   createdAt: DateTime.now(),
                   masteryLevel: 0,
+                  reviewCount: 0,
+                  isMastered: false,
+                  category: WordCategory.other,
                 );
+                
+                // StorageServiceを通じてSupabaseに保存
                 await StorageService.saveWord(word);
                 addedCount++;
+                print('[DiaryReviewScreen] Added word to storage: $english - $japanese');
+              } catch (e) {
+                print('[DiaryReviewScreen] Error saving word: $e');
               }
             }
           }
+          
+          // ダイアログを閉じる
+          if (mounted) Navigator.pop(context);
           
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  '$addedCount個のフレーズを学習カードに追加しました',
+                  '$addedCount個の単語を学習カードに追加しました',
                   style: AppTheme.body2.copyWith(color: Colors.white),
                 ),
                 backgroundColor: AppTheme.success,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             );
           }
@@ -227,7 +269,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
           ),
         ),
         icon: const Icon(Icons.add_card),
-        label: Text('学習カードに追加', style: AppTheme.button),
+        label: Text('学習カードにすべて追加', style: AppTheme.button),
       ),
     ).animate().fadeIn(delay: 800.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
@@ -416,8 +458,8 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     ).animate().fadeIn(delay: 500.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
-  // 学習フレーズ
-  Widget _buildLearningPhrasesSection() {
+  // 重要単語
+  Widget _buildLearningWordsSection() {
     return AppCard(
       backgroundColor: AppTheme.info.withOpacity(0.05),
       child: Column(
@@ -432,7 +474,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                '重要フレーズ',
+                '重要単語',
                 style: AppTheme.body1.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppTheme.info,
@@ -444,19 +486,31 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: _learnedPhrases.map((phrase) => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            children: _learnedWords.map((wordData) => Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: AppTheme.info.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: AppTheme.info.withOpacity(0.3)),
               ),
-              child: Text(
-                phrase,
-                style: AppTheme.caption.copyWith(
-                  color: AppTheme.info,
-                  fontWeight: FontWeight.w500,
-                ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    wordData['english'] ?? '',
+                    style: AppTheme.body2.copyWith(
+                      color: AppTheme.info,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    wordData['japanese'] ?? '',
+                    style: AppTheme.caption.copyWith(
+                      color: AppTheme.info.withOpacity(0.8),
+                    ),
+                  ),
+                ],
               ),
             )).toList(),
           ),
@@ -466,9 +520,9 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   }
 
   Widget _buildLearningPointsSection() {
-    // 学習したフレーズがある場合はそれを表示、なければデフォルト
-    final points = _learnedPhrases.isNotEmpty 
-        ? _learnedPhrases
+    // デフォルトの学習ポイントを表示
+    final points = _learnedWords.isNotEmpty 
+        ? ['単語の意味を確認しながら学習しましょう', '繰り返し復習することで定着します', '文脈から単語の使い方を理解しましょう']
         : widget.detectedLanguage == 'ja' 
             ? [
                 '自然な英語表現を学びました',
