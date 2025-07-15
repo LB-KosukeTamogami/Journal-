@@ -723,44 +723,162 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               
               return GestureDetector(
                 onTap: () {
-                  // モーダルを下から表示
+                  // モーダルを下から表示（日記詳細画面と同じデザインに統一）
                   showModalBottomSheet(
                     context: context,
+                    isScrollControlled: true,
                     backgroundColor: Colors.transparent,
                     builder: (context) => Container(
-                      margin: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: AppTheme.backgroundPrimary,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 20,
+                            offset: const Offset(0, -5),
+                          ),
+                        ],
                       ),
+                      padding: const EdgeInsets.all(20),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 16),
-                          Container(
-                            width: 40,
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: AppTheme.textSecondary.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(2),
+                          // ハンドル
+                          Center(
+                            child: Container(
+                              width: 40,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: AppTheme.textTertiary,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
                             ),
                           ),
+                          const SizedBox(height: 20),
+                          
+                          // 単語と品詞、音声ボタン
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      english,
+                                      style: AppTheme.headline2,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    // 日本語の意味
+                                    Text(
+                                      japanese,
+                                      style: AppTheme.body1.copyWith(fontSize: 18),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              // 品詞バッジ
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.info.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: AppTheme.info.withOpacity(0.3),
+                                  ),
+                                ),
+                                child: Text(
+                                  '単語', // TODO: 実際の品詞情報を取得して表示
+                                  style: AppTheme.caption.copyWith(
+                                    color: AppTheme.info,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              // 音声読み上げボタン
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryBlue.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: IconButton(
+                                  onPressed: () {
+                                    // TODO: 音声読み上げ機能を実装
+                                  },
+                                  icon: Icon(
+                                    Icons.volume_up,
+                                    color: AppTheme.primaryBlue,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          
                           const SizedBox(height: 24),
-                          Text(
-                            english,
-                            style: AppTheme.headline2.copyWith(
-                              color: AppTheme.primaryBlue,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          
+                          // アクションボタン
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () async {
+                                    // 学習カードに追加
+                                    Navigator.pop(context);
+                                    // TODO: 学習カード追加処理を実装
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('学習カードに追加しました'),
+                                        backgroundColor: AppTheme.success,
+                                      ),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppTheme.success,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  icon: const Icon(Icons.add_card, size: 18),
+                                  label: Text('学習カード'),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () async {
+                                    // 単語帳に追加
+                                    Navigator.pop(context);
+                                    // TODO: 単語帳追加処理を実装
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('単語帳に追加しました'),
+                                        backgroundColor: AppTheme.primaryBlue,
+                                      ),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppTheme.primaryBlue,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  icon: const Icon(Icons.bookmark_add, size: 18),
+                                  label: Text('単語帳'),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            japanese,
-                            style: AppTheme.body1.copyWith(
-                              color: AppTheme.textSecondary,
-                            ),
-                          ),
-                          const SizedBox(height: 32),
+                          
+                          const SizedBox(height: 20),
                         ],
                       ),
                     ),
