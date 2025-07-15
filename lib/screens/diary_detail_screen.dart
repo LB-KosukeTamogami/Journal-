@@ -1066,14 +1066,255 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  if (RegExp(r'^[a-zA-Z\s-]+$').hasMatch(info.text.trim())) {
-                                    // 英語の単語の場合、日本語辞書ダイアログを表示
-                                    JapaneseDictionaryDialog.show(
-                                      context, 
-                                      info.text.trim(),
-                                      providedTranslation: info.translation.isNotEmpty ? info.translation : null,
-                                    );
-                                  }
+                                  // モーダルを下から表示（レビュー画面と同じデザインに統一）
+                                  bool isAddedToFlashcard = isSaved;
+                                  bool isAddedToVocabulary = false;
+                                  
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    backgroundColor: Colors.transparent,
+                                    builder: (context) => StatefulBuilder(
+                                      builder: (context, setModalState) {
+                                        
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                            color: AppTheme.backgroundPrimary,
+                                            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(0.1),
+                                                blurRadius: 20,
+                                                offset: const Offset(0, -5),
+                                              ),
+                                            ],
+                                          ),
+                                          padding: const EdgeInsets.all(20),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              // ハンドル
+                                              Center(
+                                                child: Container(
+                                                  width: 40,
+                                                  height: 4,
+                                                  decoration: BoxDecoration(
+                                                    color: AppTheme.textTertiary,
+                                                    borderRadius: BorderRadius.circular(2),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 20),
+                                              
+                                              // 単語と品詞、音声ボタン
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          info.text,
+                                                          style: AppTheme.headline2,
+                                                        ),
+                                                        const SizedBox(height: 8),
+                                                        // 日本語の意味
+                                                        Text(
+                                                          info.translation.isNotEmpty ? info.translation : '[意味を確認中]',
+                                                          style: AppTheme.body1.copyWith(fontSize: 18),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  // 品詞バッジ
+                                                  Container(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                                    decoration: BoxDecoration(
+                                                      color: AppTheme.info.withOpacity(0.1),
+                                                      borderRadius: BorderRadius.circular(12),
+                                                      border: Border.all(
+                                                        color: AppTheme.info.withOpacity(0.3),
+                                                      ),
+                                                    ),
+                                                    child: Text(
+                                                      _getPartOfSpeech(info.text),
+                                                      style: AppTheme.caption.copyWith(
+                                                        color: AppTheme.info,
+                                                        fontWeight: FontWeight.w600,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  // 音声読み上げボタン
+                                                  Container(
+                                                    decoration: BoxDecoration(
+                                                      color: AppTheme.primaryBlue.withOpacity(0.1),
+                                                      borderRadius: BorderRadius.circular(20),
+                                                    ),
+                                                    child: IconButton(
+                                                      onPressed: () {
+                                                        // TODO: 音声読み上げ機能を実装
+                                                      },
+                                                      icon: Icon(
+                                                        Icons.volume_up,
+                                                        color: AppTheme.primaryBlue,
+                                                        size: 20,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              
+                                              const SizedBox(height: 24),
+                                              
+                                              // アクションボタン（統一デザイン）
+                                              Column(
+                                                children: [
+                                                  AppButtonStyles.withShadow(
+                                                    OutlinedButton.icon(
+                                                        onPressed: isAddedToFlashcard ? null : () async {
+                                                          // 学習カードに追加
+                                                          try {
+                                                            final word = Word(
+                                                              id: const Uuid().v4(),
+                                                              english: info.text.trim(),
+                                                              japanese: info.translation.isNotEmpty ? info.translation : '[意味を確認中]',
+                                                              diaryEntryId: widget.entry.id,
+                                                              createdAt: DateTime.now(),
+                                                              masteryLevel: 0,
+                                                              reviewCount: 0,
+                                                              isMastered: false,
+                                                              category: info.isPhrase ? WordCategory.phrase : WordCategory.other,
+                                                            );
+                                                            
+                                                            await StorageService.saveWord(word);
+                                                            
+                                                            // メインの状態も更新
+                                                            setState(() {
+                                                              _savedWords.add(info.text.trim().toLowerCase());
+                                                            });
+                                                            
+                                                            setModalState(() {
+                                                              isAddedToFlashcard = true;
+                                                            });
+                                                            
+                                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                              SnackBar(
+                                                                content: Text('学習カードに追加しました'),
+                                                                backgroundColor: AppTheme.success,
+                                                                behavior: SnackBarBehavior.floating,
+                                                                shape: RoundedRectangleBorder(
+                                                                  borderRadius: BorderRadius.circular(8),
+                                                                ),
+                                                              ),
+                                                            );
+                                                          } catch (e) {
+                                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                              SnackBar(
+                                                                content: Text('エラーが発生しました'),
+                                                                backgroundColor: AppTheme.error,
+                                                              ),
+                                                            );
+                                                          }
+                                                        },
+                                                        style: isAddedToFlashcard
+                                                          ? AppButtonStyles.modalSecondaryButton.copyWith(
+                                                              backgroundColor: MaterialStateProperty.all(Colors.white),
+                                                              foregroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
+                                                              side: MaterialStateProperty.all(BorderSide(color: AppTheme.primaryColor, width: 2)),
+                                                            )
+                                                          : AppButtonStyles.modalSecondaryButton.copyWith(
+                                                              backgroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
+                                                              foregroundColor: MaterialStateProperty.all(Colors.white),
+                                                            ),
+                                                        icon: Icon(
+                                                          isAddedToFlashcard ? Icons.check_circle : Icons.add_card,
+                                                          size: 20,
+                                                          color: isAddedToFlashcard ? AppTheme.primaryColor : Colors.white,
+                                                        ),
+                                                        label: Text(
+                                                          isAddedToFlashcard ? '学習カードに追加済み' : '学習カードに追加',
+                                                          style: TextStyle(
+                                                            color: isAddedToFlashcard ? AppTheme.primaryColor : Colors.white,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                  ),
+                                                  const SizedBox(height: 12),
+                                                  AppButtonStyles.withShadow(
+                                                    ElevatedButton.icon(
+                                                        onPressed: isAddedToVocabulary ? null : () async {
+                                                          // 単語帳に追加
+                                                          try {
+                                                            final flashcard = Flashcard(
+                                                              id: DateTime.now().millisecondsSinceEpoch.toString(),
+                                                              word: info.text,
+                                                              meaning: info.translation.isNotEmpty ? info.translation : '[意味を確認中]',
+                                                              exampleSentence: '',
+                                                              createdAt: DateTime.now(),
+                                                              lastReviewed: DateTime.now(),
+                                                              nextReviewDate: DateTime.now().add(Duration(days: 1)),
+                                                              reviewCount: 0,
+                                                            );
+                                                            
+                                                            await StorageService.saveFlashcard(flashcard);
+                                                            
+                                                            setModalState(() {
+                                                              isAddedToVocabulary = true;
+                                                            });
+                                                            
+                                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                              SnackBar(
+                                                                content: Text('単語帳に追加しました'),
+                                                                backgroundColor: AppTheme.primaryBlue,
+                                                                behavior: SnackBarBehavior.floating,
+                                                                shape: RoundedRectangleBorder(
+                                                                  borderRadius: BorderRadius.circular(8),
+                                                                ),
+                                                              ),
+                                                            );
+                                                          } catch (e) {
+                                                            ScaffoldMessenger.of(context).showSnackBar(
+                                                              SnackBar(
+                                                                content: Text('エラーが発生しました'),
+                                                                backgroundColor: AppTheme.error,
+                                                              ),
+                                                            );
+                                                          }
+                                                        },
+                                                        style: isAddedToVocabulary
+                                                          ? AppButtonStyles.modalSuccessButton.copyWith(
+                                                              backgroundColor: MaterialStateProperty.all(Colors.white),
+                                                              foregroundColor: MaterialStateProperty.all(AppTheme.success),
+                                                              side: MaterialStateProperty.all(BorderSide(color: AppTheme.success, width: 2)),
+                                                            )
+                                                          : AppButtonStyles.modalSuccessButton,
+                                                        icon: Icon(
+                                                          isAddedToVocabulary ? Icons.check_circle : Icons.style,
+                                                          size: 20,
+                                                          color: isAddedToVocabulary ? AppTheme.success : Colors.white,
+                                                        ),
+                                                        label: Text(
+                                                          isAddedToVocabulary ? '単語帳に追加済み' : '単語帳に追加',
+                                                          style: TextStyle(
+                                                            color: isAddedToVocabulary ? AppTheme.success : Colors.white,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                  ),
+                                                ],
+                                              ),
+                                              
+                                              const SizedBox(height: 20),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  );
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.only(left: 12, top: 8, bottom: 8, right: 4),
@@ -1299,6 +1540,68 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       }
     }
     return true;
+  }
+  
+  // 品詞を判定する
+  String _getPartOfSpeech(String word) {
+    final lowerWord = word.toLowerCase();
+    
+    // 動詞の判定
+    if (lowerWord.endsWith('ing') || lowerWord.endsWith('ed') || 
+        lowerWord.endsWith('es') || lowerWord.endsWith('s') ||
+        ['go', 'went', 'come', 'came', 'take', 'took', 'make', 'made', 
+         'get', 'got', 'see', 'saw', 'know', 'knew', 'think', 'thought',
+         'feel', 'felt', 'work', 'run', 'walk', 'talk', 'play', 'study',
+         'learn', 'teach', 'read', 'write', 'listen', 'speak', 'watch',
+         'look', 'find', 'help', 'try', 'start', 'stop', 'open', 'close',
+         'clean', 'realize', 'forget'].contains(lowerWord)) {
+      return '動詞';
+    }
+    
+    // 形容詞の判定
+    if (lowerWord.endsWith('ful') || lowerWord.endsWith('less') || 
+        lowerWord.endsWith('ing') || lowerWord.endsWith('ed') ||
+        lowerWord.endsWith('ous') || lowerWord.endsWith('ive') ||
+        lowerWord.endsWith('ly') ||
+        ['good', 'bad', 'big', 'small', 'new', 'old', 'young', 'long',
+         'short', 'high', 'low', 'fast', 'slow', 'easy', 'hard', 'hot',
+         'cold', 'warm', 'cool', 'great', 'wonderful', 'terrible', 'worst',
+         'best', 'better', 'worse', 'happy', 'sad', 'angry', 'excited',
+         'tired', 'beautiful', 'ugly', 'important', 'interesting', 'boring'].contains(lowerWord)) {
+      return '形容詞';
+    }
+    
+    // 副詞の判定
+    if (lowerWord.endsWith('ly') ||
+        ['today', 'yesterday', 'tomorrow', 'now', 'then', 'here', 'there',
+         'always', 'never', 'sometimes', 'often', 'usually', 'very', 'quite',
+         'really', 'actually', 'finally', 'suddenly', 'carefully', 'quickly'].contains(lowerWord)) {
+      return '副詞';
+    }
+    
+    // 前置詞の判定
+    if (['in', 'on', 'at', 'to', 'for', 'with', 'by', 'from', 'of', 'about',
+         'after', 'before', 'during', 'under', 'over', 'between', 'among',
+         'through', 'into', 'onto', 'upon', 'within', 'without'].contains(lowerWord)) {
+      return '前置詞';
+    }
+    
+    // 接続詞の判定
+    if (['and', 'or', 'but', 'so', 'because', 'although', 'while', 'when',
+         'if', 'unless', 'since', 'until', 'though', 'whereas'].contains(lowerWord)) {
+      return '接続詞';
+    }
+    
+    // 代名詞の判定
+    if (['i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her',
+         'us', 'them', 'my', 'your', 'his', 'her', 'its', 'our', 'their',
+         'mine', 'yours', 'hers', 'ours', 'theirs', 'this', 'that', 'these',
+         'those', 'who', 'what', 'which', 'where', 'when', 'why', 'how'].contains(lowerWord)) {
+      return '代名詞';
+    }
+    
+    // デフォルトは名詞
+    return '名詞';
   }
   
   void _showWordDetail(String english, String japanese) {
