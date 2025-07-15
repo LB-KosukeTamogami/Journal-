@@ -555,7 +555,7 @@ Note:
         throw Exception('Gemini API key not found');
       }
 
-      const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+      const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
       
       final prompt = '''
 あなたは英語教師です。以下の文が日本語であれば英訳してください。
@@ -598,6 +598,7 @@ $content
           "topK": 40,
           "topP": 0.95,
           "maxOutputTokens": 2048,
+          "responseMimeType": "application/json",
         },
         "safetySettings": [
           {
@@ -619,12 +620,14 @@ $content
         ]
       };
 
+      print('[GeminiService] Sending request to Gemini API...');
       final response = await http.post(
         Uri.parse('$apiUrl?key=$apiKey'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
 
+      print('[GeminiService] Response status: ${response.statusCode}');
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['candidates'] != null && 
@@ -634,6 +637,7 @@ $content
             data['candidates'][0]['content']['parts'].isNotEmpty) {
           
           final text = data['candidates'][0]['content']['parts'][0]['text'];
+          print('[GeminiService] Raw response text: $text');
           
           // JSONを抽出（マークダウンコードブロックなどを除去）
           String jsonText = text.trim();
@@ -643,7 +647,14 @@ $content
             jsonText = jsonText.split('```')[1].split('```')[0].trim();
           }
           
-          final result = jsonDecode(jsonText);
+          Map<String, dynamic> result;
+          try {
+            result = jsonDecode(jsonText);
+          } catch (jsonError) {
+            print('[GeminiService] JSON parse error: $jsonError');
+            print('[GeminiService] JSON text: $jsonText');
+            throw Exception('Failed to parse JSON response');
+          }
           
           // 判定に基づいて結果を整形
           final judgment = result['judgment'] ?? '';
@@ -674,11 +685,13 @@ $content
             'learned_phrases': [], // 後方互換性のため空配列を保持
           };
         }
+      } else {
+        print('[GeminiService] API Error Response: ${response.body}');
       }
       
-      throw Exception('Failed to get response from Gemini API');
+      throw Exception('Failed to get response from Gemini API: ${response.statusCode}');
     } catch (e) {
-      print('Error in correctAndTranslate: $e');
+      print('[GeminiService] Error in correctAndTranslate: $e');
       // エラー時は入力をそのまま返す
       return {
         'judgment': 'エラー',
@@ -688,7 +701,8 @@ $content
         'original': content,
         'corrections': [],
         'improvements': [],
-        'learned_phrases': [],
+        'learned_words': [],
+        'learned_phrases': [], // 後方互換性のため
       };
     }
   }
