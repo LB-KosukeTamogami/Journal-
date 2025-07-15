@@ -1229,12 +1229,7 @@ class _WordDetailModalState extends State<_WordDetailModal> {
                   Navigator.pop(context);
                   _deleteWord(widget.word);
                 },
-                style: AppButtonStyles.modalSecondaryButton.copyWith(
-                  foregroundColor: MaterialStateProperty.all(AppTheme.error),
-                  side: MaterialStateProperty.all(
-                    BorderSide(color: AppTheme.error, width: 2),
-                  ),
-                ),
+                style: AppButtonStyles.modalErrorButton,
                 icon: Icon(Icons.delete_outline, size: 20, color: AppTheme.error),
                 label: Text(
                   '削除',

@@ -384,6 +384,32 @@ class AppButtonStyles {
     textStyle: AppTheme.button.copyWith(color: AppTheme.primaryColor),
   );
 
+  // モーダル専用エラーボタンスタイル（不透明な白い背景）
+  static ButtonStyle modalErrorButton = OutlinedButton.styleFrom(
+    backgroundColor: Colors.white, // 不透明な白い背景
+    foregroundColor: AppTheme.error,
+    side: BorderSide(color: AppTheme.error, width: 2),
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+    minimumSize: const Size(double.infinity, 56), // 高さ56pxを確保
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    textStyle: AppTheme.button.copyWith(color: AppTheme.error),
+  );
+
+  // モーダル専用成功ボタンスタイル（不透明な背景）
+  static ButtonStyle modalSuccessButton = ElevatedButton.styleFrom(
+    backgroundColor: AppTheme.success,
+    foregroundColor: Colors.white,
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+    minimumSize: const Size(double.infinity, 56), // 高さ56pxを確保
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    elevation: 0,
+    textStyle: AppTheme.button,
+  );
+
   // 影付きコンテナでボタンをラップするヘルパー
   static Widget withShadow(Widget button) {
     return Container(

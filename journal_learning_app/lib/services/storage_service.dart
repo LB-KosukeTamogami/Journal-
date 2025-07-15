@@ -214,6 +214,12 @@ class StorageService {
     await prefs.setString(_flashcardsKey, jsonString);
   }
 
+  static Future<void> deleteFlashcard(String id) async {
+    final flashcards = await getFlashcards();
+    final filteredFlashcards = flashcards.where((f) => f.id != id).toList();
+    await saveFlashcards(filteredFlashcards);
+  }
+
   static Future<void> clearAll() async {
     await prefs.clear();
   }

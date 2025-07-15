@@ -889,6 +889,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                         icon: Icon(
                                           isAddedToFlashcard ? Icons.check_circle : Icons.collections_bookmark,
                                           size: 20,
+                                          color: isAddedToFlashcard ? AppTheme.success : AppTheme.primaryColor,
                                         ),
                                         label: Text(
                                           isAddedToFlashcard ? '学習カードに追加済み' : '学習カードに追加',
@@ -938,17 +939,16 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                           }
                                         },
                                         style: isAddedToVocabulary
-                                          ? AppButtonStyles.modalPrimaryButton.copyWith(
+                                          ? AppButtonStyles.modalSuccessButton.copyWith(
                                               backgroundColor: MaterialStateProperty.all(
                                                 AppTheme.success.withOpacity(0.8),
                                               ),
                                             )
-                                          : AppButtonStyles.modalPrimaryButton.copyWith(
-                                              backgroundColor: MaterialStateProperty.all(AppTheme.success),
-                                            ),
+                                          : AppButtonStyles.modalSuccessButton,
                                         icon: Icon(
                                           isAddedToVocabulary ? Icons.check_circle : Icons.book,
                                           size: 20,
+                                          color: Colors.white,
                                         ),
                                         label: Text(
                                           isAddedToVocabulary ? '単語帳に追加済み' : '単語帳に追加',

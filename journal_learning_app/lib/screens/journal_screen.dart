@@ -6,6 +6,7 @@ import 'dart:math' as Math;
 import 'diary_creation_screen.dart';
 import 'diary_detail_screen.dart';
 import 'conversation_journal_screen.dart';
+import 'vocabulary_screen.dart';
 import '../models/diary_entry.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
@@ -130,7 +131,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ConversationJournalScreen(),
+                    builder: (context) => const VocabularyScreen(),
                   ),
                 );
               },
@@ -142,7 +143,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
-                  Icons.chat_bubble_outline,
+                  Icons.book,
                   color: AppTheme.secondaryColor,
                   size: 20,
                 ),
