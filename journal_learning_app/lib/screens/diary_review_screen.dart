@@ -836,8 +836,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                               // アクションボタン（統一デザイン）
                               Column(
                                 children: [
-                                  AppButtonStyles.withShadow(
-                                    OutlinedButton.icon(
+                                  OutlinedButton.icon(
                                         onPressed: isAddedToFlashcard ? null : () async {
                                           // 学習カードに追加
                                           try {
@@ -894,10 +893,8 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                           isAddedToFlashcard ? '学習カードに追加済み' : '学習カードに追加',
                                         ),
                                       ),
-                                  ),
                                   const SizedBox(height: 12),
-                                  AppButtonStyles.withShadow(
-                                    ElevatedButton.icon(
+                                  ElevatedButton.icon(
                                         onPressed: isAddedToVocabulary ? null : () async {
                                           // 単語帳に追加
                                           try {
@@ -954,7 +951,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                           isAddedToVocabulary ? '単語帳に追加済み' : '単語帳に追加',
                                         ),
                                       ),
-                                  ),
                                 ],
                               ),
                               

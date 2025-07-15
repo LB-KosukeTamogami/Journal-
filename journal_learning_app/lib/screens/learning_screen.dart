@@ -1186,8 +1186,7 @@ class _WordDetailModalState extends State<_WordDetailModal> {
             ),
             const SizedBox(height: 20),
             // 単語帳に登録ボタン
-            AppButtonStyles.withShadow(
-              ElevatedButton.icon(
+            ElevatedButton.icon(
                 onPressed: () async {
                   // フラッシュカードに登録
                   final flashcard = Flashcard(
@@ -1220,11 +1219,9 @@ class _WordDetailModalState extends State<_WordDetailModal> {
                 icon: const Icon(Icons.bookmark_add, size: 20),
                 label: const Text('単語帳に登録'),
               ),
-            ),
             const SizedBox(height: 12),
             // 削除ボタン
-            AppButtonStyles.withShadow(
-              OutlinedButton.icon(
+            OutlinedButton.icon(
                 onPressed: () {
                   Navigator.pop(context);
                   _deleteWord(widget.word);
@@ -1241,7 +1238,6 @@ class _WordDetailModalState extends State<_WordDetailModal> {
                   style: AppTheme.body2.copyWith(color: AppTheme.error),
                 ),
               ),
-            ),
             const SizedBox(height: 20),
           ],
         ),
