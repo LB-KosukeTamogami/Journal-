@@ -332,7 +332,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
           borderRadius: BorderRadius.circular(16),
         ),
         child: FloatingActionButton.extended(
-          onPressed: () {
+          onPressed: () async {
             // 選択された日付が未来日でないことを確認
             if (_selectedDay != null && _selectedDay!.isAfter(DateTime.now())) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -348,12 +348,17 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
               return;
             }
             
-            Navigator.push(
+            final result = await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => const DiaryCreationScreen(),
               ),
             );
+            
+            // 日記作成完了後、最新データを再読み込み
+            if (result == true) {
+              await _loadEntries();
+            }
           },
           backgroundColor: AppTheme.primaryColor,
           icon: const Icon(Icons.add, color: Colors.white),

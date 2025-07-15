@@ -173,7 +173,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
           print('[DiaryCreation] Entry ID: ${entry.id}');
           print('[DiaryCreation] Detected language: $_detectedLanguage');
           
-          await Navigator.push(
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => DiaryReviewScreen(
@@ -183,6 +183,11 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
             ),
           );
           print('[DiaryCreation] Returned from review screen');
+          
+          // レビュー画面から完了ボタンで戻った場合、ジャーナル画面に戻る
+          if (result == true && mounted) {
+            Navigator.pop(context, true); // ジャーナル画面に更新を通知
+          }
         }
       }
     } catch (e) {

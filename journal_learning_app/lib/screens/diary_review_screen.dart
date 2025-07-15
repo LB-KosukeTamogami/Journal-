@@ -32,6 +32,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   List<Map<String, String>> _learnedWords = [];
   bool _isLoading = true;
   String _detectedLanguage = '';
+  bool _isAllAddedToCards = false;
 
   @override
   void initState() {
@@ -96,16 +97,9 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
             child: ElevatedButton(
               onPressed: () {
-                // ジャーナル画面（日記一覧）に戻る
-                // JournalScreen -> DiaryCreationScreen -> DiaryReviewScreen の順で遷移しているので
-                // JournalScreenまで戻る
-                print('[DiaryReviewScreen] Completion button pressed, navigating back to journal screen');
-                int count = 0;
-                Navigator.of(context).popUntil((route) {
-                  count++;
-                  print('[DiaryReviewScreen] Pop count: $count, route: ${route.settings.name}');
-                  return count == 3 || route.isFirst;
-                });
+                // レビュー画面から日記作成画面に結果を返す
+                print('[DiaryReviewScreen] Completion button pressed, returning to diary creation screen');
+                Navigator.of(context).pop(true);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.success,
@@ -408,7 +402,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
       child: SizedBox(
         width: double.infinity,
         child: ElevatedButton.icon(
-          onPressed: () async {
+          onPressed: _isAllAddedToCards ? null : () async {
             // ローディング表示
             showDialog(
               context: context,
@@ -466,6 +460,10 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             if (mounted) Navigator.pop(context);
             
             if (mounted) {
+              setState(() {
+                _isAllAddedToCards = true;
+              });
+              
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
@@ -481,9 +479,15 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               );
             }
           },
-          style: AppButtonStyles.primaryButton,
-          icon: const Icon(Icons.add_card, color: Colors.white),
-          label: Text('学習カードにすべて追加', style: AppTheme.button),
+          style: _isAllAddedToCards ? AppButtonStyles.modalSuccessButton : AppButtonStyles.primaryButton,
+          icon: Icon(
+            _isAllAddedToCards ? Icons.check_circle : Icons.add_card,
+            color: Colors.white,
+          ),
+          label: Text(
+            _isAllAddedToCards ? '学習カードに追加済み' : '学習カードにすべて追加',
+            style: AppTheme.button,
+          ),
         ),
       ),
     ).animate().fadeIn(delay: 800.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
@@ -879,17 +883,12 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                           }
                                         },
                                         style: isAddedToFlashcard
-                                          ? AppButtonStyles.modalSecondaryButton.copyWith(
-                                              foregroundColor: MaterialStateProperty.all(AppTheme.success),
-                                              side: MaterialStateProperty.all(
-                                                BorderSide(color: AppTheme.success, width: 2),
-                                              ),
-                                            )
+                                          ? AppButtonStyles.modalSuccessButton
                                           : AppButtonStyles.modalSecondaryButton,
                                         icon: Icon(
                                           isAddedToFlashcard ? Icons.check_circle : Icons.collections_bookmark,
                                           size: 20,
-                                          color: isAddedToFlashcard ? AppTheme.success : AppTheme.primaryColor,
+                                          color: isAddedToFlashcard ? Colors.white : AppTheme.primaryColor,
                                         ),
                                         label: Text(
                                           isAddedToFlashcard ? '学習カードに追加済み' : '学習カードに追加',
