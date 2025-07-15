@@ -1261,7 +1261,7 @@ class _WordDetailModalState extends State<_WordDetailModal> {
                     )
                   : AppButtonStyles.modalSuccessButton,
                 icon: Icon(
-                  _isAddedToVocabulary ? Icons.check_circle : Icons.book,
+                  _isAddedToVocabulary ? Icons.check_circle : Icons.style,
                   size: 20,
                   color: _isAddedToVocabulary ? AppTheme.success : Colors.white,
                 ),
