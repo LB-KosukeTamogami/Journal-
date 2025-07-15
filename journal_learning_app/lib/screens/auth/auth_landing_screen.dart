@@ -90,10 +90,8 @@ class AuthLandingScreen extends StatelessWidget {
               Column(
                 children: [
                   // 新規登録ボタン
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
+                  AppButtonStyles.withShadow(
+                    ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -102,29 +100,18 @@ class AuthLandingScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryColor,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 2,
-                      ),
-                      child: const Text(
-                        '新規登録',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                      style: AppButtonStyles.primaryButton.copyWith(
+                        textStyle: MaterialStateProperty.all(
+                          AppTheme.button.copyWith(fontSize: 18),
                         ),
                       ),
+                      child: const Text('新規登録'),
                     ),
                   ),
                   const SizedBox(height: 16),
                   // ログインボタン
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: OutlinedButton(
+                  AppButtonStyles.withShadow(
+                    OutlinedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -133,23 +120,15 @@ class AuthLandingScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppTheme.primaryColor,
-                        side: BorderSide(
-                          color: AppTheme.primaryColor,
-                          width: 2,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                      style: AppButtonStyles.secondaryButton.copyWith(
+                        textStyle: MaterialStateProperty.all(
+                          AppTheme.button.copyWith(
+                            fontSize: 18,
+                            color: AppTheme.primaryColor,
+                          ),
                         ),
                       ),
-                      child: const Text(
-                        'ログイン',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      child: const Text('ログイン'),
                     ),
                   ),
                 ],

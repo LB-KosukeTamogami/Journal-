@@ -261,14 +261,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               padding: const EdgeInsets.all(20),
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
+                style: AppButtonStyles.primaryButton,
                 child: const Text('閉じる'),
               ),
             ),

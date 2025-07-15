@@ -248,6 +248,118 @@ class PrimaryButton extends StatelessWidget {
   }
 }
 
+// セカンダリボタンコンポーネント
+class SecondaryButton extends StatelessWidget {
+  final String text;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+  final IconData? icon;
+  final bool fullWidth;
+
+  const SecondaryButton({
+    Key? key,
+    required this.text,
+    this.onPressed,
+    this.isLoading = false,
+    this.icon,
+    this.fullWidth = true,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: fullWidth ? double.infinity : null,
+      decoration: BoxDecoration(
+        boxShadow: AppTheme.buttonShadow,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: OutlinedButton(
+        onPressed: isLoading ? null : onPressed,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppTheme.primaryColor,
+          side: BorderSide(color: AppTheme.primaryColor, width: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        child: isLoading
+            ? SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+                ),
+              )
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (icon != null) ...[
+                    Icon(icon, size: 20),
+                    const SizedBox(width: 8),
+                  ],
+                  Text(
+                    text,
+                    style: AppTheme.button.copyWith(color: AppTheme.primaryColor),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+}
+
+// 統一されたElevatedButtonスタイル関数
+class AppButtonStyles {
+  // プライマリボタンスタイル
+  static ButtonStyle primaryButton = ElevatedButton.styleFrom(
+    backgroundColor: AppTheme.primaryColor,
+    foregroundColor: Colors.white,
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    elevation: 0,
+    textStyle: AppTheme.button,
+  );
+
+  // セカンダリボタンスタイル  
+  static ButtonStyle secondaryButton = OutlinedButton.styleFrom(
+    foregroundColor: AppTheme.primaryColor,
+    side: BorderSide(color: AppTheme.primaryColor, width: 2),
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    textStyle: AppTheme.button.copyWith(color: AppTheme.primaryColor),
+  );
+
+  // 小さいボタンスタイル（modal内等で使用）
+  static ButtonStyle smallButton = ElevatedButton.styleFrom(
+    backgroundColor: AppTheme.primaryColor,
+    foregroundColor: Colors.white,
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    elevation: 0,
+    textStyle: AppTheme.button.copyWith(fontSize: 14),
+  );
+
+  // 影付きコンテナでボタンをラップするヘルパー
+  static Widget withShadow(Widget button) {
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: AppTheme.buttonShadow,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: button,
+    );
+  }
+}
+
 class AppCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
