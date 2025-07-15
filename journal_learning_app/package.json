@@ -1,8 +1,0 @@
-{
-  "name": "journal-app",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "build": "echo 'No build needed - using pre-built Flutter web files'"
-  }
-}

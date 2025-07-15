@@ -978,7 +978,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                             )
                                           : AppButtonStyles.modalSuccessButton,
                                         icon: Icon(
-                                          isAddedToVocabulary ? Icons.check_circle : Icons.book,
+                                          isAddedToVocabulary ? Icons.check_circle : Icons.style,
                                           size: 20,
                                           color: isAddedToVocabulary ? AppTheme.success : Colors.white,
                                         ),

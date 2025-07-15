@@ -143,7 +143,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
-                  Icons.book,
+                  Icons.style,
                   color: AppTheme.secondaryColor,
                   size: 20,
                 ),
