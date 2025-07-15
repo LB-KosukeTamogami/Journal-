@@ -38,8 +38,8 @@ git config --global --add safe.directory '*' 2>/dev/null || true
 flutter config --no-analytics || true
 yes | flutter doctor --android-licenses 2>/dev/null || true
 
-# Navigate to app directory
-cd journal_learning_app
+# Stay in current directory (no need to navigate)
+# cd journal_learning_app
 
 # Clean build cache (only if build directory exists)
 if [ -d "build" ]; then
