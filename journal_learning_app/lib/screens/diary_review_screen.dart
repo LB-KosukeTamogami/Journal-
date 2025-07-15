@@ -133,26 +133,31 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                   
                   const SizedBox(height: 20),
                   
-                  // 元の文章
+                  // 1. 元の文章
                   _buildOriginalSection(),
                   
                   const SizedBox(height: 20),
                   
-                  // 結果文章（翻訳・添削後の英文）
-                  _isLoading ? _buildSkeletonResult() : _buildResultSection(),
+                  // 2. 翻訳または添削の文章（条件に応じて表示）
+                  if (_shouldShowTranslationOrCorrection())
+                    _isLoading ? _buildSkeletonResult() : _buildTranslationOrCorrectionSection(),
+                  
+                  if (_shouldShowTranslationOrCorrection())
+                    const SizedBox(height: 20),
+                  
+                  // 3. 添削の解説（添削時のみ）
+                  if (_shouldShowCorrectionExplanation())
+                    _isLoading ? _buildSkeletonCorrections() : _buildCorrectionExplanationSection(),
+                  
+                  if (_shouldShowCorrectionExplanation())
+                    const SizedBox(height: 20),
+                  
+                  // 4. アドバイス
+                  _isLoading ? _buildSkeletonCorrections() : _buildAdviceSection(),
                   
                   const SizedBox(height: 20),
                   
-                  // 添削コメント（必要な場合のみ）
-                  if (_isLoading)
-                    _buildSkeletonCorrections()
-                  else if (_corrections.isNotEmpty || _improvements.isNotEmpty)
-                    _buildCorrectionsSection(),
-                  
-                  if (_isLoading || _corrections.isNotEmpty || _improvements.isNotEmpty)
-                    const SizedBox(height: 20),
-                  
-                  // 重要単語（ある場合）
+                  // 5. 重要単語（ある場合）
                   if (_isLoading)
                     _buildSkeletonWords()
                   else if (_learnedWords.isNotEmpty)
@@ -168,6 +173,15 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               ),
             ),
     );
+  }
+  
+  // 条件判定メソッド
+  bool _shouldShowTranslationOrCorrection() {
+    return _judgment == '日本語翻訳' || _judgment == '英文（添削必要）';
+  }
+  
+  bool _shouldShowCorrectionExplanation() {
+    return _judgment == '英文（添削必要）';
   }
   
   // スケルトンローディング用のウィジェット
@@ -476,6 +490,9 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   }
 
   Widget _buildOriginalSection() {
+    // 英語（正しい）の場合は元の文章に音声読み上げボタンを表示
+    final showTTS = _judgment == '英文（正しい）';
+    
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -495,6 +512,13 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                   color: AppTheme.primaryBlue,
                 ),
               ),
+              if (showTTS) ...[
+                const Spacer(),
+                TextToSpeechButton(
+                  text: widget.entry.content,
+                  size: 20,
+                ),
+              ],
             ],
           ),
           const SizedBox(height: 12),
@@ -721,6 +745,203 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               ),
             )).toList(),
           ),
+        ],
+      ),
+    ).animate().fadeIn(delay: 600.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+  }
+  
+  // 2. 翻訳または添削の文章セクション
+  Widget _buildTranslationOrCorrectionSection() {
+    String sectionTitle;
+    Color sectionColor;
+    IconData sectionIcon;
+    
+    if (_judgment == '日本語翻訳') {
+      sectionTitle = '翻訳';
+      sectionColor = AppTheme.primaryBlue;
+      sectionIcon = Icons.translate;
+    } else {
+      sectionTitle = '添削';
+      sectionColor = AppTheme.warning;
+      sectionIcon = Icons.edit_note;
+    }
+    
+    return AppCard(
+      backgroundColor: sectionColor.withOpacity(0.05),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                sectionIcon,
+                color: sectionColor,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                sectionTitle,
+                style: AppTheme.body1.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: sectionColor,
+                ),
+              ),
+              const Spacer(),
+              // 音声読み上げボタン（翻訳・添削時は常に表示）
+              TextToSpeechButton(
+                text: _outputText,
+                size: 20,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SelectableText(
+            _outputText,
+            style: AppTheme.body1.copyWith(
+              height: 1.6,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    ).animate().fadeIn(delay: 400.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+  }
+  
+  // 3. 添削の解説セクション（添削時のみ）
+  Widget _buildCorrectionExplanationSection() {
+    final allCorrections = [..._corrections, ..._improvements];
+    
+    return AppCard(
+      backgroundColor: AppTheme.warning.withOpacity(0.05),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.info_outline,
+                color: AppTheme.warning,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '添削の解説',
+                style: AppTheme.body1.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.warning,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...allCorrections.map((correction) => Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 6,
+                  height: 6,
+                  margin: const EdgeInsets.only(top: 8, right: 12),
+                  decoration: BoxDecoration(
+                    color: AppTheme.warning,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    correction,
+                    style: AppTheme.body2.copyWith(height: 1.5),
+                  ),
+                ),
+              ],
+            ),
+          )),
+        ],
+      ),
+    ).animate().fadeIn(delay: 500.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+  }
+  
+  // 4. アドバイスセクション
+  Widget _buildAdviceSection() {
+    List<String> adviceList;
+    
+    switch (_judgment) {
+      case '日本語翻訳':
+        adviceList = [
+          '自然な英語表現を学習しましょう',
+          '文法や語順に注意して英語で考える練習をしましょう',
+          '日常的に英語で表現することを心がけましょう'
+        ];
+        break;
+      case '英文（正しい）':
+        adviceList = [
+          '素晴らしい英文です！この調子で続けましょう',
+          'より複雑な表現にも挑戦してみましょう',
+          '語彙力を増やして表現の幅を広げましょう'
+        ];
+        break;
+      case '英文（添削必要）':
+        adviceList = [
+          '基本的な文法をしっかり身につけましょう',
+          '添削内容を参考にして同じ間違いを避けましょう',
+          '繰り返し練習することで自然な英語が身につきます'
+        ];
+        break;
+      default:
+        adviceList = [
+          '日記を続けることで英語力が向上します',
+          '間違いを恐れずに表現することが大切です'
+        ];
+    }
+    
+    return AppCard(
+      backgroundColor: AppTheme.info.withOpacity(0.05),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.lightbulb_outline,
+                color: AppTheme.info,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'アドバイス',
+                style: AppTheme.body1.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.info,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...adviceList.map((advice) => Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 6,
+                  height: 6,
+                  margin: const EdgeInsets.only(top: 8, right: 12),
+                  decoration: BoxDecoration(
+                    color: AppTheme.info,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    advice,
+                    style: AppTheme.body2.copyWith(height: 1.5),
+                  ),
+                ),
+              ],
+            ),
+          )),
         ],
       ),
     ).animate().fadeIn(delay: 600.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
