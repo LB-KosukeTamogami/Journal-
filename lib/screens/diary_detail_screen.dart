@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import '../models/diary_entry.dart';
 import '../models/word.dart';
+import '../models/flashcard.dart';
 import '../theme/app_theme.dart';
 import '../services/translation_service.dart';
 import '../services/storage_service.dart';
