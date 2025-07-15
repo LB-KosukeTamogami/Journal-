@@ -484,8 +484,11 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                 backgroundColor: MaterialStateProperty.all(Colors.white),
                 foregroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
                 side: MaterialStateProperty.all(BorderSide(color: AppTheme.primaryColor, width: 2)),
+                minimumSize: MaterialStateProperty.all(Size(double.infinity, 56)),
               )
-            : AppButtonStyles.primaryButton,
+            : AppButtonStyles.primaryButton.copyWith(
+                minimumSize: MaterialStateProperty.all(Size(double.infinity, 56)),
+              ),
           icon: Icon(
             _isAllAddedToCards ? Icons.check_circle : Icons.add_card,
             color: _isAllAddedToCards ? AppTheme.primaryColor : Colors.white,
@@ -892,19 +895,23 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                         },
                                         style: isAddedToFlashcard
                                           ? AppButtonStyles.modalSecondaryButton.copyWith(
+                                              backgroundColor: MaterialStateProperty.all(Colors.white),
+                                              foregroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
+                                              side: MaterialStateProperty.all(BorderSide(color: AppTheme.primaryColor, width: 2)),
+                                            )
+                                          : AppButtonStyles.modalSecondaryButton.copyWith(
                                               backgroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
                                               foregroundColor: MaterialStateProperty.all(Colors.white),
-                                            )
-                                          : AppButtonStyles.modalSecondaryButton,
+                                            ),
                                         icon: Icon(
                                           isAddedToFlashcard ? Icons.check_circle : Icons.collections_bookmark,
                                           size: 20,
-                                          color: isAddedToFlashcard ? Colors.white : AppTheme.primaryColor,
+                                          color: isAddedToFlashcard ? AppTheme.primaryColor : Colors.white,
                                         ),
                                         label: Text(
                                           isAddedToFlashcard ? '学習カードに追加済み' : '学習カードに追加',
                                           style: TextStyle(
-                                            color: isAddedToFlashcard ? Colors.white : AppTheme.primaryColor,
+                                            color: isAddedToFlashcard ? AppTheme.primaryColor : Colors.white,
                                           ),
                                         ),
                                       ),
@@ -990,29 +997,43 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                       color: AppTheme.primaryBlue.withOpacity(0.3),
                     ),
                   ),
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 12, top: 8, bottom: 8, right: 12),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          english,
-                          style: AppTheme.body2.copyWith(
-                            color: AppTheme.primaryBlue,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        if (japanese.isNotEmpty) ...[
-                          const SizedBox(width: 8),
-                          Text(
-                            '• $japanese',
-                            style: AppTheme.caption.copyWith(
-                              color: AppTheme.textSecondary,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.only(left: 12, top: 8, bottom: 8, right: 4),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              english,
+                              style: AppTheme.body2.copyWith(
+                                color: AppTheme.primaryBlue,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
-                        ],
-                      ],
-                    ),
+                            if (japanese.isNotEmpty) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                japanese,
+                                style: AppTheme.caption.copyWith(
+                                  color: AppTheme.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.only(left: 4, top: 8, bottom: 8, right: 12),
+                        child: Icon(
+                          Icons.add,
+                          color: AppTheme.primaryBlue,
+                          size: 16,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );
