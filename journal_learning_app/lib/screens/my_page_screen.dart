@@ -106,13 +106,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                       },
                       icon: const Icon(Icons.edit_outlined, size: 20),
                       label: const Text('プロフィールを編集'),
-                      style: AppButtonStyles.smallButton.copyWith(
-                        backgroundColor: MaterialStateProperty.all(Colors.transparent),
-                        foregroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
-                        side: MaterialStateProperty.all(
-                          BorderSide(color: AppTheme.primaryColor, width: 2),
-                        ),
-                      ),
+                      style: AppButtonStyles.secondaryButton,
                     ),
                   ],
                 ),
