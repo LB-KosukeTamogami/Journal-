@@ -1395,10 +1395,7 @@ class _WordDetailModalState extends State<_WordDetailModal> {
       ),
     );
   }
-}
-
-// _WordDetailModalのクロージングブレースを追加
-extension _WordDetailModalExtension on _WordDetailModalState {
+  
   // 品詞を判定する
   String _getPartOfSpeech(String word) {
     final lowerWord = word.toLowerCase();
