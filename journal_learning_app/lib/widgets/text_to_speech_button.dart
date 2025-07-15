@@ -64,6 +64,12 @@ class _TextToSpeechButtonState extends State<TextToSpeechButton> with SingleTick
       return;
     }
 
+    // テキストが空の場合は何もしない
+    if (widget.text.trim().isEmpty) {
+      print('[TTS Button] Empty text, skipping');
+      return;
+    }
+
     try {
       // アニメーション実行
       await _animationController.forward();
@@ -89,6 +95,18 @@ class _TextToSpeechButtonState extends State<TextToSpeechButton> with SingleTick
       setState(() {
         _isSpeaking = false;
       });
+      
+      // エラーメッセージをユーザーに表示
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('音声再生に失敗しました'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
     }
   }
 

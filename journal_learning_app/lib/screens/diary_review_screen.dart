@@ -883,7 +883,10 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                           }
                                         },
                                         style: isAddedToFlashcard
-                                          ? AppButtonStyles.modalSuccessButton
+                                          ? AppButtonStyles.modalSuccessButton.copyWith(
+                                              backgroundColor: MaterialStateProperty.all(AppTheme.success),
+                                              foregroundColor: MaterialStateProperty.all(Colors.white),
+                                            )
                                           : AppButtonStyles.modalSecondaryButton,
                                         icon: Icon(
                                           isAddedToFlashcard ? Icons.check_circle : Icons.collections_bookmark,
@@ -939,9 +942,8 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                         },
                                         style: isAddedToVocabulary
                                           ? AppButtonStyles.modalSuccessButton.copyWith(
-                                              backgroundColor: MaterialStateProperty.all(
-                                                AppTheme.success.withOpacity(0.8),
-                                              ),
+                                              backgroundColor: MaterialStateProperty.all(AppTheme.success),
+                                              foregroundColor: MaterialStateProperty.all(Colors.white),
                                             )
                                           : AppButtonStyles.modalSuccessButton,
                                         icon: Icon(
