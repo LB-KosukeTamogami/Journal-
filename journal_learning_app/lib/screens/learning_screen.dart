@@ -1186,9 +1186,8 @@ class _WordDetailModalState extends State<_WordDetailModal> {
             ),
             const SizedBox(height: 20),
             // 単語帳に登録ボタン
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
+            AppButtonStyles.withShadow(
+              ElevatedButton.icon(
                 onPressed: () async {
                   // フラッシュカードに登録
                   final flashcard = Flashcard(
@@ -1217,33 +1216,23 @@ class _WordDetailModalState extends State<_WordDetailModal> {
                     ),
                   );
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
+                style: AppButtonStyles.primaryButton,
                 icon: const Icon(Icons.bookmark_add, size: 20),
                 label: const Text('単語帳に登録'),
               ),
             ),
             const SizedBox(height: 12),
             // 削除ボタン
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
+            AppButtonStyles.withShadow(
+              OutlinedButton.icon(
                 onPressed: () {
                   Navigator.pop(context);
                   _deleteWord(widget.word);
                 },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppTheme.error,
-                  side: BorderSide(color: AppTheme.error),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                style: AppButtonStyles.secondaryButton.copyWith(
+                  foregroundColor: MaterialStateProperty.all(AppTheme.error),
+                  side: MaterialStateProperty.all(
+                    BorderSide(color: AppTheme.error, width: 2),
                   ),
                 ),
                 icon: Icon(Icons.delete_outline, size: 20, color: AppTheme.error),
