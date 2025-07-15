@@ -479,14 +479,22 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               );
             }
           },
-          style: _isAllAddedToCards ? AppButtonStyles.modalSuccessButton : AppButtonStyles.primaryButton,
+          style: _isAllAddedToCards 
+            ? AppButtonStyles.primaryButton.copyWith(
+                backgroundColor: MaterialStateProperty.all(Colors.white),
+                foregroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
+                side: MaterialStateProperty.all(BorderSide(color: AppTheme.primaryColor, width: 2)),
+              )
+            : AppButtonStyles.primaryButton,
           icon: Icon(
             _isAllAddedToCards ? Icons.check_circle : Icons.add_card,
-            color: Colors.white,
+            color: _isAllAddedToCards ? AppTheme.primaryColor : Colors.white,
           ),
           label: Text(
             _isAllAddedToCards ? '学習カードに追加済み' : '学習カードにすべて追加',
-            style: AppTheme.button,
+            style: AppTheme.button.copyWith(
+              color: _isAllAddedToCards ? AppTheme.primaryColor : Colors.white,
+            ),
           ),
         ),
       ),
@@ -883,8 +891,8 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                           }
                                         },
                                         style: isAddedToFlashcard
-                                          ? AppButtonStyles.modalSuccessButton.copyWith(
-                                              backgroundColor: MaterialStateProperty.all(AppTheme.success),
+                                          ? AppButtonStyles.modalSecondaryButton.copyWith(
+                                              backgroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
                                               foregroundColor: MaterialStateProperty.all(Colors.white),
                                             )
                                           : AppButtonStyles.modalSecondaryButton,
@@ -895,6 +903,9 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                         ),
                                         label: Text(
                                           isAddedToFlashcard ? '学習カードに追加済み' : '学習カードに追加',
+                                          style: TextStyle(
+                                            color: isAddedToFlashcard ? Colors.white : AppTheme.primaryColor,
+                                          ),
                                         ),
                                       ),
                                   ),
@@ -942,17 +953,21 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                         },
                                         style: isAddedToVocabulary
                                           ? AppButtonStyles.modalSuccessButton.copyWith(
-                                              backgroundColor: MaterialStateProperty.all(AppTheme.success),
-                                              foregroundColor: MaterialStateProperty.all(Colors.white),
+                                              backgroundColor: MaterialStateProperty.all(Colors.white),
+                                              foregroundColor: MaterialStateProperty.all(AppTheme.success),
+                                              side: MaterialStateProperty.all(BorderSide(color: AppTheme.success, width: 2)),
                                             )
                                           : AppButtonStyles.modalSuccessButton,
                                         icon: Icon(
                                           isAddedToVocabulary ? Icons.check_circle : Icons.book,
                                           size: 20,
-                                          color: Colors.white,
+                                          color: isAddedToVocabulary ? AppTheme.success : Colors.white,
                                         ),
                                         label: Text(
                                           isAddedToVocabulary ? '単語帳に追加済み' : '単語帳に追加',
+                                          style: TextStyle(
+                                            color: isAddedToVocabulary ? AppTheme.success : Colors.white,
+                                          ),
                                         ),
                                       ),
                                   ),
