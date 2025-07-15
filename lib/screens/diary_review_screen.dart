@@ -916,7 +916,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                               foregroundColor: MaterialStateProperty.all(Colors.white),
                                             ),
                                         icon: Icon(
-                                          isAddedToFlashcard ? Icons.check_circle : Icons.collections_bookmark,
+                                          isAddedToFlashcard ? Icons.check_circle : Icons.add_card,
                                           size: 20,
                                           color: isAddedToFlashcard ? AppTheme.primaryColor : Colors.white,
                                         ),
@@ -1029,7 +1029,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                       Container(
                         padding: const EdgeInsets.only(left: 4, top: 8, bottom: 8, right: 12),
                         child: Icon(
-                          isAdded ? Icons.check : Icons.collections_bookmark,
+                          isAdded ? Icons.check : Icons.add_card,
                           color: isAdded ? AppTheme.success : AppTheme.primaryBlue,
                           size: 16,
                         ),
