@@ -1183,93 +1183,100 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             // 単語をすべて登録ボタン
             if (_extractedWords.isNotEmpty) ...[
               const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () async {
-                    // ローディング表示
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) => Center(
-                        child: Container(
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            color: AppTheme.backgroundPrimary,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              CircularProgressIndicator(color: AppTheme.primaryBlue),
-                              const SizedBox(height: 16),
-                              Text('単語を追加中...', style: AppTheme.body2),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                    
-                    // すべての抽出単語を学習カードとして保存
-                    int addedCount = 0;
-                    for (final wordInfo in _extractedWords) {
-                      final english = wordInfo.text.trim();
-                      final japanese = wordInfo.translation.isNotEmpty ? wordInfo.translation : '[意味を確認中]';
-                      
-                      if (english.isNotEmpty && !_savedWords.contains(english.toLowerCase())) {
-                        try {
-                          final word = Word(
-                            id: const Uuid().v4(),
-                            english: english,
-                            japanese: japanese,
-                            diaryEntryId: widget.entry.id,
-                            createdAt: DateTime.now(),
-                            masteryLevel: 0,
-                            reviewCount: 0,
-                            isMastered: false,
-                            category: wordInfo.isPhrase ? WordCategory.phrase : WordCategory.other,
-                          );
-                          
-                          await StorageService.saveWord(word);
-                          setState(() {
-                            _savedWords.add(english.toLowerCase());
-                          });
-                          addedCount++;
-                        } catch (e) {
-                          print('Error saving word: $e');
-                        }
-                      }
-                    }
-                    
-                    // ダイアログを閉じる
-                    if (mounted) Navigator.pop(context);
-                    
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            '$addedCount個の単語を学習カードに追加しました',
-                            style: AppTheme.body2.copyWith(color: Colors.white),
-                          ),
-                          backgroundColor: AppTheme.success,
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+              Container(
+                decoration: BoxDecoration(
+                  boxShadow: AppTheme.buttonShadow,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      // ローディング表示
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: AppTheme.backgroundPrimary,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CircularProgressIndicator(color: AppTheme.primaryBlue),
+                                const SizedBox(height: 16),
+                                Text('単語を追加中...', style: AppTheme.body2),
+                              ],
+                            ),
                           ),
                         ),
                       );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryBlue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      
+                      // すべての抽出単語を学習カードとして保存
+                      int addedCount = 0;
+                      for (final wordInfo in _extractedWords) {
+                        final english = wordInfo.text.trim();
+                        final japanese = wordInfo.translation.isNotEmpty ? wordInfo.translation : '[意味を確認中]';
+                        
+                        if (english.isNotEmpty && !_savedWords.contains(english.toLowerCase())) {
+                          try {
+                            final word = Word(
+                              id: const Uuid().v4(),
+                              english: english,
+                              japanese: japanese,
+                              diaryEntryId: widget.entry.id,
+                              createdAt: DateTime.now(),
+                              masteryLevel: 0,
+                              reviewCount: 0,
+                              isMastered: false,
+                              category: wordInfo.isPhrase ? WordCategory.phrase : WordCategory.other,
+                            );
+                            
+                            await StorageService.saveWord(word);
+                            setState(() {
+                              _savedWords.add(english.toLowerCase());
+                            });
+                            addedCount++;
+                          } catch (e) {
+                            print('Error saving word: $e');
+                          }
+                        }
+                      }
+                      
+                      // ダイアログを閉じる
+                      if (mounted) Navigator.pop(context);
+                      
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              '$addedCount個の単語を学習カードに追加しました',
+                              style: AppTheme.body2.copyWith(color: Colors.white),
+                            ),
+                            backgroundColor: AppTheme.success,
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryColor,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
                     ),
+                    icon: const Icon(Icons.add_card, color: Colors.white),
+                    label: Text('学習カードにすべて追加', style: AppTheme.button),
                   ),
-                  icon: const Icon(Icons.add_card),
-                  label: Text('学習カードにすべて追加', style: AppTheme.button),
                 ),
               ).animate().fadeIn(delay: 600.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
             ],
