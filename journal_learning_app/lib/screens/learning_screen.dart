@@ -819,16 +819,13 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                                 _endDate = null;
                               });
                             },
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              side: BorderSide(color: AppTheme.borderColor),
-                            ),
-                            child: Text(
-                              'リセット',
-                              style: AppTheme.body1.copyWith(
-                                color: AppTheme.textSecondary,
+                            style: AppButtonStyles.secondaryButton.copyWith(
+                              foregroundColor: MaterialStateProperty.all(AppTheme.textSecondary),
+                              side: MaterialStateProperty.all(
+                                BorderSide(color: AppTheme.borderColor, width: 1),
                               ),
                             ),
+                            child: const Text('リセット'),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -838,15 +835,8 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                               setState(() {});
                               Navigator.pop(context);
                             },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.primaryColor,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                            ),
-                            child: Text(
-                              '適用',
-                              style: AppTheme.button,
-                            ),
+                            style: AppButtonStyles.primaryButton,
+                            child: const Text('適用'),
                           ),
                         ),
                       ],

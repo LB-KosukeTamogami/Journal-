@@ -198,13 +198,20 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
         actions: [
           // 会話を終了ボタン（初期メッセージ以外がある場合、または5ラリー完了時）
           if (_messages.length > 2 || _messageCount >= 5) // 初期メッセージ以外がある場合のみ表示
-            TextButton.icon(
-              icon: Icon(Icons.check_circle_outline, color: AppTheme.primaryColor, size: 20),
-              label: Text(
-                '会話を終了',
-                style: AppTheme.body2.copyWith(color: AppTheme.primaryColor),
+            Container(
+              margin: const EdgeInsets.only(right: 8),
+              child: OutlinedButton.icon(
+                icon: Icon(Icons.check_circle_outline, size: 20),
+                label: Text('会話を終了'),
+                onPressed: _endConversation,
+                style: AppButtonStyles.smallButton.copyWith(
+                  backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                  foregroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
+                  side: MaterialStateProperty.all(
+                    BorderSide(color: AppTheme.primaryColor, width: 2),
+                  ),
+                ),
               ),
-              onPressed: _endConversation,
             ),
         ],
       ),

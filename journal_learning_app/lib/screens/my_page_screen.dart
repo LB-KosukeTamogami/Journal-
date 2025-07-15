@@ -104,15 +104,14 @@ class _MyPageScreenState extends State<MyPageScreen> {
                           setState(() {});
                         });
                       },
-                      icon: const Icon(Icons.edit_outlined, size: 18),
+                      icon: const Icon(Icons.edit_outlined, size: 20),
                       label: const Text('プロフィールを編集'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppTheme.primaryColor,
-                        side: BorderSide(color: AppTheme.primaryColor),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                      style: AppButtonStyles.smallButton.copyWith(
+                        backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                        foregroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
+                        side: MaterialStateProperty.all(
+                          BorderSide(color: AppTheme.primaryColor, width: 2),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       ),
                     ),
                   ],

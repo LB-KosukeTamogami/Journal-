@@ -367,9 +367,8 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               Column(
                 children: [
                   // 学習カードに追加
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
+                  AppButtonStyles.withShadow(
+                    OutlinedButton.icon(
                       onPressed: () async {
                         final now = DateTime.now();
                         final flashcard = Flashcard(
@@ -399,21 +398,18 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       },
                       icon: Icon(Icons.collections_bookmark, size: 20),
                       label: Text('学習カードに追加'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppTheme.info,
-                        side: BorderSide(color: AppTheme.info),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                      style: AppButtonStyles.secondaryButton.copyWith(
+                        foregroundColor: MaterialStateProperty.all(AppTheme.info),
+                        side: MaterialStateProperty.all(
+                          BorderSide(color: AppTheme.info, width: 2),
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 12),
                   // 単語帳に追加
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
+                  AppButtonStyles.withShadow(
+                    ElevatedButton.icon(
                       onPressed: () async {
                         final wordModel = Word(
                           id: const Uuid().v4(),
@@ -440,13 +436,8 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       },
                       icon: Icon(Icons.book, size: 20),
                       label: Text('単語帳に追加'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.success,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                      style: AppButtonStyles.primaryButton.copyWith(
+                        backgroundColor: MaterialStateProperty.all(AppTheme.success),
                       ),
                     ),
                   ),
@@ -456,15 +447,15 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               const SizedBox(height: 16),
               
               // 閉じるボタン
-              SizedBox(
-                width: double.infinity,
-                child: TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text('閉じる'),
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppTheme.textSecondary,
+              OutlinedButton(
+                onPressed: () => Navigator.pop(context),
+                style: AppButtonStyles.secondaryButton.copyWith(
+                  foregroundColor: MaterialStateProperty.all(AppTheme.textSecondary),
+                  side: MaterialStateProperty.all(
+                    BorderSide(color: AppTheme.borderColor, width: 1),
                   ),
                 ),
+                child: const Text('閉じる'),
               ),
             ],
           ),
