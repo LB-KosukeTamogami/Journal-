@@ -1066,6 +1066,7 @@ class _WordDetailModal extends StatefulWidget {
 }
 
 class _WordDetailModalState extends State<_WordDetailModal> {
+  bool _isAddedToVocabulary = false;
 
   @override
   Widget build(BuildContext context) {
@@ -1105,25 +1106,49 @@ class _WordDetailModalState extends State<_WordDetailModal> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: Text(
-                    widget.word.english,
-                    style: AppTheme.headline2,
-                    softWrap: true,
-                    overflow: TextOverflow.visible,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.word.english,
+                        style: AppTheme.headline2,
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        widget.word.japanese,
+                        style: AppTheme.body1.copyWith(fontSize: 18),
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(width: 12),
+                // 品詞バッジ
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.info.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppTheme.info.withOpacity(0.3),
+                    ),
+                  ),
+                  child: Text(
+                    _getPartOfSpeech(widget.word.english),
+                    style: AppTheme.caption.copyWith(
+                      color: AppTheme.info,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 TextToSpeechButton(
                   text: widget.word.english,
                 ),
               ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              widget.word.japanese,
-              style: AppTheme.body1.copyWith(fontSize: 18),
-              softWrap: true,
-              overflow: TextOverflow.visible,
             ),
             
             
@@ -1188,37 +1213,64 @@ class _WordDetailModalState extends State<_WordDetailModal> {
             // 単語帳に登録ボタン
             AppButtonStyles.withShadow(
               ElevatedButton.icon(
-                onPressed: () async {
+                onPressed: _isAddedToVocabulary ? null : () async {
                   // フラッシュカードに登録
-                  final flashcard = Flashcard(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    word: widget.word.english,
-                    meaning: widget.word.japanese,
-                    exampleSentence: '', // 例文は削除
-                    createdAt: DateTime.now(),
-                    lastReviewed: DateTime.now(),
-                    nextReviewDate: DateTime.now().add(Duration(days: 1)),
-                    reviewCount: 0,
-                  );
-                  await StorageService.saveFlashcard(flashcard);
-                  Navigator.pop(context);
-                  
-                  // 成功メッセージを表示
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('単語帳に登録しました'),
-                      backgroundColor: AppTheme.success,
-                      behavior: SnackBarBehavior.floating,
-                      margin: const EdgeInsets.all(16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  try {
+                    final flashcard = Flashcard(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      word: widget.word.english,
+                      meaning: widget.word.japanese,
+                      exampleSentence: '', // 例文は削除
+                      createdAt: DateTime.now(),
+                      lastReviewed: DateTime.now(),
+                      nextReviewDate: DateTime.now().add(Duration(days: 1)),
+                      reviewCount: 0,
+                    );
+                    await StorageService.saveFlashcard(flashcard);
+                    
+                    setState(() {
+                      _isAddedToVocabulary = true;
+                    });
+                    
+                    // 成功メッセージを表示
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('単語帳に登録しました'),
+                        backgroundColor: AppTheme.success,
+                        behavior: SnackBarBehavior.floating,
+                        margin: const EdgeInsets.all(16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('エラーが発生しました'),
+                        backgroundColor: AppTheme.error,
+                      ),
+                    );
+                  }
                 },
-                style: AppButtonStyles.modalPrimaryButton,
-                icon: const Icon(Icons.bookmark_add, size: 20),
-                label: const Text('単語帳に登録'),
+                style: _isAddedToVocabulary
+                  ? AppButtonStyles.modalSuccessButton.copyWith(
+                      backgroundColor: MaterialStateProperty.all(Colors.white),
+                      foregroundColor: MaterialStateProperty.all(AppTheme.success),
+                      side: MaterialStateProperty.all(BorderSide(color: AppTheme.success, width: 2)),
+                    )
+                  : AppButtonStyles.modalSuccessButton,
+                icon: Icon(
+                  _isAddedToVocabulary ? Icons.check_circle : Icons.book,
+                  size: 20,
+                  color: _isAddedToVocabulary ? AppTheme.success : Colors.white,
+                ),
+                label: Text(
+                  _isAddedToVocabulary ? '単語帳に登録済み' : '単語帳に登録',
+                  style: TextStyle(
+                    color: _isAddedToVocabulary ? AppTheme.success : Colors.white,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -1342,5 +1394,70 @@ class _WordDetailModalState extends State<_WordDetailModal> {
         ],
       ),
     );
+  }
+}
+
+// _WordDetailModalのクロージングブレースを追加
+extension _WordDetailModalExtension on _WordDetailModalState {
+  // 品詞を判定する
+  String _getPartOfSpeech(String word) {
+    final lowerWord = word.toLowerCase();
+    
+    // 動詞の判定
+    if (lowerWord.endsWith('ing') || lowerWord.endsWith('ed') || 
+        lowerWord.endsWith('es') || lowerWord.endsWith('s') ||
+        ['go', 'went', 'come', 'came', 'take', 'took', 'make', 'made', 
+         'get', 'got', 'see', 'saw', 'know', 'knew', 'think', 'thought',
+         'feel', 'felt', 'work', 'run', 'walk', 'talk', 'play', 'study',
+         'learn', 'teach', 'read', 'write', 'listen', 'speak', 'watch',
+         'look', 'find', 'help', 'try', 'start', 'stop', 'open', 'close',
+         'clean', 'realize', 'forget'].contains(lowerWord)) {
+      return '動詞';
+    }
+    
+    // 形容詞の判定
+    if (lowerWord.endsWith('ful') || lowerWord.endsWith('less') || 
+        lowerWord.endsWith('ing') || lowerWord.endsWith('ed') ||
+        lowerWord.endsWith('ous') || lowerWord.endsWith('ive') ||
+        lowerWord.endsWith('ly') ||
+        ['good', 'bad', 'big', 'small', 'new', 'old', 'young', 'long',
+         'short', 'high', 'low', 'fast', 'slow', 'easy', 'hard', 'hot',
+         'cold', 'warm', 'cool', 'great', 'wonderful', 'terrible', 'worst',
+         'best', 'better', 'worse', 'happy', 'sad', 'angry', 'excited',
+         'tired', 'beautiful', 'ugly', 'important', 'interesting', 'boring'].contains(lowerWord)) {
+      return '形容詞';
+    }
+    
+    // 副詞の判定
+    if (lowerWord.endsWith('ly') ||
+        ['today', 'yesterday', 'tomorrow', 'now', 'then', 'here', 'there',
+         'always', 'never', 'sometimes', 'often', 'usually', 'very', 'quite',
+         'really', 'actually', 'finally', 'suddenly', 'carefully', 'quickly'].contains(lowerWord)) {
+      return '副詞';
+    }
+    
+    // 前置詞の判定
+    if (['in', 'on', 'at', 'to', 'for', 'with', 'by', 'from', 'of', 'about',
+         'after', 'before', 'during', 'under', 'over', 'between', 'among',
+         'through', 'into', 'onto', 'upon', 'within', 'without'].contains(lowerWord)) {
+      return '前置詞';
+    }
+    
+    // 接続詞の判定
+    if (['and', 'or', 'but', 'so', 'because', 'although', 'while', 'when',
+         'if', 'unless', 'since', 'until', 'though', 'whereas'].contains(lowerWord)) {
+      return '接続詞';
+    }
+    
+    // 代名詞の判定
+    if (['i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her',
+         'us', 'them', 'my', 'your', 'his', 'her', 'its', 'our', 'their',
+         'mine', 'yours', 'hers', 'ours', 'theirs', 'this', 'that', 'these',
+         'those', 'who', 'what', 'which', 'where', 'when', 'why', 'how'].contains(lowerWord)) {
+      return '代名詞';
+    }
+    
+    // デフォルトは名詞
+    return '名詞';
   }
 }
