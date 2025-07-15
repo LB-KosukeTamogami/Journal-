@@ -1288,6 +1288,18 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     );
   }
   
+  // すべての単語が追加済みかチェック
+  bool _areAllWordsAdded() {
+    if (_extractedWords.isEmpty) return false;
+    
+    for (final wordInfo in _extractedWords) {
+      final english = wordInfo.text.trim();
+      if (english.isNotEmpty && !_savedWords.contains(english.toLowerCase())) {
+        return false;
+      }
+    }
+    return true;
+  }
   
   void _showWordDetail(String english, String japanese) {
     showDialog(
