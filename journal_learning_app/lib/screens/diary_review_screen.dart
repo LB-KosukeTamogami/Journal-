@@ -834,21 +834,9 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                   ),
                                   const SizedBox(width: 8),
                                   // 音声読み上げボタン
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: AppTheme.primaryBlue.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: IconButton(
-                                      onPressed: () {
-                                        // TODO: 音声読み上げ機能を実装
-                                      },
-                                      icon: Icon(
-                                        Icons.volume_up,
-                                        color: AppTheme.primaryBlue,
-                                        size: 20,
-                                      ),
-                                    ),
+                                  TextToSpeechButton(
+                                    text: english,
+                                    size: 20,
                                   ),
                                 ],
                               ),
