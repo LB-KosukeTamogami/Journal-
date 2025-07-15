@@ -1089,15 +1089,6 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
-                                      if (info.translation.isNotEmpty) ...[
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          '• ${info.translation}',
-                                          style: AppTheme.caption.copyWith(
-                                            color: AppTheme.textSecondary,
-                                          ),
-                                        ),
-                                      ],
                                     ],
                                   ),
                                 ),
@@ -1191,7 +1182,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: () async {
+                    onPressed: _areAllWordsAdded() ? null : () async {
                       // ローディング表示
                       showDialog(
                         context: context,
@@ -1265,17 +1256,28 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         );
                       }
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryColor,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 0,
+                    style: _areAllWordsAdded() 
+                      ? AppButtonStyles.primaryButton.copyWith(
+                          backgroundColor: MaterialStateProperty.all(Colors.white),
+                          foregroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
+                          side: MaterialStateProperty.all(BorderSide(color: AppTheme.primaryColor, width: 2)),
+                          minimumSize: MaterialStateProperty.all(Size(double.infinity, 56)),
+                          fixedSize: MaterialStateProperty.all(Size(double.infinity, 56)),
+                        )
+                      : AppButtonStyles.primaryButton.copyWith(
+                          minimumSize: MaterialStateProperty.all(Size(double.infinity, 56)),
+                          fixedSize: MaterialStateProperty.all(Size(double.infinity, 56)),
+                        ),
+                    icon: Icon(
+                      _areAllWordsAdded() ? Icons.check_circle : Icons.add_card,
+                      color: _areAllWordsAdded() ? AppTheme.primaryColor : Colors.white,
                     ),
-                    icon: const Icon(Icons.add_card, color: Colors.white),
-                    label: Text('学習カードにすべて追加', style: AppTheme.button),
+                    label: Text(
+                      _areAllWordsAdded() ? '学習カードに追加済み' : '学習カードにすべて追加',
+                      style: AppTheme.button.copyWith(
+                        color: _areAllWordsAdded() ? AppTheme.primaryColor : Colors.white,
+                      ),
+                    ),
                   ),
                 ),
               ).animate().fadeIn(delay: 600.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
