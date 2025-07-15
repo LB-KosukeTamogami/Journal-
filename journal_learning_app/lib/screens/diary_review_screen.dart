@@ -563,13 +563,19 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
         judgmentIcon = Icons.edit_note;
         break;
       case 'エラー':
-        judgmentDisplay = 'エラーが発生しました';
+      case 'エラーが発生しました':
+      case 'API設定エラー':
+      case 'レスポンス解析エラー':
+      case 'ネットワークエラー':
+      case 'API認証エラー':
+      case 'API利用制限に達しました':
+        judgmentDisplay = _judgment;
         judgmentColor = AppTheme.error;
         judgmentIcon = Icons.error_outline;
         break;
       default:
         // 想定外の値の場合
-        judgmentDisplay = '判定中';
+        judgmentDisplay = '処理中';
         judgmentColor = AppTheme.textSecondary;
         judgmentIcon = Icons.info_outline;
     }
@@ -732,14 +738,15 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               return GestureDetector(
                 onTap: () {
                   // モーダルを下から表示（日記詳細画面と同じデザインに統一）
+                  bool isAddedToFlashcard = false;
+                  bool isAddedToVocabulary = false;
+                  
                   showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
                     backgroundColor: Colors.transparent,
                     builder: (context) => StatefulBuilder(
                       builder: (context, setModalState) {
-                        bool isAddedToFlashcard = false;
-                        bool isAddedToVocabulary = false;
                         
                         return Container(
                           decoration: BoxDecoration(

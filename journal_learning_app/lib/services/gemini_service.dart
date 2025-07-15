@@ -692,9 +692,24 @@ $content
       throw Exception('Failed to get response from Gemini API: ${response.statusCode}');
     } catch (e) {
       print('[GeminiService] Error in correctAndTranslate: $e');
+      
+      // エラーの種類に応じてより詳細な情報を提供
+      String errorMessage = 'エラーが発生しました';
+      if (e.toString().contains('API key not found')) {
+        errorMessage = 'API設定エラー';
+      } else if (e.toString().contains('Failed to parse JSON')) {
+        errorMessage = 'レスポンス解析エラー';
+      } else if (e.toString().contains('XMLHttpRequest')) {
+        errorMessage = 'ネットワークエラー';
+      } else if (e.toString().contains('403') || e.toString().contains('401')) {
+        errorMessage = 'API認証エラー';
+      } else if (e.toString().contains('429')) {
+        errorMessage = 'API利用制限に達しました';
+      }
+      
       // エラー時は入力をそのまま返す
       return {
-        'judgment': 'エラー',
+        'judgment': errorMessage,
         'detected_language': _detectLanguage(content),
         'corrected': content,
         'translation': '',
