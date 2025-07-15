@@ -1,13 +1,8 @@
 {
-  "name": "journal-learning-app",
+  "name": "journal-app",
   "version": "1.0.0",
-  "description": "Journal-based English Learning App",
+  "private": true,
   "scripts": {
-    "vercel-build": "./vercel-install.sh",
-    "build": "./build.sh"
-  },
-  "devDependencies": {},
-  "engines": {
-    "node": ">=16"
+    "build": "echo 'No build needed - using pre-built Flutter web files'"
   }
 }

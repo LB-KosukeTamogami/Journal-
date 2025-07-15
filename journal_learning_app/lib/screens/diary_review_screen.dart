@@ -751,7 +751,8 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               return GestureDetector(
                 onTap: () {
                   // モーダルを下から表示（日記詳細画面と同じデザインに統一）
-                  bool isAddedToFlashcard = false;
+                  // 既存の追加済み状態を初期値として設定
+                  bool isAddedToFlashcard = isAdded;
                   bool isAddedToVocabulary = false;
                   
                   showModalBottomSheet(
@@ -824,7 +825,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                       ),
                                     ),
                                     child: Text(
-                                      '単語', // TODO: 実際の品詞情報を取得して表示
+                                      _getPartOfSpeech(english),
                                       style: AppTheme.caption.copyWith(
                                         color: AppTheme.info,
                                         fontWeight: FontWeight.w600,
@@ -1028,7 +1029,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                       Container(
                         padding: const EdgeInsets.only(left: 4, top: 8, bottom: 8, right: 12),
                         child: Icon(
-                          isAdded ? Icons.check : Icons.add,
+                          isAdded ? Icons.check : Icons.collections_bookmark,
                           color: isAdded ? AppTheme.success : AppTheme.primaryBlue,
                           size: 16,
                         ),
@@ -1306,5 +1307,67 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
         ],
       ),
     ).animate().fadeIn(delay: 600.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+  }
+
+  // 品詞を判定する
+  String _getPartOfSpeech(String word) {
+    final lowerWord = word.toLowerCase();
+    
+    // 動詞の判定
+    if (lowerWord.endsWith('ing') || lowerWord.endsWith('ed') || 
+        lowerWord.endsWith('es') || lowerWord.endsWith('s') ||
+        ['go', 'went', 'come', 'came', 'take', 'took', 'make', 'made', 
+         'get', 'got', 'see', 'saw', 'know', 'knew', 'think', 'thought',
+         'feel', 'felt', 'work', 'run', 'walk', 'talk', 'play', 'study',
+         'learn', 'teach', 'read', 'write', 'listen', 'speak', 'watch',
+         'look', 'find', 'help', 'try', 'start', 'stop', 'open', 'close',
+         'clean', 'realize', 'forget'].contains(lowerWord)) {
+      return '動詞';
+    }
+    
+    // 形容詞の判定
+    if (lowerWord.endsWith('ful') || lowerWord.endsWith('less') || 
+        lowerWord.endsWith('ing') || lowerWord.endsWith('ed') ||
+        lowerWord.endsWith('ous') || lowerWord.endsWith('ive') ||
+        lowerWord.endsWith('ly') ||
+        ['good', 'bad', 'big', 'small', 'new', 'old', 'young', 'long',
+         'short', 'high', 'low', 'fast', 'slow', 'easy', 'hard', 'hot',
+         'cold', 'warm', 'cool', 'great', 'wonderful', 'terrible', 'worst',
+         'best', 'better', 'worse', 'happy', 'sad', 'angry', 'excited',
+         'tired', 'beautiful', 'ugly', 'important', 'interesting', 'boring'].contains(lowerWord)) {
+      return '形容詞';
+    }
+    
+    // 副詞の判定
+    if (lowerWord.endsWith('ly') ||
+        ['today', 'yesterday', 'tomorrow', 'now', 'then', 'here', 'there',
+         'always', 'never', 'sometimes', 'often', 'usually', 'very', 'quite',
+         'really', 'actually', 'finally', 'suddenly', 'carefully', 'quickly'].contains(lowerWord)) {
+      return '副詞';
+    }
+    
+    // 前置詞の判定
+    if (['in', 'on', 'at', 'to', 'for', 'with', 'by', 'from', 'of', 'about',
+         'after', 'before', 'during', 'under', 'over', 'between', 'among',
+         'through', 'into', 'onto', 'upon', 'within', 'without'].contains(lowerWord)) {
+      return '前置詞';
+    }
+    
+    // 接続詞の判定
+    if (['and', 'or', 'but', 'so', 'because', 'although', 'while', 'when',
+         'if', 'unless', 'since', 'until', 'though', 'whereas'].contains(lowerWord)) {
+      return '接続詞';
+    }
+    
+    // 代名詞の判定
+    if (['i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her',
+         'us', 'them', 'my', 'your', 'his', 'her', 'its', 'our', 'their',
+         'mine', 'yours', 'hers', 'ours', 'theirs', 'this', 'that', 'these',
+         'those', 'who', 'what', 'which', 'where', 'when', 'why', 'how'].contains(lowerWord)) {
+      return '代名詞';
+    }
+    
+    // デフォルトは名詞
+    return '名詞';
   }
 }

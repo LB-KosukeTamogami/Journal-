@@ -1,0 +1,13 @@
+{
+  "name": "journal-learning-app",
+  "version": "1.0.0",
+  "description": "Journal-based English Learning App",
+  "scripts": {
+    "vercel-build": "./vercel-install.sh",
+    "build": "./build.sh"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=16"
+  }
+}
