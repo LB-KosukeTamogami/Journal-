@@ -3,7 +3,11 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 
+<<<<<<< HEAD
 const RESOURCES = {"flutter_bootstrap.js": "2cf59d96cf990eabcf2d52b87ebebaef",
+=======
+const RESOURCES = {"flutter_bootstrap.js": "4f1334746c308e240a88b57e4303e745",
+>>>>>>> 9f23bfe (fix: 単語バッジアイコンをadd_cardアイコンに統一)
 "version.json": "ec92061e922c3f995ade90812cae07e8",
 "index.html": "63c802c77eae47b06ff166571e3e7d0b",
 "/": "63c802c77eae47b06ff166571e3e7d0b",

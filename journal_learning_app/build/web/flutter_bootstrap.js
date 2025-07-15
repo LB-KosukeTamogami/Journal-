@@ -39,6 +39,10 @@ _flutter.buildConfig = {"engineRevision":"72f2b18bb094f92f62a3113a8075240ebb59af
 
 _flutter.loader.load({
   serviceWorkerSettings: {
+<<<<<<< HEAD
     serviceWorkerVersion: "3282106607"
+=======
+    serviceWorkerVersion: "1861057100"
+>>>>>>> 9f23bfe (fix: 単語バッジアイコンをadd_cardアイコンに統一)
   }
 });
