@@ -1279,6 +1279,7 @@ class _WordDetailModalState extends State<_WordDetailModal> {
                           ),
                         ),
                       );
+                    }
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
