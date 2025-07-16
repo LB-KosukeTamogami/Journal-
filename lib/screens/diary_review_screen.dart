@@ -1150,7 +1150,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     }
     
     return AppCard(
-      backgroundColor: sectionColor.withOpacity(0.05),
+      backgroundColor: AppTheme.backgroundPrimary,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1158,7 +1158,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             children: [
               Icon(
                 sectionIcon,
-                color: sectionColor,
+                color: AppTheme.warning,
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -1166,7 +1166,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                 sectionTitle,
                 style: AppTheme.body1.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: sectionColor,
+                  color: AppTheme.warning,
                 ),
               ),
               const Spacer(),
