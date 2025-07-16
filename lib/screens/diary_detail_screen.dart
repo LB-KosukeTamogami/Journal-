@@ -947,8 +947,30 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                             ),
                           ),
                           const SizedBox(height: 12),
-                          // 動的に変更点を生成
-                          ..._generateCorrectionExplanations(),
+                          // レビュー画面と同じ形式で表示
+                          ..._corrections.map((correction) => Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 6,
+                                  height: 6,
+                                  margin: const EdgeInsets.only(top: 8, right: 12),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.info,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    correction,
+                                    style: AppTheme.body2.copyWith(height: 1.5),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )),
                         ] else ...[
                           Text(
                             '素晴らしい！文法的な誤りは見つかりませんでした。',

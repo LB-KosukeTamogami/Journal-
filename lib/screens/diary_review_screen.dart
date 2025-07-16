@@ -1178,12 +1178,21 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          SelectableText(
-            _outputText,
-            style: AppTheme.body1.copyWith(
-              height: 1.6,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+          // 白背景コンテナを追加して統一感を向上
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.backgroundPrimary,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: SelectableText(
+              _outputText,
+              style: AppTheme.body1.copyWith(
+                height: 1.6,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
@@ -1196,7 +1205,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     final allCorrections = [..._corrections, ..._improvements];
     
     return AppCard(
-      backgroundColor: AppTheme.warning.withOpacity(0.05),
+      backgroundColor: AppTheme.info.withOpacity(0.05),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1204,7 +1213,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             children: [
               Icon(
                 Icons.info_outline,
-                color: AppTheme.warning,
+                color: AppTheme.info,
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -1212,35 +1221,47 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                 '添削の解説',
                 style: AppTheme.body1.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.warning,
+                  color: AppTheme.info,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          ...allCorrections.map((correction) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 6,
-                  height: 6,
-                  margin: const EdgeInsets.only(top: 8, right: 12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.warning,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    correction,
-                    style: AppTheme.body2.copyWith(height: 1.5),
-                  ),
-                ),
-              ],
+          // 白背景コンテナを追加して統一感を向上
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.backgroundPrimary,
+              borderRadius: BorderRadius.circular(8),
             ),
-          )),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: allCorrections.map((correction) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      margin: const EdgeInsets.only(top: 8, right: 12),
+                      decoration: BoxDecoration(
+                        color: AppTheme.info,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        correction,
+                        style: AppTheme.body2.copyWith(height: 1.5),
+                      ),
+                    ),
+                  ],
+                ),
+              )).toList(),
+            ),
+          ),
         ],
       ),
     ).animate().fadeIn(delay: 500.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
