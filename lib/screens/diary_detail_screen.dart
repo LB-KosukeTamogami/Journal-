@@ -421,6 +421,14 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         color: AppTheme.accentColor,
                       ),
                     ),
+                    // 正しい英語の場合はTTSボタンを表示
+                    if (_isCorrectEnglish()) ..[
+                      const Spacer(),
+                      TextToSpeechButton(
+                        text: widget.entry.content,
+                        size: 20,
+                      ),
+                    ],
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -1913,6 +1921,21 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         ),
       );
     }
+  }
+  
+  /// 正しい英語かどうかを判定
+  bool _isCorrectEnglish() {
+    // 日本語の場合は音声読み上げ不要
+    if (TranslationService.detectLanguage(widget.entry.content) == 'ja') {
+      return false;
+    }
+    
+    // 添削が不要な場合（元の文章と添削後が同じまたは添削がない）
+    final hasCorrections = _corrections.isNotEmpty && !_corrections.contains('本日のAI利用枚を使い切りました。明日また利用可能になります。');
+    final needsCorrection = _correctedContent.isNotEmpty && _correctedContent != widget.entry.content;
+    
+    // 添削が不要で、エラーがない場合は正しい英語と判定
+    return !hasCorrections && !needsCorrection && !_isLoading;
   }
   
   /// 単語数クリック時のモーダル表示
