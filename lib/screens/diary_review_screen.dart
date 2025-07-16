@@ -115,10 +115,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
           'レビュー結果',
           style: AppTheme.headline3,
         ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: AppTheme.textPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: false,
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
@@ -1145,12 +1142,11 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
       sectionIcon = Icons.translate;
     } else {
       sectionTitle = '添削';
-      sectionColor = AppTheme.warning;
+      sectionColor = AppTheme.success;
       sectionIcon = Icons.edit_note;
     }
     
     return AppCard(
-      backgroundColor: AppTheme.backgroundPrimary,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1158,7 +1154,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             children: [
               Icon(
                 sectionIcon,
-                color: AppTheme.warning,
+                color: sectionColor,
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -1166,7 +1162,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                 sectionTitle,
                 style: AppTheme.body1.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.warning,
+                  color: sectionColor,
                 ),
               ),
               const Spacer(),
@@ -1178,21 +1174,12 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          // 白背景コンテナを追加して統一感を向上
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppTheme.backgroundPrimary,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: SelectableText(
-              _outputText,
-              style: AppTheme.body1.copyWith(
-                height: 1.6,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
+          SelectableText(
+            _outputText,
+            style: AppTheme.body1.copyWith(
+              height: 1.6,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],

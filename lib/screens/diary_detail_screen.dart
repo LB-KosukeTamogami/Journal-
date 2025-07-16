@@ -630,7 +630,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   children: [
                     Icon(
                       isJapanese ? Icons.translate : Icons.check_circle,
-                      color: isJapanese ? AppTheme.primaryBlue : AppTheme.warning,
+                      color: isJapanese ? AppTheme.primaryBlue : AppTheme.success,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -638,7 +638,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       isJapanese ? '英語翻訳' : (isMixed ? '英語への統一' : '添削結果'),
                       style: AppTheme.body1.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: isJapanese ? AppTheme.primaryBlue : AppTheme.warning,
+                        color: isJapanese ? AppTheme.primaryBlue : AppTheme.success,
                       ),
                     ),
                   ],
