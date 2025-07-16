@@ -2300,29 +2300,41 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             ],
           ),
           const SizedBox(height: 12),
-          ...items.map((item) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 6,
-                  height: 6,
-                  margin: const EdgeInsets.only(top: 8, right: 12),
-                  decoration: BoxDecoration(
-                    color: color,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    item,
-                    style: AppTheme.body2.copyWith(height: 1.5),
-                  ),
-                ),
-              ],
+          // 白背景コンテナを追加して統一感を向上
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.backgroundPrimary,
+              borderRadius: BorderRadius.circular(8),
             ),
-          )),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: items.map((item) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      margin: const EdgeInsets.only(top: 8, right: 12),
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        item,
+                        style: AppTheme.body2.copyWith(height: 1.5),
+                      ),
+                    ),
+                  ],
+                ),
+              )).toList(),
+            ),
+          ),
         ],
       ),
     ).animate().fadeIn(
@@ -2367,7 +2379,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     return _buildInfoBlock(
       title: 'アドバイス',
       icon: Icons.lightbulb_outline,
-      color: AppTheme.info,
+      color: AppTheme.warning,
       items: adviceList,
       animationDelay: 600.ms,
     );

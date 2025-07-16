@@ -1280,7 +1280,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     }
     
     return AppCard(
-      backgroundColor: AppTheme.info.withOpacity(0.05),
+      backgroundColor: AppTheme.warning.withOpacity(0.05),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1288,7 +1288,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             children: [
               Icon(
                 Icons.lightbulb_outline,
-                color: AppTheme.info,
+                color: AppTheme.warning,
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -1296,35 +1296,47 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                 'アドバイス',
                 style: AppTheme.body1.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.info,
+                  color: AppTheme.warning,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          ...adviceList.map((advice) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 6,
-                  height: 6,
-                  margin: const EdgeInsets.only(top: 8, right: 12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.info,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    advice,
-                    style: AppTheme.body2.copyWith(height: 1.5),
-                  ),
-                ),
-              ],
+          // 白背景コンテナを追加して統一感を向上
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.backgroundPrimary,
+              borderRadius: BorderRadius.circular(8),
             ),
-          )),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: adviceList.map((advice) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      margin: const EdgeInsets.only(top: 8, right: 12),
+                      decoration: BoxDecoration(
+                        color: AppTheme.warning,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        advice,
+                        style: AppTheme.body2.copyWith(height: 1.5),
+                      ),
+                    ),
+                  ],
+                ),
+              )).toList(),
+            ),
+          ),
         ],
       ),
     ).animate().fadeIn(delay: 600.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
