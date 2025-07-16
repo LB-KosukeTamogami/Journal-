@@ -42,6 +42,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   bool _isWordsExpanded = false; // Track if words card is expanded
   String? _shadowingText; // Text being shadowed
   String? _shadowingTitle; // Title for shadowing
+  String _judgment = ''; // レビュー結果の判定
   
   // ストップワード（一般的すぎる単語）のリスト
   static const Set<String> _stopWords = {
@@ -109,6 +110,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           _translatedContent = cachedTranslation['translated_text'] ?? '';
           _correctedContent = cachedTranslation['corrected_text'] ?? widget.entry.content;
           _corrections = List<String>.from(cachedTranslation['improvements'] ?? []);
+          _judgment = cachedTranslation['judgment'] ?? '';
           _isLoading = false;
         });
         
@@ -152,6 +154,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         
         correctedContent = geminiResult['corrected'] ?? widget.entry.content;
         corrections = List<String>.from(geminiResult['improvements'] ?? []);
+        final judgment = geminiResult['judgment'] ?? '';
         
         // レート制限チェック
         if (geminiResult['rate_limited'] == true) {
@@ -217,6 +220,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           _correctedContent = correctedContent;
           _translatedContent = translatedText;
           _corrections = corrections;
+          _judgment = judgment;
           _learnedPhrases = List<String>.from(geminiResult?['learned_phrases'] ?? []);
           _extractedWords = extractedWords;
           _isLoading = false;
@@ -235,6 +239,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
               improvements: corrections,
               detectedLanguage: detectedLang,
               targetLanguage: targetLanguage,
+              judgment: judgment,
             );
           }
           print('Translation cached successfully');
@@ -1003,6 +1008,12 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 ],
               ),
             ).animate().fadeIn(delay: 300.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+          ],
+          
+          // レビュー画面と同じアドバイスセクションを追加
+          if (_judgment.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            _buildAdviceSection(),
           ],
           
           // 学習ポイント
@@ -2387,6 +2398,90 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     }
     
     return advice;
+  }
+  
+  /// レビュー画面と同じアドバイスセクションを作成
+  Widget _buildAdviceSection() {
+    List<String> adviceList;
+    
+    switch (_judgment) {
+      case '日本語翻訳':
+        adviceList = [
+          '自然な英語表現を学習しましょう',
+          '文法や語順に注意して英語で考える練習をしましょう',
+          '日常的に英語で表現することを心がけましょう'
+        ];
+        break;
+      case '英文（正しい）':
+        adviceList = [
+          '素晴らしい英文です！この調子で続けましょう',
+          'より複雑な表現にも挑戦してみましょう',
+          '語彙力を増やして表現の幅を広げましょう'
+        ];
+        break;
+      case '英文（添削必要）':
+        adviceList = [
+          '基本的な文法をしっかり身につけましょう',
+          '添削内容を参考にして同じ間違いを避けましょう',
+          '繰り返し練習することで自然な英語が身につきます'
+        ];
+        break;
+      default:
+        adviceList = [
+          '日記を続けることで英語力が向上します',
+          '間違いを恐れずに表現することが大切です'
+        ];
+    }
+    
+    return AppCard(
+      backgroundColor: AppTheme.info.withOpacity(0.05),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.lightbulb_outline,
+                color: AppTheme.info,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'アドバイス',
+                style: AppTheme.body1.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.info,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...adviceList.map((advice) => Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 6,
+                  height: 6,
+                  margin: const EdgeInsets.only(top: 8, right: 12),
+                  decoration: BoxDecoration(
+                    color: AppTheme.info,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    advice,
+                    style: AppTheme.body2.copyWith(height: 1.5),
+                  ),
+                ),
+              ],
+            ),
+          )),
+        ],
+      ),
+    ).animate().fadeIn(delay: 600.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
   
   /// アドバイス項目を作成
