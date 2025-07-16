@@ -92,10 +92,11 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           _isLoading = false;
         });
         
-        // 単語・熟語を抽出
+        // 単語を抽出（熟語を除外）
         final phraseInfos = TranslationService.detectPhrasesAndWords(widget.entry.content);
         final extractedWords = phraseInfos.where((info) {
-          final isWord = info.text.trim().isNotEmpty && RegExp(r'\w').hasMatch(info.text);
+          // 熟語ではない単語のみをフィルタリング
+          final isWord = info.text.trim().isNotEmpty && RegExp(r'\w').hasMatch(info.text) && !info.isPhrase;
           return isWord && (info.translation.isNotEmpty || RegExp(r'^[a-zA-Z\s-]+$').hasMatch(info.text));
         }).toList();
         
@@ -172,10 +173,11 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           }
         }
         
-        // 単語・熟語を抽出
+        // 単語を抽出（熟語を除外）
         final phraseInfos = TranslationService.detectPhrasesAndWords(widget.entry.content);
         final extractedWords = phraseInfos.where((info) {
-          final isWord = info.text.trim().isNotEmpty && RegExp(r'\w').hasMatch(info.text);
+          // 熟語ではない単語のみをフィルタリング
+          final isWord = info.text.trim().isNotEmpty && RegExp(r'\w').hasMatch(info.text) && !info.isPhrase;
           return isWord && (info.translation.isNotEmpty || RegExp(r'^[a-zA-Z\s-]+$').hasMatch(info.text));
         }).toList();
         
@@ -221,10 +223,11 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           
           _learnedPhrases = [];
           
-          // 単語・熟語を抽出
+          // 単語を抽出（熟語を除外）
           final phraseInfos2 = TranslationService.detectPhrasesAndWords(widget.entry.content);
           _extractedWords = phraseInfos2.where((info) {
-            final isWord = info.text.trim().isNotEmpty && RegExp(r'\w').hasMatch(info.text);
+            // 熟語ではない単語のみをフィルタリング
+            final isWord = info.text.trim().isNotEmpty && RegExp(r'\w').hasMatch(info.text) && !info.isPhrase;
             return isWord && (info.translation.isNotEmpty || RegExp(r'^[a-zA-Z\s-]+$').hasMatch(info.text));
           }).toList();
           
@@ -1016,7 +1019,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             ).animate().fadeIn(delay: 400.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
           ],
           
-          // 抽出された単語・熟語リスト
+          // 抽出された単語リスト
           if (_extractedWords.isNotEmpty) ...[
             const SizedBox(height: 16),
               AppCard(
@@ -1033,7 +1036,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          '抽出された単語・熟語',
+                          '抽出された単語',
                           style: AppTheme.body1.copyWith(
                             fontWeight: FontWeight.w600,
                             color: AppTheme.primaryBlue,
