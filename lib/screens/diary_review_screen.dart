@@ -34,6 +34,26 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   String _detectedLanguage = '';
   bool _isAllAddedToCards = false;
   Set<String> _addedWords = {}; // 追加された単語を管理
+  
+  // ストップワード（一般的すぎる単語）のリスト
+  static const Set<String> _stopWords = {
+    // 冠詞
+    'a', 'an', 'the',
+    // 代名詞
+    'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them',
+    'my', 'your', 'his', 'her', 'its', 'our', 'their',
+    'this', 'that', 'these', 'those',
+    // be動詞
+    'am', 'is', 'are', 'was', 'were', 'been', 'be', 'being',
+    // 助動詞
+    'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can',
+    // 前置詞
+    'at', 'in', 'on', 'to', 'for', 'of', 'with', 'by', 'from', 'up', 'down', 'out', 'off', 'over', 'under',
+    // 接続詞
+    'and', 'or', 'but', 'if', 'because', 'as', 'while', 'when',
+    // その他の一般的な単語
+    'not', 'no', 'yes', 's', 't', 're', 've', 'll', 'd', 'm', 'don', 'won',
+  };
 
   @override
   void initState() {
@@ -56,9 +76,15 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
         _corrections = List<String>.from(result['corrections'] ?? []);
         _improvements = List<String>.from(result['improvements'] ?? []);
         
-        // learned_wordsを処理
+        // learned_wordsを処理（フィルタリングを適用）
         if (result['learned_words'] != null) {
-          _learnedWords = List<Map<String, String>>.from(result['learned_words']);
+          final allWords = List<Map<String, String>>.from(result['learned_words']);
+          _learnedWords = allWords.where((wordData) {
+            final english = (wordData['english'] ?? '').toLowerCase();
+            return english.length >= 3 && // 3文字以上
+                   !_stopWords.contains(english) && // ストップワードを除外
+                   RegExp(r'^[a-zA-Z]+$').hasMatch(english); // 英字のみ
+          }).toList();
         }
         
         _isLoading = false;

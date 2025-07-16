@@ -43,6 +43,26 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   String? _shadowingText; // Text being shadowed
   String? _shadowingTitle; // Title for shadowing
   
+  // ストップワード（一般的すぎる単語）のリスト
+  static const Set<String> _stopWords = {
+    // 冠詞
+    'a', 'an', 'the',
+    // 代名詞
+    'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them',
+    'my', 'your', 'his', 'her', 'its', 'our', 'their',
+    'this', 'that', 'these', 'those',
+    // be動詞
+    'am', 'is', 'are', 'was', 'were', 'been', 'be', 'being',
+    // 助動詞
+    'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can',
+    // 前置詞
+    'at', 'in', 'on', 'to', 'for', 'of', 'with', 'by', 'from', 'up', 'down', 'out', 'off', 'over', 'under',
+    // 接続詞
+    'and', 'or', 'but', 'if', 'because', 'as', 'while', 'when',
+    // その他の一般的な単語
+    'not', 'no', 'yes', 's', 't', 're', 've', 'll', 'd', 'm', 'don', 'won',
+  };
+  
   @override
   void initState() {
     super.initState();
@@ -96,7 +116,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         final phraseInfos = TranslationService.detectPhrasesAndWords(widget.entry.content);
         final extractedWords = phraseInfos.where((info) {
           // 熟語ではない単語のみをフィルタリング
-          final isWord = info.text.trim().isNotEmpty && RegExp(r'\w').hasMatch(info.text) && !info.isPhrase;
+          final word = info.text.trim().toLowerCase();
+          final isWord = info.text.trim().isNotEmpty && 
+                        RegExp(r'\w').hasMatch(info.text) && 
+                        !info.isPhrase &&
+                        word.length >= 3 && // 3文字以上
+                        !_stopWords.contains(word) && // ストップワードを除外
+                        RegExp(r'^[a-zA-Z]+$').hasMatch(word); // 英字のみ
           return isWord && (info.translation.isNotEmpty || RegExp(r'^[a-zA-Z\s-]+$').hasMatch(info.text));
         }).toList();
         
@@ -177,7 +203,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         final phraseInfos = TranslationService.detectPhrasesAndWords(widget.entry.content);
         final extractedWords = phraseInfos.where((info) {
           // 熟語ではない単語のみをフィルタリング
-          final isWord = info.text.trim().isNotEmpty && RegExp(r'\w').hasMatch(info.text) && !info.isPhrase;
+          final word = info.text.trim().toLowerCase();
+          final isWord = info.text.trim().isNotEmpty && 
+                        RegExp(r'\w').hasMatch(info.text) && 
+                        !info.isPhrase &&
+                        word.length >= 3 && // 3文字以上
+                        !_stopWords.contains(word) && // ストップワードを除外
+                        RegExp(r'^[a-zA-Z]+$').hasMatch(word); // 英字のみ
           return isWord && (info.translation.isNotEmpty || RegExp(r'^[a-zA-Z\s-]+$').hasMatch(info.text));
         }).toList();
         
