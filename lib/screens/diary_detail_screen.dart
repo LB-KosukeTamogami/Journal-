@@ -975,40 +975,6 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             ).animate().fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
           ],
           
-          // ワンポイントアドバイス（英語の場合のみ、常に表示）
-          if (!isJapanese) ...[
-            const SizedBox(height: 16),
-            AppCard(
-              backgroundColor: AppTheme.warning.withOpacity(0.1),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.tips_and_updates,
-                        color: AppTheme.warning,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'ワンポイントアドバイス',
-                        style: AppTheme.body1.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.warning,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: _generateOnePointAdvice(),
-                  ),
-                ],
-              ),
-            ).animate().fadeIn(delay: 300.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
-          ],
           
           // レビュー画面と同じアドバイスセクションを追加
           if (_judgment.isNotEmpty) ...[
@@ -1019,55 +985,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           // 学習ポイント
           if (_learnedPhrases.isNotEmpty) ...[
             const SizedBox(height: 16),
-            AppCard(
-              backgroundColor: AppTheme.info.withOpacity(0.1),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.school,
-                        color: AppTheme.info,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '学習ポイント',
-                        style: AppTheme.body1.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.info,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  ..._learnedPhrases.map((phrase) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 6,
-                          height: 6,
-                          margin: const EdgeInsets.only(top: 8, right: 12),
-                          decoration: BoxDecoration(
-                            color: AppTheme.info,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            phrase,
-                            style: AppTheme.body2.copyWith(height: 1.5),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
-                ],
-              ),
-            ).animate().fadeIn(delay: 400.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+            _buildInfoBlock(
+              title: '学習ポイント',
+              icon: Icons.school,
+              color: AppTheme.info,
+              items: _learnedPhrases,
+              animationDelay: 400.ms,
+            ),
           ],
           
           // 抽出された単語リスト
@@ -2344,60 +2268,67 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     );
   }
   
-  /// ワンポイントアドバイスを生成
-  List<Widget> _generateOnePointAdvice() {
-    final advice = <Widget>[];
-    final content = widget.entry.content.toLowerCase();
-    final hasCorrections = _correctedContent != widget.entry.content;
-    
-    // 文の内容と修正内容に基づいてアドバイスを生成
-    if (hasCorrections) {
-      // 時制の間違いがある場合
-      if (content.contains('yesterday') && (content.contains('go') || content.contains('is'))) {
-        advice.add(_buildAdviceItem(
-          '💡 時制のコツ',
-          'yesterdayのような過去を表す言葉が出てきたら、動詞も過去形にすることを忘れずに！',
-          AppTheme.primaryBlue,
-        ));
-      }
-      
-      // 大文字の間違いがある場合
-      if (widget.entry.content.contains(' i ') || widget.entry.content.startsWith('i ')) {
-        advice.add(_buildAdviceItem(
-          '✏️ 書き方のルール',
-          '英語の「I」は、文のどこにあっても必ず大文字で書きます。これは特別なルールです。',
-          AppTheme.info,
-        ));
-      }
-    }
-    
-    // 内容に基づく一般的なアドバイス
-    if (content.contains('fun') || content.contains('enjoy') || content.contains('happy')) {
-      advice.add(_buildAdviceItem(
-        '😊 感情表現',
-        '楽しい気持ちを表現できていて素晴らしいです！感情を表す単語をもっと覚えると、より豊かな表現ができるようになります。',
-        AppTheme.success,
-      ));
-    }
-    
-    if (content.contains('school') || content.contains('study')) {
-      advice.add(_buildAdviceItem(
-        '📚 学習のヒント',
-        '学校生活について書くことは、日常的な英語表現を身につける良い練習になります。',
-        AppTheme.info,
-      ));
-    }
-    
-    // デフォルトのアドバイス
-    if (advice.isEmpty) {
-      advice.add(_buildAdviceItem(
-        '🌟 継続は力なり',
-        '毎日少しずつでも英語で日記を書き続けることで、必ず上達します。今日も頑張りましたね！',
-        AppTheme.warning,
-      ));
-    }
-    
-    return advice;
+  
+  /// 共通のブロックコンポーネントを作成
+  Widget _buildInfoBlock({
+    required String title,
+    required IconData icon,
+    required Color color,
+    required List<String> items,
+    Duration? animationDelay,
+  }) {
+    return AppCard(
+      backgroundColor: color.withOpacity(0.05),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                icon,
+                color: color,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: AppTheme.body1.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...items.map((item) => Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 6,
+                  height: 6,
+                  margin: const EdgeInsets.only(top: 8, right: 12),
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    item,
+                    style: AppTheme.body2.copyWith(height: 1.5),
+                  ),
+                ),
+              ],
+            ),
+          )),
+        ],
+      ),
+    ).animate().fadeIn(
+      delay: animationDelay ?? 600.ms, 
+      duration: 400.ms
+    ).slideY(begin: 0.1, end: 0);
   }
   
   /// レビュー画面と同じアドバイスセクションを作成
@@ -2433,55 +2364,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         ];
     }
     
-    return AppCard(
-      backgroundColor: AppTheme.info.withOpacity(0.05),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.lightbulb_outline,
-                color: AppTheme.info,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'アドバイス',
-                style: AppTheme.body1.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.info,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ...adviceList.map((advice) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 6,
-                  height: 6,
-                  margin: const EdgeInsets.only(top: 8, right: 12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.info,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    advice,
-                    style: AppTheme.body2.copyWith(height: 1.5),
-                  ),
-                ),
-              ],
-            ),
-          )),
-        ],
-      ),
-    ).animate().fadeIn(delay: 600.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+    return _buildInfoBlock(
+      title: 'アドバイス',
+      icon: Icons.lightbulb_outline,
+      color: AppTheme.info,
+      items: adviceList,
+      animationDelay: 600.ms,
+    );
   }
   
   /// アドバイス項目を作成
