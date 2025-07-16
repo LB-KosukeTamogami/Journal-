@@ -15,6 +15,7 @@ import '../widgets/text_to_speech_button.dart';
 import '../widgets/japanese_dictionary_dialog.dart';
 import '../widgets/shadowing_player.dart';
 import '../widgets/compact_shadowing_player.dart';
+import '../services/japanese_wordnet_service.dart';
 import 'diary_creation_screen.dart';
 
 class DiaryDetailScreen extends StatefulWidget {
@@ -1070,6 +1071,8 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                   // モーダルを下から表示（レビュー画面と同じデザインに統一）
                                   bool isAddedToFlashcard = isSaved;
                                   bool isAddedToVocabulary = false;
+                                  bool isLoadingTranslation = true;
+                                  String translationText = info.translation.isNotEmpty ? info.translation : '[意味を確認中]';
                                   
                                   showModalBottomSheet(
                                     context: context,
@@ -1077,6 +1080,24 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                     backgroundColor: Colors.transparent,
                                     builder: (context) => StatefulBuilder(
                                       builder: (context, setModalState) {
+                                        // 辞書APIから翻訳を取得（初回のみ）
+                                        if (isLoadingTranslation && info.translation.isEmpty) {
+                                          JapaneseWordNetService.lookupWord(info.text).then((wordNetEntry) {
+                                            if (wordNetEntry != null && wordNetEntry.definitions.isNotEmpty) {
+                                              setModalState(() {
+                                                translationText = wordNetEntry.definitions.first;
+                                                isLoadingTranslation = false;
+                                              });
+                                            } else {
+                                              setModalState(() {
+                                                translationText = '[意味が見つかりませんでした]';
+                                                isLoadingTranslation = false;
+                                              });
+                                            }
+                                          });
+                                        } else if (info.translation.isNotEmpty) {
+                                          isLoadingTranslation = false;
+                                        }
                                         
                                         return Container(
                                           decoration: BoxDecoration(
@@ -1123,10 +1144,30 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                                         ),
                                                         const SizedBox(height: 8),
                                                         // 日本語の意味
-                                                        Text(
-                                                          info.translation.isNotEmpty ? info.translation : '[意味を確認中]',
-                                                          style: AppTheme.body1.copyWith(fontSize: 18),
-                                                        ),
+                                                        isLoadingTranslation 
+                                                          ? Row(
+                                                              children: [
+                                                                SizedBox(
+                                                                  width: 16,
+                                                                  height: 16,
+                                                                  child: CircularProgressIndicator(
+                                                                    strokeWidth: 2,
+                                                                    color: AppTheme.primaryBlue,
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(width: 8),
+                                                                Text(
+                                                                  '意味を取得中...',
+                                                                  style: AppTheme.body2.copyWith(
+                                                                    color: AppTheme.textSecondary,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            )
+                                                          : Text(
+                                                              translationText,
+                                                              style: AppTheme.body1.copyWith(fontSize: 18),
+                                                            ),
                                                       ],
                                                     ),
                                                   ),
@@ -1182,7 +1223,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                                             final word = Word(
                                                               id: const Uuid().v4(),
                                                               english: info.text.trim(),
-                                                              japanese: info.translation.isNotEmpty ? info.translation : '[意味を確認中]',
+                                                              japanese: translationText,
                                                               diaryEntryId: widget.entry.id,
                                                               createdAt: DateTime.now(),
                                                               masteryLevel: 0,
@@ -1253,7 +1294,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                                             final flashcard = Flashcard(
                                                               id: DateTime.now().millisecondsSinceEpoch.toString(),
                                                               word: info.text,
-                                                              meaning: info.translation.isNotEmpty ? info.translation : '[意味を確認中]',
+                                                              meaning: translationText,
                                                               exampleSentence: '',
                                                               createdAt: DateTime.now(),
                                                               lastReviewed: DateTime.now(),

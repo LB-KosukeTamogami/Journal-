@@ -411,7 +411,15 @@ class AppButtonStyles {
   );
 
   // 影付きコンテナでボタンをラップするヘルパー
-  static Widget withShadow(Widget button) {
+  static Widget withShadow(Widget button, {bool removeShadowFor56px = true}) {
+    // 高さ56pxのボタンの場合はシャドウを削除
+    if (removeShadowFor56px && button is ElevatedButton) {
+      return button;
+    }
+    if (removeShadowFor56px && button is OutlinedButton) {
+      return button;
+    }
+    
     return Container(
       decoration: BoxDecoration(
         boxShadow: AppTheme.buttonShadow,
