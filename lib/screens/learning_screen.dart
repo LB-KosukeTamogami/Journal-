@@ -1213,37 +1213,72 @@ class _WordDetailModalState extends State<_WordDetailModal> {
             // 単語帳に登録ボタン
             AppButtonStyles.withShadow(
               ElevatedButton.icon(
-                onPressed: _isAddedToVocabulary ? null : () async {
-                  // フラッシュカードに登録
+                onPressed: () async {
+                  // フラッシュカードに登録/削除のトグル
                   try {
-                    final flashcard = Flashcard(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      word: widget.word.english,
-                      meaning: widget.word.japanese,
-                      exampleSentence: '', // 例文は削除
-                      createdAt: DateTime.now(),
-                      lastReviewed: DateTime.now(),
-                      nextReviewDate: DateTime.now().add(Duration(days: 1)),
-                      reviewCount: 0,
-                    );
-                    await StorageService.saveFlashcard(flashcard);
-                    
-                    setState(() {
-                      _isAddedToVocabulary = true;
-                    });
-                    
-                    // 成功メッセージを表示
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('単語帳に登録しました'),
-                        backgroundColor: AppTheme.success,
-                        behavior: SnackBarBehavior.floating,
-                        margin: const EdgeInsets.all(16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                    if (_isAddedToVocabulary) {
+                      // 既に追加済みの場合は削除
+                      final flashcards = await StorageService.getFlashcards();
+                      final cardToDelete = flashcards.firstWhere(
+                        (card) => card.word.toLowerCase() == widget.word.english.toLowerCase(),
+                        orElse: () => Flashcard(
+                          id: '',
+                          word: '',
+                          meaning: '',
+                          exampleSentence: '',
+                          createdAt: DateTime.now(),
+                          lastReviewed: DateTime.now(),
+                          nextReviewDate: DateTime.now().add(Duration(days: 1)),
+                          reviewCount: 0,
                         ),
-                      ),
-                    );
+                      );
+                      if (cardToDelete.id.isNotEmpty) {
+                        await StorageService.deleteFlashcard(cardToDelete.id);
+                        setState(() {
+                          _isAddedToVocabulary = false;
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('単語帳から削除しました'),
+                            backgroundColor: AppTheme.warning,
+                            behavior: SnackBarBehavior.floating,
+                            margin: const EdgeInsets.all(16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        );
+                      }
+                    } else {
+                      // 新規追加
+                      final flashcard = Flashcard(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        word: widget.word.english,
+                        meaning: widget.word.japanese,
+                        exampleSentence: '', // 例文は削除
+                        createdAt: DateTime.now(),
+                        lastReviewed: DateTime.now(),
+                        nextReviewDate: DateTime.now().add(Duration(days: 1)),
+                        reviewCount: 0,
+                      );
+                      await StorageService.saveFlashcard(flashcard);
+                      
+                      setState(() {
+                        _isAddedToVocabulary = true;
+                      });
+                      
+                      // 成功メッセージを表示
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('単語帳に登録しました'),
+                          backgroundColor: AppTheme.success,
+                          behavior: SnackBarBehavior.floating,
+                          margin: const EdgeInsets.all(16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      );
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -1254,21 +1289,17 @@ class _WordDetailModalState extends State<_WordDetailModal> {
                   }
                 },
                 style: _isAddedToVocabulary
-                  ? AppButtonStyles.modalSuccessButton.copyWith(
-                      backgroundColor: MaterialStateProperty.all(Colors.white),
-                      foregroundColor: MaterialStateProperty.all(AppTheme.success),
-                      side: MaterialStateProperty.all(BorderSide(color: AppTheme.success, width: 2)),
-                    )
+                  ? AppButtonStyles.modalErrorButton
                   : AppButtonStyles.modalSuccessButton,
                 icon: Icon(
                   _isAddedToVocabulary ? Icons.check_circle : Icons.style,
                   size: 20,
-                  color: _isAddedToVocabulary ? AppTheme.success : Colors.white,
+                  color: _isAddedToVocabulary ? AppTheme.error : Colors.white,
                 ),
                 label: Text(
                   _isAddedToVocabulary ? '単語帳に登録済み' : '単語帳に登録',
                   style: TextStyle(
-                    color: _isAddedToVocabulary ? AppTheme.success : Colors.white,
+                    color: _isAddedToVocabulary ? AppTheme.error : Colors.white,
                   ),
                 ),
               ),
