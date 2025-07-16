@@ -422,7 +422,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       ),
                     ),
                     // 正しい英語の場合はTTSボタンを表示
-                    if (_isCorrectEnglish()) ..[
+                    if (_isCorrectEnglish()) ...[
                       const Spacer(),
                       TextToSpeechButton(
                         text: widget.entry.content,
