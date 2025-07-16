@@ -49,7 +49,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     'a', 'an', 'the',
     // 代名詞
     'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them',
-    'my', 'your', 'his', 'her', 'its', 'our', 'their',
+    'my', 'your', 'his', 'its', 'our', 'their',
     'this', 'that', 'these', 'those',
     // be動詞
     'am', 'is', 'are', 'was', 'were', 'been', 'be', 'being',
