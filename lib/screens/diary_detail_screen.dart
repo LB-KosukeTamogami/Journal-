@@ -108,7 +108,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       
       if (cachedTranslation != null) {
         // キャッシュが存在する場合は使用
-        print('Using cached translation for diary ${widget.entry.id}');
+        
         setState(() {
           _translatedContent = cachedTranslation['translated_text'] ?? '';
           _correctedContent = cachedTranslation['corrected_text'] ?? widget.entry.content;
@@ -132,6 +132,11 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         // キャッシュから学習フレーズや単語も読み込まれているのでreturn
         return;
       }
+      
+      // キャッシュがない場合のみローディングを開始
+      setState(() {
+        _isLoading = true;
+      });
       
       // キャッシュがない場合はGemini APIを使用
       Map<String, dynamic>? geminiResult;
@@ -247,15 +252,10 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
               learnedWords: geminiResult?['learned_words'] ?? [],
             );
           }
-          print('Translation cached successfully');
         }
         
-        print('DiaryDetail: Translation set to: $_translatedContent');
-        print('DiaryDetail: Corrections: $_corrections');
       } catch (apiError) {
         // Gemini API失敗時のみオフライン翻訳をフォールバックとして使用
-        print('DiaryDetail: Gemini API error: $apiError');
-        print('DiaryDetail: Falling back to offline translation');
         
         // APIエラーの場合はレート制限の可能性が高い
         setState(() {
@@ -374,34 +374,32 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           ),
         ),
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: AppTheme.primaryColor))
-          : Stack(
-              children: [
-                TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildDiaryTab(),
-                    _buildTranslationTab(),
-                  ],
-                ),
-                if (_shadowingText != null)
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: CompactShadowingPlayer(
-                      text: _shadowingText!,
-                      onClose: () {
-                        setState(() {
-                          _shadowingText = null;
-                          _shadowingTitle = null;
-                        });
-                      },
-                    ),
-                  ),
-              ],
+      body: Stack(
+        children: [
+          TabBarView(
+            controller: _tabController,
+            children: [
+              _buildDiaryTab(),
+              _buildTranslationTab(),
+            ],
+          ),
+          if (_shadowingText != null)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: CompactShadowingPlayer(
+                text: _shadowingText!,
+                onClose: () {
+                  setState(() {
+                    _shadowingText = null;
+                    _shadowingTitle = null;
+                  });
+                },
+              ),
             ),
+        ],
+      ),
     );
   }
   
