@@ -792,7 +792,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // 添削が必要ない場合のコメント
-                            if (!isJapanese && !isMixed && _correctedContent == widget.entry.content) ...[
+                            if (!isJapanese && !isMixed && _correctedContent.isNotEmpty && _correctedContent == widget.entry.content && !_isLoading) ...[
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                 decoration: BoxDecoration(
@@ -905,9 +905,12 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
           
           // 写経セクション（添削結果または翻訳結果がある場合のみ、正しい英文の場合は除く）
-          if ((_correctedContent.isNotEmpty || _translatedContent.isNotEmpty) && 
-              _judgment != '英文（正しい）' && 
-              _correctedContent != widget.entry.content) ...[
+          if (!_isLoading && (
+              // 日本語の場合（翻訳結果がある）
+              (isJapanese && _translatedContent.isNotEmpty) ||
+              // 英語で添削が必要な場合（添削結果が元と異なる）
+              (!isJapanese && _correctedContent.isNotEmpty && _correctedContent != widget.entry.content)
+          )) ...[
             const SizedBox(height: 16),
             AppCard(
               backgroundColor: AppTheme.primaryBlue.withOpacity(0.05),
