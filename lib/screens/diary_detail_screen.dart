@@ -122,6 +122,8 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             text: data['text'] ?? '',
             translation: data['translation'] ?? '',
             isPhrase: data['isPhrase'] ?? false,
+            startIndex: 0,
+            endIndex: 0,
           )).toList();
           
           _isLoading = false;
