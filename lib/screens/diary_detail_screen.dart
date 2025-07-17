@@ -905,7 +905,9 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
           
           // 写経セクション（添削結果または翻訳結果がある場合のみ、正しい英文の場合は除く）
-          if ((_correctedContent.isNotEmpty || _translatedContent.isNotEmpty) && _judgment != '英文（正しい）') ...[
+          if ((_correctedContent.isNotEmpty || _translatedContent.isNotEmpty) && 
+              _judgment != '英文（正しい）' && 
+              _correctedContent != widget.entry.content) ...[
             const SizedBox(height: 16),
             AppCard(
               backgroundColor: AppTheme.primaryBlue.withOpacity(0.05),
