@@ -63,6 +63,9 @@ class SupabaseService {
     required String detectedLanguage,
     required String targetLanguage,
     String? judgment,
+    List<dynamic>? learnedPhrases,
+    List<dynamic>? extractedWords,
+    List<dynamic>? learnedWords,
   }) async {
     if (_client == null) {
       print('Supabase client not initialized');
@@ -80,6 +83,9 @@ class SupabaseService {
         'detected_language': detectedLanguage,
         'target_language': targetLanguage,
         'judgment': judgment,
+        'learned_phrases': learnedPhrases ?? [],
+        'extracted_words': extractedWords ?? [],
+        'learned_words': learnedWords ?? [],
         'created_at': DateTime.now().toIso8601String(),
         'updated_at': DateTime.now().toIso8601String(),
       }, onConflict: 'diary_entry_id');

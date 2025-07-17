@@ -114,27 +114,20 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           _correctedContent = cachedTranslation['corrected_text'] ?? widget.entry.content;
           _corrections = List<String>.from(cachedTranslation['improvements'] ?? []);
           _judgment = cachedTranslation['judgment'] ?? '';
+          _learnedPhrases = List<String>.from(cachedTranslation['learned_phrases'] ?? []);
+          
+          // 抽出された単語を復元
+          final extractedWordsData = cachedTranslation['extracted_words'] ?? [];
+          _extractedWords = extractedWordsData.map<PhraseInfo>((data) => PhraseInfo(
+            text: data['text'] ?? '',
+            translation: data['translation'] ?? '',
+            isPhrase: data['isPhrase'] ?? false,
+          )).toList();
+          
           _isLoading = false;
         });
         
-        // 単語を抽出（熟語を除外）
-        final phraseInfos = TranslationService.detectPhrasesAndWords(widget.entry.content);
-        final extractedWords = phraseInfos.where((info) {
-          // 熟語ではない単語のみをフィルタリング
-          final word = info.text.trim().toLowerCase();
-          final isWord = info.text.trim().isNotEmpty && 
-                        RegExp(r'\w').hasMatch(info.text) && 
-                        !info.isPhrase &&
-                        word.length >= 3 && // 3文字以上
-                        !_stopWords.contains(word) && // ストップワードを除外
-                        RegExp(r'^[a-zA-Z]+$').hasMatch(word); // 英字のみ
-          return isWord && (info.translation.isNotEmpty || RegExp(r'^[a-zA-Z\s-]+$').hasMatch(info.text));
-        }).toList();
-        
-        setState(() {
-          _extractedWords = extractedWords;
-        });
-        
+        // キャッシュから学習フレーズや単語も読み込まれているのでreturn
         return;
       }
       
@@ -243,6 +236,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
               detectedLanguage: detectedLang,
               targetLanguage: targetLanguage,
               judgment: judgment,
+              learnedPhrases: _learnedPhrases,
+              extractedWords: extractedWords.map((e) => {
+                'text': e.text,
+                'translation': e.translation,
+                'isPhrase': e.isPhrase,
+              }).toList(),
+              learnedWords: geminiResult?['learned_words'] ?? [],
             );
           }
           print('Translation cached successfully');
@@ -410,7 +410,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 元の文章
-          AppCard(
+          _isLoading ? _buildSkeletonOriginal() : AppCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -451,7 +451,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           const SizedBox(height: 16),
           
           // AI利用制限メッセージ
-          if (_corrections.contains('本日のAI利用枠を使い切りました。明日また利用可能になります。'))
+          if (!_isLoading && _corrections.contains('本日のAI利用枠を使い切りました。明日また利用可能になります。'))
             AppCard(
               backgroundColor: AppTheme.warning.withOpacity(0.05),
               child: Row(
@@ -476,7 +476,9 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             ).animate().fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
           
           // 翻訳セクション（独立配置）
-          if (_translatedContent.isNotEmpty)
+          if (_isLoading) ...
+            _buildSkeletonResults()
+          else if (_translatedContent.isNotEmpty)
             AppCard(
               backgroundColor: AppTheme.info.withOpacity(0.05),
               child: Column(
@@ -2700,5 +2702,204 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         );
       }).toList(),
     );
+  }
+  
+  // スケルトンローディング用のウィジェット
+  Widget _buildSkeletonOriginal() {
+    return AppCard(
+      backgroundColor: AppTheme.backgroundSecondary,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: AppTheme.textSecondary.withOpacity(0.3),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                width: 80,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: AppTheme.textSecondary.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            height: 60,
+            decoration: BoxDecoration(
+              color: AppTheme.textSecondary.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ],
+      ),
+    ).animate(
+      onPlay: (controller) => controller.repeat(),
+    ).shimmer(duration: 1500.ms, color: AppTheme.textSecondary.withOpacity(0.1));
+  }
+  
+  List<Widget> _buildSkeletonResults() {
+    return [
+      const SizedBox(height: 16),
+      AppCard(
+        backgroundColor: AppTheme.backgroundSecondary,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: AppTheme.textSecondary.withOpacity(0.3),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  width: 100,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: AppTheme.textSecondary.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              height: 80,
+              decoration: BoxDecoration(
+                color: AppTheme.textSecondary.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ],
+        ),
+      ).animate(
+        onPlay: (controller) => controller.repeat(),
+      ).shimmer(duration: 1500.ms, color: AppTheme.textSecondary.withOpacity(0.1)),
+    ];
+  }
+  
+  Widget _buildSkeletonAdvice() {
+    return AppCard(
+      backgroundColor: AppTheme.backgroundSecondary,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: AppTheme.textSecondary.withOpacity(0.3),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                width: 80,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: AppTheme.textSecondary.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...List.generate(3, (index) => Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            width: double.infinity,
+            height: 16,
+            decoration: BoxDecoration(
+              color: AppTheme.textSecondary.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+          )),
+        ],
+      ),
+    ).animate(
+      onPlay: (controller) => controller.repeat(),
+    ).shimmer(duration: 1500.ms, color: AppTheme.textSecondary.withOpacity(0.1));
+  }
+  
+  Widget _buildSkeletonLearningPoints() {
+    return AppCard(
+      backgroundColor: AppTheme.backgroundSecondary,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: AppTheme.textSecondary.withOpacity(0.3),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                width: 100,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: AppTheme.textSecondary.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...List.generate(2, (index) => Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppTheme.textSecondary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 80,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: AppTheme.textSecondary.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Container(
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: AppTheme.textSecondary.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )),
+        ],
+      ),
+    ).animate(
+      onPlay: (controller) => controller.repeat(),
+    ).shimmer(duration: 1500.ms, color: AppTheme.textSecondary.withOpacity(0.1));
   }
 }
