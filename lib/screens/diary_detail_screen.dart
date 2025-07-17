@@ -43,6 +43,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   String? _shadowingText; // Text being shadowed
   String? _shadowingTitle; // Title for shadowing
   String _judgment = ''; // レビュー結果の判定
+  final TextEditingController _transcriptionController = TextEditingController(); // 写経用のコントローラー
   
   // ストップワード（一般的すぎる単語）のリスト
   static const Set<String> _stopWords = {
@@ -72,6 +73,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     _loadSavedWords();
   }
   
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _transcriptionController.dispose();
+    super.dispose();
+  }
+  
   Future<void> _loadSavedWords() async {
     final words = await StorageService.getWords();
     setState(() {
@@ -79,11 +87,6 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     });
   }
   
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
   
   Future<void> _loadTranslationData() async {
     try {
@@ -900,6 +903,61 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
               ],
             ),
           ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
+          
+          // 写経セクション（添削結果または翻訳結果がある場合のみ、正しい英文の場合は除く）
+          if ((_correctedContent.isNotEmpty || _translatedContent.isNotEmpty) && _judgment != '英文（正しい）') ...[
+            const SizedBox(height: 16),
+            AppCard(
+              backgroundColor: AppTheme.primaryBlue.withOpacity(0.05),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.edit_note,
+                        color: AppTheme.primaryBlue,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '写経',
+                        style: AppTheme.body1.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.primaryBlue,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _transcriptionController,
+                    maxLines: 5,
+                    style: AppTheme.body1,
+                    decoration: InputDecoration(
+                      hintText: '正しい英文を書き写してみましょう。',
+                      hintStyle: AppTheme.body2.copyWith(color: AppTheme.textTertiary),
+                      filled: true,
+                      fillColor: AppTheme.backgroundPrimary,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: AppTheme.borderColor),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: AppTheme.borderColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: AppTheme.primaryBlue, width: 2),
+                      ),
+                      contentPadding: const EdgeInsets.all(16),
+                    ),
+                  ),
+                ],
+              ),
+            ).animate().fadeIn(delay: 500.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
+          ],
           
           // 添削の解説（英語の場合のみ）
           if (!isJapanese) ...[

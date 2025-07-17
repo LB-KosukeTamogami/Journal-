@@ -34,6 +34,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   String _detectedLanguage = '';
   bool _isAllAddedToCards = false;
   Set<String> _addedWords = {}; // 追加された単語を管理
+  final TextEditingController _transcriptionController = TextEditingController(); // 写経用のコントローラー
   
   // ストップワード（一般的すぎる単語）のリスト
   static const Set<String> _stopWords = {
@@ -59,6 +60,12 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   void initState() {
     super.initState();
     _processContent();
+  }
+  
+  @override
+  void dispose() {
+    _transcriptionController.dispose();
+    super.dispose();
   }
 
   Future<void> _processContent() async {
@@ -164,19 +171,26 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                   if (_shouldShowTranslationOrCorrection())
                     const SizedBox(height: 20),
                   
-                  // 3. 添削の解説（添削時のみ）
+                  // 3. 写経セクション（翻訳・添削が成功した場合のみ、正しい英文の場合は除く）
+                  if (_shouldShowTranslationOrCorrection() && !_isLoading && _judgment != '英文（正しい）')
+                    _buildTranscriptionSection(),
+                  
+                  if (_shouldShowTranslationOrCorrection() && !_isLoading && _judgment != '英文（正しい）')
+                    const SizedBox(height: 20),
+                  
+                  // 4. 添削の解説（添削時のみ）
                   if (_shouldShowCorrectionExplanation())
                     _isLoading ? _buildSkeletonCorrections() : _buildCorrectionExplanationSection(),
                   
                   if (_shouldShowCorrectionExplanation())
                     const SizedBox(height: 20),
                   
-                  // 4. アドバイス
+                  // 5. アドバイス
                   _isLoading ? _buildSkeletonCorrections() : _buildAdviceSection(),
                   
                   const SizedBox(height: 20),
                   
-                  // 5. 重要単語（ある場合）
+                  // 6. 重要単語（ある場合）
                   if (_isLoading)
                     _buildSkeletonWords()
                   else if (_learnedWords.isNotEmpty)
@@ -710,29 +724,40 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          ...allCorrections.map((correction) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 6,
-                  height: 6,
-                  margin: const EdgeInsets.only(top: 8, right: 12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.warning,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    correction,
-                    style: AppTheme.body2.copyWith(height: 1.5),
-                  ),
-                ),
-              ],
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.backgroundPrimary,
+              borderRadius: BorderRadius.circular(8),
             ),
-          )),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: allCorrections.map((correction) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      margin: const EdgeInsets.only(top: 8, right: 12),
+                      decoration: BoxDecoration(
+                        color: AppTheme.warning,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        correction,
+                        style: AppTheme.body2.copyWith(height: 1.5),
+                      ),
+                    ),
+                  ],
+                ),
+              )).toList(),
+            ),
+          ),
         ],
       ),
     ).animate().fadeIn(delay: 500.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
@@ -1348,6 +1373,60 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
         ],
       ),
     ).animate().fadeIn(delay: 600.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
+  }
+  
+  // 写経セクション
+  Widget _buildTranscriptionSection() {
+    return AppCard(
+      backgroundColor: AppTheme.primaryBlue.withOpacity(0.05),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.edit_note,
+                color: AppTheme.primaryBlue,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '写経',
+                style: AppTheme.body1.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.primaryBlue,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _transcriptionController,
+            maxLines: 5,
+            style: AppTheme.body1,
+            decoration: InputDecoration(
+              hintText: '正しい英文を書き写してみましょう。',
+              hintStyle: AppTheme.body2.copyWith(color: AppTheme.textTertiary),
+              filled: true,
+              fillColor: AppTheme.backgroundPrimary,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: AppTheme.borderColor),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: AppTheme.borderColor),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: AppTheme.primaryBlue, width: 2),
+              ),
+              contentPadding: const EdgeInsets.all(16),
+            ),
+          ),
+        ],
+      ),
+    ).animate().fadeIn(delay: 500.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
 
   Widget _buildLearningPointsSection() {

@@ -104,3 +104,4 @@ flutter.tar.xz
 .env.local
 .env.*.local
 journal_learning_app/build/
+.vercel

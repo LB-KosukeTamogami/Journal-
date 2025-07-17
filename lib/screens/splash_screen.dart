@@ -44,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen> {
       print('[SplashScreen] User ID: ${AuthService.currentUser?.id}');
       
       // 認証されていない場合は認証ランディング画面へ
-      final targetScreen = isLoggedIn ? const MainNavigationScreen() : const AuthLandingScreen();
+      final targetScreen = isLoggedIn ? MainNavigationScreen(key: MainNavigationScreen.navigatorKey) : const AuthLandingScreen();
       
       // フェード効果で遷移
       print('[SplashScreen] Navigating to: ${targetScreen.runtimeType}');

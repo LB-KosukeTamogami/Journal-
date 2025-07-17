@@ -81,12 +81,17 @@ class StorageService {
       print('[Storage] Cached ${supabaseEntries.length} entries from Supabase to local');
       print('[Storage] ========== Returning Supabase data ==========');
       
+      // 作成日時の降順でソート（新しい順）
+      supabaseEntries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       return supabaseEntries;
     }
     
     // Supabaseに接続できなかった場合はローカルデータを使用
     print('[Storage] Using local cached data (${localEntries.length} diaries)');
     print('[Storage] ========== Returning local data ==========');
+    
+    // 作成日時の降順でソート（新しい順）
+    localEntries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return localEntries;
   }
 

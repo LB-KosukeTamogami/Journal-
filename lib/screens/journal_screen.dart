@@ -89,6 +89,11 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
       groupedEntries[date]!.add(entry);
     }
     
+    // 各日付の日記を時間の降順でソート（新しい順）
+    groupedEntries.forEach((date, entries) {
+      entries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    });
+    
     return groupedEntries;
   }
 

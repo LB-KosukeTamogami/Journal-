@@ -8,7 +8,9 @@ import 'my_page_screen.dart';
 import '../theme/app_theme.dart';
 
 class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({super.key});
+  static final GlobalKey<_MainNavigationScreenState> navigatorKey = GlobalKey<_MainNavigationScreenState>();
+  
+  const MainNavigationScreen({Key? key}) : super(key: key);
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
@@ -16,8 +18,19 @@ class MainNavigationScreen extends StatefulWidget {
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _selectedIndex = 0;
+  
+  void navigateToTab(int index) {
+    setState(() {
+      _selectedIndex = index;
+      // ジャーナル画面の場合、強制的に再構築
+      if (index == 1) {
+        // JournalScreenが再度initStateを呼ぶように、キーを変更
+        _screens[1] = JournalScreen(key: UniqueKey());
+      }
+    });
+  }
 
-  final List<Widget> _screens = [
+  List<Widget> _screens = [
     const HomeScreen(),
     const JournalScreen(),
     const LearningScreen(),

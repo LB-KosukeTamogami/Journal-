@@ -13,6 +13,7 @@ import '../theme/app_theme.dart';
 import '../models/word.dart';
 import 'diary_review_screen.dart';
 import 'conversation_journal_screen.dart';
+import 'main_navigation_screen.dart';
 
 class DiaryCreationScreen extends StatefulWidget {
   final DiaryEntry? existingEntry;
@@ -186,7 +187,14 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
           
           // レビュー画面から完了ボタンで戻った場合、ジャーナル画面に戻る
           if (result == true && mounted) {
-            Navigator.pop(context, true); // ジャーナル画面に更新を通知
+            // MainNavigationScreenまで戻る
+            Navigator.popUntil(context, (route) => route.isFirst);
+            
+            // MainNavigationScreenのジャーナルタブに切り替える
+            final mainNavState = MainNavigationScreen.navigatorKey.currentState;
+            if (mainNavState != null) {
+              mainNavState.navigateToTab(1); // ジャーナルタブのインデックスは1
+            }
           }
         }
       }
