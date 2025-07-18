@@ -551,6 +551,8 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   Widget _buildOriginalSection() {
     // 英語（正しい）の場合は元の文章に音声読み上げボタンを表示
     final showTTS = _judgment == '英文（正しい）';
+    // 英語の場合は日本語翻訳を表示
+    final isEnglish = _detectedLanguage == 'en' || _detectedLanguage == 'mixed';
     
     return AppCard(
       child: Column(
@@ -585,6 +587,42 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             widget.entry.content,
             style: AppTheme.body1.copyWith(height: 1.6),
           ),
+          // 英語の場合、日本語訳を白いコンテナで表示
+          if (isEnglish && _translatedText.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppTheme.dividerColor.withOpacity(0.5),
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '日本語訳',
+                    style: AppTheme.caption.copyWith(
+                      color: AppTheme.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _translatedText,
+                    style: AppTheme.body2.copyWith(
+                      color: AppTheme.textPrimary,
+                      height: 1.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0);
@@ -1157,156 +1195,89 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     ).animate().fadeIn(delay: 600.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
   
-  // 2. 翻訳または添削の文章セクション（Before/After形式）
+  // 2. 翻訳または添削の文章セクション
   Widget _buildTranslationOrCorrectionSection() {
+    String sectionTitle;
+    Color sectionColor;
+    IconData sectionIcon;
+    
     if (_judgment == '日本語翻訳') {
-      // 日本語から英語への翻訳の場合
-      return Column(
-        children: [
-          // 英語翻訳（After）
-          AppCard(
-            backgroundColor: AppTheme.success.withOpacity(0.05),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppTheme.success,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'After',
-                        style: AppTheme.caption.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '英語',
-                      style: AppTheme.body1.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.success,
-                      ),
-                    ),
-                    const Spacer(),
-                    TextToSpeechButton(
-                      text: _outputText,
-                      size: 20,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                SelectableText(
-                  _outputText,
-                  style: AppTheme.body1.copyWith(
-                    height: 1.6,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      );
+      sectionTitle = '翻訳';
+      sectionColor = AppTheme.primaryBlue;
+      sectionIcon = Icons.translate;
     } else {
-      // 英文添削の場合
-      return Column(
+      sectionTitle = '添削';
+      sectionColor = AppTheme.success;
+      sectionIcon = Icons.edit_note;
+    }
+    
+    return AppCard(
+      backgroundColor: sectionColor.withOpacity(0.05),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 添削後の英文（After）
-          AppCard(
-            backgroundColor: AppTheme.success.withOpacity(0.05),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppTheme.success,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'After',
-                        style: AppTheme.caption.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '添削後',
-                      style: AppTheme.body1.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.success,
-                      ),
-                    ),
-                    const Spacer(),
-                    TextToSpeechButton(
-                      text: _outputText,
-                      size: 20,
-                    ),
-                  ],
+          Row(
+            children: [
+              Icon(
+                sectionIcon,
+                color: sectionColor,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                sectionTitle,
+                style: AppTheme.body1.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: sectionColor,
                 ),
-                const SizedBox(height: 12),
-                SelectableText(
-                  _outputText,
-                  style: AppTheme.body1.copyWith(
-                    height: 1.6,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
+              ),
+              const Spacer(),
+              // 音声読み上げボタン（翻訳・添削時は常に表示）
+              TextToSpeechButton(
+                text: _outputText,
+                size: 20,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SelectableText(
+            _outputText,
+            style: AppTheme.body1.copyWith(
+              height: 1.6,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
             ),
           ),
-          // 日本語翻訳がある場合は表示
-          if (_translatedText.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            AppCard(
-              backgroundColor: AppTheme.info.withOpacity(0.05),
+          // 英文添削の場合、日本語訳を白いコンテナで表示
+          if (_judgment == '英文（添削必要）' && _translatedText.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppTheme.dividerColor.withOpacity(0.5),
+                  width: 1,
+                ),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppTheme.info,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          '翻訳',
-                          style: AppTheme.caption.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '日本語',
-                        style: AppTheme.body1.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.info,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    '日本語訳',
+                    style: AppTheme.caption.copyWith(
+                      color: AppTheme.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 4),
                   Text(
                     _translatedText,
-                    style: AppTheme.body1.copyWith(
-                      height: 1.6,
-                      fontSize: 16,
+                    style: AppTheme.body2.copyWith(
+                      color: AppTheme.textPrimary,
+                      height: 1.5,
                     ),
                   ),
                 ],

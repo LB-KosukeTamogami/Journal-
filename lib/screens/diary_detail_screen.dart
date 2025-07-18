@@ -444,6 +444,42 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   widget.entry.content,
                   style: AppTheme.body1.copyWith(height: 1.6),
                 ),
+                // 英語の場合、日本語訳を白いコンテナで表示
+                if (TranslationService.detectLanguage(widget.entry.content) == 'en' && _translatedContent.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: AppTheme.dividerColor.withOpacity(0.5),
+                        width: 1,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '日本語訳',
+                          style: AppTheme.caption.copyWith(
+                            color: AppTheme.textSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _translatedContent,
+                          style: AppTheme.body2.copyWith(
+                            color: AppTheme.textPrimary,
+                            height: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
           ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
@@ -607,6 +643,42 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     _correctedContent,
                     style: AppTheme.body1.copyWith(height: 1.6),
                   ),
+                  // 添削後の日本語訳を白いコンテナで表示
+                  if (_translatedContent.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: AppTheme.dividerColor.withOpacity(0.5),
+                          width: 1,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '日本語訳',
+                            style: AppTheme.caption.copyWith(
+                              color: AppTheme.textSecondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            _translatedContent,
+                            style: AppTheme.body2.copyWith(
+                              color: AppTheme.textPrimary,
+                              height: 1.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ).animate().fadeIn(delay: 300.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
