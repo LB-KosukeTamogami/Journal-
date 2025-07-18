@@ -587,14 +587,14 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             widget.entry.content,
             style: AppTheme.body1.copyWith(height: 1.6),
           ),
-          // 英語の場合、日本語訳を白いコンテナで表示
+          // 英語の場合、日本語訳を透明背景のコンテナで表示
           if (isEnglish && _translatedText.isNotEmpty) ...[
             const SizedBox(height: 12),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.transparent,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: AppTheme.dividerColor.withOpacity(0.5),
@@ -1259,17 +1259,17 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               ),
             ),
           ),
-          // 英文添削の場合、日本語訳を白いコンテナで表示
+          // 英文添削の場合、日本語訳を透明背景のコンテナで表示
           if (_judgment == '英文（添削必要）' && _translatedText.isNotEmpty) ...[
             const SizedBox(height: 12),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.transparent,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: AppTheme.dividerColor.withOpacity(0.5),
+                  color: AppTheme.success.withOpacity(0.3),
                   width: 1,
                 ),
               ),
