@@ -511,10 +511,10 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
               ),
             ).animate().fadeIn(delay: 200.ms, duration: 400.ms).slideY(begin: 0.1, end: 0),
           
-          // 翻訳セクション（独立配置）
+          // 翻訳セクション（日本語エントリーの場合のみ表示）
           if (_isLoading) ...
             _buildSkeletonResults()
-          else if (_translatedContent.isNotEmpty)
+          else if (_translatedContent.isNotEmpty && TranslationService.detectLanguage(widget.entry.content) == 'ja')
             AppCard(
               backgroundColor: AppTheme.info.withOpacity(0.05),
               child: Column(
@@ -532,9 +532,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            TranslationService.detectLanguage(widget.entry.content) == 'ja' 
-                                ? '英語翻訳' 
-                                : '日本語翻訳',
+                            '英語翻訳',
                             style: AppTheme.body1.copyWith(
                               fontWeight: FontWeight.w600,
                               color: AppTheme.info,
@@ -542,26 +540,25 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           ),
                         ],
                       ),
-                      if (TranslationService.detectLanguage(_translatedContent) == 'en')
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              if (_shadowingText == _translatedContent) {
-                                _shadowingText = null;
-                                _shadowingTitle = null;
-                              } else {
-                                _shadowingText = _translatedContent;
-                                _shadowingTitle = '英語翻訳のシャドーイング';
-                              }
-                            });
-                          },
-                          icon: Icon(
-                            Icons.record_voice_over,
-                            color: AppTheme.primaryColor,
-                            size: 20,
-                          ),
-                          tooltip: 'シャドーイング練習',
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            if (_shadowingText == _translatedContent) {
+                              _shadowingText = null;
+                              _shadowingTitle = null;
+                            } else {
+                              _shadowingText = _translatedContent;
+                              _shadowingTitle = '英語翻訳のシャドーイング';
+                            }
+                          });
+                        },
+                        icon: Icon(
+                          Icons.record_voice_over,
+                          color: AppTheme.primaryColor,
+                          size: 20,
                         ),
+                        tooltip: 'シャドーイング練習',
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),

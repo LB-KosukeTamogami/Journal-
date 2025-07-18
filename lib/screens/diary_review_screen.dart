@@ -1202,13 +1202,13 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     IconData sectionIcon;
     
     if (_judgment == '日本語翻訳') {
-      sectionTitle = '翻訳';
+      sectionTitle = '英語翻訳';
       sectionColor = AppTheme.primaryBlue;
       sectionIcon = Icons.translate;
     } else {
-      sectionTitle = '添削';
+      sectionTitle = '添削後';
       sectionColor = AppTheme.success;
-      sectionIcon = Icons.edit_note;
+      sectionIcon = Icons.check_circle;
     }
     
     return AppCard(
@@ -1232,7 +1232,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                 ),
               ),
               const Spacer(),
-              // 音声読み上げボタン（翻訳・添削時は常に表示）
+              // 音声読み上げボタン（常に表示）
               TextToSpeechButton(
                 text: _outputText,
                 size: 20,
@@ -1240,12 +1240,23 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          SelectableText(
-            _outputText,
-            style: AppTheme.body1.copyWith(
-              height: 1.6,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.backgroundPrimary,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: sectionColor.withOpacity(0.2),
+                width: 1,
+              ),
+            ),
+            child: SelectableText(
+              _outputText,
+              style: AppTheme.body1.copyWith(
+                height: 1.6,
+                fontSize: 16,
+              ),
             ),
           ),
           // 英文添削の場合、日本語訳を白いコンテナで表示
