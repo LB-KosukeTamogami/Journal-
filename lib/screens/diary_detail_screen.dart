@@ -778,7 +778,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                               Container(
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.error.withOpacity(0.05),
+                                  color: Colors.transparent,
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
                                     color: AppTheme.error.withOpacity(0.2),
@@ -791,7 +791,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                     Text(
                                       '日本語訳（修正前）',
                                       style: AppTheme.caption.copyWith(
-                                        color: AppTheme.error,
+                                        color: AppTheme.textSecondary,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -935,10 +935,10 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                 Container(
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: AppTheme.info.withOpacity(0.05),
+                                    color: Colors.transparent,
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
-                                      color: AppTheme.info.withOpacity(0.2),
+                                      color: AppTheme.success.withOpacity(0.3),
                                       width: 1,
                                     ),
                                   ),
@@ -948,7 +948,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                       Text(
                                         '日本語訳',
                                         style: AppTheme.caption.copyWith(
-                                          color: AppTheme.info,
+                                          color: AppTheme.textSecondary,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
