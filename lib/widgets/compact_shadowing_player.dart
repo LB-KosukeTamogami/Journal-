@@ -20,8 +20,6 @@ class CompactShadowingPlayer extends StatefulWidget {
 class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
   final TTSService _ttsService = TTSService();
   bool _isPlaying = false;
-  double _currentPosition = 0;
-  double _totalDuration = 100;
   double _playbackSpeed = 1.0;
   bool _showSpeedOptions = false;
   
@@ -29,20 +27,12 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
   void initState() {
     super.initState();
     _ttsService.initialize();
-    _estimateDuration();
-    _ttsService.setProgressHandler(_updateProgress);
   }
   
   @override
   void dispose() {
     _stopPlayback();
-    _ttsService.removeProgressHandler();
     super.dispose();
-  }
-  
-  void _estimateDuration() {
-    final wordCount = widget.text.split(' ').length;
-    _totalDuration = (wordCount * 0.5).clamp(1, 300);
   }
   
   Future<void> _togglePlayback() async {
@@ -60,6 +50,23 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
     
     await _ttsService.setSpeechRate(_playbackSpeed);
     await _ttsService.speak(widget.text);
+    
+    // 再生終了を監視
+    _checkPlaybackStatus();
+  }
+  
+  void _checkPlaybackStatus() {
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (!mounted) return;
+      
+      if (!_ttsService.isSpeaking && _isPlaying) {
+        setState(() {
+          _isPlaying = false;
+        });
+      } else if (_isPlaying) {
+        _checkPlaybackStatus();
+      }
+    });
   }
   
   Future<void> _stopPlayback() async {
@@ -70,49 +77,19 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
     await _ttsService.stop();
   }
   
-  void _updateProgress(double progress) {
-    if (!mounted) return;
-    
-    setState(() {
-      _currentPosition = _totalDuration * progress;
-      if (progress >= 1.0) {
-        _isPlaying = false;
-      }
-    });
-  }
-  
-  void _onSeek(double value) {
-    setState(() {
-      _currentPosition = value;
-    });
-  }
-  
-  void _seekForward() {
-    setState(() {
-      _currentPosition = (_currentPosition + 5).clamp(0, _totalDuration);
-    });
-  }
-  
-  void _seekBackward() {
-    setState(() {
-      _currentPosition = (_currentPosition - 5).clamp(0, _totalDuration);
-    });
-  }
   
   void _changeSpeed(double speed) {
     setState(() {
       _playbackSpeed = speed;
+      _showSpeedOptions = false;
     });
     
     if (_isPlaying) {
-      _ttsService.setSpeechRate(speed);
+      // 再生中の場合は一旦停止して、新しい速度で再生し直す
+      _stopPlayback().then((_) {
+        _startPlayback();
+      });
     }
-  }
-  
-  String _formatTime(double seconds) {
-    final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
-    final secs = (seconds % 60).toInt().toString().padLeft(2, '0');
-    return '$minutes:$secs';
   }
   
   @override
@@ -138,35 +115,9 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Progress bar at the very top
-                SizedBox(
-                  height: 6,
-                  child: SliderTheme(
-                    data: SliderTheme.of(context).copyWith(
-                      activeTrackColor: AppTheme.primaryColor,
-                      inactiveTrackColor: AppTheme.borderColor,
-                      thumbColor: AppTheme.primaryColor,
-                      overlayColor: AppTheme.primaryColor.withOpacity(0.2),
-                      trackHeight: 6,
-                      thumbShape: const RoundSliderThumbShape(
-                        enabledThumbRadius: 6,
-                      ),
-                      overlayShape: const RoundSliderOverlayShape(
-                        overlayRadius: 12,
-                      ),
-                    ),
-                    child: Slider(
-                      value: _currentPosition,
-                      min: 0,
-                      max: _totalDuration,
-                      onChanged: _onSeek,
-                    ),
-                  ),
-                ),
-                
                 // Main controls
                 Container(
-                  padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Row(
                     children: [
                   // Speed control (dropdown style)
@@ -206,103 +157,40 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
                   
                   const Spacer(),
                   
-                  // Center controls
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // 5 seconds backward
-                      Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: AppTheme.backgroundSecondary,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppTheme.borderColor),
-                        ),
-                        child: IconButton(
-                          onPressed: _seekBackward,
-                          icon: Icon(
-                            Icons.replay_5,
-                            color: AppTheme.textPrimary,
-                            size: 16,
-                          ),
-                          padding: EdgeInsets.zero,
-                        ),
+                  // Play/Pause button
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      onPressed: _togglePlayback,
+                      icon: Icon(
+                        _isPlaying ? Icons.pause : Icons.play_arrow,
+                        color: Colors.white,
+                        size: 24,
                       ),
-                      
-                      const SizedBox(width: 8),
-                      
-                      // Play/Pause button
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryColor,
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          onPressed: _togglePlayback,
-                          icon: Icon(
-                            _isPlaying ? Icons.pause : Icons.play_arrow,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                          padding: EdgeInsets.zero,
-                        ),
-                      ),
-                      
-                      const SizedBox(width: 8),
-                      
-                      // 5 seconds forward
-                      Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: AppTheme.backgroundSecondary,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppTheme.borderColor),
-                        ),
-                        child: IconButton(
-                          onPressed: _seekForward,
-                          icon: Icon(
-                            Icons.forward_5,
-                            color: AppTheme.textPrimary,
-                            size: 16,
-                          ),
-                          padding: EdgeInsets.zero,
-                        ),
-                      ),
-                    ],
+                      padding: EdgeInsets.zero,
+                    ),
                   ),
                   
                   const Spacer(),
                   
-                  // Time display and close button
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '${_formatTime(_currentPosition)} / ${_formatTime(_totalDuration)}',
-                        style: AppTheme.caption.copyWith(
-                          color: AppTheme.textSecondary,
-                          fontSize: 10,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      IconButton(
-                        onPressed: widget.onClose,
-                        icon: Icon(
-                          Icons.close,
-                          color: AppTheme.textSecondary,
-                          size: 18,
-                        ),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(
-                          minWidth: 28,
-                          minHeight: 28,
-                        ),
-                      ),
-                    ],
+                  // Close button
+                  IconButton(
+                    onPressed: widget.onClose,
+                    icon: Icon(
+                      Icons.close,
+                      color: AppTheme.textSecondary,
+                      size: 20,
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 32,
+                      minHeight: 32,
+                    ),
                   ),
                     ],
                   ),
@@ -315,7 +203,7 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
           // Speed options popup (shown above the player when open)
           if (_showSpeedOptions)
             Positioned(
-              bottom: 60,
+              bottom: 70,
               left: 16,
             child: Container(
               decoration: BoxDecoration(
@@ -336,6 +224,7 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
                   _buildSpeedOption(0.5),
                   _buildSpeedOption(0.75),
                   _buildSpeedOption(1.0),
+                  _buildSpeedOption(1.25),
                 ],
               ),
             ),
