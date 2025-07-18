@@ -3,6 +3,10 @@ enum WordCategory {
   verb('動詞'),
   adjective('形容詞'),
   adverb('副詞'),
+  pronoun('代名詞'),
+  preposition('前置詞'),
+  conjunction('接続詞'),
+  interjection('感動詞'),
   phrase('熟語・フレーズ'),
   other('その他');
 

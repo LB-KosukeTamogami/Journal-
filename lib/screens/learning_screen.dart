@@ -643,6 +643,11 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
   }
 
   void _showFilterBottomSheet() {
+    // モーダル用の一時的な状態変数
+    Set<WordCategory> tempSelectedCategories = Set.from(_selectedCategories);
+    DateTime? tempStartDate = _startDate;
+    DateTime? tempEndDate = _endDate;
+    
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -691,14 +696,14 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                       spacing: 8,
                       runSpacing: 8,
                       children: WordCategory.values.map((category) {
-                        final isSelected = _selectedCategories.contains(category);
+                        final isSelected = tempSelectedCategories.contains(category);
                         return GestureDetector(
                           onTap: () {
                             setModalState(() {
                               if (isSelected) {
-                                _selectedCategories.remove(category);
+                                tempSelectedCategories.remove(category);
                               } else {
-                                _selectedCategories.add(category);
+                                tempSelectedCategories.add(category);
                               }
                             });
                           },
@@ -752,7 +757,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                             onTap: () async {
                               final date = await showDatePicker(
                                 context: context,
-                                initialDate: _startDate ?? DateTime.now(),
+                                initialDate: tempStartDate ?? DateTime.now(),
                                 firstDate: DateTime(2020),
                                 lastDate: DateTime.now(),
                                 builder: (context, child) {
@@ -768,7 +773,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                               );
                               if (date != null) {
                                 setModalState(() {
-                                  _startDate = date;
+                                  tempStartDate = date;
                                 });
                               }
                             },
@@ -788,11 +793,11 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    _startDate != null
-                                        ? '${_startDate!.year}/${_startDate!.month}/${_startDate!.day}'
+                                    tempStartDate != null
+                                        ? '${tempStartDate!.year}/${tempStartDate!.month}/${tempStartDate!.day}'
                                         : '開始日',
                                     style: AppTheme.body2.copyWith(
-                                      color: _startDate != null
+                                      color: tempStartDate != null
                                           ? AppTheme.textPrimary
                                           : AppTheme.textSecondary,
                                     ),
@@ -810,8 +815,8 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                             onTap: () async {
                               final date = await showDatePicker(
                                 context: context,
-                                initialDate: _endDate ?? DateTime.now(),
-                                firstDate: _startDate ?? DateTime(2020),
+                                initialDate: tempEndDate ?? DateTime.now(),
+                                firstDate: tempStartDate ?? DateTime(2020),
                                 lastDate: DateTime.now(),
                                 builder: (context, child) {
                                   return Theme(
@@ -826,7 +831,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                               );
                               if (date != null) {
                                 setModalState(() {
-                                  _endDate = date;
+                                  tempEndDate = date;
                                 });
                               }
                             },
@@ -846,11 +851,11 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    _endDate != null
-                                        ? '${_endDate!.year}/${_endDate!.month}/${_endDate!.day}'
+                                    tempEndDate != null
+                                        ? '${tempEndDate!.year}/${tempEndDate!.month}/${tempEndDate!.day}'
                                         : '終了日',
                                     style: AppTheme.body2.copyWith(
-                                      color: _endDate != null
+                                      color: tempEndDate != null
                                           ? AppTheme.textPrimary
                                           : AppTheme.textSecondary,
                                     ),
@@ -872,9 +877,9 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                           child: OutlinedButton(
                             onPressed: () {
                               setModalState(() {
-                                _selectedCategories = WordCategory.values.toSet();
-                                _startDate = null;
-                                _endDate = null;
+                                tempSelectedCategories = WordCategory.values.toSet();
+                                tempStartDate = null;
+                                tempEndDate = null;
                               });
                             },
                             style: AppButtonStyles.secondaryButton.copyWith(
@@ -890,7 +895,11 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
-                              setState(() {});
+                              setState(() {
+                                _selectedCategories = tempSelectedCategories;
+                                _startDate = tempStartDate;
+                                _endDate = tempEndDate;
+                              });
                               Navigator.pop(context);
                             },
                             style: AppButtonStyles.primaryButton,
