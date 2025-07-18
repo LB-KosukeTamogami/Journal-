@@ -16,6 +16,7 @@ import '../widgets/japanese_dictionary_dialog.dart';
 import '../widgets/shadowing_player.dart';
 import '../widgets/compact_shadowing_player.dart';
 import '../widgets/word_by_word_player.dart';
+import '../widgets/integrated_shadowing_player.dart';
 import '../services/japanese_wordnet_service.dart';
 import 'diary_creation_screen.dart';
 
@@ -44,6 +45,8 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   String? _shadowingText; // Text being shadowed
   String? _shadowingTitle; // Title for shadowing
   bool _useWordByWordPlayer = false; // Use word-by-word player instead of compact player
+  int _highlightedWordIndex = -1; // Currently highlighted word index
+  List<String> _shadowingWords = []; // Words for highlighting
   String _judgment = ''; // レビュー結果の判定
   final TextEditingController _transcriptionController = TextEditingController(); // 写経用のコントローラー
   
@@ -390,27 +393,23 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
               left: 0,
               right: 0,
               bottom: 0,
-              child: _useWordByWordPlayer
-                  ? WordByWordPlayer(
-                      text: _shadowingText!,
-                      onClose: () {
-                        setState(() {
-                          _shadowingText = null;
-                          _shadowingTitle = null;
-                          _useWordByWordPlayer = false;
-                        });
-                      },
-                    )
-                  : CompactShadowingPlayer(
-                      text: _shadowingText!,
-                      onClose: () {
-                        setState(() {
-                          _shadowingText = null;
-                          _shadowingTitle = null;
-                          _useWordByWordPlayer = false;
-                        });
-                      },
-                    ),
+              child: IntegratedShadowingPlayer(
+                text: _shadowingText!,
+                onClose: () {
+                  setState(() {
+                    _shadowingText = null;
+                    _shadowingTitle = null;
+                    _useWordByWordPlayer = false;
+                    _highlightedWordIndex = -1;
+                    _shadowingWords = [];
+                  });
+                },
+                onWordHighlight: (word, index, elapsedTime) {
+                  setState(() {
+                    _highlightedWordIndex = index;
+                  });
+                },
+              ),
             ),
         ],
       ),
@@ -483,9 +482,9 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(
+                        _buildHighlightedText(
                           _translatedContent,
-                          style: AppTheme.body2.copyWith(
+                          AppTheme.body2.copyWith(
                             color: AppTheme.textPrimary,
                             height: 1.5,
                           ),
@@ -561,10 +560,14 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                               _shadowingText = null;
                               _shadowingTitle = null;
                               _useWordByWordPlayer = false;
+                              _highlightedWordIndex = -1;
+                              _shadowingWords = [];
                             } else {
                               _shadowingText = _translatedContent;
                               _shadowingTitle = '英語翻訳のシャドーイング';
                               _useWordByWordPlayer = value == 'word_by_word';
+                              _shadowingWords = _translatedContent.split(RegExp(r'\s+')).where((word) => word.isNotEmpty).toList();
+                              _highlightedWordIndex = -1;
                             }
                           });
                         },
@@ -610,9 +613,9 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         width: 1,
                       ),
                     ),
-                    child: Text(
+                    child: _buildHighlightedText(
                       _translatedContent,
-                      style: AppTheme.body1.copyWith(
+                      AppTheme.body1.copyWith(
                         height: 1.6,
                         fontSize: 16,
                       ),
@@ -658,10 +661,14 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                               _shadowingText = null;
                               _shadowingTitle = null;
                               _useWordByWordPlayer = false;
+                              _highlightedWordIndex = -1;
+                              _shadowingWords = [];
                             } else {
                               _shadowingText = _correctedContent;
                               _shadowingTitle = '添削後の英文のシャドーイング';
                               _useWordByWordPlayer = value == 'word_by_word';
+                              _shadowingWords = _correctedContent.split(RegExp(r'\s+')).where((word) => word.isNotEmpty).toList();
+                              _highlightedWordIndex = -1;
                             }
                           });
                         },
@@ -696,9 +703,9 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     ],
                   ),
                   const SizedBox(height: 12),
-                  Text(
+                  _buildHighlightedText(
                     _correctedContent,
-                    style: AppTheme.body1.copyWith(height: 1.6),
+                    AppTheme.body1.copyWith(height: 1.6),
                   ),
                   // 添削後の日本語訳を透明背景のコンテナで表示
                   if (_translatedContent.isNotEmpty) ...[
@@ -3030,5 +3037,38 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     ).animate(
       onPlay: (controller) => controller.repeat(),
     ).shimmer(duration: 1500.ms, color: AppTheme.textSecondary.withOpacity(0.1));
+  }
+  
+  // 単語ハイライト機能付きテキストウィジェットを構築
+  Widget _buildHighlightedText(String text, TextStyle style) {
+    if (_shadowingText != text || _highlightedWordIndex == -1 || _shadowingWords.isEmpty) {
+      return Text(text, style: style);
+    }
+    
+    final words = text.split(RegExp(r'\s+'));
+    final List<TextSpan> spans = [];
+    
+    for (int i = 0; i < words.length; i++) {
+      final word = words[i];
+      final isHighlighted = i == _highlightedWordIndex;
+      
+      spans.add(TextSpan(
+        text: word,
+        style: style.copyWith(
+          backgroundColor: isHighlighted ? AppTheme.primaryColor.withOpacity(0.3) : null,
+          color: isHighlighted ? AppTheme.primaryColor : style.color,
+          fontWeight: isHighlighted ? FontWeight.w600 : style.fontWeight,
+        ),
+      ));
+      
+      // 単語間のスペースを追加（最後の単語以外）
+      if (i < words.length - 1) {
+        spans.add(TextSpan(text: ' ', style: style));
+      }
+    }
+    
+    return RichText(
+      text: TextSpan(children: spans),
+    );
   }
 }
