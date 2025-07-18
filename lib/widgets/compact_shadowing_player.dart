@@ -22,16 +22,27 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
   bool _isPlaying = false;
   double _playbackSpeed = 1.0;
   bool _showSpeedOptions = false;
+  double _totalDuration = 0;
+  double _currentTime = 0;
+  DateTime? _startTime;
   
   @override
   void initState() {
     super.initState();
     _ttsService.initialize();
+    _ttsService.setDurationHandler((duration) {
+      if (mounted) {
+        setState(() {
+          _totalDuration = duration;
+        });
+      }
+    });
   }
   
   @override
   void dispose() {
     _stopPlayback();
+    _ttsService.removeDurationHandler();
     super.dispose();
   }
   
@@ -46,6 +57,8 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
   Future<void> _startPlayback() async {
     setState(() {
       _isPlaying = true;
+      _startTime = DateTime.now();
+      _currentTime = 0;
     });
     
     await _ttsService.setSpeechRate(_playbackSpeed);
@@ -53,6 +66,8 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
     
     // 再生終了を監視
     _checkPlaybackStatus();
+    // 時間更新を開始
+    _updateTime();
   }
   
   void _checkPlaybackStatus() {
@@ -62,6 +77,7 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
       if (!_ttsService.isSpeaking && _isPlaying) {
         setState(() {
           _isPlaying = false;
+          _startTime = null;
         });
       } else if (_isPlaying) {
         _checkPlaybackStatus();
@@ -69,9 +85,31 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
     });
   }
   
+  void _updateTime() {
+    if (!_isPlaying || _startTime == null) return;
+    
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (!mounted || !_isPlaying) return;
+      
+      setState(() {
+        _currentTime = DateTime.now().difference(_startTime!).inMilliseconds / 1000.0;
+      });
+      
+      _updateTime();
+    });
+  }
+  
+  String _formatTime(double seconds) {
+    final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
+    final secs = (seconds % 60).toInt().toString().padLeft(2, '0');
+    return '$minutes:$secs';
+  }
+  
   Future<void> _stopPlayback() async {
     setState(() {
       _isPlaying = false;
+      _startTime = null;
+      _currentTime = 0;
     });
     
     await _ttsService.stop();
@@ -177,6 +215,27 @@ class _CompactShadowingPlayerState extends State<CompactShadowingPlayer> {
                   ),
                   
                   const Spacer(),
+                  
+                  // Time display
+                  if (_isPlaying || _totalDuration > 0)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppTheme.backgroundSecondary,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        _totalDuration > 0 
+                          ? '${_formatTime(_currentTime)} / ${_formatTime(_totalDuration)}'
+                          : _formatTime(_currentTime),
+                        style: AppTheme.caption.copyWith(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  
+                  const SizedBox(width: 12),
                   
                   // Close button
                   IconButton(

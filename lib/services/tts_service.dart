@@ -9,12 +9,14 @@ class TTSService {
   bool _isInitialized = false;
   bool _isSpeaking = false;
   Function(double)? _progressHandler;
+  Function(double)? _durationHandler;
   DateTime? _speakStartTime;
   int _totalCharacters = 0;
   double _speechRate = 0.9;
   double _pitch = 1.0;
   String? _language;
   bool _userInteractionDone = false;
+  double _totalDuration = 0;
 
   // 初期化
   Future<void> initialize() async {
@@ -123,9 +125,44 @@ class TTSService {
         print('[TTS] Speech started: "$text"');
         _isSpeaking = true;
         _speakStartTime = DateTime.now();
+        _totalDuration = 0;
       });
       
-      utterance.onEnd.listen((_) {
+      // boundary イベントで進行状況を追跡
+      utterance.on['boundary'].listen((event) {
+        try {
+          // JavaScriptのイベントオブジェクトから elapsedTime を取得
+          final jsEvent = js.JsObject.fromBrowserObject(event);
+          final elapsedTime = jsEvent['elapsedTime'];
+          if (elapsedTime != null) {
+            final elapsed = (elapsedTime as num).toDouble();
+            // Chrome はミリ秒、その他は秒で返すため調整
+            final elapsedSeconds = elapsed > 100 ? elapsed / 1000 : elapsed;
+            _totalDuration = elapsedSeconds;
+            print('[TTS] Boundary event - elapsed: ${elapsedSeconds}s');
+          }
+        } catch (e) {
+          print('[TTS] Error in boundary event: $e');
+        }
+      });
+      
+      utterance.onEnd.listen((event) {
+        try {
+          // elapsedTime を取得
+          final jsEvent = js.JsObject.fromBrowserObject(event);
+          final elapsedTime = jsEvent['elapsedTime'];
+          if (elapsedTime != null) {
+            final elapsed = (elapsedTime as num).toDouble();
+            // Chrome はミリ秒、その他は秒で返すため調整
+            final totalSeconds = elapsed > 100 ? elapsed / 1000 : elapsed;
+            _totalDuration = totalSeconds;
+            print('[TTS] Speech ended - total duration: ${totalSeconds}s');
+            _durationHandler?.call(totalSeconds);
+          }
+        } catch (e) {
+          print('[TTS] Error getting elapsed time: $e');
+        }
+        
         print('[TTS] Speech ended: "$text"');
         _isSpeaking = false;
         _speakStartTime = null;
@@ -251,7 +288,9 @@ class TTSService {
     _isInitialized = false;
     _isSpeaking = false;
     _progressHandler = null;
+    _durationHandler = null;
     _userInteractionDone = false;
+    _totalDuration = 0;
   }
 
   // プログレスハンドラーを設定
@@ -265,6 +304,19 @@ class TTSService {
     _progressHandler = null;
     print('[TTS] Progress handler removed');
   }
+  
+  // 再生時間ハンドラーの設定
+  void setDurationHandler(Function(double) handler) {
+    _durationHandler = handler;
+  }
+  
+  // 再生時間ハンドラーの解除
+  void removeDurationHandler() {
+    _durationHandler = null;
+  }
+  
+  // 現在の総再生時間を取得
+  double get totalDuration => _totalDuration;
 
   // デバッグ用: TTS状態を取得
   Map<String, dynamic> getStatus() {
