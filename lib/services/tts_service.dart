@@ -10,6 +10,7 @@ class TTSService {
   bool _isSpeaking = false;
   Function(double)? _progressHandler;
   Function(double)? _durationHandler;
+  Function(String, int, double)? _wordBoundaryHandler;
   DateTime? _speakStartTime;
   int _totalCharacters = 0;
   double _speechRate = 0.9;
@@ -17,6 +18,9 @@ class TTSService {
   String? _language;
   bool _userInteractionDone = false;
   double _totalDuration = 0;
+  String _currentText = '';
+  List<String> _words = [];
+  int _currentWordIndex = 0;
 
   // 初期化
   Future<void> initialize() async {
@@ -89,6 +93,12 @@ class TTSService {
       print('[TTS] Empty text, skipping');
       return;
     }
+    
+    // 単語分割の準備
+    _currentText = text;
+    _words = _splitTextIntoWords(text);
+    _currentWordIndex = 0;
+    print('[TTS] Text split into ${_words.length} words');
 
     try {
       // 言語を自動検出
@@ -131,15 +141,31 @@ class TTSService {
       // boundary イベントで進行状況を追跡
       utterance.on['boundary'].listen((event) {
         try {
-          // JavaScriptのイベントオブジェクトから elapsedTime を取得
+          // JavaScriptのイベントオブジェクトから情報を取得
           final jsEvent = js.JsObject.fromBrowserObject(event);
           final elapsedTime = jsEvent['elapsedTime'];
+          final charIndex = jsEvent['charIndex'];
+          final name = jsEvent['name'];
+          
           if (elapsedTime != null) {
             final elapsed = (elapsedTime as num).toDouble();
             // Chrome はミリ秒、その他は秒で返すため調整
             final elapsedSeconds = elapsed > 100 ? elapsed / 1000 : elapsed;
             _totalDuration = elapsedSeconds;
-            print('[TTS] Boundary event - elapsed: ${elapsedSeconds}s');
+            
+            // 単語境界の場合、現在の単語を特定
+            if (name == 'word' && charIndex != null) {
+              final charIdx = (charIndex as num).toInt();
+              final currentWord = _getCurrentWordAtIndex(charIdx);
+              final wordIndex = _getWordIndexAtCharIndex(charIdx);
+              
+              print('[TTS] Word boundary - word: "$currentWord", index: $wordIndex, char: $charIdx, elapsed: ${elapsedSeconds}s');
+              
+              // 単語境界ハンドラーを呼び出し
+              _wordBoundaryHandler?.call(currentWord, wordIndex, elapsedSeconds);
+            }
+            
+            print('[TTS] Boundary event - type: $name, elapsed: ${elapsedSeconds}s');
           }
         } catch (e) {
           print('[TTS] Error in boundary event: $e');
@@ -289,8 +315,12 @@ class TTSService {
     _isSpeaking = false;
     _progressHandler = null;
     _durationHandler = null;
+    _wordBoundaryHandler = null;
     _userInteractionDone = false;
     _totalDuration = 0;
+    _currentText = '';
+    _words = [];
+    _currentWordIndex = 0;
   }
 
   // プログレスハンドラーを設定
@@ -315,8 +345,69 @@ class TTSService {
     _durationHandler = null;
   }
   
+  // 単語境界ハンドラーの設定
+  void setWordBoundaryHandler(Function(String, int, double) handler) {
+    _wordBoundaryHandler = handler;
+  }
+  
+  // 単語境界ハンドラーの解除
+  void removeWordBoundaryHandler() {
+    _wordBoundaryHandler = null;
+  }
+  
   // 現在の総再生時間を取得
   double get totalDuration => _totalDuration;
+  
+  // 現在の単語リストを取得
+  List<String> get words => _words;
+  
+  // 現在の単語インデックスを取得
+  int get currentWordIndex => _currentWordIndex;
+  
+  // テキストを単語に分割
+  List<String> _splitTextIntoWords(String text) {
+    // 句読点を考慮した単語分割
+    return text.split(RegExp(r'\s+'))
+        .where((word) => word.isNotEmpty)
+        .toList();
+  }
+  
+  // 文字インデックスから現在の単語を取得
+  String _getCurrentWordAtIndex(int charIndex) {
+    try {
+      int currentIndex = 0;
+      for (int i = 0; i < _words.length; i++) {
+        final word = _words[i];
+        if (charIndex >= currentIndex && charIndex < currentIndex + word.length) {
+          return word;
+        }
+        currentIndex += word.length + 1; // +1 for space
+      }
+      return '';
+    } catch (e) {
+      print('[TTS] Error getting current word: $e');
+      return '';
+    }
+  }
+  
+  // 文字インデックスから単語インデックスを取得
+  int _getWordIndexAtCharIndex(int charIndex) {
+    try {
+      int currentIndex = 0;
+      for (int i = 0; i < _words.length; i++) {
+        final word = _words[i];
+        if (charIndex >= currentIndex && charIndex < currentIndex + word.length) {
+          _currentWordIndex = i;
+          return i;
+        }
+        currentIndex += word.length + 1; // +1 for space
+      }
+      return -1;
+    } catch (e) {
+      print('[TTS] Error getting word index: $e');
+      return -1;
+    }
+  }
 
   // デバッグ用: TTS状態を取得
   Map<String, dynamic> getStatus() {
