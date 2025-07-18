@@ -457,20 +457,33 @@ class StorageService {
     
     // 重複を削除（英語の単語名でグループ化し、最新のものを残す）
     final Map<String, Word> uniqueWords = {};
+    final List<String> idsToDelete = [];
+    
     for (final word in words) {
       final key = word.english.toLowerCase();
-      if (!uniqueWords.containsKey(key) || 
-          word.createdAt.isAfter(uniqueWords[key]!.createdAt)) {
+      if (uniqueWords.containsKey(key)) {
+        // 既存の単語がある場合、古い方を削除対象に追加
+        if (word.createdAt.isAfter(uniqueWords[key]!.createdAt)) {
+          idsToDelete.add(uniqueWords[key]!.id);
+          uniqueWords[key] = word;
+        } else {
+          idsToDelete.add(word.id);
+        }
+      } else {
         uniqueWords[key] = word;
       }
     }
     
     final uniqueWordsList = uniqueWords.values.toList();
     print('[Storage] Original count: ${words.length}, Unique count: ${uniqueWordsList.length}');
-    print('[Storage] Removed ${words.length - uniqueWordsList.length} duplicates');
+    print('[Storage] Will delete ${idsToDelete.length} duplicate words');
     
-    // 更新されたリストを保存
-    await saveWords(uniqueWordsList);
+    // 削除対象の単語を削除
+    for (final id in idsToDelete) {
+      await deleteWord(id);
+    }
+    
+    print('[Storage] Duplicate removal completed');
   }
 
   static Future<List<Word>> getWordsByDiaryEntry(String diaryEntryId) async {
