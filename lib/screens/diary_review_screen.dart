@@ -27,6 +27,7 @@ class DiaryReviewScreen extends StatefulWidget {
 class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   String _judgment = '';
   String _outputText = '';
+  String _translatedText = ''; // 翻訳文を保存
   List<String> _corrections = [];
   List<String> _improvements = [];
   List<Map<String, String>> _learnedWords = [];
@@ -80,6 +81,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
         _judgment = result['judgment'] ?? '';
         _detectedLanguage = result['detected_language'] ?? widget.detectedLanguage;
         _outputText = result['corrected'] ?? widget.entry.content;
+        _translatedText = result['translation'] ?? ''; // 翻訳文を保存
         _corrections = List<String>.from(result['corrections'] ?? []);
         _improvements = List<String>.from(result['improvements'] ?? []);
         
@@ -1155,58 +1157,162 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     ).animate().fadeIn(delay: 600.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
   
-  // 2. 翻訳または添削の文章セクション
+  // 2. 翻訳または添削の文章セクション（Before/After形式）
   Widget _buildTranslationOrCorrectionSection() {
-    String sectionTitle;
-    Color sectionColor;
-    IconData sectionIcon;
-    
     if (_judgment == '日本語翻訳') {
-      sectionTitle = '翻訳';
-      sectionColor = AppTheme.primaryBlue;
-      sectionIcon = Icons.translate;
-    } else {
-      sectionTitle = '添削';
-      sectionColor = AppTheme.success;
-      sectionIcon = Icons.edit_note;
-    }
-    
-    return AppCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      // 日本語から英語への翻訳の場合
+      return Column(
         children: [
-          Row(
-            children: [
-              Icon(
-                sectionIcon,
-                color: sectionColor,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                sectionTitle,
-                style: AppTheme.body1.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: sectionColor,
+          // 英語翻訳（After）
+          AppCard(
+            backgroundColor: AppTheme.success.withOpacity(0.05),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppTheme.success,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'After',
+                        style: AppTheme.caption.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '英語',
+                      style: AppTheme.body1.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.success,
+                      ),
+                    ),
+                    const Spacer(),
+                    TextToSpeechButton(
+                      text: _outputText,
+                      size: 20,
+                    ),
+                  ],
                 ),
-              ),
-              const Spacer(),
-              // 音声読み上げボタン（翻訳・添削時は常に表示）
-              TextToSpeechButton(
-                text: _outputText,
-                size: 20,
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          SelectableText(
-            _outputText,
-            style: AppTheme.body1.copyWith(
-              height: 1.6,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+                const SizedBox(height: 12),
+                SelectableText(
+                  _outputText,
+                  style: AppTheme.body1.copyWith(
+                    height: 1.6,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
+        ],
+      );
+    } else {
+      // 英文添削の場合
+      return Column(
+        children: [
+          // 添削後の英文（After）
+          AppCard(
+            backgroundColor: AppTheme.success.withOpacity(0.05),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppTheme.success,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'After',
+                        style: AppTheme.caption.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '添削後',
+                      style: AppTheme.body1.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.success,
+                      ),
+                    ),
+                    const Spacer(),
+                    TextToSpeechButton(
+                      text: _outputText,
+                      size: 20,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                SelectableText(
+                  _outputText,
+                  style: AppTheme.body1.copyWith(
+                    height: 1.6,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // 日本語翻訳がある場合は表示
+          if (_translatedText.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            AppCard(
+              backgroundColor: AppTheme.info.withOpacity(0.05),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppTheme.info,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '翻訳',
+                          style: AppTheme.caption.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '日本語',
+                        style: AppTheme.body1.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.info,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    _translatedText,
+                    style: AppTheme.body1.copyWith(
+                      height: 1.6,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     ).animate().fadeIn(delay: 400.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
@@ -1281,55 +1387,105 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   
   // 4. アドバイスセクション
   Widget _buildAdviceSection() {
-    List<String> adviceList;
+    List<String> adviceList = [];
+    
+    // 文章の長さと内容を分析
+    final wordCount = widget.entry.content.split(' ').where((word) => word.isNotEmpty).length;
+    final sentenceCount = widget.entry.content.split(RegExp(r'[.!?。！？]')).where((s) => s.trim().isNotEmpty).length;
+    final hasQuestionMark = widget.entry.content.contains('?') || widget.entry.content.contains('？');
+    final hasExclamation = widget.entry.content.contains('!') || widget.entry.content.contains('！');
     
     switch (_judgment) {
       case '日本語翻訳':
-        adviceList = [
-          '自然な英語表現を学習しましょう',
-          '文法や語順に注意して英語で考える練習をしましょう',
-          '日常的に英語で表現することを心がけましょう'
-        ];
+        // 日本語から英語への翻訳時のアドバイス
+        adviceList.add('英語で日記を書く練習を続けることで、自然な英語表現が身につきます。');
+        
+        if (wordCount < 20) {
+          adviceList.add('もう少し詳細を追加してみましょう。例えば、感情や理由、具体的な状況を説明すると良いでしょう。');
+        } else if (wordCount > 50) {
+          adviceList.add('詳細な記述ができています！段落を分けて構成を整理すると、さらに読みやすくなります。');
+        }
+        
+        if (sentenceCount == 1) {
+          adviceList.add('複数の文で構成してみましょう。接続詞（and, but, because など）を使って文をつなげる練習をしましょう。');
+        }
+        
+        adviceList.add('翻訳された英文を音読して、自然なリズムとイントネーションを身につけましょう。');
         break;
+        
       case '英文（正しい）':
-        adviceList = [
-          '素晴らしい英文です！この調子で続けましょう',
-          'より複雑な表現にも挑戦してみましょう',
-          '語彙力を増やして表現の幅を広げましょう'
-        ];
+        // 正しい英文の場合のアドバイス
+        adviceList.add('素晴らしい英文です！この調子で毎日続けることが上達への近道です。');
+        
+        if (wordCount < 30) {
+          adviceList.add('さらに詳細を追加して、より豊かな表現に挑戦してみましょう。');
+        }
+        
+        if (!hasQuestionMark && !hasExclamation) {
+          adviceList.add('疑問文や感嘆文も使って、より表現豊かな文章を書いてみましょう。');
+        }
+        
+        // 使用された時制に基づくアドバイス
+        if (widget.entry.content.contains(RegExp(r'\b(was|were|did|had)\b'))) {
+          adviceList.add('過去形の使用が適切です。現在完了形（have/has + 過去分詞）も学習して、時制の幅を広げましょう。');
+        }
+        
+        adviceList.add('新しい語彙や慣用表現を取り入れて、表現の幅をさらに広げていきましょう。');
         break;
+        
       case '英文（添削必要）':
-        adviceList = [
-          '基本的な文法をしっかり身につけましょう',
-          '添削内容を参考にして同じ間違いを避けましょう',
-          '繰り返し練習することで自然な英語が身につきます'
-        ];
+        // 添削が必要な英文の場合のアドバイス
+        if (_corrections.isNotEmpty || _improvements.isNotEmpty) {
+          final totalCorrections = _corrections.length + _improvements.length;
+          
+          if (totalCorrections == 1) {
+            adviceList.add('ほぼ正しい英文が書けています！添削箇所を確認して、同じ間違いを避けるようにしましょう。');
+          } else if (totalCorrections <= 3) {
+            adviceList.add('基本的な英文は書けています。添削内容を復習して、より自然な表現を身につけましょう。');
+          } else {
+            adviceList.add('添削箇所が多いですが、挑戦する姿勢が素晴らしいです！一つずつ改善していきましょう。');
+          }
+        }
+        
+        // 文法的なアドバイス
+        if (widget.entry.content.toLowerCase().contains(' i ')) {
+          adviceList.add('主語「I」は常に大文字で書きましょう。基本的なルールを意識することが大切です。');
+        }
+        
+        if (sentenceCount > 3) {
+          adviceList.add('複数の文を書けているのは良いことです。接続詞や関係代名詞を使って、文の関連性を明確にしましょう。');
+        }
+        
+        adviceList.add('添削された文章を声に出して読み、正しい表現を体に覚えさせましょう。');
+        adviceList.add('同じテーマで再度書いてみると、学習効果が高まります。');
         break;
+        
       default:
         adviceList = [
-          '日記を続けることで英語力が向上します',
-          '間違いを恐れずに表現することが大切です'
+          '日記を続けることで英語力が向上します。',
+          '間違いを恐れずに表現することが大切です。',
+          '毎日少しずつでも英語に触れる時間を作りましょう。'
         ];
     }
     
     return AppCard(
-      backgroundColor: AppTheme.warning.withOpacity(0.05),
+      backgroundColor: AppTheme.info.withOpacity(0.05),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Icon(
-                Icons.lightbulb_outline,
-                color: AppTheme.warning,
+                Icons.tips_and_updates,
+                color: AppTheme.info,
                 size: 20,
               ),
               const SizedBox(width: 8),
               Text(
-                'アドバイス',
+                '文章構成のアドバイス',
                 style: AppTheme.body1.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.warning,
+                  color: AppTheme.info,
                 ),
               ),
             ],

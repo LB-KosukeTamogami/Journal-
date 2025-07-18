@@ -568,23 +568,27 @@ $content
 以下のJSON形式で出力してください：
 {
   "judgment": "日本語翻訳" または "英文（正しい）" または "英文（添削必要）",
-  "detected_language": "ja" または "en",
+  "detected_language": "ja" または "en" または "mixed",
   "output_text": "翻訳結果 または 添削済み英文 または 入力文そのまま",
   "original_text": "入力文（変更なし）",
-  "corrections": ["添削コメント1", "添削コメント2", ...],
-  "improvements": ["改善点1", "改善点2", ...],
+  "translation": "日本語翻訳（英文の場合のみ）",
+  "corrections": ["間違いの説明1（日本語）", "間違いの説明2（日本語）", ...],
+  "improvements": ["改善提案1（日本語）", "改善提案2（日本語）", ...],
   "learned_words": [
     {"english": "word1", "japanese": "単語1の意味"},
     {"english": "word2", "japanese": "単語2の意味"}
-  ]
+  ],
+  "learned_phrases": ["重要なフレーズ1", "重要なフレーズ2", ...]
 }
 
-注意事項：
-- 日本語の場合は自然な英訳を提供
-- 英語で正しい場合は、corrections配列は空
-- 英語で添削が必要な場合は、具体的な改善点を含める
-- learned_wordsには重要な単語（単一の単語のみ）を英語と日本語のペアで含める
-- フレーズや熟語は含めない、単語のみ抽出
+重要な指示：
+1. 添削コメント（corrections）と改善提案（improvements）は必ず日本語で記述してください
+2. 日本語の場合は自然な英訳を提供し、output_textに英訳を入れる
+3. 英語で正しい場合は、corrections配列は空、improvementsに上達のためのヒントを日本語で含める
+4. 英語で添削が必要な場合は、具体的な間違いの説明を日本語で含める
+5. learned_wordsには重要な単語（単一の単語のみ）を英語と日本語のペアで含める
+6. 英文の場合は必ず日本語翻訳も提供してください（translationフィールド）
+7. 日英混在の場合は detected_language を "mixed" とし、英語に統一した文を output_text に含める
 ''';
 
       final requestBody = {
@@ -677,12 +681,12 @@ $content
             'judgment': judgment,
             'detected_language': result['detected_language'] ?? 'en',
             'corrected': outputText,
-            'translation': judgment == '日本語翻訳' ? outputText : '',
+            'translation': result['translation'] ?? (judgment == '日本語翻訳' ? outputText : ''),
             'original': content,
             'corrections': List<String>.from(result['corrections'] ?? []),
             'improvements': List<String>.from(result['improvements'] ?? []),
             'learned_words': learnedWords,
-            'learned_phrases': [], // 後方互換性のため空配列を保持
+            'learned_phrases': List<String>.from(result['learned_phrases'] ?? []),
           };
         }
       } else {
