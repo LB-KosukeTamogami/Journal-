@@ -334,6 +334,36 @@ class StorageService {
     print('[Storage] Saving word: ${word.english}');
     print('[Storage] SupabaseService.isAvailable: ${SupabaseService.isAvailable}');
     
+    // まず既存の単語をチェックして重複を防ぐ
+    final existingWords = await getWords();
+    final existingWord = existingWords.firstWhere(
+      (w) => w.english.toLowerCase() == word.english.toLowerCase(),
+      orElse: () => Word(
+        id: '', 
+        english: '', 
+        japanese: '', 
+        createdAt: DateTime.now()
+      ),
+    );
+    
+    if (existingWord.id.isNotEmpty) {
+      print('[Storage] Word already exists: ${word.english}');
+      // 既存の単語がある場合は、IDを使用して更新
+      word = Word(
+        id: existingWord.id,
+        english: word.english,
+        japanese: word.japanese,
+        example: word.example,
+        diaryEntryId: word.diaryEntryId,
+        createdAt: word.createdAt,
+        reviewCount: word.reviewCount,
+        lastReviewedAt: word.lastReviewedAt,
+        isMastered: word.isMastered,
+        masteryLevel: word.masteryLevel,
+        category: word.category,
+      );
+    }
+    
     // Supabaseに保存（必須）
     if (SupabaseService.isAvailable) {
       try {
@@ -419,6 +449,28 @@ class StorageService {
     
     // 更新されたリストを保存
     await saveWords(words);
+  }
+  
+  static Future<void> removeDuplicateWords() async {
+    print('[Storage] Removing duplicate words...');
+    final words = await getWords();
+    
+    // 重複を削除（英語の単語名でグループ化し、最新のものを残す）
+    final Map<String, Word> uniqueWords = {};
+    for (final word in words) {
+      final key = word.english.toLowerCase();
+      if (!uniqueWords.containsKey(key) || 
+          word.createdAt.isAfter(uniqueWords[key]!.createdAt)) {
+        uniqueWords[key] = word;
+      }
+    }
+    
+    final uniqueWordsList = uniqueWords.values.toList();
+    print('[Storage] Original count: ${words.length}, Unique count: ${uniqueWordsList.length}');
+    print('[Storage] Removed ${words.length - uniqueWordsList.length} duplicates');
+    
+    // 更新されたリストを保存
+    await saveWords(uniqueWordsList);
   }
 
   static Future<List<Word>> getWordsByDiaryEntry(String diaryEntryId) async {

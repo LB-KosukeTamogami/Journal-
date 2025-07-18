@@ -50,6 +50,44 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
       });
     }
   }
+  
+  Future<void> _removeDuplicates() async {
+    try {
+      // ローディング表示
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+      
+      await StorageService.removeDuplicateWords();
+      await _loadWords();
+      
+      if (mounted) {
+        Navigator.pop(context); // ローディングを閉じる
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('重複した単語を削除しました'),
+            backgroundColor: AppTheme.success,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context); // ローディングを閉じる
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('エラーが発生しました: $e'),
+            backgroundColor: AppTheme.error,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -66,6 +104,26 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
         backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
         actions: [
+          PopupMenuButton<String>(
+            icon: Icon(Icons.more_vert, color: AppTheme.textPrimary),
+            onSelected: (value) async {
+              if (value == 'remove_duplicates') {
+                await _removeDuplicates();
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem<String>(
+                value: 'remove_duplicates',
+                child: Row(
+                  children: [
+                    Icon(Icons.cleaning_services, size: 20),
+                    SizedBox(width: 8),
+                    Text('重複を削除'),
+                  ],
+                ),
+              ),
+            ],
+          ),
           IconButton(
             icon: Stack(
               children: [
