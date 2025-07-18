@@ -44,7 +44,6 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   bool _isWordsExpanded = false; // Track if words card is expanded
   String? _shadowingText; // Text being shadowed
   String? _shadowingTitle; // Title for shadowing
-  bool _useWordByWordPlayer = false; // Use word-by-word player instead of compact player
   int _highlightedWordIndex = -1; // Currently highlighted word index
   List<String> _shadowingWords = []; // Words for highlighting
   String _judgment = ''; // レビュー結果の判定
@@ -399,7 +398,6 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   setState(() {
                     _shadowingText = null;
                     _shadowingTitle = null;
-                    _useWordByWordPlayer = false;
                     _highlightedWordIndex = -1;
                     _shadowingWords = [];
                   });
@@ -553,50 +551,31 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           ),
                         ],
                       ),
-                      PopupMenuButton<String>(
-                        onSelected: (String value) {
+                      IconButton(
+                        onPressed: () {
                           setState(() {
-                            if (_shadowingText == _translatedContent && !_useWordByWordPlayer) {
+                            if (_shadowingText == _translatedContent) {
                               _shadowingText = null;
                               _shadowingTitle = null;
-                              _useWordByWordPlayer = false;
                               _highlightedWordIndex = -1;
                               _shadowingWords = [];
                             } else {
                               _shadowingText = _translatedContent;
                               _shadowingTitle = '英語翻訳のシャドーイング';
-                              _useWordByWordPlayer = value == 'word_by_word';
                               _shadowingWords = _translatedContent.split(RegExp(r'\s+')).where((word) => word.isNotEmpty).toList();
                               _highlightedWordIndex = -1;
                             }
                           });
                         },
-                        itemBuilder: (context) => [
-                          const PopupMenuItem(
-                            value: 'normal',
-                            child: Row(
-                              children: [
-                                Icon(Icons.record_voice_over, size: 18),
-                                SizedBox(width: 8),
-                                Text('通常再生'),
-                              ],
-                            ),
-                          ),
-                          const PopupMenuItem(
-                            value: 'word_by_word',
-                            child: Row(
-                              children: [
-                                Icon(Icons.text_fields, size: 18),
-                                SizedBox(width: 8),
-                                Text('単語単位再生'),
-                              ],
-                            ),
-                          ),
-                        ],
                         icon: Icon(
                           Icons.record_voice_over,
                           color: AppTheme.primaryColor,
                           size: 20,
+                        ),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
                         ),
                       ),
                     ],
@@ -654,50 +633,31 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           ),
                         ],
                       ),
-                      PopupMenuButton<String>(
-                        onSelected: (String value) {
+                      IconButton(
+                        onPressed: () {
                           setState(() {
-                            if (_shadowingText == _correctedContent && !_useWordByWordPlayer) {
+                            if (_shadowingText == _correctedContent) {
                               _shadowingText = null;
                               _shadowingTitle = null;
-                              _useWordByWordPlayer = false;
                               _highlightedWordIndex = -1;
                               _shadowingWords = [];
                             } else {
                               _shadowingText = _correctedContent;
                               _shadowingTitle = '添削後の英文のシャドーイング';
-                              _useWordByWordPlayer = value == 'word_by_word';
                               _shadowingWords = _correctedContent.split(RegExp(r'\s+')).where((word) => word.isNotEmpty).toList();
                               _highlightedWordIndex = -1;
                             }
                           });
                         },
-                        itemBuilder: (context) => [
-                          const PopupMenuItem(
-                            value: 'normal',
-                            child: Row(
-                              children: [
-                                Icon(Icons.record_voice_over, size: 18),
-                                SizedBox(width: 8),
-                                Text('通常再生'),
-                              ],
-                            ),
-                          ),
-                          const PopupMenuItem(
-                            value: 'word_by_word',
-                            child: Row(
-                              children: [
-                                Icon(Icons.text_fields, size: 18),
-                                SizedBox(width: 8),
-                                Text('単語単位再生'),
-                              ],
-                            ),
-                          ),
-                        ],
                         icon: Icon(
                           Icons.record_voice_over,
                           color: AppTheme.success,
                           size: 20,
+                        ),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
                         ),
                       ),
                     ],
