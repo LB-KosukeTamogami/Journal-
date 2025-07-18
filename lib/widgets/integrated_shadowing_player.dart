@@ -22,7 +22,7 @@ class IntegratedShadowingPlayer extends StatefulWidget {
 class _IntegratedShadowingPlayerState extends State<IntegratedShadowingPlayer> {
   final TTSService _ttsService = TTSService();
   bool _isPlaying = false;
-  String _playbackMode = 'normal'; // 'normal' or 'word_by_word'
+  String _playbackMode = 'word_by_word'; // Always use word-by-word mode
   List<String> _words = [];
   int _currentWordIndex = -1;
   
@@ -34,7 +34,7 @@ class _IntegratedShadowingPlayerState extends State<IntegratedShadowingPlayer> {
     
     // 単語境界ハンドラーを設定
     _ttsService.setWordBoundaryHandler((word, index, elapsedTime) {
-      if (mounted && _playbackMode == 'word_by_word') {
+      if (mounted) {
         setState(() {
           _currentWordIndex = index;
         });
@@ -105,18 +105,6 @@ class _IntegratedShadowingPlayerState extends State<IntegratedShadowingPlayer> {
     });
   }
   
-  void _changeMode(String mode) {
-    setState(() {
-      _playbackMode = mode;
-    });
-    
-    if (_isPlaying) {
-      // 再生中の場合は一旦停止して、新しいモードで再生し直す
-      _stopPlayback().then((_) {
-        _startPlayback();
-      });
-    }
-  }
   
   @override
   Widget build(BuildContext context) {
@@ -151,24 +139,24 @@ class _IntegratedShadowingPlayerState extends State<IntegratedShadowingPlayer> {
                     child: Row(
                       children: [
                         // 速度・モード選択
-                        // モード選択ボタン
-                        Container(
-                          decoration: BoxDecoration(
-                            color: AppTheme.backgroundSecondary,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: AppTheme.borderColor),
+                        // 最初から再生ボタン
+                        IconButton(
+                          onPressed: () async {
+                            if (_isPlaying) {
+                              await _stopPlayback();
+                              await _startPlayback();
+                            }
+                          },
+                          icon: Icon(
+                            Icons.replay,
+                            color: _isPlaying ? AppTheme.primaryColor : AppTheme.textSecondary,
+                            size: 28,
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _buildModeButton('normal', '標準', Icons.play_arrow),
-                              Container(
-                                width: 1,
-                                height: 24,
-                                color: AppTheme.borderColor,
-                              ),
-                              _buildModeButton('word_by_word', '単語', Icons.text_fields),
-                            ],
+                          tooltip: '最初から再生',
+                          padding: const EdgeInsets.all(8),
+                          constraints: const BoxConstraints(
+                            minWidth: 48,
+                            minHeight: 48,
                           ),
                         ),
                         
@@ -229,37 +217,4 @@ class _IntegratedShadowingPlayerState extends State<IntegratedShadowingPlayer> {
     ).animate().fadeIn(duration: 200.ms).slideY(begin: 1, end: 0);
   }
   
-  Widget _buildModeButton(String mode, String label, IconData icon) {
-    final isSelected = _playbackMode == mode;
-    
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => _changeMode(mode),
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: 16,
-                color: isSelected ? AppTheme.primaryColor : AppTheme.textSecondary,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                label,
-                style: AppTheme.body2.copyWith(
-                  fontSize: 12,
-                  color: isSelected ? AppTheme.primaryColor : AppTheme.textPrimary,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
