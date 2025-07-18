@@ -1451,7 +1451,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     }
     
     return AppCard(
-      backgroundColor: AppTheme.info.withOpacity(0.05),
+      backgroundColor: AppTheme.warning.withOpacity(0.05),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1459,7 +1459,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             children: [
               Icon(
                 Icons.tips_and_updates,
-                color: AppTheme.info,
+                color: AppTheme.warning,
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -1467,7 +1467,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                 '文章構成のアドバイス',
                 style: AppTheme.body1.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.info,
+                  color: AppTheme.warning,
                 ),
               ),
             ],

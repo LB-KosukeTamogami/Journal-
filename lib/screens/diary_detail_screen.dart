@@ -640,17 +640,17 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     _correctedContent,
                     style: AppTheme.body1.copyWith(height: 1.6),
                   ),
-                  // 添削後の日本語訳を白いコンテナで表示
+                  // 添削後の日本語訳を緑背景のコンテナで表示
                   if (_translatedContent.isNotEmpty) ...[
                     const SizedBox(height: 12),
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppTheme.success.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: AppTheme.dividerColor.withOpacity(0.5),
+                          color: AppTheme.success.withOpacity(0.3),
                           width: 1,
                         ),
                       ),
