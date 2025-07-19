@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'home_screen.dart';
 import 'journal_screen.dart';
-import 'learning_screen.dart';
+import 'learning_category_screen.dart';
 import 'analytics_screen.dart';
 import 'my_page_screen.dart';
 import '../theme/app_theme.dart';
@@ -33,7 +33,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   List<Widget> _screens = [
     const HomeScreen(),
     const JournalScreen(),
-    const LearningScreen(),
+    const LearningCategoryScreen(),
     const AnalyticsScreen(),
     const MyPageScreen(),
   ];

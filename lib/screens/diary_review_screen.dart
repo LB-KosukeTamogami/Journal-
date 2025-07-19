@@ -483,7 +483,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                     masteryLevel: 0,
                     reviewCount: 0,
                     isMastered: false,
-                    category: WordCategory.other,
+                    category: _getWordCategory(english),
                   );
                   
                   // StorageServiceを通じてSupabaseに保存
@@ -997,7 +997,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                                 masteryLevel: 0,
                                                 reviewCount: 0,
                                                 isMastered: false,
-                                                category: WordCategory.other,
+                                                category: _getWordCategory(english),
                                               );
                                               
                                               await StorageService.saveWord(word);
@@ -1694,5 +1694,30 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     
     // デフォルトは名詞
     return '名詞';
+  }
+  
+  // 品詞文字列をWordCategoryに変換
+  WordCategory _getWordCategory(String word) {
+    final partOfSpeech = _getPartOfSpeech(word);
+    switch (partOfSpeech) {
+      case '名詞':
+        return WordCategory.noun;
+      case '動詞':
+        return WordCategory.verb;
+      case '形容詞':
+        return WordCategory.adjective;
+      case '副詞':
+        return WordCategory.adverb;
+      case '代名詞':
+        return WordCategory.pronoun;
+      case '前置詞':
+        return WordCategory.preposition;
+      case '接続詞':
+        return WordCategory.conjunction;
+      case '感動詞':
+        return WordCategory.interjection;
+      default:
+        return WordCategory.other;
+    }
   }
 }

@@ -7,7 +7,6 @@ enum WordCategory {
   preposition('前置詞'),
   conjunction('接続詞'),
   interjection('感動詞'),
-  phrase('熟語・フレーズ'),
   other('その他');
 
   final String displayName;

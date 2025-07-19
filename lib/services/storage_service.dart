@@ -269,23 +269,139 @@ class StorageService {
     return streak;
   }
 
-  static Future<Map<String, int>> getAnalyticsData() async {
+  static Future<Map<String, dynamic>> getAnalyticsData() async {
     final entries = await getDiaryEntries();
     final missions = await getMissions();
-    final flashcards = await getFlashcards();
+    final words = await getWords();
     
+    // 総単語数の計算
     final totalWords = entries.fold<int>(0, (sum, entry) => sum + entry.wordCount);
+    
+    // 習得済み単語数（masteryLevel == 2）の計算
+    final masteredWords = words.where((word) => word.masteryLevel == 2).length;
+    
+    // 完了したミッション数
     final completedMissions = missions.where((m) => m.isCompleted).length;
-    final learnedWords = flashcards.where((f) => f.isLearned).length;
+    
+    // 現在の連続記録
     final streak = await getDiaryStreak();
+    
+    // 投稿頻度データの計算
+    final now = DateTime.now();
+    final weeklyData = _getWeeklyPostData(entries, now);
+    final monthlyData = _getMonthlyPostData(entries, now);
+    final yearlyData = _getYearlyPostData(entries, now);
+    
+    // 頻出単語の計算
+    final frequentWords = _getFrequentWords(entries);
     
     return {
       'totalEntries': entries.length,
       'totalWords': totalWords,
       'completedMissions': completedMissions,
-      'learnedWords': learnedWords,
+      'learnedWords': masteredWords,
       'currentStreak': streak,
+      'weeklyData': weeklyData,
+      'monthlyData': monthlyData,
+      'yearlyData': yearlyData,
+      'frequentWords': frequentWords,
     };
+  }
+  
+  // 週間投稿データを取得
+  static List<int> _getWeeklyPostData(List<DiaryEntry> entries, DateTime now) {
+    final List<int> data = List.filled(7, 0);
+    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    
+    for (final entry in entries) {
+      final daysDiff = entry.createdAt.difference(startOfWeek).inDays;
+      if (daysDiff >= 0 && daysDiff < 7) {
+        data[daysDiff]++;
+      }
+    }
+    
+    return data;
+  }
+  
+  // 月間投稿データを取得（週ごと）
+  static List<int> _getMonthlyPostData(List<DiaryEntry> entries, DateTime now) {
+    final List<int> data = List.filled(4, 0);
+    final startOfMonth = DateTime(now.year, now.month, 1);
+    
+    for (final entry in entries) {
+      if (entry.createdAt.year == now.year && entry.createdAt.month == now.month) {
+        final weekIndex = ((entry.createdAt.day - 1) / 7).floor();
+        if (weekIndex < 4) {
+          data[weekIndex]++;
+        }
+      }
+    }
+    
+    return data;
+  }
+  
+  // 年間投稿データを取得（月ごと）
+  static List<int> _getYearlyPostData(List<DiaryEntry> entries, DateTime now) {
+    final List<int> data = List.filled(12, 0);
+    
+    for (final entry in entries) {
+      if (entry.createdAt.year == now.year) {
+        data[entry.createdAt.month - 1]++;
+      }
+    }
+    
+    return data;
+  }
+  
+  // 頻出単語を取得
+  static List<Map<String, dynamic>> _getFrequentWords(List<DiaryEntry> entries) {
+    // 除外する基本的な単語
+    final excludedWords = {
+      'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them',
+      'my', 'your', 'his', 'her', 'its', 'our', 'their',
+      'a', 'an', 'the',
+      'is', 'am', 'are', 'was', 'were', 'be', 'been', 'being',
+      'have', 'has', 'had',
+      'do', 'does', 'did',
+      'will', 'would', 'shall', 'should', 'may', 'might', 'must', 'can', 'could',
+      'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'up', 'about',
+      'into', 'through', 'during', 'before', 'after', 'above', 'below', 'between',
+      'under', 'over', 'out', 'off', 'down', 'around',
+      'and', 'or', 'but', 'if', 'then', 'else', 'when', 'while', 'because', 'as',
+      'until', 'although', 'unless', 'since', 'so', 'yet', 'however',
+      'this', 'that', 'these', 'those', 'what', 'which', 'who', 'whom', 'whose',
+      'where', 'why', 'how',
+      'all', 'each', 'every', 'some', 'any', 'few', 'more', 'most', 'other',
+      'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'than', 'too', 'very',
+      'also', 'just', 'there', 'here',
+    };
+    
+    final wordCount = <String, int>{};
+    
+    // すべての日記から単語を抽出してカウント
+    for (final entry in entries) {
+      final words = entry.content
+          .toLowerCase()
+          .replaceAll(RegExp(r'[^\w\s]'), ' ')
+          .split(RegExp(r'\s+'))
+          .where((word) => word.isNotEmpty && word.length > 2 && !excludedWords.contains(word));
+      
+      for (final word in words) {
+        wordCount[word] = (wordCount[word] ?? 0) + 1;
+      }
+    }
+    
+    // 頻度順にソートしてトップ3を取得
+    final sortedWords = wordCount.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    
+    return sortedWords
+        .take(3)
+        .map((entry) => {
+              'word': entry.key,
+              'count': entry.value,
+            })
+        .toList();
   }
 
   // 単語関連のメソッド
@@ -544,6 +660,7 @@ class StorageService {
         reviewCount: 2,
         isMastered: false,
         masteryLevel: 1, // △
+        category: WordCategory.adjective, // 形容詞
       ),
       Word(
         id: 'sample_2',
@@ -555,6 +672,7 @@ class StorageService {
         reviewCount: 1,
         isMastered: false,
         masteryLevel: 0, // ×
+        category: WordCategory.noun, // 名詞
       ),
       // フレーズ
       Word(
@@ -567,6 +685,7 @@ class StorageService {
         reviewCount: 3,
         isMastered: true,
         masteryLevel: 2, // ○
+        category: WordCategory.other, // その他（フレーズ）
       ),
       Word(
         id: 'sample_4',
@@ -577,6 +696,7 @@ class StorageService {
         reviewCount: 0,
         isMastered: false,
         masteryLevel: 0, // ×
+        category: WordCategory.adjective, // 形容詞
       ),
       // 慣用句
       Word(
@@ -589,6 +709,7 @@ class StorageService {
         reviewCount: 5,
         isMastered: true,
         masteryLevel: 2, // ○
+        category: WordCategory.other, // その他（慣用句）
       ),
       Word(
         id: 'sample_6',
@@ -599,6 +720,7 @@ class StorageService {
         reviewCount: 1,
         isMastered: false,
         masteryLevel: 1, // △
+        category: WordCategory.verb, // 動詞
       ),
       // フレーズ
       Word(
@@ -611,6 +733,7 @@ class StorageService {
         reviewCount: 4,
         isMastered: true,
         masteryLevel: 2, // ○
+        category: WordCategory.other, // その他（フレーズ）
       ),
       Word(
         id: 'sample_8',
@@ -621,6 +744,7 @@ class StorageService {
         reviewCount: 0,
         isMastered: false,
         masteryLevel: 0, // ×
+        category: WordCategory.verb, // 動詞
       ),
       // 追加のフレーズと慣用句
       Word(
@@ -633,6 +757,7 @@ class StorageService {
         reviewCount: 2,
         isMastered: false,
         masteryLevel: 1, // △
+        category: WordCategory.other, // その他（慣用句）
       ),
       Word(
         id: 'sample_10',
@@ -644,6 +769,7 @@ class StorageService {
         reviewCount: 6,
         isMastered: true,
         masteryLevel: 2, // ○
+        category: WordCategory.other, // その他（フレーズ）
       ),
     ];
 

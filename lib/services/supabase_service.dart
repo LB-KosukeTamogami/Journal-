@@ -308,6 +308,7 @@ class SupabaseService {
       print('[Supabase] User ID: $userId');
       
       print('[Supabase] Preparing word data...');
+      print('[Supabase] Word category: ${word.category.name} (${word.category.displayName})');
       final data = {
         'id': word.id,
         'user_id': userId,
@@ -355,9 +356,13 @@ class SupabaseService {
       final List<Word> words = [];
       for (final data in response) {
         try {
-          words.add(Word.fromJson(data));
+          print('[Supabase] Retrieved word data: english="${data['english']}", category="${data['category']}"');
+          final word = Word.fromJson(data);
+          print('[Supabase] Parsed word: english="${word.english}", category=${word.category.name}');
+          words.add(word);
         } catch (e) {
           print('[Supabase] Error parsing word: $e');
+          print('[Supabase] Problem data: $data');
         }
       }
       
@@ -394,19 +399,21 @@ class SupabaseService {
     try {
       final userId = await getUserId();
       
-      final wordsData = words.map((word) => {
-        'id': word.id,
-        'user_id': userId,
-        'english': word.english,
-        'japanese': word.japanese,
-        'example': word.example,
-        'diary_entry_id': word.diaryEntryId,
-        'review_count': word.reviewCount,
-        'last_reviewed_at': word.lastReviewedAt?.toIso8601String(),
-        'is_mastered': word.isMastered,
-        'mastery_level': word.masteryLevel,
-        'category': word.category.name,
-        'created_at': word.createdAt.toIso8601String(),
+      final wordsData = words.map((word) {
+        return {
+          'id': word.id,
+          'user_id': userId,
+          'english': word.english,
+          'japanese': word.japanese,
+          'example': word.example,
+          'diary_entry_id': word.diaryEntryId,
+          'review_count': word.reviewCount,
+          'last_reviewed_at': word.lastReviewedAt?.toIso8601String(),
+          'is_mastered': word.isMastered,
+          'mastery_level': word.masteryLevel,
+          'category': word.category.name,
+          'created_at': word.createdAt.toIso8601String(),
+        };
       }).toList();
       
       await _client!.from('words').upsert(wordsData, onConflict: 'id');

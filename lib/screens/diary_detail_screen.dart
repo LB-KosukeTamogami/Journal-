@@ -1427,7 +1427,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                                                 masteryLevel: 0,
                                                                 reviewCount: 0,
                                                                 isMastered: false,
-                                                                category: info.isPhrase ? WordCategory.phrase : WordCategory.other,
+                                                                category: _getWordCategory(info.text.trim()),
                                                               );
                                                               
                                                               await StorageService.saveWord(word);
@@ -1638,7 +1638,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                         id: const Uuid().v4(),
                                         english: info.text.trim(),
                                         japanese: info.translation.isNotEmpty ? info.translation : '[意味を確認中]',
-                                        category: info.isPhrase ? WordCategory.phrase : WordCategory.other,
+                                        category: _getWordCategory(info.text.trim()),
                                         createdAt: DateTime.now(),
                                         lastReviewedAt: null,
                                         reviewCount: 0,
@@ -1729,7 +1729,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                               masteryLevel: 0,
                               reviewCount: 0,
                               isMastered: false,
-                              category: wordInfo.isPhrase ? WordCategory.phrase : WordCategory.other,
+                              category: _getWordCategory(english),
                             );
                             
                             await StorageService.saveWord(word);
@@ -1869,6 +1869,31 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     return '名詞';
   }
   
+  // 品詞文字列をWordCategoryに変換
+  WordCategory _getWordCategory(String word) {
+    final partOfSpeech = _getPartOfSpeech(word);
+    switch (partOfSpeech) {
+      case '名詞':
+        return WordCategory.noun;
+      case '動詞':
+        return WordCategory.verb;
+      case '形容詞':
+        return WordCategory.adjective;
+      case '副詞':
+        return WordCategory.adverb;
+      case '代名詞':
+        return WordCategory.pronoun;
+      case '前置詞':
+        return WordCategory.preposition;
+      case '接続詞':
+        return WordCategory.conjunction;
+      case '感動詞':
+        return WordCategory.interjection;
+      default:
+        return WordCategory.other;
+    }
+  }
+  
   void _showWordDetail(String english, String japanese) {
     showDialog(
       context: context,
@@ -1981,6 +2006,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       createdAt: DateTime.now(),
       masteryLevel: 0,
       diaryEntryId: widget.entry.id, // Link word to diary entry
+      category: _getWordCategory(english),
     );
     
     await StorageService.saveWord(word);
@@ -2016,6 +2042,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             japanese: japanese,
             createdAt: DateTime.now(),
             masteryLevel: 0,
+            category: _getWordCategory(english),
           );
           await StorageService.saveWord(word);
           addedCount++;

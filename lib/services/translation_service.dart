@@ -830,7 +830,7 @@ class TranslationResult {
     
     // 複数の単語（フレーズ）の場合
     if (word.contains(' ')) {
-      return WordCategory.phrase;
+      return WordCategory.other;
     }
     
     // 動詞のパターン
