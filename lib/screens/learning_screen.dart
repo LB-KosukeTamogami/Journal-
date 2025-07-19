@@ -991,13 +991,15 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        Text(
-                          '追加日',
-                          style: AppTheme.body2.copyWith(
-                            color: AppTheme.textSecondary,
+                        SizedBox(
+                          width: 100,
+                          child: Text(
+                            '追加日',
+                            style: AppTheme.body2.copyWith(
+                              color: AppTheme.textSecondary,
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 16),
                         Expanded(
                           child: Row(
                             children: [
@@ -1041,13 +1043,15 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Text(
-                          'アルファベット',
-                          style: AppTheme.body2.copyWith(
-                            color: AppTheme.textSecondary,
+                        SizedBox(
+                          width: 100,
+                          child: Text(
+                            'アルファベット',
+                            style: AppTheme.body2.copyWith(
+                              color: AppTheme.textSecondary,
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 16),
                         Expanded(
                           child: Row(
                             children: [
