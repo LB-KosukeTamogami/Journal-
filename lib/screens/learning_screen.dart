@@ -35,6 +35,10 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
   DateTime? _startDate;
   DateTime? _endDate;
   bool _showFilters = false;
+  
+  // 並べ替え関連の状態
+  enum SortOrder { dateAsc, dateDesc, alphabetAsc, alphabetDesc }
+  SortOrder _sortOrder = SortOrder.dateDesc; // デフォルトは追加日の降順
 
   @override
   void initState() {
@@ -701,7 +705,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
   }
 
   List<Word> _getFilteredWords(List<Word> words) {
-    return words.where((word) {
+    final filtered = words.where((word) {
       // カテゴリフィルター
       if (!_selectedCategories.contains(word.category)) {
         return false;
@@ -717,6 +721,24 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
       
       return true;
     }).toList();
+    
+    // 並べ替え
+    switch (_sortOrder) {
+      case SortOrder.dateAsc:
+        filtered.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+        break;
+      case SortOrder.dateDesc:
+        filtered.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        break;
+      case SortOrder.alphabetAsc:
+        filtered.sort((a, b) => a.english.toLowerCase().compareTo(b.english.toLowerCase()));
+        break;
+      case SortOrder.alphabetDesc:
+        filtered.sort((a, b) => b.english.toLowerCase().compareTo(a.english.toLowerCase()));
+        break;
+    }
+    
+    return filtered;
   }
 
   void _showFilterBottomSheet() {
@@ -724,6 +746,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     Set<WordCategory> tempSelectedCategories = Set.from(_selectedCategories);
     DateTime? tempStartDate = _startDate;
     DateTime? tempEndDate = _endDate;
+    SortOrder tempSortOrder = _sortOrder;
     
     showModalBottomSheet(
       context: context,
@@ -956,6 +979,93 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                     
                     const SizedBox(height: 24),
                     
+                    // 並べ替え
+                    Text(
+                      '並べ替え',
+                      style: AppTheme.body1.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: RadioListTile<SortOrder>(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text('追加日（新しい順）', style: AppTheme.body2),
+                                value: SortOrder.dateDesc,
+                                groupValue: tempSortOrder,
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    setModalState(() {
+                                      tempSortOrder = value;
+                                    });
+                                  }
+                                },
+                                activeColor: AppTheme.primaryColor,
+                              ),
+                            ),
+                            Expanded(
+                              child: RadioListTile<SortOrder>(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text('追加日（古い順）', style: AppTheme.body2),
+                                value: SortOrder.dateAsc,
+                                groupValue: tempSortOrder,
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    setModalState(() {
+                                      tempSortOrder = value;
+                                    });
+                                  }
+                                },
+                                activeColor: AppTheme.primaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: RadioListTile<SortOrder>(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text('アルファベット順（A-Z）', style: AppTheme.body2),
+                                value: SortOrder.alphabetAsc,
+                                groupValue: tempSortOrder,
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    setModalState(() {
+                                      tempSortOrder = value;
+                                    });
+                                  }
+                                },
+                                activeColor: AppTheme.primaryColor,
+                              ),
+                            ),
+                            Expanded(
+                              child: RadioListTile<SortOrder>(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text('アルファベット逆順（Z-A）', style: AppTheme.body2),
+                                value: SortOrder.alphabetDesc,
+                                groupValue: tempSortOrder,
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    setModalState(() {
+                                      tempSortOrder = value;
+                                    });
+                                  }
+                                },
+                                activeColor: AppTheme.primaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
                     // ボタン
                     Row(
                       children: [
@@ -966,6 +1076,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                                 tempSelectedCategories = WordCategory.values.toSet();
                                 tempStartDate = null;
                                 tempEndDate = null;
+                                tempSortOrder = SortOrder.dateDesc;
                               });
                             },
                             style: AppButtonStyles.secondaryButton.copyWith(
@@ -985,6 +1096,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                                 _selectedCategories = tempSelectedCategories;
                                 _startDate = tempStartDate;
                                 _endDate = tempEndDate;
+                                _sortOrder = tempSortOrder;
                               });
                               Navigator.pop(context);
                             },
@@ -2103,6 +2215,26 @@ class _WordDetailModalState extends State<_WordDetailModal> {
               ],
             ),
             
+            
+            const SizedBox(height: 16),
+            
+            // 追加日
+            Row(
+              children: [
+                Icon(
+                  Icons.calendar_today_outlined,
+                  size: 16,
+                  color: AppTheme.textSecondary,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '追加日: ${widget.word.createdAt.year}年${widget.word.createdAt.month}月${widget.word.createdAt.day}日',
+                  style: AppTheme.caption.copyWith(
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+              ],
+            ),
             
             const SizedBox(height: 20),
             // ステータス変更セクション
