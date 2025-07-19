@@ -1000,12 +1000,15 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                             ),
                           ),
                         ),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: Row(
                             children: [
                               Expanded(
                                 child: RadioListTile<SortOrder>(
                                   contentPadding: EdgeInsets.zero,
+                                  visualDensity: VisualDensity.compact,
+                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   title: Text('新しい順', style: AppTheme.body2),
                                   value: SortOrder.dateDesc,
                                   groupValue: tempSortOrder,
@@ -1022,6 +1025,8 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                               Expanded(
                                 child: RadioListTile<SortOrder>(
                                   contentPadding: EdgeInsets.zero,
+                                  visualDensity: VisualDensity.compact,
+                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   title: Text('古い順', style: AppTheme.body2),
                                   value: SortOrder.dateAsc,
                                   groupValue: tempSortOrder,
@@ -1052,12 +1057,15 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                             ),
                           ),
                         ),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: Row(
                             children: [
                               Expanded(
                                 child: RadioListTile<SortOrder>(
                                   contentPadding: EdgeInsets.zero,
+                                  visualDensity: VisualDensity.compact,
+                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   title: Text('A-Z', style: AppTheme.body2),
                                   value: SortOrder.alphabetAsc,
                                   groupValue: tempSortOrder,
@@ -1074,6 +1082,8 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                               Expanded(
                                 child: RadioListTile<SortOrder>(
                                   contentPadding: EdgeInsets.zero,
+                                  visualDensity: VisualDensity.compact,
+                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   title: Text('Z-A', style: AppTheme.body2),
                                   value: SortOrder.alphabetDesc,
                                   groupValue: tempSortOrder,
