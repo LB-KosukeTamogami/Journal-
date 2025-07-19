@@ -10,6 +10,9 @@ import '../widgets/text_to_speech_button.dart';
 import '../widgets/japanese_dictionary_dialog.dart';
 import 'flashcard_session_screen.dart' hide AppCard;
 
+// 並べ替えの種類
+enum SortOrder { dateAsc, dateDesc, alphabetAsc, alphabetDesc }
+
 class LearningScreen extends StatefulWidget {
   final WordCategory? initialCategory;
   
@@ -37,7 +40,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
   bool _showFilters = false;
   
   // 並べ替え関連の状態
-  enum SortOrder { dateAsc, dateDesc, alphabetAsc, alphabetDesc }
   SortOrder _sortOrder = SortOrder.dateDesc; // デフォルトは追加日の降順
 
   @override
@@ -987,79 +989,102 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                       ),
                     ),
                     const SizedBox(height: 12),
-                    Column(
+                    Row(
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: RadioListTile<SortOrder>(
-                                contentPadding: EdgeInsets.zero,
-                                title: Text('追加日（新しい順）', style: AppTheme.body2),
-                                value: SortOrder.dateDesc,
-                                groupValue: tempSortOrder,
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    setModalState(() {
-                                      tempSortOrder = value;
-                                    });
-                                  }
-                                },
-                                activeColor: AppTheme.primaryColor,
-                              ),
-                            ),
-                            Expanded(
-                              child: RadioListTile<SortOrder>(
-                                contentPadding: EdgeInsets.zero,
-                                title: Text('追加日（古い順）', style: AppTheme.body2),
-                                value: SortOrder.dateAsc,
-                                groupValue: tempSortOrder,
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    setModalState(() {
-                                      tempSortOrder = value;
-                                    });
-                                  }
-                                },
-                                activeColor: AppTheme.primaryColor,
-                              ),
-                            ),
-                          ],
+                        Text(
+                          '追加日',
+                          style: AppTheme.body2.copyWith(
+                            color: AppTheme.textSecondary,
+                          ),
                         ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: RadioListTile<SortOrder>(
-                                contentPadding: EdgeInsets.zero,
-                                title: Text('アルファベット順（A-Z）', style: AppTheme.body2),
-                                value: SortOrder.alphabetAsc,
-                                groupValue: tempSortOrder,
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    setModalState(() {
-                                      tempSortOrder = value;
-                                    });
-                                  }
-                                },
-                                activeColor: AppTheme.primaryColor,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: RadioListTile<SortOrder>(
+                                  contentPadding: EdgeInsets.zero,
+                                  title: Text('新しい順', style: AppTheme.body2),
+                                  value: SortOrder.dateDesc,
+                                  groupValue: tempSortOrder,
+                                  onChanged: (value) {
+                                    if (value != null) {
+                                      setModalState(() {
+                                        tempSortOrder = value;
+                                      });
+                                    }
+                                  },
+                                  activeColor: AppTheme.primaryColor,
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: RadioListTile<SortOrder>(
-                                contentPadding: EdgeInsets.zero,
-                                title: Text('アルファベット逆順（Z-A）', style: AppTheme.body2),
-                                value: SortOrder.alphabetDesc,
-                                groupValue: tempSortOrder,
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    setModalState(() {
-                                      tempSortOrder = value;
-                                    });
-                                  }
-                                },
-                                activeColor: AppTheme.primaryColor,
+                              Expanded(
+                                child: RadioListTile<SortOrder>(
+                                  contentPadding: EdgeInsets.zero,
+                                  title: Text('古い順', style: AppTheme.body2),
+                                  value: SortOrder.dateAsc,
+                                  groupValue: tempSortOrder,
+                                  onChanged: (value) {
+                                    if (value != null) {
+                                      setModalState(() {
+                                        tempSortOrder = value;
+                                      });
+                                    }
+                                  },
+                                  activeColor: AppTheme.primaryColor,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Text(
+                          'アルファベット',
+                          style: AppTheme.body2.copyWith(
+                            color: AppTheme.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: RadioListTile<SortOrder>(
+                                  contentPadding: EdgeInsets.zero,
+                                  title: Text('A-Z', style: AppTheme.body2),
+                                  value: SortOrder.alphabetAsc,
+                                  groupValue: tempSortOrder,
+                                  onChanged: (value) {
+                                    if (value != null) {
+                                      setModalState(() {
+                                        tempSortOrder = value;
+                                      });
+                                    }
+                                  },
+                                  activeColor: AppTheme.primaryColor,
+                                ),
+                              ),
+                              Expanded(
+                                child: RadioListTile<SortOrder>(
+                                  contentPadding: EdgeInsets.zero,
+                                  title: Text('Z-A', style: AppTheme.body2),
+                                  value: SortOrder.alphabetDesc,
+                                  groupValue: tempSortOrder,
+                                  onChanged: (value) {
+                                    if (value != null) {
+                                      setModalState(() {
+                                        tempSortOrder = value;
+                                      });
+                                    }
+                                  },
+                                  activeColor: AppTheme.primaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
