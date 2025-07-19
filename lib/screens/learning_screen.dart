@@ -1811,10 +1811,13 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
       return;
     }
     
+    // 単語リストをシャッフル
+    final shuffledWords = List<Word>.from(sessionWords)..shuffle();
+    
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => FlashcardSessionScreen(words: sessionWords),
+        builder: (context) => FlashcardSessionScreen(words: shuffledWords),
       ),
     ).then((_) => _loadWords());
   }
