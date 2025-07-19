@@ -224,57 +224,24 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                       labelPadding: const EdgeInsets.symmetric(vertical: 4),
                       tabs: [
                         Tab(
-                          child: Container(
-                            width: double.infinity,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text('すべて'),
-                                const SizedBox(height: 2),
-                                Text(
-                                  '${_getFilteredWords(_allWords).length}個',
-                                  style: AppTheme.caption.copyWith(
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ],
-                            ),
+                          child: _buildTabContent(
+                            'すべて',
+                            '${_getFilteredWords(_allWords).length}個',
+                            0,
                           ),
                         ),
                         Tab(
-                          child: Container(
-                            width: double.infinity,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text('学習中'),
-                                const SizedBox(height: 2),
-                                Text(
-                                  '${_getFilteredWords(_allWords).where((word) => word.masteryLevel < 2).length}個',
-                                  style: AppTheme.caption.copyWith(
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ],
-                            ),
+                          child: _buildTabContent(
+                            '学習中',
+                            '${_getFilteredWords(_allWords).where((word) => word.masteryLevel < 2).length}個',
+                            1,
                           ),
                         ),
                         Tab(
-                          child: Container(
-                            width: double.infinity,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text('習得済み'),
-                                const SizedBox(height: 2),
-                                Text(
-                                  '${_getFilteredWords(_allWords).where((word) => word.masteryLevel == 2).length}個',
-                                  style: AppTheme.caption.copyWith(
-                                    fontSize: 10,
-                                  ),
-                                ),
-                              ],
-                            ),
+                          child: _buildTabContent(
+                            '習得済み',
+                            '${_getFilteredWords(_allWords).where((word) => word.masteryLevel == 2).length}個',
+                            2,
                           ),
                         ),
                       ],
@@ -307,6 +274,37 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           label: Text('学習を開始', style: AppTheme.button),
         ),
       ),
+    );
+  }
+
+  Widget _buildTabContent(String title, String count, int index) {
+    return AnimatedBuilder(
+      animation: _tabController,
+      builder: (context, child) {
+        final isSelected = _tabController.index == index;
+        return Container(
+          width: double.infinity,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : AppTheme.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                count,
+                style: AppTheme.caption.copyWith(
+                  fontSize: 10,
+                  color: isSelected ? Colors.white : AppTheme.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
