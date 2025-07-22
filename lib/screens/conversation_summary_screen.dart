@@ -6,7 +6,6 @@ import 'dart:convert';
 import '../theme/app_theme.dart';
 import '../models/conversation_message.dart';
 import '../models/word.dart';
-import '../models/flashcard.dart';
 import '../services/gemini_service.dart';
 import '../services/storage_service.dart';
 import '../services/translation_service.dart';
@@ -161,40 +160,13 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
               // アクションボタン（縦並び）
               Column(
                 children: [
-                  // 学習カードに追加
+                  // 学習カードに追加機能は削除
+                  /*
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
                       onPressed: _addedToStudyCards[wordOrPhrase] == true ? null : () async {
-                        // 学習カードに追加
-                        final now = DateTime.now();
-                        final flashcard = Flashcard(
-                          id: const Uuid().v4(),
-                          word: wordOrPhrase,
-                          meaning: translation,
-                          createdAt: now,
-                          lastReviewed: now,
-                          nextReviewDate: now.add(const Duration(days: 1)),
-                        );
-                        
-                        await StorageService.saveFlashcard(flashcard);
-                        
-                        if (context.mounted) {
-                          setState(() {
-                            _addedToStudyCards[wordOrPhrase] = true;
-                          });
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('学習カードに追加しました'),
-                              backgroundColor: AppTheme.success,
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          );
-                        }
+                        // Flashcard機能は削除されました
                       },
                       icon: Icon(
                         _addedToStudyCards[wordOrPhrase] == true 
@@ -226,6 +198,7 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
                       ),
                     ),
                   ),
+                  */
                   const SizedBox(height: 12),
                   // 単語帳に追加
                   SizedBox(

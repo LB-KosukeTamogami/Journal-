@@ -48,13 +48,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundSecondary,
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: Container(
+    return WillPopScope(
+      onWillPop: () async => false, // スワイプバックを無効化
+      child: Scaffold(
+        backgroundColor: AppTheme.backgroundSecondary,
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _screens,
+        ),
+        bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AppTheme.backgroundPrimary,
           border: Border(
@@ -91,6 +93,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             SizedBox(height: MediaQuery.of(context).padding.bottom > 0 ? 34 : 0),
           ],
         ),
+      ),
       ),
     );
   }

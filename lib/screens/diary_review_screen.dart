@@ -3,11 +3,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:uuid/uuid.dart';
 import '../models/diary_entry.dart';
 import '../models/word.dart';
-import '../models/flashcard.dart';
 import '../theme/app_theme.dart';
 import '../services/translation_service.dart';
 import '../services/gemini_service.dart';
 import '../services/storage_service.dart';
+import '../services/dictionary_service.dart';
 import '../widgets/text_to_speech_button.dart';
 
 class DiaryReviewScreen extends StatefulWidget {
@@ -36,6 +36,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   bool _isAllAddedToCards = false;
   Set<String> _addedWords = {}; // 追加された単語を管理
   final TextEditingController _transcriptionController = TextEditingController(); // 写経用のコントローラー
+  Map<String, String> _wordDefinitions = {}; // 事前取得した単語の意味を保存
   
   // ストップワード（一般的すぎる単語）のリスト
   static const Set<String> _stopWords = {
@@ -68,6 +69,41 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     _transcriptionController.dispose();
     super.dispose();
   }
+  
+  // 単語の意味を事前に取得
+  Future<void> _prefetchWordDefinitions() async {
+    final futures = <Future>[];
+    
+    for (final wordData in _learnedWords) {
+      final english = wordData['english'] ?? '';
+      final japanese = wordData['japanese'] ?? '';
+      
+      // 意味が空または不十分な場合のみ取得
+      if (english.isNotEmpty && 
+          (japanese.isEmpty || japanese == '意味不明' || japanese.length < 2)) {
+        futures.add(
+          DictionaryService.lookupWord(english).then((result) {
+            if (result.success && result.definitions.isNotEmpty) {
+              final definition = result.definitions.first;
+              setState(() {
+                _wordDefinitions[english] = definition.japaneseDefinition ?? 
+                                           definition.definition;
+              });
+            }
+          }).catchError((error) {
+            print('Failed to fetch definition for $english: $error');
+          })
+        );
+      }
+    }
+    
+    // 並列で実行（最大5つまで同時実行）
+    const int batchSize = 5;
+    for (int i = 0; i < futures.length; i += batchSize) {
+      final end = (i + batchSize < futures.length) ? i + batchSize : futures.length;
+      await Future.wait(futures.sublist(i, end));
+    }
+  }
 
   Future<void> _processContent() async {
     try {
@@ -94,6 +130,9 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                    !_stopWords.contains(english) && // ストップワードを除外
                    RegExp(r'^[a-zA-Z]+$').hasMatch(english); // 英字のみ
           }).toList();
+          
+          // 単語の意味を事前に取得
+          _prefetchWordDefinitions();
         }
         
         _isLoading = false;
@@ -841,7 +880,15 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                   // モーダルを下から表示（日記詳細画面と同じデザインに統一）
                   // 既存の追加済み状態を初期値として設定
                   bool isAddedToFlashcard = isAdded;
-                  bool isAddedToVocabulary = false;
+                  
+                  // 事前取得した意味があればそれを使用、なければ元の意味を使用
+                  String displayJapanese = _wordDefinitions[english] ?? japanese;
+                  
+                  // それでも意味が空または不十分な場合のみローディング
+                  bool isLoadingTranslation = (displayJapanese.isEmpty || 
+                                               displayJapanese == '意味不明' || 
+                                               displayJapanese.length < 2) && 
+                                              english.isNotEmpty;
                   
                   showModalBottomSheet(
                     context: context,
@@ -849,6 +896,26 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                     backgroundColor: Colors.transparent,
                     builder: (context) => StatefulBuilder(
                       builder: (context, setModalState) {
+                        // 事前取得でも意味が取得できていない場合のみ、リアルタイムで取得
+                        if (isLoadingTranslation) {
+                          DictionaryService.lookupWord(english).then((result) {
+                            if (result.success && result.definitions.isNotEmpty) {
+                              final definition = result.definitions.first;
+                              setModalState(() {
+                                displayJapanese = definition.japaneseDefinition ?? 
+                                                 definition.definition;
+                                isLoadingTranslation = false;
+                                // 事前取得マップにも保存
+                                _wordDefinitions[english] = displayJapanese;
+                              });
+                            } else {
+                              setModalState(() {
+                                displayJapanese = '[意味が見つかりませんでした]';
+                                isLoadingTranslation = false;
+                              });
+                            }
+                          });
+                        }
                         
                         return Container(
                           decoration: BoxDecoration(
@@ -895,10 +962,30 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                         ),
                                         const SizedBox(height: 8),
                                         // 日本語の意味
-                                        Text(
-                                          japanese,
-                                          style: AppTheme.body1.copyWith(fontSize: 18),
-                                        ),
+                                        isLoadingTranslation 
+                                          ? Row(
+                                              children: [
+                                                SizedBox(
+                                                  width: 16,
+                                                  height: 16,
+                                                  child: CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    color: AppTheme.primaryBlue,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Text(
+                                                  '意味を取得中...',
+                                                  style: AppTheme.body2.copyWith(
+                                                    color: AppTheme.textSecondary,
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          : Text(
+                                              displayJapanese,
+                                              style: AppTheme.body1.copyWith(fontSize: 18),
+                                            ),
                                       ],
                                     ),
                                   ),
@@ -922,21 +1009,9 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                   ),
                                   const SizedBox(width: 8),
                                   // 音声読み上げボタン
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: AppTheme.primaryBlue.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: IconButton(
-                                      onPressed: () {
-                                        // TODO: 音声読み上げ機能を実装
-                                      },
-                                      icon: Icon(
-                                        Icons.volume_up,
-                                        color: AppTheme.primaryBlue,
-                                        size: 20,
-                                      ),
-                                    ),
+                                  TextToSpeechButton(
+                                    text: english,
+                                    size: 20,
                                   ),
                                 ],
                               ),
@@ -991,7 +1066,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                               final word = Word(
                                                 id: const Uuid().v4(),
                                                 english: english,
-                                                japanese: japanese,
+                                                japanese: displayJapanese,
                                                 diaryEntryId: widget.entry.id,
                                                 createdAt: DateTime.now(),
                                                 masteryLevel: 0,
@@ -1043,99 +1118,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                           isAddedToFlashcard ? '学習カードに追加済み' : '学習カードに追加',
                                           style: TextStyle(
                                             color: isAddedToFlashcard ? AppTheme.primaryColor : Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  AppButtonStyles.withShadow(
-                                    ElevatedButton.icon(
-                                        onPressed: () async {
-                                          // 単語帳に追加/削除のトグル
-                                          try {
-                                            if (isAddedToVocabulary) {
-                                              // 既に追加済みの場合は削除
-                                              final flashcards = await StorageService.getFlashcards();
-                                              final cardToDelete = flashcards.firstWhere(
-                                                (card) => card.word.toLowerCase() == english.toLowerCase(),
-                                                orElse: () => Flashcard(
-                                                  id: '',
-                                                  word: '',
-                                                  meaning: '',
-                                                  exampleSentence: '',
-                                                  createdAt: DateTime.now(),
-                                                  lastReviewed: DateTime.now(),
-                                                  nextReviewDate: DateTime.now().add(Duration(days: 1)),
-                                                  reviewCount: 0,
-                                                ),
-                                              );
-                                              if (cardToDelete.id.isNotEmpty) {
-                                                await StorageService.deleteFlashcard(cardToDelete.id);
-                                                setModalState(() {
-                                                  isAddedToVocabulary = false;
-                                                });
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text('単語帳から削除しました'),
-                                                    backgroundColor: AppTheme.warning,
-                                                    behavior: SnackBarBehavior.floating,
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(8),
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                            } else {
-                                              // 新規追加
-                                              final flashcard = Flashcard(
-                                                id: DateTime.now().millisecondsSinceEpoch.toString(),
-                                                word: english,
-                                                meaning: japanese,
-                                                exampleSentence: '',
-                                                createdAt: DateTime.now(),
-                                                lastReviewed: DateTime.now(),
-                                                nextReviewDate: DateTime.now().add(Duration(days: 1)),
-                                                reviewCount: 0,
-                                              );
-                                              
-                                              await StorageService.saveFlashcard(flashcard);
-                                              
-                                              setModalState(() {
-                                                isAddedToVocabulary = true;
-                                              });
-                                              
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(
-                                                  content: Text('単語帳に追加しました'),
-                                                  backgroundColor: AppTheme.success,
-                                                  behavior: SnackBarBehavior.floating,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(8),
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          } catch (e) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(
-                                                content: Text('エラーが発生しました'),
-                                                backgroundColor: AppTheme.error,
-                                              ),
-                                            );
-                                          }
-                                        },
-                                        style: isAddedToVocabulary
-                                          ? AppButtonStyles.modalErrorButton
-                                          : AppButtonStyles.modalSuccessButton,
-                                        icon: Icon(
-                                          isAddedToVocabulary ? Icons.check_circle : Icons.style,
-                                          size: 20,
-                                          color: isAddedToVocabulary ? AppTheme.error : Colors.white,
-                                        ),
-                                        label: Text(
-                                          isAddedToVocabulary ? '単語帳に追加済み' : '単語帳に追加',
-                                          style: TextStyle(
-                                            color: isAddedToVocabulary ? AppTheme.error : Colors.white,
                                           ),
                                         ),
                                       ),

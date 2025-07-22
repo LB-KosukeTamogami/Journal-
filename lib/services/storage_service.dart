@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/diary_entry.dart';
 import '../models/user_profile.dart';
 import '../models/mission.dart';
-import '../models/flashcard.dart';
 import '../models/word.dart';
 import 'supabase_service.dart';
 
@@ -11,7 +10,6 @@ class StorageService {
   static const String _diaryEntriesKey = 'diary_entries';
   static const String _userProfileKey = 'user_profile';
   static const String _missionsKey = 'missions';
-  static const String _flashcardsKey = 'flashcards';
   static const String _wordsKey = 'words';
   static const String _sampleDataKey = 'sample_data_initialized';
 
@@ -192,38 +190,6 @@ class StorageService {
     await prefs.setString(_missionsKey, jsonString);
   }
 
-  static Future<List<Flashcard>> getFlashcards() async {
-    final jsonString = prefs.getString(_flashcardsKey);
-    if (jsonString == null) return [];
-
-    final List<dynamic> jsonList = json.decode(jsonString);
-    return jsonList.map((json) => Flashcard.fromJson(json)).toList();
-  }
-
-  static Future<void> saveFlashcard(Flashcard flashcard) async {
-    final flashcards = await getFlashcards();
-    
-    final existingIndex = flashcards.indexWhere((f) => f.id == flashcard.id);
-    if (existingIndex != -1) {
-      flashcards[existingIndex] = flashcard;
-    } else {
-      flashcards.add(flashcard);
-    }
-    
-    final jsonString = json.encode(flashcards.map((f) => f.toJson()).toList());
-    await prefs.setString(_flashcardsKey, jsonString);
-  }
-
-  static Future<void> saveFlashcards(List<Flashcard> flashcards) async {
-    final jsonString = json.encode(flashcards.map((f) => f.toJson()).toList());
-    await prefs.setString(_flashcardsKey, jsonString);
-  }
-
-  static Future<void> deleteFlashcard(String id) async {
-    final flashcards = await getFlashcards();
-    final filteredFlashcards = flashcards.where((f) => f.id != id).toList();
-    await saveFlashcards(filteredFlashcards);
-  }
 
   static Future<void> clearAll() async {
     await prefs.clear();

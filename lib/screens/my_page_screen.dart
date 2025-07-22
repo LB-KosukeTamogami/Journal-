@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 import '../services/auth_service.dart';
 import '../services/storage_service.dart';
+import '../utils/no_swipe_page_route.dart';
 import 'auth/login_screen.dart';
 import 'profile_edit_screen.dart';
 import 'debug/supabase_status_screen.dart';
@@ -442,7 +443,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                 if (mounted) {
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    NoSwipePageRoute(builder: (context) => const LoginScreen()),
                     (route) => false,
                   );
                 }

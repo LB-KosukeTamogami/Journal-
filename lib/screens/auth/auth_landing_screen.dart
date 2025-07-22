@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/no_swipe_page_route.dart';
 import 'login_screen.dart';
 import 'signup_screen.dart';
 import '../debug/env_check_screen.dart';
@@ -95,7 +96,7 @@ class AuthLandingScreen extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
+                          NoSwipePageRoute(
                             builder: (context) => const SignupScreen(),
                           ),
                         );
@@ -115,7 +116,7 @@ class AuthLandingScreen extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
+                          NoSwipePageRoute(
                             builder: (context) => const LoginScreen(),
                           ),
                         );

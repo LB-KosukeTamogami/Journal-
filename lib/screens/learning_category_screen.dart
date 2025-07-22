@@ -136,7 +136,7 @@ class _LearningCategoryScreenState extends State<LearningCategoryScreen> {
                         borderRadius: BorderRadius.circular(16),
                         onTap: () => _navigateToLearning(),
                         child: Container(
-                          padding: const EdgeInsets.all(20),
+                          padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: AppTheme.backgroundPrimary,
                             borderRadius: BorderRadius.circular(16),
@@ -155,7 +155,7 @@ class _LearningCategoryScreenState extends State<LearningCategoryScreen> {
                           child: Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.all(12),
+                                padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   color: AppTheme.primaryColor.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(12),
@@ -163,7 +163,7 @@ class _LearningCategoryScreenState extends State<LearningCategoryScreen> {
                                 child: Icon(
                                   Icons.all_inclusive,
                                   color: AppTheme.primaryColor,
-                                  size: 32,
+                                  size: 28,
                                 ),
                               ),
                               const SizedBox(width: 16),
@@ -216,7 +216,7 @@ class _LearningCategoryScreenState extends State<LearningCategoryScreen> {
                           borderRadius: BorderRadius.circular(16),
                           onTap: count > 0 ? () => _navigateToLearning(selectedCategory: category) : null,
                           child: Container(
-                            padding: const EdgeInsets.all(20),
+                            padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: AppTheme.backgroundPrimary,
                               borderRadius: BorderRadius.circular(16),
@@ -237,7 +237,7 @@ class _LearningCategoryScreenState extends State<LearningCategoryScreen> {
                             child: Row(
                               children: [
                                 Container(
-                                  padding: const EdgeInsets.all(12),
+                                  padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     color: color.withOpacity(count > 0 ? 0.1 : 0.05),
                                     borderRadius: BorderRadius.circular(12),
@@ -245,7 +245,7 @@ class _LearningCategoryScreenState extends State<LearningCategoryScreen> {
                                   child: Icon(
                                     _getCategoryIcon(category),
                                     color: count > 0 ? color : AppTheme.textSecondary,
-                                    size: 32,
+                                    size: 28,
                                   ),
                                 ),
                                 const SizedBox(width: 16),

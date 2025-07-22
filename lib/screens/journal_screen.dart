@@ -6,7 +6,6 @@ import 'dart:math' as Math;
 import 'diary_creation_screen.dart';
 import 'diary_detail_screen.dart';
 import 'conversation_journal_screen.dart';
-import 'vocabulary_screen.dart';
 import '../models/diary_entry.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
@@ -128,34 +127,6 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
         title: Text('ジャーナル', style: AppTheme.headline3),
         backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const VocabularyScreen(),
-                  ),
-                );
-              },
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppTheme.secondaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.style,
-                  color: AppTheme.secondaryColor,
-                  size: 20,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
       body: Column(
         children: [

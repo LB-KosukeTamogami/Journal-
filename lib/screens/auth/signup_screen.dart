@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../theme/app_theme.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/acorn_icon.dart';
+import '../../utils/no_swipe_page_route.dart';
 import 'login_screen.dart';
 import '../legal/terms_of_service_screen.dart';
 import '../legal/privacy_policy_screen.dart';
@@ -105,11 +106,12 @@ class _SignupScreenState extends State<SignupScreen> {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  Navigator.pushReplacement(
+                  Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(
+                    NoSwipePageRoute(
                       builder: (context) => const LoginScreen(),
                     ),
+                    (route) => false, // すべての履歴を削除
                   );
                 },
                 child: Text(

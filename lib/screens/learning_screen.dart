@@ -3,12 +3,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../theme/app_theme.dart';
 import '../models/word.dart';
-import '../models/flashcard.dart';
 import '../services/storage_service.dart';
 import '../services/gemini_service.dart';
 import '../widgets/text_to_speech_button.dart';
 import '../widgets/japanese_dictionary_dialog.dart';
-import 'flashcard_session_screen.dart' hide AppCard;
+import 'word_study_session_screen.dart' hide AppCard;
 
 // 並べ替えの種類
 enum SortOrder { dateAsc, dateDesc, alphabetAsc, alphabetDesc }
@@ -115,12 +114,20 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     super.dispose();
   }
 
+  String _getHeaderTitle() {
+    if (widget.initialCategory != null) {
+      return widget.initialCategory!.displayName;
+    } else {
+      return 'すべて';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundSecondary,
       appBar: AppBar(
-        title: Text('学習', style: AppTheme.headline3),
+        title: Text(_getHeaderTitle(), style: AppTheme.headline3),
         backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
         actions: [
@@ -273,7 +280,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
         ),
         child: FloatingActionButton.extended(
           onPressed: () {
-            _startFlashcardSession();
+            _startWordStudySession();
           },
           backgroundColor: AppTheme.primaryColor,
           icon: const Icon(Icons.play_arrow, color: Colors.white),
@@ -564,7 +571,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
       itemCount: words.length,
       itemBuilder: (context, index) {
         final word = words[index];
-        return _FlashcardItem(
+        return _WordCardItem(
           word: word,
           onTap: () => _showCardDetail(word),
           onToggleLearned: () async {
@@ -979,7 +986,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                       ],
                     ),
                     
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
                     
                     // 並べ替え
                     Text(
@@ -988,7 +995,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 4),
                     Row(
                       children: [
                         SizedBox(
@@ -1007,7 +1014,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                               Expanded(
                                 child: RadioListTile<SortOrder>(
                                   contentPadding: EdgeInsets.zero,
-                                  visualDensity: VisualDensity.compact,
+                                  visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
                                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   title: Text('新しい順', style: AppTheme.body2),
                                   value: SortOrder.dateDesc,
@@ -1025,7 +1032,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                               Expanded(
                                 child: RadioListTile<SortOrder>(
                                   contentPadding: EdgeInsets.zero,
-                                  visualDensity: VisualDensity.compact,
+                                  visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
                                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   title: Text('古い順', style: AppTheme.body2),
                                   value: SortOrder.dateAsc,
@@ -1045,7 +1052,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
                     Row(
                       children: [
                         SizedBox(
@@ -1064,7 +1071,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                               Expanded(
                                 child: RadioListTile<SortOrder>(
                                   contentPadding: EdgeInsets.zero,
-                                  visualDensity: VisualDensity.compact,
+                                  visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
                                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   title: Text('A-Z', style: AppTheme.body2),
                                   value: SortOrder.alphabetAsc,
@@ -1082,7 +1089,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                               Expanded(
                                 child: RadioListTile<SortOrder>(
                                   contentPadding: EdgeInsets.zero,
-                                  visualDensity: VisualDensity.compact,
+                                  visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
                                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   title: Text('Z-A', style: AppTheme.body2),
                                   value: SortOrder.alphabetDesc,
@@ -1103,7 +1110,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                       ],
                     ),
                     
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                     
                     // ボタン
                     Row(
@@ -1925,7 +1932,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     );
   }
 
-  void _startFlashcardSession() {
+  void _startWordStudySession() {
     // Get words based on current tab and filters
     List<Word> sessionWords;
     
@@ -1968,18 +1975,18 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => FlashcardSessionScreen(words: shuffledWords),
+        builder: (context) => WordStudySessionScreen(words: shuffledWords),
       ),
     ).then((_) => _loadWords());
   }
 }
 
-class _FlashcardItem extends StatelessWidget {
+class _WordCardItem extends StatelessWidget {
   final Word word;
   final VoidCallback onTap;
   final VoidCallback onToggleLearned;
 
-  const _FlashcardItem({
+  const _WordCardItem({
     required this.word,
     required this.onTap,
     required this.onToggleLearned,
@@ -2169,7 +2176,6 @@ class _WordDetailModal extends StatefulWidget {
 }
 
 class _WordDetailModalState extends State<_WordDetailModal> {
-  bool _isAddedToVocabulary = false;
 
   @override
   Widget build(BuildContext context) {
@@ -2331,102 +2337,6 @@ class _WordDetailModalState extends State<_WordDetailModal> {
                   ],
                 ),
               ],
-            ),
-            const SizedBox(height: 20),
-            // 単語帳に登録ボタン
-            AppButtonStyles.withShadow(
-              ElevatedButton.icon(
-                onPressed: () async {
-                  // フラッシュカードに登録/削除のトグル
-                  try {
-                    if (_isAddedToVocabulary) {
-                      // 既に追加済みの場合は削除
-                      final flashcards = await StorageService.getFlashcards();
-                      final cardToDelete = flashcards.firstWhere(
-                        (card) => card.word.toLowerCase() == widget.word.english.toLowerCase(),
-                        orElse: () => Flashcard(
-                          id: '',
-                          word: '',
-                          meaning: '',
-                          exampleSentence: '',
-                          createdAt: DateTime.now(),
-                          lastReviewed: DateTime.now(),
-                          nextReviewDate: DateTime.now().add(Duration(days: 1)),
-                          reviewCount: 0,
-                        ),
-                      );
-                      if (cardToDelete.id.isNotEmpty) {
-                        await StorageService.deleteFlashcard(cardToDelete.id);
-                        setState(() {
-                          _isAddedToVocabulary = false;
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('単語帳から削除しました'),
-                            backgroundColor: AppTheme.warning,
-                            behavior: SnackBarBehavior.floating,
-                            margin: const EdgeInsets.all(16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        );
-                      }
-                    } else {
-                      // 新規追加
-                      final flashcard = Flashcard(
-                        id: DateTime.now().millisecondsSinceEpoch.toString(),
-                        word: widget.word.english,
-                        meaning: widget.word.japanese,
-                        exampleSentence: '', // 例文は削除
-                        createdAt: DateTime.now(),
-                        lastReviewed: DateTime.now(),
-                        nextReviewDate: DateTime.now().add(Duration(days: 1)),
-                        reviewCount: 0,
-                      );
-                      await StorageService.saveFlashcard(flashcard);
-                      
-                      setState(() {
-                        _isAddedToVocabulary = true;
-                      });
-                      
-                      // 成功メッセージを表示
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('単語帳に登録しました'),
-                          backgroundColor: AppTheme.success,
-                          behavior: SnackBarBehavior.floating,
-                          margin: const EdgeInsets.all(16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      );
-                    }
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('エラーが発生しました'),
-                        backgroundColor: AppTheme.error,
-                      ),
-                    );
-                  }
-                },
-                style: _isAddedToVocabulary
-                  ? AppButtonStyles.modalErrorButton
-                  : AppButtonStyles.modalSuccessButton,
-                icon: Icon(
-                  _isAddedToVocabulary ? Icons.check_circle : Icons.style,
-                  size: 20,
-                  color: _isAddedToVocabulary ? AppTheme.error : Colors.white,
-                ),
-                label: Text(
-                  _isAddedToVocabulary ? '単語帳に登録済み' : '単語帳に登録',
-                  style: TextStyle(
-                    color: _isAddedToVocabulary ? AppTheme.error : Colors.white,
-                  ),
-                ),
-              ),
             ),
             const SizedBox(height: 12),
             // 削除ボタン

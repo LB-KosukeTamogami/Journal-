@@ -3,7 +3,6 @@ import 'package:uuid/uuid.dart';
 import 'dart:async';
 import '../models/diary_entry.dart';
 import '../models/mission.dart';
-import '../models/flashcard.dart';
 import '../services/storage_service.dart';
 import '../services/translation_service.dart';
 import '../services/mission_service.dart';
@@ -379,35 +378,12 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               // アクションボタン（縦並び）
               Column(
                 children: [
-                  // 学習カードに追加
+                  // 学習カードに追加機能は削除
+                  /*
                   AppButtonStyles.withShadow(
                     OutlinedButton.icon(
                       onPressed: () async {
-                        final now = DateTime.now();
-                        final flashcard = Flashcard(
-                          id: const Uuid().v4(),
-                          word: word,
-                          meaning: meaning,
-                          createdAt: now,
-                          lastReviewed: now,
-                          nextReviewDate: now.add(const Duration(days: 1)),
-                        );
-                        
-                        await StorageService.saveFlashcard(flashcard);
-                        
-                        if (context.mounted) {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('学習カードに追加しました'),
-                              backgroundColor: AppTheme.success,
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          );
-                        }
+                        // Flashcard機能は削除されました
                       },
                       icon: Icon(Icons.collections_bookmark, size: 20),
                       label: Text('学習カードに追加'),
@@ -419,6 +395,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       ),
                     ),
                   ),
+                  */
                   const SizedBox(height: 12),
                   // 単語帳に追加
                   AppButtonStyles.withShadow(
@@ -1258,37 +1235,13 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                 // アクションボタン（縦並び）
                 Column(
                   children: [
-                    // 学習カードに追加
+                    // 学習カードに追加機能は削除
+                    /*
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
                         onPressed: isAddedToFlashcard ? null : () async {
-                          final now = DateTime.now();
-                          final flashcard = Flashcard(
-                            id: const Uuid().v4(),
-                            word: english,
-                            meaning: japanese,
-                            createdAt: now,
-                            lastReviewed: now,
-                            nextReviewDate: now.add(const Duration(days: 1)),
-                          );
-                          
-                          await StorageService.saveFlashcard(flashcard);
-                          
-                          setModalState(() {
-                            isAddedToFlashcard = true;
-                          });
-                          
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('学習カードに追加しました'),
-                              backgroundColor: AppTheme.success,
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          );
+                          // Flashcard機能は削除されました
                         },
                         icon: Icon(
                           isAddedToFlashcard 
@@ -1320,6 +1273,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                         ),
                       ),
                     ),
+                    */
                     const SizedBox(height: 12),
                     // 単語帳に追加
                     SizedBox(

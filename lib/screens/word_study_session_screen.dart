@@ -6,19 +6,19 @@ import '../services/tts_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/text_to_speech_button.dart';
 
-class FlashcardSessionScreen extends StatefulWidget {
+class WordStudySessionScreen extends StatefulWidget {
   final List<Word> words;
 
-  const FlashcardSessionScreen({
+  const WordStudySessionScreen({
     super.key,
     required this.words,
   });
 
   @override
-  State<FlashcardSessionScreen> createState() => _FlashcardSessionScreenState();
+  State<WordStudySessionScreen> createState() => _WordStudySessionScreenState();
 }
 
-class _FlashcardSessionScreenState extends State<FlashcardSessionScreen> {
+class _WordStudySessionScreenState extends State<WordStudySessionScreen> {
   int _currentIndex = 0;
   bool _isFlipped = false;
   bool _showResult = false;

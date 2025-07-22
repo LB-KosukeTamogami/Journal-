@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'main_navigation_screen.dart';
 import 'auth/auth_landing_screen.dart';
 import '../services/auth_service.dart';
+import '../utils/no_swipe_page_route.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -46,21 +47,14 @@ class _SplashScreenState extends State<SplashScreen> {
       // 認証されていない場合は認証ランディング画面へ
       final targetScreen = isLoggedIn ? MainNavigationScreen(key: MainNavigationScreen.navigatorKey) : const AuthLandingScreen();
       
-      // フェード効果で遷移
+      // フェード効果で遷移（履歴から削除してスワイプバックを防ぐ）
       print('[SplashScreen] Navigating to: ${targetScreen.runtimeType}');
-      await Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => targetScreen,
-          transitionDuration: const Duration(milliseconds: 500),
-          reverseTransitionDuration: const Duration(milliseconds: 500),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            // フェード効果
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+      await Navigator.of(context).pushAndRemoveUntil(
+        NoSwipePageRoute(
+          builder: (context) => targetScreen,
+          settings: RouteSettings(name: targetScreen.runtimeType.toString()),
         ),
+        (route) => false, // すべての履歴を削除
       );
       print('[SplashScreen] Navigation completed');
     } catch (e, stack) {
@@ -69,8 +63,12 @@ class _SplashScreenState extends State<SplashScreen> {
       
       // エラーが発生した場合は認証ランディング画面へ
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const AuthLandingScreen()),
+        Navigator.of(context).pushAndRemoveUntil(
+          NoSwipePageRoute(
+            builder: (context) => const AuthLandingScreen(),
+            settings: const RouteSettings(name: 'AuthLandingScreen'),
+          ),
+          (route) => false, // すべての履歴を削除
         );
       }
     }

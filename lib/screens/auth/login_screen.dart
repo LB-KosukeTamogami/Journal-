@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../theme/app_theme.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/acorn_icon.dart';
+import '../../utils/no_swipe_page_route.dart';
 import 'signup_screen.dart';
 import 'forgot_password_screen.dart';
 import '../main_navigation_screen.dart';
@@ -46,10 +47,11 @@ class _LoginScreenState extends State<LoginScreen> {
       print('[LoginScreen] Login response received');
 
       if (response.user != null && mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
+        Navigator.of(context).pushAndRemoveUntil(
+          NoSwipePageRoute(
             builder: (context) => const MainNavigationScreen(),
           ),
+          (route) => false, // すべての履歴を削除
         );
       }
     } catch (e) {
