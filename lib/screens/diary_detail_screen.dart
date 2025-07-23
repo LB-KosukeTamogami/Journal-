@@ -522,7 +522,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppTheme.colors.surface,
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: AppTheme.dividerColor.withOpacity(0.5),
@@ -842,7 +842,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppTheme.colors.surfaceVariant,
+                          color: Theme.of(context).scaffoldBackgroundColor,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                             color: AppTheme.error.withOpacity(0.2),
@@ -939,7 +939,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppTheme.colors.surfaceVariant,
+                          color: Theme.of(context).scaffoldBackgroundColor,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                             color: AppTheme.success.withOpacity(0.2),
@@ -1520,8 +1520,8 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                                           }
                                                         },
                                                         style: isAddedToFlashcard
-                                                          ? AppButtonStyles.modalSecondaryButton
-                                                          : AppButtonStyles.modalPrimaryButton,
+                                                          ? AppButtonStyles.modalSecondaryButton(context)
+                                                          : AppButtonStyles.modalPrimaryButton(context),
                                                         icon: Icon(
                                                           isAddedToFlashcard ? Icons.check_circle : Icons.add_card,
                                                           size: 20,
@@ -1534,6 +1534,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                                           ),
                                                         ),
                                                       ),
+                                                    Theme.of(context).primaryColor,
                                                   ),
                                                 ],
                                               ),
@@ -1649,7 +1650,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
               const SizedBox(height: 16),
               Container(
                 decoration: BoxDecoration(
-                  boxShadow: AppTheme.buttonShadow,
+                  boxShadow: AppTheme.buttonShadow(Theme.of(context).primaryColor),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: SizedBox(
@@ -1732,14 +1733,14 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       }
                     },
                     style: _areAllWordsAdded() 
-                      ? AppButtonStyles.primaryButton.copyWith(
+                      ? AppButtonStyles.primaryButton(context).copyWith(
                           backgroundColor: MaterialStateProperty.all(Colors.white),
                           foregroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
                           side: MaterialStateProperty.all(BorderSide(color: AppTheme.primaryColor, width: 2)),
                           minimumSize: MaterialStateProperty.all(Size(double.infinity, 56)),
                           fixedSize: MaterialStateProperty.all(Size(double.infinity, 56)),
                         )
-                      : AppButtonStyles.primaryButton.copyWith(
+                      : AppButtonStyles.primaryButton(context).copyWith(
                           minimumSize: MaterialStateProperty.all(Size(double.infinity, 56)),
                           fixedSize: MaterialStateProperty.all(Size(double.infinity, 56)),
                         ),

@@ -302,7 +302,13 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
       ),
       floatingActionButton: Container(
         decoration: BoxDecoration(
-          boxShadow: AppTheme.buttonShadow,
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).primaryColor.withOpacity(0.25),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
           borderRadius: BorderRadius.circular(16),
         ),
         child: FloatingActionButton.extended(
@@ -336,7 +342,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
           },
           backgroundColor: Theme.of(context).primaryColor,
           icon: const Icon(Icons.add, color: Colors.white),
-          label: Text('新規作成', style: AppTheme.button.copyWith(color: Colors.white)),
+          label: Text('新規作成', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
         ),
       ),
     );

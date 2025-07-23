@@ -475,7 +475,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   Widget _buildAddToCardsButton() {
     return Container(
       decoration: BoxDecoration(
-        boxShadow: AppTheme.buttonShadow,
+        boxShadow: AppTheme.buttonShadow(Theme.of(context).primaryColor),
         borderRadius: BorderRadius.circular(16),
       ),
       child: SizedBox(
@@ -563,13 +563,13 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             }
           },
           style: _isAllAddedToCards 
-            ? AppButtonStyles.primaryButton.copyWith(
+            ? AppButtonStyles.primaryButton(context).copyWith(
                 backgroundColor: MaterialStateProperty.all(Colors.white),
                 foregroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
                 side: MaterialStateProperty.all(BorderSide(color: AppTheme.primaryColor, width: 2)),
                 minimumSize: MaterialStateProperty.all(Size(double.infinity, 56)),
               )
-            : AppButtonStyles.primaryButton.copyWith(
+            : AppButtonStyles.primaryButton(context).copyWith(
                 minimumSize: MaterialStateProperty.all(Size(double.infinity, 56)),
               ),
           icon: Icon(
@@ -1107,8 +1107,8 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                           }
                                         },
                                         style: isAddedToFlashcard
-                                          ? AppButtonStyles.modalSecondaryButton
-                                          : AppButtonStyles.modalPrimaryButton,
+                                          ? AppButtonStyles.modalSecondaryButton(context)
+                                          : AppButtonStyles.modalPrimaryButton(context),
                                         icon: Icon(
                                           isAddedToFlashcard ? Icons.check_circle : Icons.add_card,
                                           size: 20,
@@ -1121,6 +1121,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                           ),
                                         ),
                                       ),
+                                    Theme.of(context).primaryColor,
                                   ),
                                 ],
                               ),

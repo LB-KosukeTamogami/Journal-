@@ -43,7 +43,7 @@ class GlassContainer extends StatelessWidget {
           child: Container(
             padding: padding,
             decoration: BoxDecoration(
-              color: color ?? AppTheme.colors.surface.withOpacity(opacity),
+              color: color ?? Theme.of(context).cardColor.withOpacity(opacity),
               gradient: gradient != null
                   ? LinearGradient(
                       begin: Alignment.topLeft,
@@ -54,7 +54,7 @@ class GlassContainer extends StatelessWidget {
               borderRadius: BorderRadius.circular(borderRadius),
               border: border ??
                   Border.all(
-                    color: AppTheme.colors.surface.withOpacity(0.6),
+                    color: Theme.of(context).cardColor.withOpacity(0.6),
                     width: 1.0,
                   ),
             ),
@@ -84,7 +84,7 @@ class LiquidContainer extends StatefulWidget {
     this.margin,
     List<Color>? colors,
     this.animationDuration = const Duration(seconds: 3),
-  }) : colors = colors ?? [AppTheme.colors.success, AppTheme.colors.info],
+  }) : colors = colors ?? [Color(0xFF7CB342), Color(0xFF64B5F6)],
        super(key: key);
 
   @override
@@ -165,7 +165,7 @@ class NeumorphicContainer extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final double borderRadius;
-  late final Color backgroundColor;
+  final Color? backgroundColor;
   final bool isPressed;
 
   NeumorphicContainer({
@@ -178,7 +178,7 @@ class NeumorphicContainer extends StatelessWidget {
     this.borderRadius = 16.0,
     Color? backgroundColor,
     this.isPressed = false,
-  }) : backgroundColor = backgroundColor ?? AppTheme.colors.surfaceVariant,
+  }) : backgroundColor = backgroundColor,
        super(key: key);
 
   @override
@@ -189,18 +189,18 @@ class NeumorphicContainer extends StatelessWidget {
       margin: margin,
       padding: padding,
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(borderRadius),
         boxShadow: isPressed
             ? [
                 BoxShadow(
-                  color: AppTheme.colors.textTertiary.withOpacity(0.3),
+                  color: (Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey).withOpacity(0.3),
                   offset: const Offset(4, 4),
                   blurRadius: 15,
                   spreadRadius: 1,
                 ),
                 BoxShadow(
-                  color: AppTheme.colors.surface.withOpacity(0.7),
+                  color: Theme.of(context).cardColor.withOpacity(0.7),
                   offset: Offset(-4, -4),
                   blurRadius: 15,
                   spreadRadius: 1,
@@ -208,13 +208,13 @@ class NeumorphicContainer extends StatelessWidget {
               ]
             : [
                 BoxShadow(
-                  color: AppTheme.colors.textTertiary.withOpacity(0.3),
+                  color: (Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey).withOpacity(0.3),
                   offset: const Offset(8, 8),
                   blurRadius: 15,
                   spreadRadius: 1,
                 ),
                 BoxShadow(
-                  color: AppTheme.colors.surface.withOpacity(0.7),
+                  color: Theme.of(context).cardColor.withOpacity(0.7),
                   offset: Offset(-8, -8),
                   blurRadius: 15,
                   spreadRadius: 1,

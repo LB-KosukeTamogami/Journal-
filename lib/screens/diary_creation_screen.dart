@@ -273,7 +273,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               padding: const EdgeInsets.all(20),
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
-                style: AppButtonStyles.primaryButton,
+                style: AppButtonStyles.primaryButton(context),
                 child: const Text('閉じる'),
               ),
             ),
@@ -387,7 +387,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       },
                       icon: Icon(Icons.collections_bookmark, size: 20),
                       label: Text('学習カードに追加'),
-                      style: AppButtonStyles.secondaryButton.copyWith(
+                      style: AppButtonStyles.secondaryButton(context).copyWith(
                         foregroundColor: MaterialStateProperty.all(AppTheme.info),
                         side: MaterialStateProperty.all(
                           BorderSide(color: AppTheme.info, width: 2),
@@ -426,10 +426,11 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       },
                       icon: Icon(Icons.book, size: 20),
                       label: Text('単語帳に追加'),
-                      style: AppButtonStyles.primaryButton.copyWith(
+                      style: AppButtonStyles.primaryButton(context).copyWith(
                         backgroundColor: MaterialStateProperty.all(AppTheme.success),
                       ),
                     ),
+                    Theme.of(context).primaryColor,
                   ),
                 ],
               ),
@@ -439,7 +440,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               // 閉じるボタン
               OutlinedButton(
                 onPressed: () => Navigator.pop(context),
-                style: AppButtonStyles.secondaryButton.copyWith(
+                style: AppButtonStyles.secondaryButton(context).copyWith(
                   foregroundColor: MaterialStateProperty.all(AppTheme.textSecondary),
                   side: MaterialStateProperty.all(
                     BorderSide(color: AppTheme.borderColor, width: 1),
@@ -790,7 +791,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                         decoration: BoxDecoration(
                           color: Theme.of(context).brightness == Brightness.dark 
                             ? Color(0xFF2D2D2D) 
-                            : AppTheme.colors.surface,
+                            : Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: _titleFocusNode.hasFocus 
@@ -860,7 +861,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                         decoration: BoxDecoration(
                           color: Theme.of(context).brightness == Brightness.dark 
                             ? Color(0xFF2D2D2D) 
-                            : AppTheme.colors.surface,
+                            : Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: _contentFocusNode.hasFocus 

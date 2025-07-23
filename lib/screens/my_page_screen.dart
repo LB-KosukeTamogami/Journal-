@@ -154,7 +154,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                       },
                       icon: const Icon(Icons.edit_outlined, size: 20),
                       label: const Text('プロフィールを編集'),
-                      style: AppButtonStyles.secondaryButton,
+                      style: AppButtonStyles.secondaryButton(context),
                     ),
                   ],
                 ),

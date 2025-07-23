@@ -9,11 +9,11 @@ class EnvCheckScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.colors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('環境変数チェック'),
         backgroundColor: AppTheme.primaryColor,
-        foregroundColor: AppTheme.colors.onPrimary,
+        foregroundColor: Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -26,12 +26,14 @@ class EnvCheckScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _buildEnvItem(
+              context,
               'SUPABASE_URL',
               SupabaseConfig.supabaseUrl,
               SupabaseConfig.supabaseUrl.isNotEmpty,
             ),
             const SizedBox(height: 8),
             _buildEnvItem(
+              context,
               'SUPABASE_ANON_KEY',
               SupabaseConfig.supabaseAnonKey,
               SupabaseConfig.supabaseAnonKey.isNotEmpty,
@@ -59,22 +61,22 @@ class EnvCheckScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppTheme.colors.warningContainer,
+                  color: Color(0xFFFFB74D).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppTheme.colors.warning),
+                  border: Border.all(color: Color(0xFFFFB74D)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.warning, color: AppTheme.colors.warning),
+                        Icon(Icons.warning, color: Color(0xFFFFB74D)),
                         const SizedBox(width: 8),
                         Text(
                           '環境変数が設定されていません',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: AppTheme.colors.warning,
+                            color: Color(0xFFFFB74D),
                           ),
                         ),
                       ],
@@ -94,7 +96,7 @@ class EnvCheckScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEnvItem(String name, String value, bool isSet) {
+  Widget _buildEnvItem(BuildContext context, String name, String value, bool isSet) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -102,7 +104,7 @@ class EnvCheckScreen extends StatelessWidget {
           children: [
             Icon(
               isSet ? Icons.check_circle : Icons.cancel,
-              color: isSet ? AppTheme.colors.success : AppTheme.colors.error,
+              color: isSet ? Color(0xFF7CB342) : Theme.of(context).colorScheme.error,
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -116,7 +118,7 @@ class EnvCheckScreen extends StatelessWidget {
                   Text(
                     isSet ? '設定済み (${value.length}文字)' : '未設定',
                     style: TextStyle(
-                      color: isSet ? AppTheme.colors.success : AppTheme.colors.error,
+                      color: isSet ? Color(0xFF7CB342) : Theme.of(context).colorScheme.error,
                       fontSize: 12,
                     ),
                   ),

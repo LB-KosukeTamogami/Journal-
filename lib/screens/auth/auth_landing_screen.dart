@@ -11,7 +11,7 @@ class AuthLandingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.colors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -101,13 +101,14 @@ class AuthLandingScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      style: AppButtonStyles.primaryButton.copyWith(
+                      style: AppButtonStyles.primaryButton(context).copyWith(
                         textStyle: MaterialStateProperty.all(
                           AppTheme.button.copyWith(fontSize: 18),
                         ),
                       ),
                       child: const Text('新規登録'),
                     ),
+                    Theme.of(context).primaryColor,
                   ),
                   const SizedBox(height: 16),
                   // ログインボタン
@@ -121,7 +122,7 @@ class AuthLandingScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      style: AppButtonStyles.secondaryButton.copyWith(
+                      style: AppButtonStyles.secondaryButton(context).copyWith(
                         textStyle: MaterialStateProperty.all(
                           AppTheme.button.copyWith(
                             fontSize: 18,
@@ -131,6 +132,7 @@ class AuthLandingScreen extends StatelessWidget {
                       ),
                       child: const Text('ログイン'),
                     ),
+                    Theme.of(context).primaryColor,
                   ),
                 ],
               ),

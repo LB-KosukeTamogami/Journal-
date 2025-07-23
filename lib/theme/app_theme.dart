@@ -192,9 +192,9 @@ class AppTheme {
     ),
   ];
   
-  static List<BoxShadow> get buttonShadow => [
+  static List<BoxShadow> buttonShadow(Color primaryColor) => [
     BoxShadow(
-      color: colors.primary.withOpacity(0.25),
+      color: primaryColor.withOpacity(0.25),
       blurRadius: 8,
       offset: const Offset(0, 4),
     ),
@@ -244,92 +244,98 @@ class AppTheme {
     height: 1,
   );
   
+  // Helper function to get colors based on brightness
+  static AppColors getColors(Brightness brightness) {
+    return brightness == Brightness.light ? lightColors : darkColors;
+  }
+
   // Theme Data
   static ThemeData getTheme(Brightness brightness) {
     final isLight = brightness == Brightness.light;
-    colors = isLight ? lightColors : darkColors;
+    final themeColors = isLight ? lightColors : darkColors;
+    colors = themeColors; // Update static variable for legacy support
     
     return ThemeData(
       brightness: brightness,
-      primaryColor: colors.primary,
-      scaffoldBackgroundColor: colors.background,
+      primaryColor: themeColors.primary,
+      scaffoldBackgroundColor: themeColors.background,
       
       colorScheme: ColorScheme(
         brightness: brightness,
-        primary: colors.primary,
-        onPrimary: colors.onPrimary,
-        secondary: colors.secondary,
-        onSecondary: colors.onSecondary,
-        error: colors.error,
-        onError: colors.onError,
-        background: colors.background,
-        onBackground: colors.onBackground,
-        surface: colors.surface,
-        onSurface: colors.onSurface,
+        primary: themeColors.primary,
+        onPrimary: themeColors.onPrimary,
+        secondary: themeColors.secondary,
+        onSecondary: themeColors.onSecondary,
+        error: themeColors.error,
+        onError: themeColors.onError,
+        background: themeColors.background,
+        onBackground: themeColors.onBackground,
+        surface: themeColors.surface,
+        onSurface: themeColors.onSurface,
       ),
       
       textTheme: TextTheme(
         displayLarge: GoogleFonts.notoSansJp(
           fontSize: 32,
           fontWeight: FontWeight.w700,
-          color: colors.textPrimary,
+          color: themeColors.textPrimary,
           height: 1.2,
         ),
         displayMedium: GoogleFonts.notoSansJp(
           fontSize: 24,
           fontWeight: FontWeight.w600,
-          color: colors.textPrimary,
+          color: themeColors.textPrimary,
           height: 1.3,
         ),
         displaySmall: GoogleFonts.notoSansJp(
           fontSize: 20,
           fontWeight: FontWeight.w600,
-          color: colors.textPrimary,
+          color: themeColors.textPrimary,
           height: 1.3,
         ),
         bodyLarge: GoogleFonts.notoSansJp(
           fontSize: 16,
           fontWeight: FontWeight.w400,
-          color: colors.textPrimary,
+          color: themeColors.textPrimary,
           height: 1.5,
         ),
         bodyMedium: GoogleFonts.notoSansJp(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: colors.textSecondary,
+          color: themeColors.textSecondary,
           height: 1.5,
         ),
         bodySmall: GoogleFonts.notoSansJp(
           fontSize: 12,
           fontWeight: FontWeight.w400,
-          color: colors.textTertiary,
+          color: themeColors.textTertiary,
           height: 1.4,
         ),
         labelLarge: GoogleFonts.notoSansJp(
           fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: colors.textPrimary,
+          color: themeColors.textPrimary,
           height: 1,
         ),
       ),
       
       appBarTheme: AppBarTheme(
-        backgroundColor: colors.surface,
+        backgroundColor: themeColors.surface,
         elevation: 0,
         centerTitle: false,
         titleTextStyle: GoogleFonts.notoSansJp(
           fontSize: 20,
           fontWeight: FontWeight.w600,
-          color: colors.textPrimary,
+          color: themeColors.textPrimary,
           height: 1.3,
         ),
-        iconTheme: IconThemeData(color: colors.textPrimary),
+        iconTheme: IconThemeData(color: themeColors.textPrimary),
       ),
       
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: colors.primary,
-          foregroundColor: colors.onPrimary,
+          backgroundColor: themeColors.primary,
+          foregroundColor: themeColors.onPrimary,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
@@ -340,48 +346,48 @@ class AppTheme {
       ),
       
       cardTheme: CardThemeData(
-        color: colors.surface,
+        color: themeColors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: colors.border, width: 1),
+          side: BorderSide(color: themeColors.border, width: 1),
         ),
         margin: const EdgeInsets.symmetric(vertical: 8),
       ),
       
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: colors.surface,
+        fillColor: themeColors.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colors.border),
+          borderSide: BorderSide(color: themeColors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colors.border),
+          borderSide: BorderSide(color: themeColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colors.primary, width: 2),
+          borderSide: BorderSide(color: themeColors.primary, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colors.error),
+          borderSide: BorderSide(color: themeColors.error),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        hintStyle: body2.copyWith(color: colors.textTertiary),
+        hintStyle: body2.copyWith(color: themeColors.textTertiary),
       ),
       
       dividerTheme: DividerThemeData(
-        color: colors.divider,
+        color: themeColors.divider,
         thickness: 1,
         space: 0,
       ),
       
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: colors.surface,
-        selectedItemColor: colors.primary,
-        unselectedItemColor: colors.textTertiary,
+        backgroundColor: themeColors.surface,
+        selectedItemColor: themeColors.primary,
+        unselectedItemColor: themeColors.textTertiary,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
@@ -415,13 +421,13 @@ class PrimaryButton extends StatelessWidget {
     return Container(
       width: fullWidth ? double.infinity : null,
       decoration: BoxDecoration(
-        boxShadow: AppTheme.buttonShadow,
+        boxShadow: AppTheme.buttonShadow(Theme.of(context).primaryColor),
         borderRadius: BorderRadius.circular(12),
       ),
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheme.colors.primary,
+          backgroundColor: Theme.of(context).primaryColor,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           minimumSize: const Size(double.infinity, 56),
           shape: RoundedRectangleBorder(
@@ -435,7 +441,7 @@ class PrimaryButton extends StatelessWidget {
                 width: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colors.onPrimary),
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               )
             : Row(
@@ -476,14 +482,14 @@ class SecondaryButton extends StatelessWidget {
     return Container(
       width: fullWidth ? double.infinity : null,
       decoration: BoxDecoration(
-        boxShadow: AppTheme.buttonShadow,
+        boxShadow: AppTheme.buttonShadow(Theme.of(context).primaryColor),
         borderRadius: BorderRadius.circular(12),
       ),
       child: OutlinedButton(
         onPressed: isLoading ? null : onPressed,
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppTheme.colors.primary,
-          side: BorderSide(color: AppTheme.colors.primary, width: 2),
+          foregroundColor: Theme.of(context).primaryColor,
+          side: BorderSide(color: Theme.of(context).primaryColor, width: 2),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           minimumSize: const Size(double.infinity, 56),
           shape: RoundedRectangleBorder(
@@ -497,7 +503,7 @@ class SecondaryButton extends StatelessWidget {
                 width: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colors.primary),
+                  valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
                 ),
               )
             : Row(
@@ -510,7 +516,7 @@ class SecondaryButton extends StatelessWidget {
                   ],
                   Text(
                     text,
-                    style: AppTheme.button.copyWith(color: AppTheme.colors.primary),
+                    style: AppTheme.button.copyWith(color: Theme.of(context).primaryColor),
                   ),
                 ],
               ),
@@ -522,9 +528,9 @@ class SecondaryButton extends StatelessWidget {
 // 統一されたElevatedButtonスタイル関数
 class AppButtonStyles {
   // プライマリボタンスタイル
-  static ButtonStyle get primaryButton => ElevatedButton.styleFrom(
-    backgroundColor: AppTheme.colors.primary,
-    foregroundColor: AppTheme.colors.onPrimary,
+  static ButtonStyle primaryButton(BuildContext context) => ElevatedButton.styleFrom(
+    backgroundColor: Theme.of(context).primaryColor,
+    foregroundColor: Colors.white,
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
     minimumSize: const Size(double.infinity, 56),
     shape: RoundedRectangleBorder(
@@ -535,21 +541,21 @@ class AppButtonStyles {
   );
 
   // セカンダリボタンスタイル  
-  static ButtonStyle get secondaryButton => OutlinedButton.styleFrom(
-    foregroundColor: AppTheme.colors.primary,
-    side: BorderSide(color: AppTheme.colors.primary, width: 2),
+  static ButtonStyle secondaryButton(BuildContext context) => OutlinedButton.styleFrom(
+    foregroundColor: Theme.of(context).primaryColor,
+    side: BorderSide(color: Theme.of(context).primaryColor, width: 2),
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
     minimumSize: const Size(double.infinity, 56),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12),
     ),
-    textStyle: AppTheme.button.copyWith(color: AppTheme.colors.primary),
+    textStyle: AppTheme.button.copyWith(color: Theme.of(context).primaryColor),
   );
 
   // 小さいボタンスタイル（modal内等で使用）
-  static ButtonStyle get smallButton => ElevatedButton.styleFrom(
-    backgroundColor: AppTheme.colors.primary,
-    foregroundColor: AppTheme.colors.onPrimary,
+  static ButtonStyle smallButton(BuildContext context) => ElevatedButton.styleFrom(
+    backgroundColor: Theme.of(context).primaryColor,
+    foregroundColor: Colors.white,
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     minimumSize: const Size(0, 44),
     shape: RoundedRectangleBorder(
@@ -560,9 +566,9 @@ class AppButtonStyles {
   );
 
   // モーダル専用プライマリボタンスタイル（不透明な背景）
-  static ButtonStyle get modalPrimaryButton => ElevatedButton.styleFrom(
-    backgroundColor: AppTheme.colors.primary,
-    foregroundColor: AppTheme.colors.onPrimary,
+  static ButtonStyle modalPrimaryButton(BuildContext context) => ElevatedButton.styleFrom(
+    backgroundColor: Theme.of(context).primaryColor,
+    foregroundColor: Colors.white,
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
     minimumSize: const Size(double.infinity, 56),
     shape: RoundedRectangleBorder(
@@ -573,35 +579,35 @@ class AppButtonStyles {
   );
 
   // モーダル専用セカンダリボタンスタイル（不透明な白い背景）
-  static ButtonStyle get modalSecondaryButton => OutlinedButton.styleFrom(
-    backgroundColor: AppTheme.colors.surface,
-    foregroundColor: AppTheme.colors.primary,
-    side: BorderSide(color: AppTheme.colors.primary, width: 2),
+  static ButtonStyle modalSecondaryButton(BuildContext context) => OutlinedButton.styleFrom(
+    backgroundColor: Theme.of(context).cardColor,
+    foregroundColor: Theme.of(context).primaryColor,
+    side: BorderSide(color: Theme.of(context).primaryColor, width: 2),
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
     minimumSize: const Size(double.infinity, 56),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12),
     ),
-    textStyle: AppTheme.button.copyWith(color: AppTheme.colors.primary),
+    textStyle: AppTheme.button.copyWith(color: Theme.of(context).primaryColor),
   );
 
   // モーダル専用エラーボタンスタイル（不透明な白い背景）
-  static ButtonStyle get modalErrorButton => OutlinedButton.styleFrom(
-    backgroundColor: AppTheme.colors.surface,
-    foregroundColor: AppTheme.colors.error,
-    side: BorderSide(color: AppTheme.colors.error, width: 2),
+  static ButtonStyle modalErrorButton(BuildContext context) => OutlinedButton.styleFrom(
+    backgroundColor: Theme.of(context).cardColor,
+    foregroundColor: Theme.of(context).colorScheme.error,
+    side: BorderSide(color: Theme.of(context).colorScheme.error, width: 2),
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
     minimumSize: const Size(double.infinity, 56),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(12),
     ),
-    textStyle: AppTheme.button.copyWith(color: AppTheme.colors.error),
+    textStyle: AppTheme.button.copyWith(color: Theme.of(context).colorScheme.error),
   );
 
   // モーダル専用成功ボタンスタイル（不透明な背景）
-  static ButtonStyle get modalSuccessButton => ElevatedButton.styleFrom(
-    backgroundColor: AppTheme.colors.success,
-    foregroundColor: AppTheme.colors.onSuccess,
+  static ButtonStyle modalSuccessButton(BuildContext context) => ElevatedButton.styleFrom(
+    backgroundColor: const Color(0xFF7CB342),
+    foregroundColor: Colors.white,
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
     minimumSize: const Size(double.infinity, 56),
     shape: RoundedRectangleBorder(
@@ -612,7 +618,7 @@ class AppButtonStyles {
   );
 
   // 影付きコンテナでボタンをラップするヘルパー
-  static Widget withShadow(Widget button, {bool removeShadowFor56px = true}) {
+  static Widget withShadow(Widget button, Color primaryColor, {bool removeShadowFor56px = true}) {
     if (removeShadowFor56px && button is ElevatedButton) {
       return button;
     }
@@ -622,7 +628,7 @@ class AppButtonStyles {
     
     return Container(
       decoration: BoxDecoration(
-        boxShadow: AppTheme.buttonShadow,
+        boxShadow: AppTheme.buttonShadow(primaryColor),
         borderRadius: BorderRadius.circular(12),
       ),
       child: button,

@@ -205,7 +205,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                 icon: Icon(Icons.check_circle_outline, size: 20),
                 label: Text('会話を終了'),
                 onPressed: _endConversation,
-                style: AppButtonStyles.smallButton.copyWith(
+                style: AppButtonStyles.smallButton(context).copyWith(
                   backgroundColor: MaterialStateProperty.all(Colors.transparent),
                   foregroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
                   side: MaterialStateProperty.all(
@@ -576,7 +576,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
               decoration: BoxDecoration(
                 color: AppTheme.primaryColor,
                 shape: BoxShape.circle,
-                boxShadow: AppTheme.buttonShadow,
+                boxShadow: AppTheme.buttonShadow(Theme.of(context).primaryColor),
               ),
               child: IconButton(
                 onPressed: () => _sendMessage(_messageController.text),

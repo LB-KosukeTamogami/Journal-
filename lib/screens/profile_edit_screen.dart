@@ -132,7 +132,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                           decoration: BoxDecoration(
                             color: AppTheme.primaryColor,
                             shape: BoxShape.circle,
-                            boxShadow: AppTheme.buttonShadow,
+                            boxShadow: AppTheme.buttonShadow(Theme.of(context).primaryColor),
                           ),
                           child: const Icon(
                             Icons.edit,

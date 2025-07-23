@@ -231,8 +231,8 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppTheme.warning.withOpacity(0.8),
-                  AppTheme.warning,
+                  Theme.of(context).colorScheme.error.withOpacity(0.8),
+                  const Color(0xFFFFB74D),
                 ],
               ),
               shape: BoxShape.circle,
@@ -473,7 +473,7 @@ class _MissionCard extends StatelessWidget {
     
     return AppCard(
       onTap: null, // タップ不可
-      backgroundColor: completed ? AppTheme.backgroundTertiary : Theme.of(context).cardColor,
+      backgroundColor: completed ? const Color(0xFFF8F6F3) : Theme.of(context).cardColor,
       child: Row(
         children: [
           Container(
@@ -481,13 +481,13 @@ class _MissionCard extends StatelessWidget {
             height: 48,
             decoration: BoxDecoration(
               color: completed 
-                ? AppTheme.success.withOpacity(0.1)
+                ? const Color(0xFF7CB342).withOpacity(0.1)
                 : color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               completed ? Icons.check_circle : icon,
-              color: completed ? AppTheme.success : color,
+              color: completed ? const Color(0xFF7CB342) : color,
               size: 24,
             ),
           ),
@@ -559,9 +559,9 @@ class _MissionCard extends StatelessWidget {
       case MissionType.wordLearning:
         return AppTheme.info;
       case MissionType.streak:
-        return AppTheme.warning;
+        return const Color(0xFFFFB74D);
       case MissionType.review:
-        return AppTheme.success;
+        return const Color(0xFF7CB342);
       case MissionType.conversation:
         return const Color(0xFF8B5CF6);
     }
