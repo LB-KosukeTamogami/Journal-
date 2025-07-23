@@ -283,8 +283,8 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
             _startWordStudySession();
           },
           backgroundColor: AppTheme.primaryColor,
-          icon: Icon(Icons.play_arrow, color: AppTheme.colors.onPrimary),
-          label: Text('学習を開始', style: AppTheme.button),
+          icon: Icon(Icons.play_arrow, color: Colors.white),
+          label: Text('学習を開始', style: AppTheme.button.copyWith(color: Colors.white)),
         ),
       ),
     );

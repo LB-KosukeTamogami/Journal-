@@ -195,6 +195,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
         title: Text('会話ジャーナル', style: AppTheme.headline3),
         backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
+        iconTheme: IconThemeData(color: Colors.white),
         actions: [
           // 会話を終了ボタン（初期メッセージ以外がある場合、または5ラリー完了時）
           if (_messages.length > 2 || _messageCount >= 5) // 初期メッセージ以外がある場合のみ表示

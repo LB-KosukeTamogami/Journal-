@@ -117,6 +117,7 @@ class _LearningCategoryScreenState extends State<LearningCategoryScreen> {
         title: Text('学習', style: AppTheme.headline3),
         backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: _isLoading
           ? Center(

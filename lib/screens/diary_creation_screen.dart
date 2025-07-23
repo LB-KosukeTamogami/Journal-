@@ -788,7 +788,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       // タイトル入力
                       Container(
                         decoration: BoxDecoration(
-                          color: AppTheme.colors.surface,
+                          color: AppTheme.colors.surfaceVariant,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: _titleFocusNode.hasFocus 
@@ -856,7 +856,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       // 内容入力
                       Container(
                         decoration: BoxDecoration(
-                          color: AppTheme.colors.surface,
+                          color: AppTheme.colors.surfaceVariant,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: _contentFocusNode.hasFocus 
