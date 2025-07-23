@@ -223,7 +223,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.7,
         decoration: BoxDecoration(
-          color: AppTheme.backgroundPrimary,
+          color: Theme.of(context).cardColor,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
@@ -310,7 +310,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
       builder: (context) => Container(
         margin: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppTheme.backgroundPrimary,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -352,7 +352,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppTheme.backgroundSecondary,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -516,7 +516,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.backgroundPrimary,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: AppTheme.primaryColor.withOpacity(0.2),
@@ -752,9 +752,9 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppTheme.backgroundPrimary,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         appBar: AppBar(
-          backgroundColor: AppTheme.backgroundPrimary,
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
           elevation: 0,
           title: Text(
             widget.existingEntry != null ? '日記を編集' : '新しい日記',
@@ -1089,7 +1089,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: AppTheme.backgroundPrimary,
+                  color: Theme.of(context).cardColor,
                   border: Border(
                     top: BorderSide(color: AppTheme.borderColor),
                   ),
@@ -1175,7 +1175,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
         builder: (context, setModalState) => Container(
           margin: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppTheme.backgroundPrimary,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -1217,7 +1217,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppTheme.backgroundSecondary,
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -1380,7 +1380,7 @@ class _MissionCard extends StatelessWidget {
     
     return AppCard(
       onTap: null, // タップ不可
-      backgroundColor: completed ? AppTheme.backgroundTertiary : AppTheme.backgroundPrimary,
+      backgroundColor: completed ? AppTheme.backgroundTertiary : Theme.of(context).cardColor,
       child: Row(
         children: [
           Container(

@@ -110,10 +110,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundSecondary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('分析', style: AppTheme.headline3),
-        backgroundColor: AppTheme.backgroundPrimary,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
       ),
       body: _isLoading
@@ -256,7 +256,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                           return LineTooltipItem(
                             '${barSpot.y.toInt()}件',
                             AppTheme.body2.copyWith(
-                              color: AppTheme.backgroundPrimary,
+                              color: Theme.of(context).cardColor,
                               fontWeight: FontWeight.w600,
                             ),
                           );
@@ -341,7 +341,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                         getDotPainter: (spot, percent, barData, index) {
                           return FlDotCirclePainter(
                             radius: 4,
-                            color: AppTheme.backgroundPrimary,
+                            color: Theme.of(context).cardColor,
                             strokeWidth: 2,
                             strokeColor: AppTheme.primaryColor,
                           );

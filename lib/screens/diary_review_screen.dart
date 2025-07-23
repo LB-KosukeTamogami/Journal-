@@ -155,9 +155,9 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     print('[DiaryReviewScreen] Detected language: ${widget.detectedLanguage}');
     
     return Scaffold(
-      backgroundColor: AppTheme.backgroundSecondary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppTheme.backgroundPrimary,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         title: Text(
           'レビュー結果',
@@ -296,7 +296,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   
   Widget _buildSkeletonResult() {
     return AppCard(
-      backgroundColor: AppTheme.backgroundSecondary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -366,7 +366,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   
   Widget _buildSkeletonCorrections() {
     return AppCard(
-      backgroundColor: AppTheme.backgroundSecondary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -427,7 +427,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   
   Widget _buildSkeletonWords() {
     return AppCard(
-      backgroundColor: AppTheme.backgroundSecondary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -490,7 +490,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: AppTheme.backgroundPrimary,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -807,7 +807,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppTheme.backgroundPrimary,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Column(
@@ -919,7 +919,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                         
                         return Container(
                           decoration: BoxDecoration(
-                            color: AppTheme.backgroundPrimary,
+                            color: Theme.of(context).cardColor,
                             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                             boxShadow: [
                               BoxShadow(
@@ -1226,7 +1226,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppTheme.backgroundPrimary,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: sectionColor.withOpacity(0.2),
@@ -1314,7 +1314,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppTheme.backgroundPrimary,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Column(
@@ -1460,7 +1460,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppTheme.backgroundPrimary,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Column(
@@ -1528,7 +1528,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               hintText: '正しい英文を書き写してみましょう。',
               hintStyle: AppTheme.body2.copyWith(color: AppTheme.textTertiary),
               filled: true,
-              fillColor: AppTheme.backgroundPrimary,
+              fillColor: Theme.of(context).cardColor,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(color: AppTheme.borderColor),

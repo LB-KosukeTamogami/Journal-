@@ -122,10 +122,10 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundSecondary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('ジャーナル', style: AppTheme.headline3),
-        backgroundColor: AppTheme.backgroundPrimary,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
       ),
       body: Column(
@@ -255,7 +255,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: AppTheme.backgroundPrimary.withOpacity(0.9),
+                          color: Theme.of(context).cardColor.withOpacity(0.9),
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
@@ -468,7 +468,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         decoration: BoxDecoration(
-          color: AppTheme.backgroundPrimary,
+          color: Theme.of(context).cardColor,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           boxShadow: [
             BoxShadow(

@@ -353,9 +353,9 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundSecondary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppTheme.backgroundPrimary,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -394,11 +394,11 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Container(
-            color: AppTheme.backgroundPrimary,
+            color: Theme.of(context).cardColor,
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: Container(
               decoration: BoxDecoration(
-                color: AppTheme.backgroundSecondary,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.all(4),
@@ -645,7 +645,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppTheme.backgroundPrimary,
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: AppTheme.info.withOpacity(0.2),
@@ -1101,7 +1101,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       hintText: '正しい英文を書き写してみましょう。',
                       hintStyle: AppTheme.body2.copyWith(color: AppTheme.textTertiary),
                       filled: true,
-                      fillColor: AppTheme.backgroundPrimary,
+                      fillColor: Theme.of(context).cardColor,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide(color: AppTheme.borderColor),
@@ -1152,7 +1152,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppTheme.backgroundPrimary,
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(
@@ -1332,7 +1332,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                         
                                         return Container(
                                           decoration: BoxDecoration(
-                                            color: AppTheme.backgroundPrimary,
+                                            color: Theme.of(context).cardColor,
                                             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                                             boxShadow: [
                                               BoxShadow(
@@ -1664,7 +1664,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           child: Container(
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
-                              color: AppTheme.backgroundPrimary,
+                              color: Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Column(
@@ -1867,7 +1867,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.backgroundPrimary,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -1892,7 +1892,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppTheme.backgroundSecondary,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -2060,7 +2060,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setModalState) => AlertDialog(
-          backgroundColor: AppTheme.backgroundPrimary,
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -2130,7 +2130,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                             margin: const EdgeInsets.only(bottom: 8),
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: AppTheme.backgroundSecondary,
+                              color: Theme.of(context).colorScheme.surface,
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
                                 color: isSaved 
@@ -2241,7 +2241,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.backgroundPrimary,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -2285,7 +2285,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppTheme.backgroundSecondary,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
                           color: AppTheme.warning.withOpacity(0.2),
@@ -2492,7 +2492,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppTheme.backgroundPrimary,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Column(
@@ -2578,7 +2578,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.backgroundPrimary,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: AppTheme.warning.withOpacity(0.2),
@@ -2811,7 +2811,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   // スケルトンローディング用のウィジェット
   Widget _buildSkeletonOriginal() {
     return AppCard(
-      backgroundColor: AppTheme.backgroundSecondary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -2856,7 +2856,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     return [
       const SizedBox(height: 16),
       AppCard(
-        backgroundColor: AppTheme.backgroundSecondary,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -2900,7 +2900,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   
   Widget _buildSkeletonAdvice() {
     return AppCard(
-      backgroundColor: AppTheme.backgroundSecondary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -2944,7 +2944,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
   
   Widget _buildSkeletonLearningPoints() {
     return AppCard(
-      backgroundColor: AppTheme.backgroundSecondary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

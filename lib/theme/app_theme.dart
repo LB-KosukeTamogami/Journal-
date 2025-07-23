@@ -72,7 +72,7 @@ class AppTheme {
     
     // Surface Colors
     surface: Color(0xFFFFFFFF),        // カード背景
-    background: Color(0xFFFFFFFF),     // メイン背景
+    background: Color(0xFFF5F5F5),     // メイン背景（薄いグレー）
     surfaceVariant: Color(0xFFF8F6F3), // セクション区切り（薄いベージュ）
     
     // On Colors
@@ -602,11 +602,12 @@ class AppCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: backgroundColor ?? AppTheme.colors.surface,
+        color: backgroundColor ?? Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.colors.border),
+        border: Border.all(color: isDark ? AppTheme.darkColors.border : AppTheme.lightColors.border),
         boxShadow: AppTheme.cardShadow,
       ),
       child: Material(

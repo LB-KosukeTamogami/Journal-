@@ -90,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundSecondary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _loadData,
@@ -358,8 +358,12 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppTheme.colors.surface,
-            AppTheme.colors.surfaceVariant,
+            Theme.of(context).brightness == Brightness.dark 
+              ? AppTheme.darkColors.surface 
+              : AppTheme.lightColors.surface,
+            Theme.of(context).brightness == Brightness.dark 
+              ? AppTheme.darkColors.surfaceVariant 
+              : AppTheme.lightColors.surfaceVariant,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -469,7 +473,7 @@ class _MissionCard extends StatelessWidget {
     
     return AppCard(
       onTap: null, // タップ不可
-      backgroundColor: completed ? AppTheme.backgroundTertiary : AppTheme.backgroundPrimary,
+      backgroundColor: completed ? AppTheme.backgroundTertiary : Theme.of(context).cardColor,
       child: Row(
         children: [
           Container(

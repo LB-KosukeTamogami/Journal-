@@ -112,10 +112,10 @@ class _LearningCategoryScreenState extends State<LearningCategoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundSecondary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('学習', style: AppTheme.headline3),
-        backgroundColor: AppTheme.backgroundPrimary,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
       ),
@@ -139,7 +139,7 @@ class _LearningCategoryScreenState extends State<LearningCategoryScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: AppTheme.backgroundPrimary,
+                            color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
                               color: AppTheme.primaryColor.withOpacity(0.3),
@@ -219,7 +219,7 @@ class _LearningCategoryScreenState extends State<LearningCategoryScreen> {
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: AppTheme.backgroundPrimary,
+                              color: Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
                                 color: count > 0 

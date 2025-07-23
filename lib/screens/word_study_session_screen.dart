@@ -130,9 +130,9 @@ class _WordStudySessionScreenState extends State<WordStudySessionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundPrimary,
+      backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       appBar: AppBar(
-        backgroundColor: AppTheme.backgroundPrimary,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         title: Text('フラッシュカード学習', style: AppTheme.headline3),
         centerTitle: true,
@@ -200,7 +200,7 @@ class _WordStudySessionScreenState extends State<WordStudySessionScreen> {
               const SizedBox(height: 8),
               LinearProgressIndicator(
                 value: progress,
-                backgroundColor: AppTheme.backgroundSecondary,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryBlue),
               ),
             ],
@@ -339,7 +339,7 @@ class _WordStudySessionScreenState extends State<WordStudySessionScreen> {
               : ElevatedButton(
                   onPressed: (!_isAudioEnabled || _isPlayingAudio) ? null : _playCurrentCardAudio,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isAudioEnabled ? AppTheme.primaryBlue : AppTheme.backgroundSecondary,
+                    backgroundColor: _isAudioEnabled ? AppTheme.primaryBlue : Theme.of(context).colorScheme.surface,
                     foregroundColor: _isAudioEnabled ? Colors.white : AppTheme.textTertiary,
                     padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
                   ),
@@ -417,7 +417,7 @@ class _WordStudySessionScreenState extends State<WordStudySessionScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppTheme.backgroundSecondary,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
@@ -470,7 +470,7 @@ class _WordStudySessionScreenState extends State<WordStudySessionScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppTheme.backgroundSecondary,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(
@@ -540,7 +540,7 @@ class _WordStudySessionScreenState extends State<WordStudySessionScreen> {
                   child: ElevatedButton(
                     onPressed: _resetReview,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.backgroundSecondary,
+                      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                       foregroundColor: AppTheme.textPrimary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
@@ -586,7 +586,7 @@ class AppCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: backgroundColor ?? AppTheme.backgroundPrimary,
+        color: backgroundColor ?? Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(

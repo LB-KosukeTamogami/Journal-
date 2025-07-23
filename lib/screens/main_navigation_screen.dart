@@ -51,14 +51,14 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     return WillPopScope(
       onWillPop: () async => false, // スワイプバックを無効化
       child: Scaffold(
-        backgroundColor: AppTheme.backgroundSecondary,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: IndexedStack(
           index: _selectedIndex,
           children: _screens,
         ),
         bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: AppTheme.backgroundPrimary,
+          color: Theme.of(context).bottomNavigationBarTheme.backgroundColor ?? Theme.of(context).cardColor,
           border: Border(
             top: BorderSide(color: AppTheme.borderColor),
           ),

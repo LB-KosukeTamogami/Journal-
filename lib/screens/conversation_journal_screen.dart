@@ -190,10 +190,10 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundSecondary,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('会話ジャーナル', style: AppTheme.headline3),
-        backgroundColor: AppTheme.backgroundPrimary,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
         actions: [
@@ -301,7 +301,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: isUser ? AppTheme.primaryColor : AppTheme.backgroundPrimary,
+              color: isUser ? AppTheme.primaryColor : Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16).copyWith(
                 bottomLeft: isUser ? const Radius.circular(16) : const Radius.circular(4),
                 bottomRight: isUser ? const Radius.circular(4) : const Radius.circular(16),
@@ -359,7 +359,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                                       margin: const EdgeInsets.only(top: 8),
                                       padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
-                                        color: AppTheme.backgroundSecondary,
+                                        color: Theme.of(context).colorScheme.surface,
                                         borderRadius: BorderRadius.circular(8),
                                         border: Border.all(
                                           color: AppTheme.borderColor,
@@ -473,7 +473,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: AppTheme.backgroundPrimary,
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3)),
                     ),
@@ -501,7 +501,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppTheme.backgroundPrimary,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16).copyWith(
                 bottomLeft: const Radius.circular(4),
               ),
@@ -535,7 +535,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.backgroundPrimary,
+        color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -559,7 +559,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                   hintText: 'Type your message...',
                   hintStyle: AppTheme.body1.copyWith(color: AppTheme.textTertiary),
                   filled: true,
-                  fillColor: AppTheme.backgroundSecondary,
+                  fillColor: Theme.of(context).colorScheme.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(24),
                     borderSide: BorderSide.none,
@@ -597,7 +597,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.backgroundPrimary,
+        color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
