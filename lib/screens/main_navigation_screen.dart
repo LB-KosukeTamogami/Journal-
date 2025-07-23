@@ -127,8 +127,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 child: Icon(
                   item.icon,
                   color: isSelected
-                      ? AppTheme.primaryColor
-                      : AppTheme.textTertiary,
+                      ? Theme.of(context).primaryColor
+                      : Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.darkColors.textSecondary
+                          : AppTheme.lightColors.textPrimary,
                   size: 24,
                 ),
               ),
@@ -137,8 +139,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 item.label,
                 style: AppTheme.caption.copyWith(
                   color: isSelected
-                      ? AppTheme.primaryColor
-                      : AppTheme.textTertiary,
+                      ? Theme.of(context).primaryColor
+                      : Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.darkColors.textSecondary
+                          : AppTheme.lightColors.textPrimary,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                   fontSize: 11,
                 ),

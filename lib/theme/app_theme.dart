@@ -87,8 +87,8 @@ class AppTheme {
     textTertiary: Color(0xFF9B9B9B),
     
     // Border & Divider
-    border: Color(0xFFE8E4DE),
-    divider: Color(0xFFE8E4DE),
+    border: Color(0xFFE0E0E0),  // より濃いグレーに変更
+    divider: Color(0xFFE0E0E0),  // より濃いグレーに変更
     
     // Semantic Colors
     success: Color(0xFF7CB342),        // フレッシュグリーン
@@ -181,12 +181,12 @@ class AppTheme {
   // Shadow
   static List<BoxShadow> get cardShadow => [
     BoxShadow(
-      color: Colors.black.withOpacity(0.04),
+      color: Colors.black.withOpacity(0.08),  // より濃いシャドウ
       blurRadius: 10,
       offset: const Offset(0, 4),
     ),
     BoxShadow(
-      color: Colors.black.withOpacity(0.01),
+      color: Colors.black.withOpacity(0.02),  // より濃いシャドウ
       blurRadius: 2,
       offset: const Offset(0, 1),
     ),
@@ -200,46 +200,40 @@ class AppTheme {
     ),
   ];
   
-  // Text Styles
+  // Text Styles - These will use the current theme colors
   static TextStyle get headline1 => GoogleFonts.notoSansJp(
     fontSize: 32,
     fontWeight: FontWeight.w700,
-    color: colors.textPrimary,
     height: 1.2,
   );
   
   static TextStyle get headline2 => GoogleFonts.notoSansJp(
     fontSize: 24,
     fontWeight: FontWeight.w600,
-    color: colors.textPrimary,
     height: 1.3,
   );
   
   static TextStyle get headline3 => GoogleFonts.notoSansJp(
     fontSize: 20,
     fontWeight: FontWeight.w600,
-    color: colors.textPrimary,
     height: 1.3,
   );
   
   static TextStyle get body1 => GoogleFonts.notoSansJp(
     fontSize: 16,
     fontWeight: FontWeight.w400,
-    color: colors.textPrimary,
     height: 1.5,
   );
   
   static TextStyle get body2 => GoogleFonts.notoSansJp(
     fontSize: 14,
     fontWeight: FontWeight.w400,
-    color: colors.textSecondary,
     height: 1.5,
   );
   
   static TextStyle get caption => GoogleFonts.notoSansJp(
     fontSize: 12,
     fontWeight: FontWeight.w400,
-    color: colors.textTertiary,
     height: 1.4,
   );
   
@@ -274,11 +268,61 @@ class AppTheme {
         onSurface: colors.onSurface,
       ),
       
+      textTheme: TextTheme(
+        displayLarge: GoogleFonts.notoSansJp(
+          fontSize: 32,
+          fontWeight: FontWeight.w700,
+          color: colors.textPrimary,
+          height: 1.2,
+        ),
+        displayMedium: GoogleFonts.notoSansJp(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+          color: colors.textPrimary,
+          height: 1.3,
+        ),
+        displaySmall: GoogleFonts.notoSansJp(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: colors.textPrimary,
+          height: 1.3,
+        ),
+        bodyLarge: GoogleFonts.notoSansJp(
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          color: colors.textPrimary,
+          height: 1.5,
+        ),
+        bodyMedium: GoogleFonts.notoSansJp(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: colors.textSecondary,
+          height: 1.5,
+        ),
+        bodySmall: GoogleFonts.notoSansJp(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          color: colors.textTertiary,
+          height: 1.4,
+        ),
+        labelLarge: GoogleFonts.notoSansJp(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: colors.textPrimary,
+          height: 1,
+        ),
+      ),
+      
       appBarTheme: AppBarTheme(
         backgroundColor: colors.surface,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: headline3,
+        titleTextStyle: GoogleFonts.notoSansJp(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: colors.textPrimary,
+          height: 1.3,
+        ),
         iconTheme: IconThemeData(color: colors.textPrimary),
       ),
       

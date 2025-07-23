@@ -338,7 +338,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
           },
           backgroundColor: AppTheme.primaryColor,
           icon: const Icon(Icons.add, color: Colors.white),
-          label: Text('新規作成', style: AppTheme.button),
+          label: Text('新規作成', style: AppTheme.button.copyWith(color: Colors.white)),
         ),
       ),
     );
