@@ -77,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(AcoService.getMissionCompleteMessage()),
-        backgroundColor: AppTheme.success,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
         shape: RoundedRectangleBorder(
@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _loadData,
-          color: AppTheme.primaryColor,
+          color: Theme.of(context).primaryColor,
           child: CustomScrollView(
             slivers: [
               // Header
@@ -106,12 +106,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         _getGreeting(),
-                        style: AppTheme.headline1,
+                        style: Theme.of(context).textTheme.displayLarge,
                       ),
                       const SizedBox(height: 8),
                       Text(
                         '${_today.month}月${_today.day}日 ${_getDayOfWeek()}曜日',
-                        style: AppTheme.body2,
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],
                   ),
@@ -149,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
                   child: Text(
                     '今日のミッション',
-                    style: AppTheme.headline3,
+                    style: Theme.of(context).textTheme.displaySmall,
                   ),
                 ),
               ),
@@ -161,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Padding(
                       padding: const EdgeInsets.all(32),
                       child: CircularProgressIndicator(
-                        color: AppTheme.primaryColor,
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                   ),
@@ -176,12 +176,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           Icon(
                             Icons.check_circle_outline,
                             size: 64,
-                            color: AppTheme.textTertiary,
+                            color: Theme.of(context).textTheme.bodySmall?.color,
                           ),
                           const SizedBox(height: 16),
                           Text(
                             '今日のミッションはありません',
-                            style: AppTheme.body2,
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ],
                       ),
@@ -250,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Text(
                   '連続記録',
-                  style: AppTheme.body2,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const SizedBox(height: 4),
                 Row(
@@ -259,14 +259,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       '$_currentStreak',
-                      style: AppTheme.headline2.copyWith(
-                        color: AppTheme.primaryColor,
+                      style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       '日',
-                      style: AppTheme.body2,
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
                 ),
@@ -278,12 +278,12 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 '総学習日数',
-                style: AppTheme.caption,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
               const SizedBox(height: 4),
               Text(
                 '$_totalDays日',
-                style: AppTheme.body1.copyWith(
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -296,7 +296,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildCreateDiaryCard() {
     return AppCard(
-      backgroundColor: AppTheme.primaryColor,
+      backgroundColor: Theme.of(context).primaryColor,
       onTap: () {
         Navigator.push(
           context,
@@ -425,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   'Aco からのメッセージ',
                   style: AppTheme.body2.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: AppTheme.primaryColor,
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
                 const SizedBox(height: 6),

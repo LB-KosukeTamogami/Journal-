@@ -124,7 +124,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text('ジャーナル', style: AppTheme.headline3),
+        title: Text('ジャーナル', style: Theme.of(context).textTheme.displaySmall),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
       ),
@@ -161,20 +161,20 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                           startingDayOfWeek: StartingDayOfWeek.monday,
                           calendarStyle: CalendarStyle(
                             outsideDaysVisible: false,
-                            defaultTextStyle: TextStyle(color: AppTheme.textPrimary),
-                            weekendTextStyle: TextStyle(color: AppTheme.textSecondary),
-                            disabledTextStyle: TextStyle(color: AppTheme.textTertiary.withOpacity(0.5)),
+                            defaultTextStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
+                            weekendTextStyle: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
+                            disabledTextStyle: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5)),
                             selectedDecoration: BoxDecoration(
-                              color: AppTheme.primaryColor,
+                              color: Theme.of(context).primaryColor,
                               shape: BoxShape.circle,
                             ),
                             todayDecoration: BoxDecoration(
-                              color: AppTheme.primaryColor.withOpacity(0.3),
+                              color: Theme.of(context).primaryColor.withOpacity(0.3),
                               shape: BoxShape.circle,
-                              border: Border.all(color: AppTheme.primaryColor, width: 2),
+                              border: Border.all(color: Theme.of(context).primaryColor, width: 2),
                             ),
                             markerDecoration: BoxDecoration(
-                              color: AppTheme.primaryColor,
+                              color: Theme.of(context).primaryColor,
                               shape: BoxShape.circle,
                             ),
                             markersMaxCount: 1,
@@ -182,13 +182,13 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                           headerStyle: HeaderStyle(
                             formatButtonVisible: false,
                             titleCentered: true,
-                            titleTextStyle: AppTheme.headline3,
-                            leftChevronIcon: Icon(Icons.chevron_left, color: AppTheme.textPrimary),
+                            titleTextStyle: Theme.of(context).textTheme.displaySmall ?? AppTheme.headline3,
+                            leftChevronIcon: Icon(Icons.chevron_left, color: Theme.of(context).textTheme.bodyLarge?.color),
                             rightChevronIcon: Icon(
                               Icons.chevron_right, 
                               color: _canGoToNextMonth(_focusedDay) 
-                                ? AppTheme.textPrimary 
-                                : AppTheme.textTertiary.withOpacity(0.3),
+                                ? Theme.of(context).textTheme.bodyLarge?.color
+                                : Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.3),
                             ),
                           ),
                           onDaySelected: (selectedDay, focusedDay) {
@@ -197,7 +197,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: const Text('未来の日付は選択できません'),
-                                  backgroundColor: AppTheme.error,
+                                  backgroundColor: Theme.of(context).colorScheme.error,
                                   behavior: SnackBarBehavior.floating,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
@@ -290,12 +290,12 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
           // 選択された日の日記リスト
           Expanded(
             child: _isLoading
-                ? Center(child: CircularProgressIndicator(color: AppTheme.primaryColor))
+                ? Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor))
                 : _selectedDay == null
                     ? Center(
                         child: Text(
                           '日付を選択してください',
-                          style: AppTheme.body1.copyWith(color: AppTheme.textSecondary),
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).textTheme.bodyMedium?.color),
                         ),
                       )
                     : _buildJournalList(),
@@ -314,7 +314,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Text('未来の日付には日記を作成できません'),
-                  backgroundColor: AppTheme.error,
+                  backgroundColor: Theme.of(context).colorScheme.error,
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -336,7 +336,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
               await _loadEntries();
             }
           },
-          backgroundColor: AppTheme.primaryColor,
+          backgroundColor: Theme.of(context).primaryColor,
           icon: const Icon(Icons.add, color: Colors.white),
           label: Text('新規作成', style: AppTheme.button.copyWith(color: Colors.white)),
         ),
@@ -357,18 +357,18 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
               Icon(
                 Icons.book_outlined,
                 size: 64,
-                color: AppTheme.textTertiary.withOpacity(0.5),
+                color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5),
               ),
               const SizedBox(height: 16),
               Text(
                 '${DateFormat('M月d日').format(_selectedDay!)}の日記はまだありません',
-                style: AppTheme.body1.copyWith(color: AppTheme.textSecondary),
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).textTheme.bodyMedium?.color),
               ),
               const SizedBox(height: 8),
               Text(
                 '右下のボタンから日記を作成できます',
-                style: AppTheme.body2.copyWith(
-                  color: AppTheme.textTertiary,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).textTheme.bodySmall?.color,
                 ),
               ),
             ],
@@ -415,14 +415,14 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                       Expanded(
                         child: Text(
                           journal.title,
-                          style: AppTheme.headline3,
+                          style: Theme.of(context).textTheme.displaySmall,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Text(
                         DateFormat('HH:mm').format(journal.createdAt),
-                        style: AppTheme.caption,
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
                   ),
@@ -431,7 +431,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                     journal.content,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTheme.body2,
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 12),
                   Row(
@@ -439,12 +439,12 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                       Icon(
                         Icons.edit,
                         size: 16,
-                        color: AppTheme.textTertiary,
+                        color: Theme.of(context).textTheme.bodySmall?.color,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         '${journal.wordCount} words',
-                        style: AppTheme.caption,
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
                   ),
