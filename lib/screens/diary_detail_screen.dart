@@ -939,7 +939,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppTheme.backgroundPrimary,
+                          color: AppTheme.colors.surfaceVariant,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
                             color: AppTheme.success.withOpacity(0.2),

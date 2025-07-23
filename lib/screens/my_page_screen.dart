@@ -165,7 +165,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
             
             // プラン情報
             Container(
-              color: AppTheme.colors.surface,
+              color: Theme.of(context).brightness == Brightness.dark 
+                ? AppTheme.darkColors.surface 
+                : AppTheme.lightColors.surface,
               child: Column(
                 children: [
                   ListTile(
@@ -173,8 +175,8 @@ class _MyPageScreenState extends State<MyPageScreen> {
                       Icons.star,
                       color: Colors.amber[700],
                     ),
-                    title: const Text('現在のプラン'),
-                    subtitle: Text(_currentPlan),
+                    title: Text('現在のプラン', style: AppTheme.body1),
+                    subtitle: Text(_currentPlan, style: AppTheme.body2.copyWith(color: AppTheme.textSecondary)),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
                       _showPlanDialog();
@@ -186,7 +188,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                       Icons.book,
                       color: Colors.green,
                     ),
-                    title: const Text('製本申込履歴'),
+                    title: Text('製本申込履歴', style: AppTheme.body1),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
                       // TODO: 製本申込履歴画面への遷移
@@ -200,7 +202,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
             
             // 設定セクション
             Container(
-              color: AppTheme.colors.surface,
+              color: Theme.of(context).brightness == Brightness.dark 
+                ? AppTheme.darkColors.surface 
+                : AppTheme.lightColors.surface,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -221,8 +225,8 @@ class _MyPageScreenState extends State<MyPageScreen> {
                       ThemeProvider.instance.getThemeModeIcon(),
                       color: AppTheme.primaryColor,
                     ),
-                    title: const Text('テーマ'),
-                    subtitle: Text(ThemeProvider.instance.getThemeModeText()),
+                    title: Text('テーマ', style: AppTheme.body1),
+                    subtitle: Text(ThemeProvider.instance.getThemeModeText(), style: AppTheme.body2.copyWith(color: AppTheme.textSecondary)),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
                       _showThemeSelectionDialog();
@@ -242,7 +246,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                     ),
                   ),
                   SwitchListTile(
-                    title: const Text('通知を有効にする'),
+                    title: Text('通知を有効にする', style: AppTheme.body1),
                     value: _notificationEnabled,
                     onChanged: (value) {
                       setState(() {
@@ -251,8 +255,8 @@ class _MyPageScreenState extends State<MyPageScreen> {
                     },
                   ),
                   ListTile(
-                    title: const Text('通知時刻'),
-                    subtitle: Text(_notificationTime),
+                    title: Text('通知時刻', style: AppTheme.body1),
+                    subtitle: Text(_notificationTime, style: AppTheme.body2.copyWith(color: AppTheme.textSecondary)),
                     trailing: const Icon(Icons.chevron_right),
                     enabled: _notificationEnabled,
                     onTap: _notificationEnabled ? () {
@@ -267,36 +271,38 @@ class _MyPageScreenState extends State<MyPageScreen> {
             
             // その他
             Container(
-              color: AppTheme.colors.surface,
+              color: Theme.of(context).brightness == Brightness.dark 
+                ? AppTheme.darkColors.surface 
+                : AppTheme.lightColors.surface,
               child: Column(
                 children: [
                   ListTile(
                     leading: const Icon(Icons.help_outline),
-                    title: const Text('ヘルプ'),
+                    title: Text('ヘルプ', style: AppTheme.body1),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {},
                   ),
                   const Divider(height: 1),
                   ListTile(
                     leading: const Icon(Icons.privacy_tip_outlined),
-                    title: const Text('プライバシーポリシー'),
+                    title: Text('プライバシーポリシー', style: AppTheme.body1),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {},
                   ),
                   const Divider(height: 1),
                   ListTile(
                     leading: const Icon(Icons.description_outlined),
-                    title: const Text('利用規約'),
+                    title: Text('利用規約', style: AppTheme.body1),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {},
                   ),
                   const Divider(height: 1),
                   ListTile(
                     leading: const Icon(Icons.bug_report, color: Colors.deepPurple),
-                    title: const Text('Supabase接続状態'),
-                    subtitle: const Text(
+                    title: Text('Supabase接続状態', style: AppTheme.body1),
+                    subtitle: Text(
                       'デバッグ用：データ同期の確認',
-                      style: TextStyle(fontSize: 12),
+                      style: AppTheme.caption.copyWith(color: AppTheme.textSecondary),
                     ),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
@@ -311,13 +317,13 @@ class _MyPageScreenState extends State<MyPageScreen> {
                   const Divider(height: 1),
                   ListTile(
                     leading: const Icon(Icons.delete_sweep, color: Colors.orange),
-                    title: const Text(
+                    title: Text(
                       'サンプルデータを削除',
-                      style: TextStyle(color: Colors.orange),
+                      style: AppTheme.body1.copyWith(color: Colors.orange),
                     ),
-                    subtitle: const Text(
+                    subtitle: Text(
                       'デモ用のサンプルデータを削除します',
-                      style: TextStyle(fontSize: 12),
+                      style: AppTheme.caption.copyWith(color: AppTheme.textSecondary),
                     ),
                     onTap: () {
                       _showClearSampleDataDialog();
@@ -326,9 +332,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
                   const Divider(height: 1),
                   ListTile(
                     leading: const Icon(Icons.logout, color: Colors.red),
-                    title: const Text(
+                    title: Text(
                       'ログアウト',
-                      style: TextStyle(color: Colors.red),
+                      style: AppTheme.body1.copyWith(color: Colors.red),
                     ),
                     onTap: () {
                       _showLogoutDialog();
@@ -363,7 +369,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         decoration: BoxDecoration(
-          color: AppTheme.colors.surface,
+          color: Theme.of(context).brightness == Brightness.dark 
+            ? AppTheme.darkColors.surface 
+            : AppTheme.lightColors.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         padding: const EdgeInsets.all(20),
@@ -650,7 +658,9 @@ class _PlanOption extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           color: isSelected 
             ? Theme.of(context).primaryColor.withOpacity(0.05)
-            : AppTheme.colors.surface,
+            : Theme.of(context).brightness == Brightness.dark 
+              ? AppTheme.darkColors.surface 
+              : AppTheme.lightColors.surface,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -737,7 +747,9 @@ class AppCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.colors.textPrimary.withOpacity(0.05),
+            color: Theme.of(context).brightness == Brightness.dark 
+              ? AppTheme.darkColors.textPrimary.withOpacity(0.05)
+              : AppTheme.lightColors.textPrimary.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),

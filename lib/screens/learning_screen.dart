@@ -130,6 +130,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
         title: Text(_getHeaderTitle(), style: AppTheme.headline3),
         backgroundColor: AppTheme.backgroundPrimary,
         elevation: 0,
+        iconTheme: IconThemeData(color: Colors.white),
         actions: [
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert, color: AppTheme.textPrimary),
