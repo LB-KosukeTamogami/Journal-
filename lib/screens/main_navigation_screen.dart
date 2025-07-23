@@ -60,7 +60,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         decoration: BoxDecoration(
           color: Theme.of(context).bottomNavigationBarTheme.backgroundColor ?? Theme.of(context).cardColor,
           border: Border(
-            top: BorderSide(color: AppTheme.borderColor),
+            top: BorderSide(color: Theme.of(context).dividerColor),
           ),
           boxShadow: [
             BoxShadow(
@@ -120,7 +120,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? AppTheme.primaryColor.withOpacity(0.1)
+                      ? Theme.of(context).primaryColor.withOpacity(0.1)
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(24),
                 ),
@@ -128,21 +128,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                   item.icon,
                   color: isSelected
                       ? Theme.of(context).primaryColor
-                      : Theme.of(context).brightness == Brightness.dark
-                          ? AppTheme.darkColors.textSecondary
-                          : AppTheme.lightColors.textPrimary,
+                      : Theme.of(context).textTheme.bodyLarge?.color,
                   size: 24,
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 item.label,
-                style: AppTheme.caption.copyWith(
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: isSelected
                       ? Theme.of(context).primaryColor
-                      : Theme.of(context).brightness == Brightness.dark
-                          ? AppTheme.darkColors.textSecondary
-                          : AppTheme.lightColors.textPrimary,
+                      : Theme.of(context).textTheme.bodyLarge?.color,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                   fontSize: 11,
                 ),

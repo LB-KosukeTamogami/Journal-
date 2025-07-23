@@ -124,9 +124,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text('ジャーナル', style: Theme.of(context).textTheme.displaySmall),
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-        elevation: 0,
+        title: Text('ジャーナル'),
       ),
       body: Column(
         children: [
