@@ -124,6 +124,7 @@ class AuthService {
   // Update user profile
   static Future<void> updateProfile({
     required String username,
+    String? avatar,
   }) async {
     try {
       final userId = currentUserId;
@@ -135,8 +136,13 @@ class AuthService {
       }).eq('id', userId);
       
       // Also update auth metadata
+      final metadata = {'username': username};
+      if (avatar != null) {
+        metadata['avatar'] = avatar;
+      }
+      
       await _supabase.auth.updateUser(
-        UserAttributes(data: {'username': username}),
+        UserAttributes(data: metadata),
       );
     } catch (e) {
       throw Exception('プロファイルの更新に失敗しました: $e');

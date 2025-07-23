@@ -87,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundSecondary,
+      backgroundColor: AppTheme.colors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -141,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         labelText: 'メールアドレス',
                         prefixIcon: const Icon(Icons.email_outlined),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: AppTheme.colors.surface,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -188,7 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: AppTheme.colors.surface,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -246,14 +246,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.red.shade50,
+                    color: AppTheme.colors.errorContainer,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
                       Icon(
                         Icons.error_outline,
-                        color: Colors.red.shade700,
+                        color: AppTheme.colors.error,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
@@ -261,7 +261,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Text(
                           _errorMessage!,
                           style: TextStyle(
-                            color: Colors.red.shade700,
+                            color: AppTheme.colors.error,
                             fontSize: 14,
                           ),
                         ),
@@ -276,12 +276,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: _isLoading ? null : _signIn,
                   style: AppButtonStyles.primaryButton,
                   child: _isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colors.onPrimary),
                           ),
                         )
                       : const Text('ログイン'),

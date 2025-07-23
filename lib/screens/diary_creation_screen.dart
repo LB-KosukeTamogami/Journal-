@@ -788,7 +788,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       // タイトル入力
                       Container(
                         decoration: BoxDecoration(
-                          color: AppTheme.backgroundSecondary,
+                          color: AppTheme.colors.surface,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: _titleFocusNode.hasFocus 
@@ -810,7 +810,9 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                               vertical: 16,
                             ),
                           ),
-                          style: AppTheme.headline3,
+                          style: AppTheme.headline3.copyWith(
+                            color: AppTheme.textPrimary,
+                          ),
                           textInputAction: TextInputAction.next,
                           onSubmitted: (_) => _contentFocusNode.requestFocus(),
                         ),
@@ -854,7 +856,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       // 内容入力
                       Container(
                         decoration: BoxDecoration(
-                          color: AppTheme.backgroundSecondary,
+                          color: AppTheme.colors.surface,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: _contentFocusNode.hasFocus 
@@ -878,7 +880,9 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                               vertical: 16,
                             ),
                           ),
-                          style: AppTheme.body1,
+                          style: AppTheme.body1.copyWith(
+                            color: AppTheme.textPrimary,
+                          ),
                           maxLines: 10,
                           textInputAction: TextInputAction.newline,
                         ),

@@ -88,7 +88,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
         Navigator.pop(context); // ローディングを閉じる
         
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('重複した単語を削除しました'),
             backgroundColor: AppTheme.success,
           ),
@@ -221,7 +221,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                     padding: const EdgeInsets.all(4),
                     child: TabBar(
                       controller: _tabController,
-                      labelColor: Colors.white,
+                      labelColor: AppTheme.colors.onPrimary,
                       unselectedLabelColor: AppTheme.textSecondary,
                       indicator: BoxDecoration(
                         color: AppTheme.primaryColor,
@@ -283,7 +283,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
             _startWordStudySession();
           },
           backgroundColor: AppTheme.primaryColor,
-          icon: const Icon(Icons.play_arrow, color: Colors.white),
+          icon: Icon(Icons.play_arrow, color: AppTheme.colors.onPrimary),
           label: Text('学習を開始', style: AppTheme.button),
         ),
       ),
@@ -303,7 +303,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
               Text(
                 title,
                 style: TextStyle(
-                  color: isSelected ? Colors.white : AppTheme.textSecondary,
+                  color: isSelected ? AppTheme.colors.onPrimary : AppTheme.textSecondary,
                 ),
               ),
               const SizedBox(height: 2),
@@ -311,7 +311,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                 count,
                 style: AppTheme.caption.copyWith(
                   fontSize: 10,
-                  color: isSelected ? Colors.white : AppTheme.textSecondary,
+                  color: isSelected ? AppTheme.colors.onPrimary : AppTheme.textSecondary,
                 ),
               ),
             ],
@@ -632,7 +632,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
               Text(
                 label,
                 style: AppTheme.body1.copyWith(
-                  color: isSelected ? Colors.white : color,
+                  color: isSelected ? AppTheme.colors.onPrimary : color,
                   fontWeight: FontWeight.w600,
                   fontSize: 18,
                 ),
@@ -642,7 +642,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                 label == '×' ? '未学習' :
                 label == '△' ? '学習中' : '習得済み',
                 style: AppTheme.caption.copyWith(
-                  color: isSelected ? Colors.white : AppTheme.textSecondary,
+                  color: isSelected ? AppTheme.colors.onPrimary : AppTheme.textSecondary,
                   fontSize: 10,
                 ),
               ),
@@ -686,7 +686,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                 SnackBar(
                   content: Text(
                     '削除しました',
-                    style: AppTheme.body2.copyWith(color: Colors.white),
+                    style: AppTheme.body2.copyWith(color: AppTheme.colors.onPrimary),
                   ),
                   backgroundColor: AppTheme.textSecondary,
                 ),
@@ -1204,7 +1204,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           SnackBar(
             content: Text(
               '$updatedCount個の単語の品詞を更新しました',
-              style: AppTheme.body2.copyWith(color: Colors.white),
+              style: AppTheme.body2.copyWith(color: AppTheme.colors.onPrimary),
             ),
             backgroundColor: AppTheme.success,
           ),
@@ -1259,7 +1259,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           SnackBar(
             content: Text(
               '$deletedCount個の不要な語句を削除しました',
-              style: AppTheme.body2.copyWith(color: Colors.white),
+              style: AppTheme.body2.copyWith(color: AppTheme.colors.onPrimary),
             ),
             backgroundColor: AppTheme.success,
           ),
@@ -1835,8 +1835,8 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                             color: AppTheme.primaryColor,
                             shape: BoxShape.circle,
                           ),
-                          selectedTextStyle: const TextStyle(
-                            color: Colors.white,
+                          selectedTextStyle: TextStyle(
+                            color: AppTheme.colors.onPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                           todayDecoration: BoxDecoration(
@@ -1911,7 +1911,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppTheme.primaryColor,
-                              foregroundColor: Colors.white,
+                              foregroundColor: AppTheme.colors.onPrimary,
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -1962,7 +1962,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     if (sessionWords.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('学習するカードがありません', style: AppTheme.body2.copyWith(color: Colors.white)),
+          content: Text('学習するカードがありません', style: AppTheme.body2.copyWith(color: AppTheme.colors.onPrimary)),
           backgroundColor: AppTheme.textSecondary,
         ),
       );
@@ -2188,7 +2188,7 @@ class _WordDetailModalState extends State<_WordDetailModal> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: AppTheme.colors.textPrimary.withOpacity(0.1),
             blurRadius: 20,
             offset: const Offset(0, -5),
           ),
@@ -2391,7 +2391,7 @@ class _WordDetailModalState extends State<_WordDetailModal> {
               Text(
                 label,
                 style: AppTheme.body1.copyWith(
-                  color: isSelected ? Colors.white : color,
+                  color: isSelected ? AppTheme.colors.onPrimary : color,
                   fontWeight: FontWeight.w600,
                   fontSize: 18,
                 ),
@@ -2401,7 +2401,7 @@ class _WordDetailModalState extends State<_WordDetailModal> {
                 label == '×' ? '未学習' :
                 label == '△' ? '学習中' : '習得済み',
                 style: AppTheme.caption.copyWith(
-                  color: isSelected ? Colors.white : AppTheme.textSecondary,
+                  color: isSelected ? AppTheme.colors.onPrimary : AppTheme.textSecondary,
                   fontSize: 10,
                 ),
               ),
@@ -2445,7 +2445,7 @@ class _WordDetailModalState extends State<_WordDetailModal> {
                 SnackBar(
                   content: Text(
                     '削除しました',
-                    style: AppTheme.body2.copyWith(color: Colors.white),
+                    style: AppTheme.body2.copyWith(color: AppTheme.colors.onPrimary),
                   ),
                   backgroundColor: AppTheme.textSecondary,
                 ),

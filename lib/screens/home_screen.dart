@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _missions = missions;
         _currentStreak = analytics['currentStreak'] ?? 0;
-        _totalDays = analytics['totalEntries'] ?? 0;
+        _totalDays = analytics['totalLearningDays'] ?? 0;
         _acoMessage = acoMessage;
         _isLoading = false;
       });
@@ -358,8 +358,8 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.white, // 純白
-            const Color(0xFFFBF8F5), // 非常に薄いクリーム色
+            AppTheme.colors.surface,
+            AppTheme.colors.surfaceVariant,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -428,7 +428,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   _acoMessage,
                   style: AppTheme.body2.copyWith(
-                    color: const Color(0xFF424242), // より読みやすいダークグレー
+                    color: AppTheme.textPrimary,
                     height: 1.5,
                   ),
                 ),

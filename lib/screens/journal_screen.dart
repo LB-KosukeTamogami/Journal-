@@ -348,15 +348,31 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
     final journals = _getJournalsForDay(_selectedDay!);
     
     if (journals.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '${DateFormat('M月d日').format(_selectedDay!)}の日記はまだありません',
-              style: AppTheme.body1.copyWith(color: AppTheme.textSecondary),
-            ),
-          ],
+      return Container(
+        padding: const EdgeInsets.only(bottom: 80), // FABの高さを考慮して調整
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.book_outlined,
+                size: 64,
+                color: AppTheme.textTertiary.withOpacity(0.5),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                '${DateFormat('M月d日').format(_selectedDay!)}の日記はまだありません',
+                style: AppTheme.body1.copyWith(color: AppTheme.textSecondary),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '右下のボタンから日記を作成できます',
+                style: AppTheme.body2.copyWith(
+                  color: AppTheme.textTertiary,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }

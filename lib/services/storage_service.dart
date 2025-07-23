@@ -252,6 +252,14 @@ class StorageService {
     // 現在の連続記録
     final streak = await getDiaryStreak();
     
+    // 総学習日数を計算（ユニークな日付の数）
+    final uniqueDates = <String>{};
+    for (final entry in entries) {
+      final dateString = '${entry.createdAt.year}-${entry.createdAt.month.toString().padLeft(2, '0')}-${entry.createdAt.day.toString().padLeft(2, '0')}';
+      uniqueDates.add(dateString);
+    }
+    final totalLearningDays = uniqueDates.length;
+    
     // 投稿頻度データの計算
     final now = DateTime.now();
     final weeklyData = _getWeeklyPostData(entries, now);
@@ -263,6 +271,7 @@ class StorageService {
     
     return {
       'totalEntries': entries.length,
+      'totalLearningDays': totalLearningDays,
       'totalWords': totalWords,
       'completedMissions': completedMissions,
       'learnedWords': masteredWords,

@@ -162,7 +162,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundSecondary,
+      backgroundColor: AppTheme.colors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -215,7 +215,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         labelText: 'ユーザー名',
                         prefixIcon: const Icon(Icons.person_outline),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: AppTheme.colors.surface,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -250,7 +250,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         labelText: 'メールアドレス',
                         prefixIcon: const Icon(Icons.email_outlined),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: AppTheme.colors.surface,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -297,7 +297,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           },
                         ),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: AppTheme.colors.surface,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -344,7 +344,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           },
                         ),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: AppTheme.colors.surface,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -379,7 +379,7 @@ class _SignupScreenState extends State<SignupScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppTheme.colors.surface,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -453,14 +453,14 @@ class _SignupScreenState extends State<SignupScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.red.shade50,
+                    color: AppTheme.colors.errorContainer,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
                       Icon(
                         Icons.error_outline,
-                        color: Colors.red.shade700,
+                        color: AppTheme.colors.error,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
@@ -468,7 +468,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         child: Text(
                           _errorMessage!,
                           style: TextStyle(
-                            color: Colors.red.shade700,
+                            color: AppTheme.colors.error,
                             fontSize: 14,
                           ),
                         ),
@@ -483,12 +483,12 @@ class _SignupScreenState extends State<SignupScreen> {
                   onPressed: _isLoading ? null : _signUp,
                   style: AppButtonStyles.primaryButton,
                   child: _isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.colors.onPrimary),
                           ),
                         )
                       : const Text('新規登録'),

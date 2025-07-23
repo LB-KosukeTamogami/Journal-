@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
+import '../providers/theme_provider.dart';
 import '../services/auth_service.dart';
 import '../services/storage_service.dart';
 import '../utils/no_swipe_page_route.dart';
@@ -20,6 +21,24 @@ class _MyPageScreenState extends State<MyPageScreen> {
   bool _notificationEnabled = true;
   String _notificationTime = '21:00';
   
+  @override
+  void initState() {
+    super.initState();
+    ThemeProvider.instance.addListener(_onThemeChanged);
+  }
+  
+  @override
+  void dispose() {
+    ThemeProvider.instance.removeListener(_onThemeChanged);
+    super.dispose();
+  }
+  
+  void _onThemeChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+  
   String get _userName {
     final user = AuthService.currentUser;
     return user?.userMetadata?['username'] ?? 'ゲスト';
@@ -28,6 +47,34 @@ class _MyPageScreenState extends State<MyPageScreen> {
   String get _userEmail {
     final user = AuthService.currentUser;
     return user?.email ?? 'guest@example.com';
+  }
+  
+  String get _userAvatar {
+    final user = AuthService.currentUser;
+    return user?.userMetadata?['avatar'] ?? 'person';
+  }
+  
+  IconData _getAvatarIcon(String avatar) {
+    switch (avatar) {
+      case 'person':
+        return Icons.person;
+      case 'face':
+        return Icons.face;
+      case 'mood':
+        return Icons.mood;
+      case 'star':
+        return Icons.star;
+      case 'favorite':
+        return Icons.favorite;
+      case 'pets':
+        return Icons.pets;
+      case 'school':
+        return Icons.school;
+      case 'work':
+        return Icons.work;
+      default:
+        return Icons.person;
+    }
   }
   
   @override
@@ -55,7 +102,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                       radius: 40,
                       backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
                       child: Icon(
-                        Icons.person,
+                        _getAvatarIcon(_userAvatar),
                         size: 40,
                         color: AppTheme.primaryBlue,
                       ),
@@ -118,7 +165,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
             
             // プラン情報
             Container(
-              color: Colors.white,
+              color: AppTheme.colors.surface,
               child: Column(
                 children: [
                   ListTile(
@@ -153,18 +200,44 @@ class _MyPageScreenState extends State<MyPageScreen> {
             
             // 設定セクション
             Container(
-              color: Colors.white,
+              color: AppTheme.colors.surface,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  // テーマ設定
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                     child: Text(
-                      '通知設定',
-                      style: TextStyle(
+                      '表示設定',
+                      style: AppTheme.body1.copyWith(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black54,
+                        color: AppTheme.textSecondary,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      ThemeProvider.instance.getThemeModeIcon(),
+                      color: AppTheme.primaryColor,
+                    ),
+                    title: const Text('テーマ'),
+                    subtitle: Text(ThemeProvider.instance.getThemeModeText()),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      _showThemeSelectionDialog();
+                    },
+                  ),
+                  const Divider(height: 1),
+                  // 通知設定
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    child: Text(
+                      '通知設定',
+                      style: AppTheme.body1.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.textSecondary,
                       ),
                     ),
                   ),
@@ -194,7 +267,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
             
             // その他
             Container(
-              color: Colors.white,
+              color: AppTheme.colors.surface,
               child: Column(
                 children: [
                   ListTile(
@@ -270,9 +343,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
             // バージョン情報
             Text(
               'Version 1.0.0',
-              style: TextStyle(
+              style: AppTheme.caption.copyWith(
                 fontSize: 12,
-                color: Colors.grey[600],
+                color: AppTheme.textTertiary,
               ),
             ),
             
@@ -289,9 +362,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        decoration: BoxDecoration(
+          color: AppTheme.colors.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -306,12 +379,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'プランを選択',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppTheme.headline3,
             ),
             const SizedBox(height: 20),
             _PlanOption(
@@ -375,6 +445,83 @@ class _MyPageScreenState extends State<MyPageScreen> {
     }
   }
   
+  void _showThemeSelectionDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: AppTheme.backgroundPrimary,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppTheme.textTertiary,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'テーマを選択',
+              style: AppTheme.headline3,
+            ),
+            const SizedBox(height: 20),
+            _buildThemeOption(
+              'システム設定に従う',
+              Icons.brightness_auto,
+              ThemeMode.system,
+            ),
+            _buildThemeOption(
+              'ライトモード',
+              Icons.light_mode,
+              ThemeMode.light,
+            ),
+            _buildThemeOption(
+              'ダークモード',
+              Icons.dark_mode,
+              ThemeMode.dark,
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildThemeOption(String title, IconData icon, ThemeMode mode) {
+    final isSelected = ThemeProvider.instance.themeMode == mode;
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: isSelected ? AppTheme.primaryColor : AppTheme.textSecondary,
+      ),
+      title: Text(
+        title,
+        style: AppTheme.body1.copyWith(
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+        ),
+      ),
+      trailing: isSelected
+          ? Icon(
+              Icons.check,
+              color: AppTheme.primaryColor,
+            )
+          : null,
+      onTap: () {
+        ThemeProvider.instance.setThemeMode(mode);
+        Navigator.pop(context);
+        // ThemeProviderの変更を反映するために再描画
+        setState(() {});
+      },
+    );
+  }
+  
   void _showClearSampleDataDialog() {
     showDialog(
       context: context,
@@ -395,7 +542,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                 
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
+                    SnackBar(
                       content: Text('サンプルデータを削除しました'),
                       backgroundColor: AppTheme.success,
                     ),
@@ -497,13 +644,13 @@ class _PlanOption extends StatelessWidget {
           border: Border.all(
             color: isSelected 
               ? Theme.of(context).primaryColor 
-              : Colors.grey[300]!,
+              : AppTheme.borderColor,
             width: isSelected ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(16),
           color: isSelected 
             ? Theme.of(context).primaryColor.withOpacity(0.05)
-            : Colors.white,
+            : AppTheme.colors.surface,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -513,7 +660,7 @@ class _PlanOption extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: AppTheme.body1.copyWith(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -539,9 +686,7 @@ class _PlanOption extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               price,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+              style: AppTheme.headline3.copyWith(
                 color: Theme.of(context).primaryColor,
               ),
             ),
@@ -553,12 +698,12 @@ class _PlanOption extends StatelessWidget {
                   Icon(
                     Icons.check,
                     size: 16,
-                    color: Colors.green[600],
+                    color: AppTheme.success,
                   ),
                   const SizedBox(width: 8),
                   Text(
                     feature,
-                    style: const TextStyle(fontSize: 14),
+                    style: AppTheme.body2,
                   ),
                 ],
               ),
@@ -592,7 +737,7 @@ class AppCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: AppTheme.colors.textPrimary.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),

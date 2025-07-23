@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 
 class GlassContainer extends StatelessWidget {
   final Widget child;
@@ -42,7 +43,7 @@ class GlassContainer extends StatelessWidget {
           child: Container(
             padding: padding,
             decoration: BoxDecoration(
-              color: color ?? Colors.white.withOpacity(opacity),
+              color: color ?? AppTheme.colors.surface.withOpacity(opacity),
               gradient: gradient != null
                   ? LinearGradient(
                       begin: Alignment.topLeft,
@@ -53,7 +54,7 @@ class GlassContainer extends StatelessWidget {
               borderRadius: BorderRadius.circular(borderRadius),
               border: border ??
                   Border.all(
-                    color: Colors.white.withOpacity(0.6),
+                    color: AppTheme.colors.surface.withOpacity(0.6),
                     width: 1.0,
                   ),
             ),
@@ -71,22 +72,20 @@ class LiquidContainer extends StatefulWidget {
   final double? height;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
-  final List<Color> colors;
+  late final List<Color> colors;
   final Duration animationDuration;
 
-  const LiquidContainer({
+  LiquidContainer({
     Key? key,
     required this.child,
     this.width,
     this.height,
     this.padding,
     this.margin,
-    this.colors = const [
-      Color(0xFF81C784),
-      Color(0xFF64B5F6),
-    ],
+    List<Color>? colors,
     this.animationDuration = const Duration(seconds: 3),
-  }) : super(key: key);
+  }) : colors = colors ?? [AppTheme.colors.success, AppTheme.colors.info],
+       super(key: key);
 
   @override
   State<LiquidContainer> createState() => _LiquidContainerState();
@@ -166,10 +165,10 @@ class NeumorphicContainer extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final double borderRadius;
-  final Color backgroundColor;
+  late final Color backgroundColor;
   final bool isPressed;
 
-  const NeumorphicContainer({
+  NeumorphicContainer({
     Key? key,
     required this.child,
     this.width,
@@ -177,9 +176,10 @@ class NeumorphicContainer extends StatelessWidget {
     this.padding,
     this.margin,
     this.borderRadius = 16.0,
-    this.backgroundColor = const Color(0xFFF5F5F5),
+    Color? backgroundColor,
     this.isPressed = false,
-  }) : super(key: key);
+  }) : backgroundColor = backgroundColor ?? AppTheme.colors.surfaceVariant,
+       super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -194,13 +194,13 @@ class NeumorphicContainer extends StatelessWidget {
         boxShadow: isPressed
             ? [
                 BoxShadow(
-                  color: Colors.grey.shade500,
+                  color: AppTheme.colors.textTertiary.withOpacity(0.3),
                   offset: const Offset(4, 4),
                   blurRadius: 15,
                   spreadRadius: 1,
                 ),
-                const BoxShadow(
-                  color: Colors.white,
+                BoxShadow(
+                  color: AppTheme.colors.surface.withOpacity(0.7),
                   offset: Offset(-4, -4),
                   blurRadius: 15,
                   spreadRadius: 1,
@@ -208,13 +208,13 @@ class NeumorphicContainer extends StatelessWidget {
               ]
             : [
                 BoxShadow(
-                  color: Colors.grey.shade500,
+                  color: AppTheme.colors.textTertiary.withOpacity(0.3),
                   offset: const Offset(8, 8),
                   blurRadius: 15,
                   spreadRadius: 1,
                 ),
-                const BoxShadow(
-                  color: Colors.white,
+                BoxShadow(
+                  color: AppTheme.colors.surface.withOpacity(0.7),
                   offset: Offset(-8, -8),
                   blurRadius: 15,
                   spreadRadius: 1,

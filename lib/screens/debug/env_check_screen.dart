@@ -9,11 +9,11 @@ class EnvCheckScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.colors.background,
       appBar: AppBar(
         title: const Text('環境変数チェック'),
         backgroundColor: AppTheme.primaryColor,
-        foregroundColor: Colors.white,
+        foregroundColor: AppTheme.colors.onPrimary,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -59,22 +59,22 @@ class EnvCheckScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.amber.shade50,
+                  color: AppTheme.colors.warningContainer,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.amber),
+                  border: Border.all(color: AppTheme.colors.warning),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.warning, color: Colors.amber.shade700),
+                        Icon(Icons.warning, color: AppTheme.colors.warning),
                         const SizedBox(width: 8),
                         Text(
                           '環境変数が設定されていません',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.amber.shade700,
+                            color: AppTheme.colors.warning,
                           ),
                         ),
                       ],
@@ -102,7 +102,7 @@ class EnvCheckScreen extends StatelessWidget {
           children: [
             Icon(
               isSet ? Icons.check_circle : Icons.cancel,
-              color: isSet ? Colors.green : Colors.red,
+              color: isSet ? AppTheme.colors.success : AppTheme.colors.error,
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -116,7 +116,7 @@ class EnvCheckScreen extends StatelessWidget {
                   Text(
                     isSet ? '設定済み (${value.length}文字)' : '未設定',
                     style: TextStyle(
-                      color: isSet ? Colors.green : Colors.red,
+                      color: isSet ? AppTheme.colors.success : AppTheme.colors.error,
                       fontSize: 12,
                     ),
                   ),

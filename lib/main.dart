@@ -5,6 +5,7 @@ import 'services/storage_service.dart';
 import 'services/supabase_service.dart';
 import 'theme/app_theme.dart';
 import 'config/supabase_config.dart';
+import 'providers/theme_provider.dart';
 
 void main() async {
   // エラーハンドリングを設定
@@ -99,8 +100,29 @@ Future<void> _performInitialDataSync() async {
   }
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+  
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final ThemeProvider _themeProvider = ThemeProvider.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _themeProvider.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _themeProvider.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,6 +151,30 @@ class MyApp extends StatelessWidget {
           ],
         ),
       ),
+      darkTheme: AppTheme.darkTheme.copyWith(
+        // 包括的なフォントフォールバックを追加
+        textTheme: AppTheme.darkTheme.textTheme.apply(
+          fontFamilyFallback: [
+            'Noto Sans JP', 
+            'Noto Sans', 
+            'Noto Emoji',
+            'Noto Color Emoji',
+            'Apple Color Emoji',
+            'Segoe UI Emoji',
+            'Segoe UI Symbol',
+            'Noto Sans CJK JP',
+            'Noto Sans CJK',
+            'Hiragino Sans',
+            'Yu Gothic',
+            'Meiryo',
+            'Takao',
+            'IPAexGothic',
+            'IPAPGothic',
+            'sans-serif'
+          ],
+        ),
+      ),
+      themeMode: _themeProvider.themeMode,
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
     );

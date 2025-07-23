@@ -15,6 +15,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   final _userNameController = TextEditingController();
   bool _isLoading = false;
   String? _errorMessage;
+  String _selectedAvatar = 'person';
 
   @override
   void initState() {
@@ -26,6 +27,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     final user = AuthService.currentUser;
     if (user != null) {
       _userNameController.text = user.userMetadata?['username'] ?? '';
+      _selectedAvatar = user.userMetadata?['avatar'] ?? 'person';
     }
   }
 
@@ -46,6 +48,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     try {
       await AuthService.updateProfile(
         username: _userNameController.text.trim(),
+        avatar: _selectedAvatar,
       );
 
       if (mounted) {
@@ -108,36 +111,39 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             children: [
               // プロフィール画像
               Center(
-                child: Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
-                      child: Icon(
-                        Icons.person,
-                        size: 60,
-                        color: AppTheme.primaryColor,
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
+                child: GestureDetector(
+                  onTap: () => _showAvatarSelectionSheet(),
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 60,
+                        backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+                        child: Icon(
+                          _getAvatarIcon(_selectedAvatar),
+                          size: 60,
                           color: AppTheme.primaryColor,
-                          shape: BoxShape.circle,
-                          boxShadow: AppTheme.buttonShadow,
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          size: 20,
-                          color: Colors.white,
                         ),
                       ),
-                    ),
-                  ],
-                ).animate().scale(duration: 300.ms),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryColor,
+                            shape: BoxShape.circle,
+                            boxShadow: AppTheme.buttonShadow,
+                          ),
+                          child: const Icon(
+                            Icons.edit,
+                            size: 20,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ).animate().scale(duration: 300.ms),
+                ),
               ),
               
               const SizedBox(height: 32),
@@ -247,69 +253,179 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               
               const SizedBox(height: 48),
               
-              // パスワード変更セクション
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppTheme.backgroundTertiary,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+              // パスワード変更ボタン
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PasswordChangeScreen(),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppTheme.borderColor),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
                       children: [
-                        Icon(
-                          Icons.security,
-                          color: AppTheme.textSecondary,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'セキュリティ',
-                          style: AppTheme.body1.copyWith(
-                            fontWeight: FontWeight.w600,
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: AppTheme.warning.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
                           ),
+                          child: Icon(
+                            Icons.key_outlined,
+                            color: AppTheme.warning,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'パスワードを変更',
+                                style: AppTheme.body1.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'アカウントのセキュリティを保護',
+                                style: AppTheme.caption.copyWith(
+                                  color: AppTheme.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                          color: AppTheme.textTertiary,
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    InkWell(
-                      onTap: () {
-                        // パスワード変更画面への遷移
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const PasswordChangeScreen(),
-                          ),
-                        );
-                      },
-                      borderRadius: BorderRadius.circular(8),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'パスワードを変更',
-                              style: AppTheme.body2.copyWith(
-                                color: AppTheme.primaryColor,
-                              ),
-                            ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              size: 16,
-                              color: AppTheme.textTertiary,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ).animate().fadeIn(delay: 300.ms).slideX(begin: -0.1, end: 0),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  IconData _getAvatarIcon(String avatar) {
+    switch (avatar) {
+      case 'person':
+        return Icons.person;
+      case 'face':
+        return Icons.face;
+      case 'mood':
+        return Icons.mood;
+      case 'star':
+        return Icons.star;
+      case 'favorite':
+        return Icons.favorite;
+      case 'pets':
+        return Icons.pets;
+      case 'school':
+        return Icons.school;
+      case 'work':
+        return Icons.work;
+      default:
+        return Icons.person;
+    }
+  }
+
+  void _showAvatarSelectionSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: AppTheme.backgroundPrimary,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppTheme.textTertiary,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'アイコンを選択',
+              style: AppTheme.headline3,
+            ),
+            const SizedBox(height: 20),
+            GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 4,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              children: [
+                _buildAvatarOption('person', Icons.person),
+                _buildAvatarOption('face', Icons.face),
+                _buildAvatarOption('mood', Icons.mood),
+                _buildAvatarOption('star', Icons.star),
+                _buildAvatarOption('favorite', Icons.favorite),
+                _buildAvatarOption('pets', Icons.pets),
+                _buildAvatarOption('school', Icons.school),
+                _buildAvatarOption('work', Icons.work),
+              ],
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAvatarOption(String value, IconData icon) {
+    final isSelected = _selectedAvatar == value;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedAvatar = value;
+        });
+        Navigator.pop(context);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppTheme.primaryColor.withOpacity(0.1)
+              : AppTheme.backgroundTertiary,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected
+                ? AppTheme.primaryColor
+                : AppTheme.borderColor,
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Icon(
+          icon,
+          size: 40,
+          color: isSelected
+              ? AppTheme.primaryColor
+              : AppTheme.textSecondary,
         ),
       ),
     );
