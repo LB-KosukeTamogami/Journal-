@@ -60,7 +60,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         decoration: BoxDecoration(
           color: Theme.of(context).bottomNavigationBarTheme.backgroundColor ?? Theme.of(context).cardColor,
           border: Border(
-            top: BorderSide(color: Theme.of(context).dividerColor),
+            top: BorderSide(
+              color: Theme.of(context).brightness == Brightness.light 
+                ? const Color(0xFFD4C4B0)  // 薄茶色
+                : const Color(0xFF5C4A3A), // ダークモード用の茶色
+              width: 1.0,
+            ),
           ),
           boxShadow: [
             BoxShadow(
