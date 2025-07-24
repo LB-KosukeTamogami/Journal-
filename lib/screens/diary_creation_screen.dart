@@ -234,7 +234,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: AppTheme.textTertiary.withOpacity(0.3),
+                color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -252,7 +252,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                 ? Center(
                     child: Text(
                       'ミッションがありません',
-                      style: AppTheme.body2.copyWith(color: AppTheme.textSecondary),
+                      style: AppTheme.body2.copyWith(color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
                     ),
                   )
                 : ListView.builder(
@@ -287,7 +287,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? AppTheme.error : AppTheme.success,
+        backgroundColor: isError ? Theme.of(context).colorScheme.error : (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
         shape: RoundedRectangleBorder(
@@ -332,7 +332,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: AppTheme.textTertiary.withOpacity(0.3),
+                    color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -343,7 +343,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               Text(
                 word,
                 style: AppTheme.headline2.copyWith(
-                  color: AppTheme.primaryColor,
+                  color: Theme.of(context).primaryColor,
                 ),
               ),
               const SizedBox(height: 12),
@@ -361,7 +361,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                     Text(
                       '意味',
                       style: AppTheme.caption.copyWith(
-                        color: AppTheme.textSecondary,
+                        color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -415,7 +415,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: const Text('単語帳に追加しました'),
-                              backgroundColor: AppTheme.success,
+                              backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -427,7 +427,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       icon: Icon(Icons.book, size: 20),
                       label: Text('単語帳に追加'),
                       style: AppButtonStyles.primaryButton(context).copyWith(
-                        backgroundColor: MaterialStateProperty.all(AppTheme.success),
+                        backgroundColor: MaterialStateProperty.all((Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success)),
                       ),
                     ),
                     Theme.of(context).primaryColor,
@@ -441,9 +441,9 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               OutlinedButton(
                 onPressed: () => Navigator.pop(context),
                 style: AppButtonStyles.secondaryButton(context).copyWith(
-                  foregroundColor: MaterialStateProperty.all(AppTheme.textSecondary),
+                  foregroundColor: MaterialStateProperty.all(Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
                   side: MaterialStateProperty.all(
-                    BorderSide(color: AppTheme.borderColor, width: 1),
+                    BorderSide(color: Theme.of(context).dividerColor, width: 1),
                   ),
                 ),
                 child: const Text('閉じる'),
@@ -520,7 +520,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppTheme.primaryColor.withOpacity(0.2),
+          color: Theme.of(context).primaryColor.withOpacity(0.2),
           width: 1,
         ),
       ),
@@ -533,8 +533,8 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppTheme.primaryColor.withOpacity(0.1),
-                  AppTheme.primaryColor.withOpacity(0.05),
+                  Theme.of(context).primaryColor.withOpacity(0.1),
+                  Theme.of(context).primaryColor.withOpacity(0.05),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -564,7 +564,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                     ),
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: AppTheme.primaryColor.withOpacity(0.3),
+                      color: Theme.of(context).primaryColor.withOpacity(0.3),
                       width: 1.5,
                     ),
                   ),
@@ -580,7 +580,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                   'Acoとの会話まとめ',
                   style: AppTheme.body1.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: AppTheme.primaryColor,
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
               ],
@@ -638,7 +638,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                         summaryTranslation.isNotEmpty ? summaryTranslation : _getJapaneseTranslation(summary),
                         style: AppTheme.caption.copyWith(
                           height: 1.4,
-                          color: AppTheme.textSecondary,
+                          color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                         ),
                       ),
                     ],
@@ -651,7 +651,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                     '使用した単語・熟語',
                     style: AppTheme.caption.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: AppTheme.textSecondary,
+                      color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -687,17 +687,17 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: AppTheme.success.withOpacity(0.1),
+                            color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.1),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: AppTheme.success.withOpacity(0.3),
+                              color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.3),
                               width: 1,
                             ),
                           ),
                           child: Text(
                             word,
                             style: AppTheme.caption.copyWith(
-                              color: AppTheme.success,
+                              color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -734,7 +734,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
             onPressed: () => Navigator.pop(context, true),
             child: Text(
               '破棄',
-              style: AppTheme.body2.copyWith(color: AppTheme.error),
+              style: AppTheme.body2.copyWith(color: Theme.of(context).colorScheme.error),
             ),
           ),
         ],
@@ -766,7 +766,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
             style: AppTheme.headline3,
           ),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: AppTheme.textPrimary),
+            icon: Icon(Icons.arrow_back_ios, color: Theme.of(context).textTheme.bodyLarge?.color),
             onPressed: () async {
               if (await _onWillPop()) {
                 Navigator.pop(context);
@@ -775,7 +775,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
           ),
           actions: [
             IconButton(
-              icon: Icon(Icons.flag_outlined, color: AppTheme.primaryColor),
+              icon: Icon(Icons.flag_outlined, color: Theme.of(context).primaryColor),
               onPressed: _showMissionsModal,
               tooltip: '今日のミッション',
             ),
@@ -799,8 +799,8 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: _titleFocusNode.hasFocus 
-                              ? AppTheme.primaryBlue.withOpacity(0.3)
-                              : AppTheme.borderColor.withOpacity(0.1),
+                              ? Theme.of(context).colorScheme.secondary.withOpacity(0.3)
+                              : Theme.of(context).dividerColor.withOpacity(0.1),
                           ),
                         ),
                         child: TextField(
@@ -809,7 +809,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                           decoration: InputDecoration(
                             hintText: '日記のタイトルを入力',
                             hintStyle: AppTheme.body2.copyWith(
-                              color: AppTheme.textTertiary,
+                              color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey,
                             ),
                             border: InputBorder.none,
                             contentPadding: const EdgeInsets.symmetric(
@@ -818,7 +818,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                             ),
                           ),
                           style: AppTheme.headline3.copyWith(
-                            color: AppTheme.textPrimary,
+                            color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                           ),
                           textInputAction: TextInputAction.next,
                           onSubmitted: (_) => _contentFocusNode.requestFocus(),
@@ -869,8 +869,8 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: _contentFocusNode.hasFocus 
-                              ? AppTheme.primaryBlue.withOpacity(0.3)
-                              : AppTheme.borderColor.withOpacity(0.1),
+                              ? Theme.of(context).colorScheme.secondary.withOpacity(0.3)
+                              : Theme.of(context).dividerColor.withOpacity(0.1),
                           ),
                         ),
                         child: TextField(
@@ -881,7 +881,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                               ? '今日の出来事や感想を書いてみましょう'
                               : 'Write about your day and thoughts',
                             hintStyle: AppTheme.body2.copyWith(
-                              color: AppTheme.textTertiary,
+                              color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey,
                             ),
                             border: InputBorder.none,
                             contentPadding: const EdgeInsets.symmetric(
@@ -890,7 +890,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                             ),
                           ),
                           style: AppTheme.body1.copyWith(
-                            color: AppTheme.textPrimary,
+                            color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                           ),
                           maxLines: 10,
                           textInputAction: TextInputAction.newline,
@@ -918,15 +918,15 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  AppTheme.primaryColor.withOpacity(0.1),
-                                  AppTheme.primaryColor.withOpacity(0.05),
+                                  Theme.of(context).primaryColor.withOpacity(0.1),
+                                  Theme.of(context).primaryColor.withOpacity(0.05),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: AppTheme.primaryColor.withOpacity(0.3),
+                                color: Theme.of(context).primaryColor.withOpacity(0.3),
                                 width: 1,
                               ),
                             ),
@@ -950,7 +950,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                                     ),
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: AppTheme.primaryColor.withOpacity(0.3),
+                                      color: Theme.of(context).primaryColor.withOpacity(0.3),
                                       width: 1.5,
                                     ),
                                   ),
@@ -970,14 +970,14 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                                         '日記のネタを見つける',
                                         style: AppTheme.body1.copyWith(
                                           fontWeight: FontWeight.w600,
-                                          color: AppTheme.primaryColor,
+                                          color: Theme.of(context).primaryColor,
                                         ),
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
                                         'Acoとの会話から今日の出来事を振り返りましょう',
                                         style: AppTheme.body2.copyWith(
-                                          color: AppTheme.textSecondary,
+                                          color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                                         ),
                                       ),
                                     ],
@@ -985,7 +985,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                                 ),
                                 Icon(
                                   Icons.arrow_forward_ios,
-                                  color: AppTheme.primaryColor.withOpacity(0.6),
+                                  color: Theme.of(context).primaryColor.withOpacity(0.6),
                                   size: 16,
                                 ),
                               ],
@@ -997,7 +997,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       /*if (_translatedContent.isNotEmpty) ...[
                         const SizedBox(height: 16),
                         AppCard(
-                          backgroundColor: AppTheme.backgroundTertiary,
+                          backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.surfaceVariant : AppTheme.darkColors.surfaceVariant),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -1006,7 +1006,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                                   Icon(
                                     Icons.translate,
                                     size: 18,
-                                    color: AppTheme.textSecondary,
+                                    color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
@@ -1023,13 +1023,13 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                                         vertical: 4,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: AppTheme.primaryBlue.withOpacity(0.1),
+                                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
                                         _detectedLanguage == 'ja' ? '日本語 → 英語' : 'English → 日本語',
                                         style: AppTheme.caption.copyWith(
-                                          color: AppTheme.primaryBlue,
+                                          color: Theme.of(context).colorScheme.secondary,
                                         ),
                                       ),
                                     ),
@@ -1045,7 +1045,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       if (_selectedWords.isNotEmpty) ...[
                         const SizedBox(height: 16),
                         AppCard(
-                          backgroundColor: AppTheme.success.withOpacity(0.1),
+                          backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.1),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -1054,14 +1054,14 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                                   Icon(
                                     Icons.bookmark,
                                     size: 18,
-                                    color: AppTheme.success,
+                                    color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
                                     '登録した単語 (${_selectedWords.length})',
                                     style: AppTheme.body2.copyWith(
                                       fontWeight: FontWeight.w600,
-                                      color: AppTheme.success,
+                                      color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                                     ),
                                   ),
                                 ],
@@ -1100,7 +1100,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   border: Border(
-                    top: BorderSide(color: AppTheme.borderColor),
+                    top: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                 ),
                 child: PrimaryButton(
@@ -1144,7 +1144,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                 border: hasTranslation
                     ? Border(
                         bottom: BorderSide(
-                          color: AppTheme.primaryBlue.withOpacity(0.3),
+                          color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
                           width: 1,
                         ),
                       )
@@ -1153,7 +1153,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               child: Text(
                 word,
                 style: AppTheme.body1.copyWith(
-                  color: hasTranslation ? AppTheme.primaryBlue : AppTheme.textPrimary,
+                  color: hasTranslation ? Theme.of(context).colorScheme.secondary : Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                 ),
               ),
             ),
@@ -1206,7 +1206,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: AppTheme.textTertiary.withOpacity(0.3),
+                      color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -1217,7 +1217,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                 Text(
                   english,
                   style: AppTheme.headline2.copyWith(
-                    color: AppTheme.primaryColor,
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -1235,7 +1235,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       Text(
                         '意味',
                         style: AppTheme.caption.copyWith(
-                          color: AppTheme.textSecondary,
+                          color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -1266,7 +1266,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                             : Icons.collections_bookmark, 
                           size: 20,
                           color: isAddedToFlashcard 
-                            ? AppTheme.success 
+                            ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success) 
                             : null,
                         ),
                         label: Text(
@@ -1276,11 +1276,11 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                         ),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: isAddedToFlashcard 
-                            ? AppTheme.success 
+                            ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success) 
                             : AppTheme.info,
                           side: BorderSide(
                             color: isAddedToFlashcard 
-                              ? AppTheme.success 
+                              ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success) 
                               : AppTheme.info,
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -1317,7 +1317,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: const Text('単語帳に追加しました'),
-                              backgroundColor: AppTheme.success,
+                              backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -1338,8 +1338,8 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: isAddedToVocabulary 
-                            ? AppTheme.success.withOpacity(0.8) 
-                            : AppTheme.success,
+                            ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.8) 
+                            : (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -1360,7 +1360,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                     onPressed: () => Navigator.pop(context),
                     child: Text('閉じる'),
                     style: TextButton.styleFrom(
-                      foregroundColor: AppTheme.textSecondary,
+                      foregroundColor: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                     ),
                   ),
                 ),
@@ -1385,11 +1385,11 @@ class _MissionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool completed = mission.isCompleted;
     final IconData icon = _getIconFromType(mission.type);
-    final Color color = _getColorFromType(mission.type);
+    final Color color = _getColorFromType(mission.type, context);
     
     return AppCard(
       onTap: null, // タップ不可
-      backgroundColor: completed ? AppTheme.backgroundTertiary : Theme.of(context).cardColor,
+      backgroundColor: completed ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.surfaceVariant : AppTheme.darkColors.surfaceVariant) : Theme.of(context).cardColor,
       child: Row(
         children: [
           Container(
@@ -1397,13 +1397,13 @@ class _MissionCard extends StatelessWidget {
             height: 48,
             decoration: BoxDecoration(
               color: completed
-                ? AppTheme.textTertiary.withOpacity(0.1)
+                ? Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey.withOpacity(0.1)
                 : color.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               completed ? Icons.check : icon,
-              color: completed ? AppTheme.textTertiary : color,
+              color: completed ? Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey : color,
               size: 24,
             ),
           ),
@@ -1417,14 +1417,14 @@ class _MissionCard extends StatelessWidget {
                   style: AppTheme.body1.copyWith(
                     fontWeight: FontWeight.w600,
                     decoration: completed ? TextDecoration.lineThrough : null,
-                    color: completed ? AppTheme.textTertiary : AppTheme.textPrimary,
+                    color: completed ? Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey : Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   mission.description,
                   style: AppTheme.caption.copyWith(
-                    color: completed ? AppTheme.textTertiary : AppTheme.textSecondary,
+                    color: completed ? Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey : Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -1432,9 +1432,9 @@ class _MissionCard extends StatelessWidget {
                   value: mission.targetValue > 0
                     ? (mission.currentValue / mission.targetValue).clamp(0.0, 1.0)
                     : 0.0,
-                  backgroundColor: AppTheme.backgroundTertiary,
+                  backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.surfaceVariant : AppTheme.darkColors.surfaceVariant),
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    completed ? AppTheme.textTertiary : color,
+                    completed ? Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey : color,
                   ),
                   minHeight: 4,
                 ),
@@ -1445,14 +1445,14 @@ class _MissionCard extends StatelessWidget {
                     Text(
                       '${mission.currentValue}/${mission.targetValue}',
                       style: AppTheme.caption.copyWith(
-                        color: AppTheme.textTertiary,
+                        color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey,
                       ),
                     ),
                     if (completed)
                       Icon(
                         Icons.star,
                         size: 16,
-                        color: AppTheme.warning,
+                        color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning),
                       ),
                   ],
                 ),
@@ -1479,18 +1479,18 @@ class _MissionCard extends StatelessWidget {
     }
   }
 
-  Color _getColorFromType(MissionType type) {
+  Color _getColorFromType(MissionType type, BuildContext context) {
     switch (type) {
       case MissionType.dailyDiary:
-        return AppTheme.primaryBlue;
+        return Theme.of(context).colorScheme.secondary;
       case MissionType.wordLearning:
-        return AppTheme.success;
+        return (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success);
       case MissionType.conversation:
-        return AppTheme.secondaryColor;
+        return Theme.of(context).colorScheme.secondary;
       case MissionType.streak:
-        return AppTheme.warning;
+        return (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning);
       case MissionType.review:
-        return AppTheme.success;
+        return (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success);
     }
   }
 }
