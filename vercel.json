@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "./vercel-build-simple.sh",
+  "buildCommand": "bash vercel-build-simple.sh",
   "outputDirectory": "build/web",
   "installCommand": "echo 'Skipping install'",
   "framework": null,

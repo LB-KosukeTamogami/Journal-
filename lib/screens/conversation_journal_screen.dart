@@ -192,10 +192,10 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text('会話ジャーナル', style: AppTheme.headline3),
+        title: Text('Aco', style: AppTheme.headline3),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: AppTheme.lightColors.onPrimary),
         actions: [
           // 会話を終了ボタン（初期メッセージ以外がある場合、または5ラリー完了時）
           if (_messages.length > 2 || _messageCount >= 5) // 初期メッセージ以外がある場合のみ表示
@@ -257,7 +257,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
       child: Column(
         crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-          // Acoの場合、アイコンと名前を表示
+          // Acoの場合、アイコンのみを表示（LINE風）
           if (!isUser) ...[
             Row(
               children: [
@@ -288,14 +288,6 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                       '🐿',
                       style: TextStyle(fontSize: 16),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Aco',
-                  style: AppTheme.body2.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.textSecondary,
                   ),
                 ),
               ],
@@ -342,7 +334,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                                         child: Text(
                                           _getEnglishPart(message.text),
                                           style: AppTheme.body1.copyWith(
-                                            color: AppTheme.textPrimary,
+                                            color: Theme.of(context).textTheme.bodyLarge?.color ?? AppTheme.textPrimary,
                                           ),
                                         ),
                                       ),
@@ -403,7 +395,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                             Text(
                               message.text,
                               style: AppTheme.body1.copyWith(
-                                color: isUser ? Colors.white : AppTheme.textPrimary,
+                                color: isUser ? Colors.white : (Theme.of(context).textTheme.bodyLarge?.color ?? AppTheme.textPrimary),
                               ),
                             ),
                           ],
