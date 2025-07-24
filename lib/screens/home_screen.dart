@@ -232,7 +232,9 @@ class _HomeScreenState extends State<HomeScreen> {
               gradient: LinearGradient(
                 colors: [
                   Theme.of(context).colorScheme.error.withOpacity(0.8),
-                  AppTheme.warning,
+                  Theme.of(context).brightness == Brightness.light 
+                    ? AppTheme.lightColors.warning
+                    : AppTheme.darkColors.warning,
                 ],
               ),
               shape: BoxShape.circle,
@@ -370,12 +372,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppTheme.primaryColor.withOpacity(0.2),
+          color: Theme.of(context).primaryColor.withOpacity(0.2),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.primaryColor.withOpacity(0.08),
+            color: Theme.of(context).primaryColor.withOpacity(0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -402,7 +404,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               shape: BoxShape.circle,
               border: Border.all(
-                color: AppTheme.primaryColor.withOpacity(0.3),
+                color: Theme.of(context).primaryColor.withOpacity(0.3),
                 width: 1.5,
               ),
               boxShadow: [
@@ -436,7 +438,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   _acoMessage,
                   style: AppTheme.body2.copyWith(
-                    color: AppTheme.textPrimary,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
                     height: 1.5,
                   ),
                 ),
@@ -473,7 +475,7 @@ class _MissionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool completed = mission.isCompleted;
     final IconData icon = _getIconFromType(mission.type);
-    final Color color = _getColorFromType(mission.type);
+    final Color color = _getColorFromType(mission.type, context);
     
     return AppCard(
       onTap: null, // タップ不可
@@ -485,13 +487,19 @@ class _MissionCard extends StatelessWidget {
             height: 48,
             decoration: BoxDecoration(
               color: completed 
-                ? AppTheme.success.withOpacity(0.1)
+                ? (Theme.of(context).brightness == Brightness.light 
+                  ? AppTheme.lightColors.success.withOpacity(0.1)
+                  : AppTheme.darkColors.success.withOpacity(0.1))
                 : color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               completed ? Icons.check_circle : icon,
-              color: completed ? AppTheme.success : color,
+              color: completed 
+                ? (Theme.of(context).brightness == Brightness.light 
+                  ? AppTheme.lightColors.success
+                  : AppTheme.darkColors.success)
+                : color,
               size: 24,
             ),
           ),
@@ -504,7 +512,9 @@ class _MissionCard extends StatelessWidget {
                   mission.title,
                   style: AppTheme.body1.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: completed ? AppTheme.textTertiary : AppTheme.textPrimary,
+                    color: completed 
+                      ? Theme.of(context).textTheme.bodySmall?.color 
+                      : Theme.of(context).textTheme.bodyLarge?.color,
                     decoration: completed ? TextDecoration.lineThrough : null,
                   ),
                 ),
@@ -512,7 +522,9 @@ class _MissionCard extends StatelessWidget {
                 Text(
                   mission.description,
                   style: AppTheme.body2.copyWith(
-                    color: completed ? AppTheme.textTertiary : AppTheme.textSecondary,
+                    color: completed 
+                      ? Theme.of(context).textTheme.bodySmall?.color 
+                      : Theme.of(context).textTheme.bodyMedium?.color,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -524,13 +536,13 @@ class _MissionCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: AppTheme.secondaryColor.withOpacity(0.1),
+                color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 '+${mission.experiencePoints}XP',
                 style: AppTheme.caption.copyWith(
-                  color: AppTheme.secondaryColor,
+                  color: Theme.of(context).colorScheme.secondary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -556,18 +568,21 @@ class _MissionCard extends StatelessWidget {
     }
   }
 
-  Color _getColorFromType(MissionType type) {
+  Color _getColorFromType(MissionType type, BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+    final colors = brightness == Brightness.light ? AppTheme.lightColors : AppTheme.darkColors;
+    
     switch (type) {
       case MissionType.dailyDiary:
-        return AppTheme.primaryColor;
+        return colors.primary;
       case MissionType.wordLearning:
-        return AppTheme.info;
+        return colors.info;
       case MissionType.streak:
-        return AppTheme.warning;
+        return colors.warning;
       case MissionType.review:
-        return AppTheme.success;
+        return colors.success;
       case MissionType.conversation:
-        return AppTheme.info;
+        return colors.info;
     }
   }
 }
