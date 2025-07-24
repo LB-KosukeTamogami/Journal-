@@ -175,8 +175,8 @@ class AppTheme {
   static Color get warning => colors.warning;
   static Color get error => colors.error;
   static Color get info => colors.info;
-  static Color get borderColor => colors.border;
-  static Color get dividerColor => colors.divider;
+  static Color get borderColor => lightColors.border;  // Deprecated - use Theme.of(context).dividerColor
+  static Color get dividerColor => lightColors.divider;  // Deprecated - use Theme.of(context).dividerColor
   
   // Shadow
   static List<BoxShadow> get cardShadow => [

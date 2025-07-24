@@ -217,7 +217,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                     decoration: BoxDecoration(
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppTheme.borderColor),
+                      border: Border.all(color: Theme.of(context).dividerColor),
                     ),
                     padding: const EdgeInsets.all(4),
                     child: TabBar(
@@ -392,7 +392,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           color: _showNew ? AppTheme.primaryBlue.withOpacity(0.15) : AppTheme.backgroundTertiary,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: _showNew ? AppTheme.primaryBlue : AppTheme.borderColor,
+            color: _showNew ? AppTheme.primaryBlue : Theme.of(context).dividerColor,
             width: _showNew ? 2 : 1,
           ),
         ),
@@ -433,7 +433,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           color: _showFailed ? AppTheme.error.withOpacity(0.15) : AppTheme.backgroundTertiary,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: _showFailed ? AppTheme.error : AppTheme.borderColor,
+            color: _showFailed ? AppTheme.error : Theme.of(context).dividerColor,
             width: _showFailed ? 2 : 1,
           ),
         ),
@@ -474,7 +474,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           color: isSelected ? color.withOpacity(0.15) : AppTheme.backgroundTertiary,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? color : AppTheme.borderColor,
+            color: isSelected ? color : Theme.of(context).dividerColor,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -525,7 +525,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           color: isSelected ? color.withOpacity(0.15) : AppTheme.backgroundTertiary,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? color : AppTheme.borderColor,
+            color: isSelected ? color : Theme.of(context).dividerColor,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -623,7 +623,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
             color: isSelected ? color : AppTheme.backgroundTertiary,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? color : AppTheme.borderColor,
+              color: isSelected ? color : Theme.of(context).dividerColor,
               width: isSelected ? 2 : 1,
             ),
           ),
@@ -862,7 +862,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                                 border: Border.all(
                                   color: isSelected
                                       ? AppTheme.primaryColor
-                                      : AppTheme.borderColor,
+                                      : Theme.of(context).dividerColor,
                                   width: isSelected ? 2 : 1,
                                 ),
                               ),
@@ -915,7 +915,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: AppTheme.borderColor),
+                                border: Border.all(color: Theme.of(context).dividerColor),
                               ),
                               child: Row(
                                 children: [
@@ -959,7 +959,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: AppTheme.borderColor),
+                                border: Border.all(color: Theme.of(context).dividerColor),
                               ),
                               child: Row(
                                 children: [
@@ -1129,7 +1129,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                             style: AppButtonStyles.secondaryButton(context).copyWith(
                               foregroundColor: MaterialStateProperty.all(AppTheme.textSecondary),
                               side: MaterialStateProperty.all(
-                                BorderSide(color: AppTheme.borderColor, width: 1),
+                                BorderSide(color: Theme.of(context).dividerColor, width: 1),
                               ),
                             ),
                             child: const Text('リセット'),
@@ -2383,7 +2383,7 @@ class _WordDetailModalState extends State<_WordDetailModal> {
             color: isSelected ? color : AppTheme.backgroundTertiary,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? color : AppTheme.borderColor,
+              color: isSelected ? color : Theme.of(context).dividerColor,
               width: isSelected ? 2 : 1,
             ),
           ),
