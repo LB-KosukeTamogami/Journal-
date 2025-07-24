@@ -82,3 +82,7 @@ if [ -f "build/web/flutter_bootstrap.js" ]; then
 fi
 
 echo "Build completed!"
+
+# List build output
+echo "Checking build output..."
+ls -la build/web/ || echo "build/web directory not found"
