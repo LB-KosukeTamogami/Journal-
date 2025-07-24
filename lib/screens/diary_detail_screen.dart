@@ -560,12 +560,14 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           // AI利用制限メッセージ
           if (!_isLoading && _corrections.contains('本日のAI利用枠を使い切りました。明日また利用可能になります。'))
             AppCard(
-              backgroundColor: AppTheme.warning.withOpacity(0.05),
+              backgroundColor: (Theme.of(context).brightness == Brightness.light 
+                ? AppTheme.lightColors.warning 
+                : AppTheme.darkColors.warning).withOpacity(0.05),
               child: Row(
                 children: [
                   Icon(
                     Icons.info_outline,
-                    color: AppTheme.warning,
+                    color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning),
                     size: 20,
                   ),
                   const SizedBox(width: 12),
@@ -573,7 +575,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     child: Text(
                       '本日のAI利用枠を使い切りました。明日また利用可能になります。',
                       style: AppTheme.body1.copyWith(
-                        color: AppTheme.warning,
+                        color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -587,7 +589,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             _buildSkeletonResults()
           else if (_translatedContent.isNotEmpty && TranslationService.detectLanguage(widget.entry.content) == 'ja')
             AppCard(
-              backgroundColor: AppTheme.info.withOpacity(0.05),
+              backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.info : AppTheme.darkColors.info).withOpacity(0.05),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -598,7 +600,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         children: [
                           Icon(
                             Icons.translate,
-                            color: AppTheme.info,
+                            color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.info : AppTheme.darkColors.info),
                             size: 20,
                           ),
                           const SizedBox(width: 8),
@@ -606,7 +608,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                             '英語翻訳',
                             style: AppTheme.body1.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: AppTheme.info,
+                              color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.info : AppTheme.darkColors.info),
                             ),
                           ),
                         ],
@@ -648,7 +650,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: AppTheme.info.withOpacity(0.2),
+                        color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.info : AppTheme.darkColors.info).withOpacity(0.2),
                         width: 1,
                       ),
                     ),
@@ -669,7 +671,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           // 添削セクション（英語の場合のみ）
           if (TranslationService.detectLanguage(widget.entry.content) == 'en' && _correctedContent != widget.entry.content)
             AppCard(
-              backgroundColor: AppTheme.success.withOpacity(0.05),
+              backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.05),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -680,7 +682,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         children: [
                           Icon(
                             Icons.check_circle,
-                            color: AppTheme.success,
+                            color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                             size: 20,
                           ),
                           const SizedBox(width: 8),
@@ -688,7 +690,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                             '添削後',
                             style: AppTheme.body1.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: AppTheme.success,
+                              color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                             ),
                           ),
                         ],
@@ -711,7 +713,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         },
                         icon: Icon(
                           Icons.record_voice_over,
-                          color: AppTheme.success,
+                          color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                           size: 20,
                         ),
                         padding: EdgeInsets.zero,
@@ -737,7 +739,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         color: Colors.transparent,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: AppTheme.success.withOpacity(0.3),
+                          color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.3),
                           width: 1,
                         ),
                       ),
@@ -791,7 +793,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   children: [
                     Icon(
                       isJapanese ? Icons.translate : Icons.check_circle,
-                      color: isJapanese ? AppTheme.primaryBlue : AppTheme.success,
+                      color: isJapanese ? AppTheme.primaryBlue : (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -799,7 +801,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       isJapanese ? '英語翻訳' : (isMixed ? '英語への統一' : '添削結果'),
                       style: AppTheme.body1.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: isJapanese ? AppTheme.primaryBlue : AppTheme.success,
+                        color: isJapanese ? AppTheme.primaryBlue : (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                       ),
                     ),
                   ],
@@ -914,13 +916,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: AppTheme.success.withOpacity(0.1),
+                              color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.1),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
                               'After',
                               style: AppTheme.caption.copyWith(
-                                color: AppTheme.success,
+                                color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -942,7 +944,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           color: Theme.of(context).scaffoldBackgroundColor,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: AppTheme.success.withOpacity(0.2),
+                            color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.2),
                             width: 1,
                           ),
                         ),
@@ -954,21 +956,21 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.success.withOpacity(0.1),
+                                  color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Row(
                                   children: [
                                     Icon(
                                       Icons.check_circle,
-                                      color: AppTheme.success,
+                                      color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                                       size: 16,
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
                                       '添削の必要はありません',
                                       style: AppTheme.caption.copyWith(
-                                        color: AppTheme.success,
+                                        color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
@@ -982,14 +984,14 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                   decoration: BoxDecoration(
-                                    color: AppTheme.warning.withOpacity(0.1),
+                                    color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning).withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Row(
                                     children: [
                                       Icon(
                                         Icons.info_outline,
-                                        color: AppTheme.warning,
+                                        color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning),
                                         size: 16,
                                       ),
                                       const SizedBox(width: 8),
@@ -997,7 +999,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                         child: Text(
                                           '本日のAI利用枠を使い切りました。明日また利用可能になります。',
                                           style: AppTheme.caption.copyWith(
-                                            color: AppTheme.warning,
+                                            color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning),
                                             fontWeight: FontWeight.w500,
                                           ),
                                         ),
@@ -1025,7 +1027,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                     color: Colors.transparent,
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
-                                      color: AppTheme.success.withOpacity(0.3),
+                                      color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.3),
                                       width: 1,
                                     ),
                                   ),
@@ -1071,7 +1073,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           )) ...[
             const SizedBox(height: 16),
             AppCard(
-              backgroundColor: AppTheme.primaryBlue.withOpacity(0.05),
+              backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.secondary : AppTheme.darkColors.secondary).withOpacity(0.05),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1126,7 +1128,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           if (!isJapanese) ...[
             const SizedBox(height: 16),
             AppCard(
-              backgroundColor: AppTheme.info.withOpacity(0.05),
+              backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.info : AppTheme.darkColors.info).withOpacity(0.05),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1134,7 +1136,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     children: [
                       Icon(
                         Icons.school,
-                        color: AppTheme.info,
+                        color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.info : AppTheme.darkColors.info),
                         size: 20,
                       ),
                       const SizedBox(width: 8),
@@ -1142,7 +1144,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         '添削の解説',
                         style: AppTheme.body1.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: AppTheme.info,
+                          color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.info : AppTheme.darkColors.info),
                         ),
                       ),
                     ],
@@ -1179,7 +1181,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                   height: 6,
                                   margin: const EdgeInsets.only(top: 8, right: 12),
                                   decoration: BoxDecoration(
-                                    color: AppTheme.info,
+                                    color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.info : AppTheme.darkColors.info),
                                     shape: BoxShape.circle,
                                   ),
                                 ),
@@ -1196,7 +1198,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           Text(
                             '素晴らしい！文法的な誤りは見つかりませんでした。',
                             style: AppTheme.body2.copyWith(
-                              color: AppTheme.success,
+                              color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                               height: 1.5,
                               fontWeight: FontWeight.w500,
                             ),
@@ -1231,7 +1233,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             _buildInfoBlock(
               title: '学習ポイント',
               icon: Icons.school,
-              color: AppTheme.info,
+              color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.info : AppTheme.darkColors.info),
               items: _learnedPhrases,
               animationDelay: 400.ms,
             ),
@@ -1241,7 +1243,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           if (_extractedWords.isNotEmpty) ...[
             const SizedBox(height: 16),
               AppCard(
-                backgroundColor: AppTheme.primaryBlue.withOpacity(0.05),
+                backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.secondary : AppTheme.darkColors.secondary).withOpacity(0.05),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -1271,16 +1273,16 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         return Container(
                           decoration: BoxDecoration(
                             color: isSaved
-                                ? AppTheme.success.withOpacity(0.05)
+                                ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.05)
                                 : (info.isPhrase 
-                                    ? AppTheme.success.withOpacity(0.1)
+                                    ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.1)
                                     : AppTheme.primaryBlue.withOpacity(0.1)),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
                               color: isSaved
-                                  ? AppTheme.success.withOpacity(0.5)
+                                  ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.5)
                                   : (info.isPhrase 
-                                      ? AppTheme.success.withOpacity(0.3)
+                                      ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.3)
                                       : AppTheme.primaryBlue.withOpacity(0.3)),
                             ),
                           ),
@@ -1406,16 +1408,16 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                                   Container(
                                                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                                     decoration: BoxDecoration(
-                                                      color: AppTheme.info.withOpacity(0.1),
+                                                      color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.info : AppTheme.darkColors.info).withOpacity(0.1),
                                                       borderRadius: BorderRadius.circular(12),
                                                       border: Border.all(
-                                                        color: AppTheme.info.withOpacity(0.3),
+                                                        color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.info : AppTheme.darkColors.info).withOpacity(0.3),
                                                       ),
                                                     ),
                                                     child: Text(
                                                       _getPartOfSpeech(info.text),
                                                       style: AppTheme.caption.copyWith(
-                                                        color: AppTheme.info,
+                                                        color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.info : AppTheme.darkColors.info),
                                                         fontWeight: FontWeight.w600,
                                                       ),
                                                     ),
@@ -1466,7 +1468,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                                                 ScaffoldMessenger.of(context).showSnackBar(
                                                                   SnackBar(
                                                                     content: Text('学習カードから削除しました'),
-                                                                    backgroundColor: AppTheme.warning,
+                                                                    backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning),
                                                                     behavior: SnackBarBehavior.floating,
                                                                     shape: RoundedRectangleBorder(
                                                                       borderRadius: BorderRadius.circular(8),
@@ -1502,7 +1504,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                                               ScaffoldMessenger.of(context).showSnackBar(
                                                                 SnackBar(
                                                                   content: Text('学習カードに追加しました'),
-                                                                  backgroundColor: AppTheme.success,
+                                                                  backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                                                                   behavior: SnackBarBehavior.floating,
                                                                   shape: RoundedRectangleBorder(
                                                                     borderRadius: BorderRadius.circular(8),
@@ -1556,8 +1558,8 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                         info.text,
                                         style: AppTheme.body2.copyWith(
                                           color: isSaved 
-                                              ? AppTheme.success 
-                                              : (info.isPhrase ? AppTheme.success : AppTheme.primaryBlue),
+                                              ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success) 
+                                              : (info.isPhrase ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success) : AppTheme.primaryBlue),
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
@@ -1594,7 +1596,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(
                                             content: Text('学習カードから削除しました', style: AppTheme.body2.copyWith(color: Colors.white)),
-                                            backgroundColor: AppTheme.warning,
+                                            backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning),
                                           ),
                                         );
                                       }
@@ -1620,7 +1622,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
                                           content: Text('学習カードに追加しました', style: AppTheme.body2.copyWith(color: Colors.white)),
-                                          backgroundColor: AppTheme.success,
+                                          backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                                         ),
                                       );
                                     }
@@ -1631,7 +1633,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                     child: Icon(
                                       isSaved ? Icons.check : Icons.add_card,
                                       size: 16,
-                                      color: isSaved ? AppTheme.success : AppTheme.primaryBlue.withOpacity(0.7),
+                                      color: isSaved ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success) : AppTheme.primaryBlue.withOpacity(0.7),
                                     ),
                                   ),
                                 ),
@@ -1723,7 +1725,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                               '$addedCount個の単語を学習カードに追加しました',
                               style: AppTheme.body2.copyWith(color: Colors.white),
                             ),
-                            backgroundColor: AppTheme.success,
+                            backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -1985,7 +1987,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('学習カードに追加しました'),
-          backgroundColor: AppTheme.success,
+          backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(16),
           shape: RoundedRectangleBorder(
@@ -2027,7 +2029,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             '$addedCount個のフレーズを学習カードに追加しました',
             style: AppTheme.body2.copyWith(color: Colors.white),
           ),
-          backgroundColor: AppTheme.success,
+          backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(16),
           shape: RoundedRectangleBorder(
@@ -2135,7 +2137,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
                                 color: isSaved 
-                                    ? AppTheme.success.withOpacity(0.3)
+                                    ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.3)
                                     : AppTheme.primaryBlue.withOpacity(0.2),
                               ),
                             ),
@@ -2149,7 +2151,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                       word,
                                       style: AppTheme.body1.copyWith(
                                         fontWeight: FontWeight.w600,
-                                        color: isSaved ? AppTheme.success : AppTheme.primaryBlue,
+                                        color: isSaved ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success) : AppTheme.primaryBlue,
                                       ),
                                     ),
                                     if (translation != null) ...[
@@ -2190,7 +2192,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             SnackBar(
                                               content: Text('学習カードから削除しました'),
-                                              backgroundColor: AppTheme.warning,
+                                              backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning),
                                               behavior: SnackBarBehavior.floating,
                                               margin: const EdgeInsets.all(16),
                                               shape: RoundedRectangleBorder(
@@ -2211,7 +2213,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                   },
                                   icon: Icon(
                                     isSaved ? Icons.check : Icons.add_card,
-                                    color: isSaved ? AppTheme.success : AppTheme.primaryBlue,
+                                    color: isSaved ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success) : AppTheme.primaryBlue,
                                     size: 20,
                                   ),
                                 ),
@@ -2250,7 +2252,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           children: [
             Icon(
               Icons.bookmark,
-              color: AppTheme.warning,
+              color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning),
               size: 24,
             ),
             const SizedBox(width: 8),
@@ -2289,7 +2291,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: AppTheme.warning.withOpacity(0.2),
+                          color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning).withOpacity(0.2),
                         ),
                       ),
                       child: Row(
@@ -2302,7 +2304,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                   word,
                                   style: AppTheme.body1.copyWith(
                                     fontWeight: FontWeight.w600,
-                                    color: AppTheme.warning,
+                                    color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning),
                                   ),
                                 ),
                                 if (translation != null) ...[
@@ -2320,13 +2322,13 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: AppTheme.success.withOpacity(0.1),
+                              color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               '学習済み',
                               style: AppTheme.caption.copyWith(
-                                color: AppTheme.success,
+                                color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -2388,7 +2390,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       explanations.add(_buildExplanationItem(
         '"i" → "I"',
         '英語の一人称単数「I」は、文中のどこにあっても必ず大文字で書きます。',
-        AppTheme.info,
+        (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.info : AppTheme.darkColors.info),
       ));
     }
     
@@ -2397,7 +2399,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       explanations.add(_buildExplanationItem(
         '句読点の前のスペース',
         '英語では感嘆符（!）の前にスペースは入れません。',
-        AppTheme.warning,
+        (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning),
       ));
     }
     
@@ -2406,7 +2408,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       explanations.add(_buildExplanationItem(
         '文法の改善',
         'より自然な英語表現に修正されました。',
-        AppTheme.success,
+        (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
       ));
     }
     
@@ -2567,7 +2569,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
     return _buildInfoBlock(
       title: 'アドバイス',
       icon: Icons.lightbulb_outline,
-      color: AppTheme.warning,
+      color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning),
       items: adviceList,
       animationDelay: 600.ms,
     );
@@ -2582,7 +2584,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: AppTheme.warning.withOpacity(0.2),
+          color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning).withOpacity(0.2),
           width: 1,
         ),
       ),
@@ -2621,7 +2623,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             height: 6,
             margin: const EdgeInsets.only(top: 8, right: 12),
             decoration: BoxDecoration(
-              color: AppTheme.warning,
+              color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning),
               shape: BoxShape.circle,
             ),
           ),
@@ -2633,7 +2635,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   title,
                   style: AppTheme.body2.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: AppTheme.warning,
+                    color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -2695,12 +2697,12 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         return Container(
           decoration: BoxDecoration(
             color: isSaved
-                ? AppTheme.success.withOpacity(0.05)
+                ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.05)
                 : AppTheme.primaryBlue.withOpacity(0.1),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: isSaved
-                  ? AppTheme.success.withOpacity(0.5)
+                  ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.5)
                   : AppTheme.primaryBlue.withOpacity(0.3),
             ),
           ),
@@ -2724,7 +2726,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       Text(
                         word,
                         style: AppTheme.body2.copyWith(
-                          color: isSaved ? AppTheme.success : AppTheme.primaryBlue,
+                          color: isSaved ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success) : AppTheme.primaryBlue,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -2773,7 +2775,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('単語帳から削除しました', style: AppTheme.body2.copyWith(color: Colors.white)),
-                                backgroundColor: AppTheme.warning,
+                                backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning),
                                 behavior: SnackBarBehavior.floating,
                                 margin: const EdgeInsets.all(16),
                                 shape: RoundedRectangleBorder(
@@ -2797,7 +2799,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       child: Icon(
                         isSaved ? Icons.check : Icons.add_card,
                         size: 16,
-                        color: isSaved ? AppTheme.success : AppTheme.primaryBlue.withOpacity(0.7),
+                        color: isSaved ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success) : AppTheme.primaryBlue.withOpacity(0.7),
                       ),
                     ),
                   ),
