@@ -87,8 +87,8 @@ class AppTheme {
     textTertiary: Color(0xFF9B9B9B),
     
     // Border & Divider
-    border: Color(0xFFE0E0E0),  // より濃いグレーに変更
-    divider: Color(0xFFE0E0E0),  // より濃いグレーに変更
+    border: Color(0xFFD4C4B0),  // 薄茶色のボーダー
+    divider: Color(0xFFD4C4B0),  // 薄茶色のボーダー
     
     // Semantic Colors
     success: Color(0xFF7CB342),        // フレッシュグリーン
@@ -133,8 +133,8 @@ class AppTheme {
     textTertiary: Color(0xFF8C8C8C),
     
     // Border & Divider
-    border: Color(0xFF404040),
-    divider: Color(0xFF404040),
+    border: Color(0xFF5C4A3A),  // ダークモード用の茶色ボーダー
+    divider: Color(0xFF5C4A3A),  // ダークモード用の茶色ボーダー
     
     // Semantic Colors - Adjusted for dark theme
     success: Color(0xFF9CCC65),        // 明るめのグリーン
