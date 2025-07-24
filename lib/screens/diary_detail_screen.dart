@@ -366,17 +366,17 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             ),
             Text(
               DateFormat('yyyy年MM月dd日 HH:mm').format(widget.entry.createdAt),
-              style: AppTheme.caption.copyWith(color: AppTheme.textSecondary),
+              style: AppTheme.caption.copyWith(color: Theme.of(context).textTheme.bodyMedium?.color),
             ),
           ],
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: AppTheme.textPrimary),
+          icon: Icon(Icons.arrow_back_ios, color: Theme.of(context).textTheme.bodyLarge?.color),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.edit, color: AppTheme.primaryBlue),
+            icon: Icon(Icons.edit, color: Theme.of(context).colorScheme.secondary),
             onPressed: () {
               Navigator.push(
                 context,
@@ -405,9 +405,9 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
               child: TabBar(
                 controller: _tabController,
                 labelColor: Colors.white,
-                unselectedLabelColor: AppTheme.textSecondary,
+                unselectedLabelColor: Theme.of(context).textTheme.bodyMedium?.color,
                 indicator: BoxDecoration(
-                  color: AppTheme.primaryColor,
+                  color: Theme.of(context).primaryColor,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 indicatorPadding: EdgeInsets.zero,
@@ -489,7 +489,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   children: [
                     Icon(
                       Icons.edit_note,
-                      color: AppTheme.accentColor,
+                      color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.accent : AppTheme.darkColors.accent),
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -497,7 +497,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       '元の文章',
                       style: AppTheme.body1.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: AppTheme.accentColor,
+                        color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.accent : AppTheme.darkColors.accent),
                       ),
                     ),
                     // 正しい英語の場合はTTSボタンを表示
@@ -525,7 +525,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: AppTheme.dividerColor.withOpacity(0.5),
+                        color: Theme.of(context).dividerColor.withOpacity(0.5),
                         width: 1,
                       ),
                     ),
@@ -535,7 +535,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         Text(
                           '日本語訳',
                           style: AppTheme.caption.copyWith(
-                            color: AppTheme.textSecondary,
+                            color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -543,7 +543,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         _buildHighlightedText(
                           _translatedContent,
                           AppTheme.body2.copyWith(
-                            color: AppTheme.textPrimary,
+                            color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                             height: 1.5,
                           ),
                         ),
@@ -629,7 +629,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         },
                         icon: Icon(
                           Icons.record_voice_over,
-                          color: AppTheme.primaryColor,
+                          color: Theme.of(context).primaryColor,
                           size: 20,
                         ),
                         padding: EdgeInsets.zero,
@@ -747,7 +747,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           Text(
                             '日本語訳',
                             style: AppTheme.caption.copyWith(
-                              color: AppTheme.textSecondary,
+                              color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -755,7 +755,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           Text(
                             _translatedContent,
                             style: AppTheme.body2.copyWith(
-                              color: AppTheme.textPrimary,
+                              color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                               height: 1.5,
                             ),
                           ),
@@ -832,7 +832,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           Text(
                             '元の文章',
                             style: AppTheme.caption.copyWith(
-                              color: AppTheme.textSecondary,
+                              color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                             ),
                           ),
                         ],
@@ -878,7 +878,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                     Text(
                                       '日本語訳（修正前）',
                                       style: AppTheme.caption.copyWith(
-                                        color: AppTheme.textSecondary,
+                                        color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -886,7 +886,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                     Text(
                                       _generateOriginalTranslation(),
                                       style: AppTheme.body2.copyWith(
-                                        color: AppTheme.textPrimary,
+                                        color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                                         height: 1.5,
                                       ),
                                     ),
@@ -929,7 +929,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           Text(
                             isJapanese ? '翻訳文' : (isMixed ? '英語に統一' : '添削後'),
                             style: AppTheme.caption.copyWith(
-                              color: AppTheme.textSecondary,
+                              color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                             ),
                           ),
                         ],
@@ -1035,7 +1035,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                       Text(
                                         '日本語訳',
                                         style: AppTheme.caption.copyWith(
-                                          color: AppTheme.textSecondary,
+                                          color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
@@ -1043,7 +1043,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                       Text(
                                         _translatedContent,
                                         style: AppTheme.body2.copyWith(
-                                          color: AppTheme.textPrimary,
+                                          color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                                           height: 1.5,
                                         ),
                                       ),
@@ -1099,16 +1099,16 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     style: AppTheme.body1,
                     decoration: InputDecoration(
                       hintText: '正しい英文を書き写してみましょう。',
-                      hintStyle: AppTheme.body2.copyWith(color: AppTheme.textTertiary),
+                      hintStyle: AppTheme.body2.copyWith(color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey),
                       filled: true,
                       fillColor: Theme.of(context).cardColor,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: AppTheme.borderColor),
+                        borderSide: BorderSide(color: Theme.of(context).dividerColor),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: AppTheme.borderColor),
+                        borderSide: BorderSide(color: Theme.of(context).dividerColor),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -1162,7 +1162,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           Text(
                             '文法的により自然な表現に修正しました。以下の点に注意してください：',
                             style: AppTheme.body2.copyWith(
-                              color: AppTheme.textPrimary,
+                              color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                               height: 1.5,
                               fontWeight: FontWeight.w500,
                             ),
@@ -1205,7 +1205,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                           Text(
                             'このまま継続して学習を続けることで、さらに上達できます。',
                             style: AppTheme.caption.copyWith(
-                              color: AppTheme.textSecondary,
+                              color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                               height: 1.4,
                             ),
                           ),
@@ -1353,7 +1353,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                                   width: 40,
                                                   height: 4,
                                                   decoration: BoxDecoration(
-                                                    color: AppTheme.textTertiary,
+                                                    color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey,
                                                     borderRadius: BorderRadius.circular(2),
                                                   ),
                                                 ),
@@ -1390,7 +1390,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                                                 Text(
                                                                   '意味を取得中...',
                                                                   style: AppTheme.body2.copyWith(
-                                                                    color: AppTheme.textSecondary,
+                                                                    color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                                                                   ),
                                                                 ),
                                                               ],
@@ -1525,12 +1525,12 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                                         icon: Icon(
                                                           isAddedToFlashcard ? Icons.check_circle : Icons.add_card,
                                                           size: 20,
-                                                          color: isAddedToFlashcard ? AppTheme.primaryColor : Colors.white,
+                                                          color: isAddedToFlashcard ? Theme.of(context).primaryColor : Colors.white,
                                                         ),
                                                         label: Text(
                                                           isAddedToFlashcard ? '学習カードに追加済み' : '学習カードに追加',
                                                           style: TextStyle(
-                                                            color: isAddedToFlashcard ? AppTheme.primaryColor : Colors.white,
+                                                            color: isAddedToFlashcard ? Theme.of(context).primaryColor : Colors.white,
                                                           ),
                                                         ),
                                                       ),
@@ -1735,8 +1735,8 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     style: _areAllWordsAdded() 
                       ? AppButtonStyles.primaryButton(context).copyWith(
                           backgroundColor: MaterialStateProperty.all(Colors.white),
-                          foregroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
-                          side: MaterialStateProperty.all(BorderSide(color: AppTheme.primaryColor, width: 2)),
+                          foregroundColor: MaterialStateProperty.all(Theme.of(context).primaryColor),
+                          side: MaterialStateProperty.all(BorderSide(color: Theme.of(context).primaryColor, width: 2)),
                           minimumSize: MaterialStateProperty.all(Size(double.infinity, 56)),
                           fixedSize: MaterialStateProperty.all(Size(double.infinity, 56)),
                         )
@@ -1746,12 +1746,12 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         ),
                     icon: Icon(
                       _areAllWordsAdded() ? Icons.check_circle : Icons.add_card,
-                      color: _areAllWordsAdded() ? AppTheme.primaryColor : Colors.white,
+                      color: _areAllWordsAdded() ? Theme.of(context).primaryColor : Colors.white,
                     ),
                     label: Text(
                       _areAllWordsAdded() ? '学習カードに追加済み' : '学習カードにすべて追加',
                       style: AppTheme.button.copyWith(
-                        color: _areAllWordsAdded() ? AppTheme.primaryColor : Colors.white,
+                        color: _areAllWordsAdded() ? Theme.of(context).primaryColor : Colors.white,
                       ),
                     ),
                   ),
@@ -1902,7 +1902,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   Text(
                     'English',
                     style: AppTheme.caption.copyWith(
-                      color: AppTheme.textSecondary,
+                      color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -1917,7 +1917,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     Text(
                       '日本語',
                       style: AppTheme.caption.copyWith(
-                        color: AppTheme.textSecondary,
+                        color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -1930,7 +1930,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     Text(
                       '翻訳がありません',
                       style: AppTheme.body2.copyWith(
-                        color: AppTheme.textTertiary,
+                        color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey,
                         fontStyle: FontStyle.italic,
                       ),
                     ),
@@ -2087,7 +2087,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
               Text(
                 '単語をタップして詳細を表示',
                 style: AppTheme.caption.copyWith(
-                  color: AppTheme.textSecondary,
+                  color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                 ),
               ),
             ],
@@ -2100,7 +2100,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                     child: Text(
                       '単語が見つかりません',
                       style: AppTheme.body2.copyWith(
-                        color: AppTheme.textTertiary,
+                        color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey,
                       ),
                     ),
                   )
@@ -2157,7 +2157,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                       Text(
                                         translation,
                                         style: AppTheme.body2.copyWith(
-                                          color: AppTheme.textSecondary,
+                                          color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                                         ),
                                       ),
                                     ],
@@ -2268,7 +2268,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   child: Text(
                     '学習した単語がありません',
                     style: AppTheme.body2.copyWith(
-                      color: AppTheme.textTertiary,
+                      color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey,
                     ),
                   ),
                 )
@@ -2310,7 +2310,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                                   Text(
                                     translation,
                                     style: AppTheme.body2.copyWith(
-                                      color: AppTheme.textSecondary,
+                                      color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                                     ),
                                   ),
                                 ],
@@ -2444,7 +2444,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 Text(
                   description,
                   style: AppTheme.caption.copyWith(
-                    color: AppTheme.textSecondary,
+                    color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                     height: 1.4,
                   ),
                 ),
@@ -2600,7 +2600,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
           Text(
             description,
             style: AppTheme.caption.copyWith(
-              color: AppTheme.textPrimary,
+              color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
               height: 1.4,
             ),
           ),
@@ -2640,7 +2640,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 Text(
                   description,
                   style: AppTheme.caption.copyWith(
-                    color: AppTheme.textSecondary,
+                    color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                     height: 1.4,
                   ),
                 ),
@@ -2675,7 +2675,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         child: Text(
           '単語が見つかりません',
           style: AppTheme.body2.copyWith(
-            color: AppTheme.textTertiary,
+            color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey,
           ),
         ),
       );
@@ -2733,7 +2733,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                         Text(
                           '• ${translation}',
                           style: AppTheme.caption.copyWith(
-                            color: AppTheme.textSecondary,
+                            color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
                           ),
                         ),
                       ],
@@ -2822,7 +2822,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 width: 20,
                 height: 20,
                 decoration: BoxDecoration(
-                  color: AppTheme.textSecondary.withOpacity(0.3),
+                  color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.3),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -2831,7 +2831,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 width: 80,
                 height: 16,
                 decoration: BoxDecoration(
-                  color: AppTheme.textSecondary.withOpacity(0.3),
+                  color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
@@ -2842,7 +2842,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             width: double.infinity,
             height: 60,
             decoration: BoxDecoration(
-              color: AppTheme.textSecondary.withOpacity(0.2),
+              color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.2),
               borderRadius: BorderRadius.circular(8),
             ),
           ),
@@ -2850,7 +2850,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       ),
     ).animate(
       onPlay: (controller) => controller.repeat(),
-    ).shimmer(duration: 1500.ms, color: AppTheme.textSecondary.withOpacity(0.1));
+    ).shimmer(duration: 1500.ms, color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.1));
   }
   
   List<Widget> _buildSkeletonResults() {
@@ -2867,7 +2867,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   width: 20,
                   height: 20,
                   decoration: BoxDecoration(
-                    color: AppTheme.textSecondary.withOpacity(0.3),
+                    color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.3),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -2876,7 +2876,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   width: 100,
                   height: 16,
                   decoration: BoxDecoration(
-                    color: AppTheme.textSecondary.withOpacity(0.3),
+                    color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
@@ -2887,7 +2887,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
               width: double.infinity,
               height: 80,
               decoration: BoxDecoration(
-                color: AppTheme.textSecondary.withOpacity(0.2),
+                color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
@@ -2895,7 +2895,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
         ),
       ).animate(
         onPlay: (controller) => controller.repeat(),
-      ).shimmer(duration: 1500.ms, color: AppTheme.textSecondary.withOpacity(0.1)),
+      ).shimmer(duration: 1500.ms, color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.1)),
     ];
   }
   
@@ -2911,7 +2911,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 width: 20,
                 height: 20,
                 decoration: BoxDecoration(
-                  color: AppTheme.textSecondary.withOpacity(0.3),
+                  color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.3),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -2920,7 +2920,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 width: 80,
                 height: 16,
                 decoration: BoxDecoration(
-                  color: AppTheme.textSecondary.withOpacity(0.3),
+                  color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
@@ -2932,7 +2932,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             width: double.infinity,
             height: 16,
             decoration: BoxDecoration(
-              color: AppTheme.textSecondary.withOpacity(0.2),
+              color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.2),
               borderRadius: BorderRadius.circular(8),
             ),
           )),
@@ -2940,7 +2940,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       ),
     ).animate(
       onPlay: (controller) => controller.repeat(),
-    ).shimmer(duration: 1500.ms, color: AppTheme.textSecondary.withOpacity(0.1));
+    ).shimmer(duration: 1500.ms, color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.1));
   }
   
   Widget _buildSkeletonLearningPoints() {
@@ -2955,7 +2955,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 width: 20,
                 height: 20,
                 decoration: BoxDecoration(
-                  color: AppTheme.textSecondary.withOpacity(0.3),
+                  color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.3),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -2964,7 +2964,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                 width: 100,
                 height: 16,
                 decoration: BoxDecoration(
-                  color: AppTheme.textSecondary.withOpacity(0.3),
+                  color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
@@ -2975,7 +2975,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppTheme.textSecondary.withOpacity(0.1),
+              color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -2984,7 +2984,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   width: 80,
                   height: 16,
                   decoration: BoxDecoration(
-                    color: AppTheme.textSecondary.withOpacity(0.3),
+                    color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
@@ -2993,7 +2993,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
                   child: Container(
                     height: 16,
                     decoration: BoxDecoration(
-                      color: AppTheme.textSecondary.withOpacity(0.2),
+                      color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
@@ -3005,7 +3005,7 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       ),
     ).animate(
       onPlay: (controller) => controller.repeat(),
-    ).shimmer(duration: 1500.ms, color: AppTheme.textSecondary.withOpacity(0.1));
+    ).shimmer(duration: 1500.ms, color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey.withOpacity(0.1));
   }
   
   // 単語ハイライト機能付きテキストウィジェットを構築
@@ -3024,8 +3024,8 @@ class _DiaryDetailScreenState extends State<DiaryDetailScreen> with SingleTicker
       spans.add(TextSpan(
         text: word,
         style: style.copyWith(
-          backgroundColor: isHighlighted ? AppTheme.primaryColor.withOpacity(0.3) : null,
-          color: isHighlighted ? AppTheme.primaryColor : style.color,
+          backgroundColor: isHighlighted ? Theme.of(context).primaryColor.withOpacity(0.3) : null,
+          color: isHighlighted ? Theme.of(context).primaryColor : style.color,
           fontWeight: isHighlighted ? FontWeight.w600 : style.fontWeight,
         ),
       ));
