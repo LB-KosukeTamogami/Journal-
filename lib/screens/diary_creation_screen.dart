@@ -552,8 +552,12 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        const Color(0xFFF5F5F5),
-                        const Color(0xFFE8E8E8),
+                        Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.darkColors.surface
+                          : AppTheme.lightColors.surface,
+                        Theme.of(context).brightness == Brightness.dark
+                          ? AppTheme.darkColors.surfaceVariant
+                          : AppTheme.lightColors.surfaceVariant,
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -790,7 +794,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       Container(
                         decoration: BoxDecoration(
                           color: Theme.of(context).brightness == Brightness.dark 
-                            ? Color(0xFF2D2D2D) 
+                            ? AppTheme.darkColors.surface
                             : Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
@@ -860,7 +864,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       Container(
                         decoration: BoxDecoration(
                           color: Theme.of(context).brightness == Brightness.dark 
-                            ? Color(0xFF2D2D2D) 
+                            ? AppTheme.darkColors.surface
                             : Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
@@ -934,8 +938,12 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        const Color(0xFFF5F5F5),
-                                        const Color(0xFFE8E8E8),
+                                        Theme.of(context).brightness == Brightness.dark
+                                          ? AppTheme.darkColors.surface
+                                          : AppTheme.lightColors.surface,
+                                        Theme.of(context).brightness == Brightness.dark
+                                          ? AppTheme.darkColors.surfaceVariant
+                                          : AppTheme.lightColors.surfaceVariant,
                                       ],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,

@@ -321,7 +321,9 @@ class AppTheme {
       
       appBarTheme: AppBarTheme(
         backgroundColor: themeColors.surface,
-        elevation: 0,
+        surfaceTintColor: Colors.transparent, // Material 3のtintを無効化
+        elevation: 0.5, // 軽微な影を追加
+        shadowColor: themeColors.border.withOpacity(0.3),
         centerTitle: false,
         titleTextStyle: GoogleFonts.notoSansJp(
           fontSize: 20,
@@ -330,6 +332,7 @@ class AppTheme {
           height: 1.3,
         ),
         iconTheme: IconThemeData(color: themeColors.textPrimary),
+        actionsIconTheme: IconThemeData(color: themeColors.textSecondary),
       ),
       
       elevatedButtonTheme: ElevatedButtonThemeData(

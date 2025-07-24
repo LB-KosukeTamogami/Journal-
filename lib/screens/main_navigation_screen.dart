@@ -120,15 +120,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? Theme.of(context).primaryColor.withOpacity(0.1)
+                      ? Theme.of(context).primaryColor.withOpacity(0.12)
                       : Colors.transparent,
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(20),
                 ),
                 child: Icon(
                   item.icon,
                   color: isSelected
                       ? Theme.of(context).primaryColor
-                      : Theme.of(context).textTheme.bodyLarge?.color,
+                      : Theme.of(context).textTheme.bodySmall?.color,
                   size: 24,
                 ),
               ),
@@ -138,8 +138,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: isSelected
                       ? Theme.of(context).primaryColor
-                      : Theme.of(context).textTheme.bodyLarge?.color,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                      : Theme.of(context).textTheme.bodySmall?.color,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                   fontSize: 11,
                 ),
                 maxLines: 1,

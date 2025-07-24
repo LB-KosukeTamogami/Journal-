@@ -232,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
               gradient: LinearGradient(
                 colors: [
                   Theme.of(context).colorScheme.error.withOpacity(0.8),
-                  const Color(0xFFFFB74D),
+                  AppTheme.warning,
                 ],
               ),
               shape: BoxShape.circle,
@@ -390,8 +390,12 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  const Color(0xFFF5F5F5), // 薄いグレー
-                  const Color(0xFFE8E8E8), // 少し濃いグレー
+                  Theme.of(context).brightness == Brightness.dark
+                    ? AppTheme.darkColors.surface
+                    : AppTheme.lightColors.surface,
+                  Theme.of(context).brightness == Brightness.dark
+                    ? AppTheme.darkColors.surfaceVariant
+                    : AppTheme.lightColors.surfaceVariant,
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -473,7 +477,7 @@ class _MissionCard extends StatelessWidget {
     
     return AppCard(
       onTap: null, // タップ不可
-      backgroundColor: completed ? const Color(0xFFF8F6F3) : Theme.of(context).cardColor,
+      backgroundColor: completed ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.surfaceVariant : AppTheme.darkColors.surfaceVariant) : Theme.of(context).cardColor,
       child: Row(
         children: [
           Container(
@@ -481,13 +485,13 @@ class _MissionCard extends StatelessWidget {
             height: 48,
             decoration: BoxDecoration(
               color: completed 
-                ? const Color(0xFF7CB342).withOpacity(0.1)
+                ? AppTheme.success.withOpacity(0.1)
                 : color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               completed ? Icons.check_circle : icon,
-              color: completed ? const Color(0xFF7CB342) : color,
+              color: completed ? AppTheme.success : color,
               size: 24,
             ),
           ),
@@ -559,11 +563,11 @@ class _MissionCard extends StatelessWidget {
       case MissionType.wordLearning:
         return AppTheme.info;
       case MissionType.streak:
-        return const Color(0xFFFFB74D);
+        return AppTheme.warning;
       case MissionType.review:
-        return const Color(0xFF7CB342);
+        return AppTheme.success;
       case MissionType.conversation:
-        return const Color(0xFF8B5CF6);
+        return AppTheme.info;
     }
   }
 }
