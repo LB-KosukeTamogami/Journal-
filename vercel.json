@@ -1,12 +1,7 @@
 {
-  "buildCommand": "bash vercel-build-simple.sh",
+  "buildCommand": "sh vercel-build-simple.sh",
   "outputDirectory": "build/web",
   "installCommand": "npm install",
-  "functions": {
-    "api/**/*.js": {
-      "maxDuration": 10
-    }
-  },
   "github": {
     "silent": true
   }
