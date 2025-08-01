@@ -1,5 +1,5 @@
 {
-  "buildCommand": "./vercel-build-simple.sh",
+  "buildCommand": "bash vercel-build-simple.sh",
   "outputDirectory": "build/web",
   "installCommand": "npm install",
   "functions": {
