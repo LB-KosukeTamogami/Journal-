@@ -44,11 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _missions = missions;
         _currentStreak = analytics['currentStreak'] ?? 0;
-<<<<<<< HEAD
-        _totalDays = analytics['totalEntries'] ?? 0;
-=======
         _totalDays = analytics['totalLearningDays'] ?? 0;
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         _acoMessage = acoMessage;
         _isLoading = false;
       });
@@ -81,11 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(AcoService.getMissionCompleteMessage()),
-<<<<<<< HEAD
-        backgroundColor: AppTheme.success,
-=======
         backgroundColor: Theme.of(context).colorScheme.secondary,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
         shape: RoundedRectangleBorder(
@@ -98,19 +90,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.backgroundSecondary,
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: _loadData,
-          color: AppTheme.primaryColor,
-=======
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _loadData,
           color: Theme.of(context).primaryColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
           child: CustomScrollView(
             slivers: [
               // Header
@@ -122,20 +106,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         _getGreeting(),
-<<<<<<< HEAD
-                        style: AppTheme.headline1,
-=======
                         style: Theme.of(context).textTheme.displayLarge,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       ),
                       const SizedBox(height: 8),
                       Text(
                         '${_today.month}月${_today.day}日 ${_getDayOfWeek()}曜日',
-<<<<<<< HEAD
-                        style: AppTheme.body2,
-=======
                         style: Theme.of(context).textTheme.bodyMedium,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       ),
                     ],
                   ),
@@ -173,11 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
                   child: Text(
                     '今日のミッション',
-<<<<<<< HEAD
-                    style: AppTheme.headline3,
-=======
                     style: Theme.of(context).textTheme.displaySmall,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   ),
                 ),
               ),
@@ -189,11 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Padding(
                       padding: const EdgeInsets.all(32),
                       child: CircularProgressIndicator(
-<<<<<<< HEAD
-                        color: AppTheme.primaryColor,
-=======
                         color: Theme.of(context).primaryColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       ),
                     ),
                   ),
@@ -208,20 +176,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           Icon(
                             Icons.check_circle_outline,
                             size: 64,
-<<<<<<< HEAD
-                            color: AppTheme.textTertiary,
-=======
                             color: Theme.of(context).textTheme.bodySmall?.color,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                           ),
                           const SizedBox(height: 16),
                           Text(
                             '今日のミッションはありません',
-<<<<<<< HEAD
-                            style: AppTheme.body2,
-=======
                             style: Theme.of(context).textTheme.bodyMedium,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                           ),
                         ],
                       ),
@@ -271,15 +231,10 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-<<<<<<< HEAD
-                  AppTheme.warning.withOpacity(0.8),
-                  AppTheme.warning,
-=======
                   Theme.of(context).colorScheme.error.withOpacity(0.8),
                   Theme.of(context).brightness == Brightness.light 
                     ? AppTheme.lightColors.warning
                     : AppTheme.darkColors.warning,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 ],
               ),
               shape: BoxShape.circle,
@@ -297,11 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Text(
                   '連続記録',
-<<<<<<< HEAD
-                  style: AppTheme.body2,
-=======
                   style: Theme.of(context).textTheme.bodyMedium,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 ),
                 const SizedBox(height: 4),
                 Row(
@@ -310,23 +261,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       '$_currentStreak',
-<<<<<<< HEAD
-                      style: AppTheme.headline2.copyWith(
-                        color: AppTheme.primaryColor,
-=======
                       style: Theme.of(context).textTheme.displayMedium?.copyWith(
                         color: Theme.of(context).primaryColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       ),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       '日',
-<<<<<<< HEAD
-                      style: AppTheme.body2,
-=======
                       style: Theme.of(context).textTheme.bodyMedium,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     ),
                   ],
                 ),
@@ -338,20 +280,12 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 '総学習日数',
-<<<<<<< HEAD
-                style: AppTheme.caption,
-=======
                 style: Theme.of(context).textTheme.bodySmall,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
               ),
               const SizedBox(height: 4),
               Text(
                 '$_totalDays日',
-<<<<<<< HEAD
-                style: AppTheme.body1.copyWith(
-=======
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -364,11 +298,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildCreateDiaryCard() {
     return AppCard(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.primaryColor,
-=======
       backgroundColor: Theme.of(context).primaryColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       onTap: () {
         Navigator.push(
           context,
@@ -430,37 +360,24 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-<<<<<<< HEAD
-            Colors.white, // 純白
-            const Color(0xFFFBF8F5), // 非常に薄いクリーム色
-=======
             Theme.of(context).brightness == Brightness.dark 
               ? AppTheme.darkColors.surface 
               : AppTheme.lightColors.surface,
             Theme.of(context).brightness == Brightness.dark 
               ? AppTheme.darkColors.surfaceVariant 
               : AppTheme.lightColors.surfaceVariant,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-<<<<<<< HEAD
-          color: AppTheme.primaryColor.withOpacity(0.2),
-=======
           color: Theme.of(context).primaryColor.withOpacity(0.2),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-<<<<<<< HEAD
-            color: AppTheme.primaryColor.withOpacity(0.08),
-=======
             color: Theme.of(context).primaryColor.withOpacity(0.08),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -475,28 +392,19 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-<<<<<<< HEAD
-                  const Color(0xFFF5F5F5), // 薄いグレー
-                  const Color(0xFFE8E8E8), // 少し濃いグレー
-=======
                   Theme.of(context).brightness == Brightness.dark
                     ? AppTheme.darkColors.surface
                     : AppTheme.lightColors.surface,
                   Theme.of(context).brightness == Brightness.dark
                     ? AppTheme.darkColors.surfaceVariant
                     : AppTheme.lightColors.surfaceVariant,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               shape: BoxShape.circle,
               border: Border.all(
-<<<<<<< HEAD
-                color: AppTheme.primaryColor.withOpacity(0.3),
-=======
                 color: Theme.of(context).primaryColor.withOpacity(0.3),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 width: 1.5,
               ),
               boxShadow: [
@@ -523,22 +431,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   'Aco からのメッセージ',
                   style: AppTheme.body2.copyWith(
                     fontWeight: FontWeight.w600,
-<<<<<<< HEAD
-                    color: AppTheme.primaryColor,
-=======
                     color: Theme.of(context).primaryColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   _acoMessage,
                   style: AppTheme.body2.copyWith(
-<<<<<<< HEAD
-                    color: const Color(0xFF424242), // より読みやすいダークグレー
-=======
                     color: Theme.of(context).textTheme.bodyMedium?.color,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     height: 1.5,
                   ),
                 ),
@@ -575,19 +475,11 @@ class _MissionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool completed = mission.isCompleted;
     final IconData icon = _getIconFromType(mission.type);
-<<<<<<< HEAD
-    final Color color = _getColorFromType(mission.type);
-    
-    return AppCard(
-      onTap: null, // タップ不可
-      backgroundColor: completed ? AppTheme.backgroundTertiary : AppTheme.backgroundPrimary,
-=======
     final Color color = _getColorFromType(mission.type, context);
     
     return AppCard(
       onTap: null, // タップ不可
       backgroundColor: completed ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.surfaceVariant : AppTheme.darkColors.surfaceVariant) : Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       child: Row(
         children: [
           Container(
@@ -595,27 +487,19 @@ class _MissionCard extends StatelessWidget {
             height: 48,
             decoration: BoxDecoration(
               color: completed 
-<<<<<<< HEAD
-                ? AppTheme.success.withOpacity(0.1)
-=======
                 ? (Theme.of(context).brightness == Brightness.light 
                   ? AppTheme.lightColors.success.withOpacity(0.1)
                   : AppTheme.darkColors.success.withOpacity(0.1))
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 : color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               completed ? Icons.check_circle : icon,
-<<<<<<< HEAD
-              color: completed ? AppTheme.success : color,
-=======
               color: completed 
                 ? (Theme.of(context).brightness == Brightness.light 
                   ? AppTheme.lightColors.success
                   : AppTheme.darkColors.success)
                 : color,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
               size: 24,
             ),
           ),
@@ -628,13 +512,9 @@ class _MissionCard extends StatelessWidget {
                   mission.title,
                   style: AppTheme.body1.copyWith(
                     fontWeight: FontWeight.w600,
-<<<<<<< HEAD
-                    color: completed ? AppTheme.textTertiary : AppTheme.textPrimary,
-=======
                     color: completed 
                       ? Theme.of(context).textTheme.bodySmall?.color 
                       : Theme.of(context).textTheme.bodyLarge?.color,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     decoration: completed ? TextDecoration.lineThrough : null,
                   ),
                 ),
@@ -642,13 +522,9 @@ class _MissionCard extends StatelessWidget {
                 Text(
                   mission.description,
                   style: AppTheme.body2.copyWith(
-<<<<<<< HEAD
-                    color: completed ? AppTheme.textTertiary : AppTheme.textSecondary,
-=======
                     color: completed 
                       ? Theme.of(context).textTheme.bodySmall?.color 
                       : Theme.of(context).textTheme.bodyMedium?.color,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -660,21 +536,13 @@ class _MissionCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-<<<<<<< HEAD
-                color: AppTheme.secondaryColor.withOpacity(0.1),
-=======
                 color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 '+${mission.experiencePoints}XP',
                 style: AppTheme.caption.copyWith(
-<<<<<<< HEAD
-                  color: AppTheme.secondaryColor,
-=======
                   color: Theme.of(context).colorScheme.secondary,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -700,20 +568,6 @@ class _MissionCard extends StatelessWidget {
     }
   }
 
-<<<<<<< HEAD
-  Color _getColorFromType(MissionType type) {
-    switch (type) {
-      case MissionType.dailyDiary:
-        return AppTheme.primaryColor;
-      case MissionType.wordLearning:
-        return AppTheme.info;
-      case MissionType.streak:
-        return AppTheme.warning;
-      case MissionType.review:
-        return AppTheme.success;
-      case MissionType.conversation:
-        return const Color(0xFF8B5CF6);
-=======
   Color _getColorFromType(MissionType type, BuildContext context) {
     final brightness = Theme.of(context).brightness;
     final colors = brightness == Brightness.light ? AppTheme.lightColors : AppTheme.darkColors;
@@ -729,7 +583,6 @@ class _MissionCard extends StatelessWidget {
         return colors.success;
       case MissionType.conversation:
         return colors.info;
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
     }
   }
 }

@@ -6,10 +6,6 @@ import 'dart:math' as Math;
 import 'diary_creation_screen.dart';
 import 'diary_detail_screen.dart';
 import 'conversation_journal_screen.dart';
-<<<<<<< HEAD
-import 'vocabulary_screen.dart';
-=======
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 import '../models/diary_entry.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
@@ -92,14 +88,11 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
       groupedEntries[date]!.add(entry);
     }
     
-<<<<<<< HEAD
-=======
     // 各日付の日記を時間の降順でソート（新しい順）
     groupedEntries.forEach((date, entries) {
       entries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     });
     
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
     return groupedEntries;
   }
 
@@ -129,45 +122,9 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.backgroundSecondary,
-      appBar: AppBar(
-        title: Text('ジャーナル', style: AppTheme.headline3),
-        backgroundColor: AppTheme.backgroundPrimary,
-        elevation: 0,
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const VocabularyScreen(),
-                  ),
-                );
-              },
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppTheme.secondaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.book,
-                  color: AppTheme.secondaryColor,
-                  size: 20,
-                ),
-              ),
-            ),
-          ),
-        ],
-=======
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('ジャーナル'),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       ),
       body: Column(
         children: [
@@ -202,22 +159,6 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                           startingDayOfWeek: StartingDayOfWeek.monday,
                           calendarStyle: CalendarStyle(
                             outsideDaysVisible: false,
-<<<<<<< HEAD
-                            defaultTextStyle: TextStyle(color: AppTheme.textPrimary),
-                            weekendTextStyle: TextStyle(color: AppTheme.textSecondary),
-                            disabledTextStyle: TextStyle(color: AppTheme.textTertiary.withOpacity(0.5)),
-                            selectedDecoration: BoxDecoration(
-                              color: AppTheme.primaryColor,
-                              shape: BoxShape.circle,
-                            ),
-                            todayDecoration: BoxDecoration(
-                              color: AppTheme.primaryColor.withOpacity(0.3),
-                              shape: BoxShape.circle,
-                              border: Border.all(color: AppTheme.primaryColor, width: 2),
-                            ),
-                            markerDecoration: BoxDecoration(
-                              color: AppTheme.primaryColor,
-=======
                             defaultTextStyle: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                             weekendTextStyle: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
                             disabledTextStyle: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.5)),
@@ -232,7 +173,6 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                             ),
                             markerDecoration: BoxDecoration(
                               color: Theme.of(context).primaryColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                               shape: BoxShape.circle,
                             ),
                             markersMaxCount: 1,
@@ -240,15 +180,6 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                           headerStyle: HeaderStyle(
                             formatButtonVisible: false,
                             titleCentered: true,
-<<<<<<< HEAD
-                            titleTextStyle: AppTheme.headline3,
-                            leftChevronIcon: Icon(Icons.chevron_left, color: AppTheme.textPrimary),
-                            rightChevronIcon: Icon(
-                              Icons.chevron_right, 
-                              color: _canGoToNextMonth(_focusedDay) 
-                                ? AppTheme.textPrimary 
-                                : AppTheme.textTertiary.withOpacity(0.3),
-=======
                             titleTextStyle: Theme.of(context).textTheme.displaySmall ?? AppTheme.headline3,
                             leftChevronIcon: Icon(Icons.chevron_left, color: Theme.of(context).textTheme.bodyLarge?.color),
                             rightChevronIcon: Icon(
@@ -256,7 +187,6 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                               color: _canGoToNextMonth(_focusedDay) 
                                 ? Theme.of(context).textTheme.bodyLarge?.color
                                 : Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.3),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                             ),
                           ),
                           onDaySelected: (selectedDay, focusedDay) {
@@ -265,11 +195,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: const Text('未来の日付は選択できません'),
-<<<<<<< HEAD
-                                  backgroundColor: AppTheme.error,
-=======
                                   backgroundColor: Theme.of(context).colorScheme.error,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                   behavior: SnackBarBehavior.floating,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
@@ -327,11 +253,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-<<<<<<< HEAD
-                          color: AppTheme.backgroundPrimary.withOpacity(0.9),
-=======
                           color: Theme.of(context).cardColor.withOpacity(0.9),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
@@ -366,20 +288,12 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
           // 選択された日の日記リスト
           Expanded(
             child: _isLoading
-<<<<<<< HEAD
-                ? Center(child: CircularProgressIndicator(color: AppTheme.primaryColor))
-=======
                 ? Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor))
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 : _selectedDay == null
                     ? Center(
                         child: Text(
                           '日付を選択してください',
-<<<<<<< HEAD
-                          style: AppTheme.body1.copyWith(color: AppTheme.textSecondary),
-=======
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).textTheme.bodyMedium?.color),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                         ),
                       )
                     : _buildJournalList(),
@@ -388,9 +302,6 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
       ),
       floatingActionButton: Container(
         decoration: BoxDecoration(
-<<<<<<< HEAD
-          boxShadow: AppTheme.buttonShadow,
-=======
           boxShadow: [
             BoxShadow(
               color: Theme.of(context).primaryColor.withOpacity(0.25),
@@ -398,7 +309,6 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
               offset: const Offset(0, 4),
             ),
           ],
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
           borderRadius: BorderRadius.circular(16),
         ),
         child: FloatingActionButton.extended(
@@ -408,11 +318,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: const Text('未来の日付には日記を作成できません'),
-<<<<<<< HEAD
-                  backgroundColor: AppTheme.error,
-=======
                   backgroundColor: Theme.of(context).colorScheme.error,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -434,15 +340,9 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
               await _loadEntries();
             }
           },
-<<<<<<< HEAD
-          backgroundColor: AppTheme.primaryColor,
-          icon: const Icon(Icons.add, color: Colors.white),
-          label: Text('新規作成', style: AppTheme.button),
-=======
           backgroundColor: Theme.of(context).primaryColor,
           icon: const Icon(Icons.add, color: Colors.white),
           label: Text('新規作成', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         ),
       ),
     );
@@ -452,17 +352,6 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
     final journals = _getJournalsForDay(_selectedDay!);
     
     if (journals.isEmpty) {
-<<<<<<< HEAD
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '${DateFormat('M月d日').format(_selectedDay!)}の日記はまだありません',
-              style: AppTheme.body1.copyWith(color: AppTheme.textSecondary),
-            ),
-          ],
-=======
       return Container(
         padding: const EdgeInsets.only(bottom: 80), // FABの高さを考慮して調整
         child: Center(
@@ -488,7 +377,6 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
               ),
             ],
           ),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         ),
       );
     }
@@ -531,22 +419,14 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                       Expanded(
                         child: Text(
                           journal.title,
-<<<<<<< HEAD
-                          style: AppTheme.headline3,
-=======
                           style: Theme.of(context).textTheme.displaySmall,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Text(
                         DateFormat('HH:mm').format(journal.createdAt),
-<<<<<<< HEAD
-                        style: AppTheme.caption,
-=======
                         style: Theme.of(context).textTheme.bodySmall,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       ),
                     ],
                   ),
@@ -555,11 +435,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                     journal.content,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-<<<<<<< HEAD
-                    style: AppTheme.body2,
-=======
                     style: Theme.of(context).textTheme.bodyMedium,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   ),
                   const SizedBox(height: 12),
                   Row(
@@ -567,20 +443,12 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
                       Icon(
                         Icons.edit,
                         size: 16,
-<<<<<<< HEAD
-                        color: AppTheme.textTertiary,
-=======
                         color: Theme.of(context).textTheme.bodySmall?.color,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       ),
                       const SizedBox(width: 4),
                       Text(
                         '${journal.wordCount} words',
-<<<<<<< HEAD
-                        style: AppTheme.caption,
-=======
                         style: Theme.of(context).textTheme.bodySmall,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       ),
                     ],
                   ),
@@ -604,11 +472,7 @@ class _JournalScreenState extends State<JournalScreen> with SingleTickerProvider
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         decoration: BoxDecoration(
-<<<<<<< HEAD
-          color: AppTheme.backgroundPrimary,
-=======
           color: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           boxShadow: [
             BoxShadow(

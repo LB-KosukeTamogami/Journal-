@@ -568,25 +568,6 @@ $content
 以下のJSON形式で出力してください：
 {
   "judgment": "日本語翻訳" または "英文（正しい）" または "英文（添削必要）",
-<<<<<<< HEAD
-  "detected_language": "ja" または "en",
-  "output_text": "翻訳結果 または 添削済み英文 または 入力文そのまま",
-  "original_text": "入力文（変更なし）",
-  "corrections": ["添削コメント1", "添削コメント2", ...],
-  "improvements": ["改善点1", "改善点2", ...],
-  "learned_words": [
-    {"english": "word1", "japanese": "単語1の意味"},
-    {"english": "word2", "japanese": "単語2の意味"}
-  ]
-}
-
-注意事項：
-- 日本語の場合は自然な英訳を提供
-- 英語で正しい場合は、corrections配列は空
-- 英語で添削が必要な場合は、具体的な改善点を含める
-- learned_wordsには重要な単語（単一の単語のみ）を英語と日本語のペアで含める
-- フレーズや熟語は含めない、単語のみ抽出
-=======
   "detected_language": "ja" または "en" または "mixed",
   "output_text": "翻訳結果 または 添削済み英文 または 入力文そのまま",
   "original_text": "入力文（変更なし）",
@@ -608,7 +589,6 @@ $content
 5. learned_wordsには重要な単語（単一の単語のみ）を英語と日本語のペアで含める
 6. 英文の場合は必ず日本語翻訳も提供してください（translationフィールド）
 7. 日英混在の場合は detected_language を "mixed" とし、英語に統一した文を output_text に含める
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 ''';
 
       final requestBody = {
@@ -701,20 +681,12 @@ $content
             'judgment': judgment,
             'detected_language': result['detected_language'] ?? 'en',
             'corrected': outputText,
-<<<<<<< HEAD
-            'translation': judgment == '日本語翻訳' ? outputText : '',
-=======
             'translation': result['translation'] ?? (judgment == '日本語翻訳' ? outputText : ''),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             'original': content,
             'corrections': List<String>.from(result['corrections'] ?? []),
             'improvements': List<String>.from(result['improvements'] ?? []),
             'learned_words': learnedWords,
-<<<<<<< HEAD
-            'learned_phrases': [], // 後方互換性のため空配列を保持
-=======
             'learned_phrases': List<String>.from(result['learned_phrases'] ?? []),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
           };
         }
       } else {

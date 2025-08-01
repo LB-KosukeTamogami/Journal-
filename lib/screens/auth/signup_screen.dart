@@ -4,10 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../theme/app_theme.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/acorn_icon.dart';
-<<<<<<< HEAD
-=======
 import '../../utils/no_swipe_page_route.dart';
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 import 'login_screen.dart';
 import '../legal/terms_of_service_screen.dart';
 import '../legal/privacy_policy_screen.dart';
@@ -109,20 +106,12 @@ class _SignupScreenState extends State<SignupScreen> {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-<<<<<<< HEAD
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
-                    ),
-=======
                   Navigator.pushAndRemoveUntil(
                     context,
                     NoSwipePageRoute(
                       builder: (context) => const LoginScreen(),
                     ),
                     (route) => false, // すべての履歴を削除
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   );
                 },
                 child: Text(
@@ -173,11 +162,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.backgroundSecondary,
-=======
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -230,11 +215,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         labelText: 'ユーザー名',
                         prefixIcon: const Icon(Icons.person_outline),
                         filled: true,
-<<<<<<< HEAD
-                        fillColor: Colors.white,
-=======
                         fillColor: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -269,11 +250,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         labelText: 'メールアドレス',
                         prefixIcon: const Icon(Icons.email_outlined),
                         filled: true,
-<<<<<<< HEAD
-                        fillColor: Colors.white,
-=======
                         fillColor: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -320,11 +297,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           },
                         ),
                         filled: true,
-<<<<<<< HEAD
-                        fillColor: Colors.white,
-=======
                         fillColor: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -371,11 +344,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           },
                         ),
                         filled: true,
-<<<<<<< HEAD
-                        fillColor: Colors.white,
-=======
                         fillColor: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -410,11 +379,7 @@ class _SignupScreenState extends State<SignupScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-<<<<<<< HEAD
-                  color: Colors.white,
-=======
                   color: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -488,22 +453,14 @@ class _SignupScreenState extends State<SignupScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-<<<<<<< HEAD
-                    color: Colors.red.shade50,
-=======
                     color: Theme.of(context).colorScheme.error.withOpacity(0.1),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
                       Icon(
                         Icons.error_outline,
-<<<<<<< HEAD
-                        color: Colors.red.shade700,
-=======
                         color: Theme.of(context).colorScheme.error,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                         size: 20,
                       ),
                       const SizedBox(width: 8),
@@ -511,11 +468,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         child: Text(
                           _errorMessage!,
                           style: TextStyle(
-<<<<<<< HEAD
-                            color: Colors.red.shade700,
-=======
                             color: Theme.of(context).colorScheme.error,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                             fontSize: 14,
                           ),
                         ),
@@ -528,15 +481,9 @@ class _SignupScreenState extends State<SignupScreen> {
               AppButtonStyles.withShadow(
                 ElevatedButton(
                   onPressed: _isLoading ? null : _signUp,
-<<<<<<< HEAD
-                  style: AppButtonStyles.primaryButton,
-                  child: _isLoading
-                      ? const SizedBox(
-=======
                   style: AppButtonStyles.primaryButton(context),
                   child: _isLoading
-                      ? SizedBox(
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
+                      ? const SizedBox(
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
@@ -546,10 +493,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         )
                       : const Text('新規登録'),
                 ),
-<<<<<<< HEAD
-=======
                 Theme.of(context).primaryColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
               ).animate().scale(delay: 400.ms),
               const SizedBox(height: 24),
               // Login link

@@ -3,10 +3,6 @@ import 'package:uuid/uuid.dart';
 import 'dart:async';
 import '../models/diary_entry.dart';
 import '../models/mission.dart';
-<<<<<<< HEAD
-import '../models/flashcard.dart';
-=======
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 import '../services/storage_service.dart';
 import '../services/translation_service.dart';
 import '../services/mission_service.dart';
@@ -16,10 +12,7 @@ import '../theme/app_theme.dart';
 import '../models/word.dart';
 import 'diary_review_screen.dart';
 import 'conversation_journal_screen.dart';
-<<<<<<< HEAD
-=======
 import 'main_navigation_screen.dart';
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 
 class DiaryCreationScreen extends StatefulWidget {
   final DiaryEntry? existingEntry;
@@ -193,9 +186,6 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
           
           // レビュー画面から完了ボタンで戻った場合、ジャーナル画面に戻る
           if (result == true && mounted) {
-<<<<<<< HEAD
-            Navigator.pop(context, true); // ジャーナル画面に更新を通知
-=======
             // MainNavigationScreenまで戻る
             Navigator.popUntil(context, (route) => route.isFirst);
             
@@ -204,7 +194,6 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
             if (mainNavState != null) {
               mainNavState.navigateToTab(1); // ジャーナルタブのインデックスは1
             }
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
           }
         }
       }
@@ -234,11 +223,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.7,
         decoration: BoxDecoration(
-<<<<<<< HEAD
-          color: AppTheme.backgroundPrimary,
-=======
           color: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
@@ -249,11 +234,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-<<<<<<< HEAD
-                color: AppTheme.textTertiary.withOpacity(0.3),
-=======
                 color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey.withOpacity(0.3),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -271,11 +252,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                 ? Center(
                     child: Text(
                       'ミッションがありません',
-<<<<<<< HEAD
-                      style: AppTheme.body2.copyWith(color: AppTheme.textSecondary),
-=======
                       style: AppTheme.body2.copyWith(color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     ),
                   )
                 : ListView.builder(
@@ -296,11 +273,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               padding: const EdgeInsets.all(20),
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
-<<<<<<< HEAD
-                style: AppButtonStyles.primaryButton,
-=======
                 style: AppButtonStyles.primaryButton(context),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 child: const Text('閉じる'),
               ),
             ),
@@ -314,11 +287,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-<<<<<<< HEAD
-        backgroundColor: isError ? AppTheme.error : AppTheme.success,
-=======
         backgroundColor: isError ? Theme.of(context).colorScheme.error : (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
         shape: RoundedRectangleBorder(
@@ -341,11 +310,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
       builder: (context) => Container(
         margin: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-<<<<<<< HEAD
-          color: AppTheme.backgroundPrimary,
-=======
           color: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -367,11 +332,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-<<<<<<< HEAD
-                    color: AppTheme.textTertiary.withOpacity(0.3),
-=======
                     color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey.withOpacity(0.3),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -382,11 +343,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               Text(
                 word,
                 style: AppTheme.headline2.copyWith(
-<<<<<<< HEAD
-                  color: AppTheme.primaryColor,
-=======
                   color: Theme.of(context).primaryColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 ),
               ),
               const SizedBox(height: 12),
@@ -395,11 +352,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-<<<<<<< HEAD
-                  color: AppTheme.backgroundSecondary,
-=======
                   color: Theme.of(context).colorScheme.surface,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -408,11 +361,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                     Text(
                       '意味',
                       style: AppTheme.caption.copyWith(
-<<<<<<< HEAD
-                        color: AppTheme.textSecondary,
-=======
                         color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -429,41 +378,6 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               // アクションボタン（縦並び）
               Column(
                 children: [
-<<<<<<< HEAD
-                  // 学習カードに追加
-                  AppButtonStyles.withShadow(
-                    OutlinedButton.icon(
-                      onPressed: () async {
-                        final now = DateTime.now();
-                        final flashcard = Flashcard(
-                          id: const Uuid().v4(),
-                          word: word,
-                          meaning: meaning,
-                          createdAt: now,
-                          lastReviewed: now,
-                          nextReviewDate: now.add(const Duration(days: 1)),
-                        );
-                        
-                        await StorageService.saveFlashcard(flashcard);
-                        
-                        if (context.mounted) {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('学習カードに追加しました'),
-                              backgroundColor: AppTheme.success,
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                      icon: Icon(Icons.collections_bookmark, size: 20),
-                      label: Text('学習カードに追加'),
-                      style: AppButtonStyles.secondaryButton.copyWith(
-=======
                   // 学習カードに追加機能は削除
                   /*
                   AppButtonStyles.withShadow(
@@ -474,7 +388,6 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       icon: Icon(Icons.collections_bookmark, size: 20),
                       label: Text('学習カードに追加'),
                       style: AppButtonStyles.secondaryButton(context).copyWith(
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                         foregroundColor: MaterialStateProperty.all(AppTheme.info),
                         side: MaterialStateProperty.all(
                           BorderSide(color: AppTheme.info, width: 2),
@@ -482,34 +395,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       ),
                     ),
                   ),
-<<<<<<< HEAD
-=======
-                  */
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-                  const SizedBox(height: 12),
-                  // 単語帳に追加
-                  AppButtonStyles.withShadow(
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        final wordModel = Word(
-                          id: const Uuid().v4(),
-                          english: word,
-                          japanese: meaning,
-                          createdAt: DateTime.now(),
-                        );
-                        
-                        await StorageService.saveWord(wordModel);
-                        
-                        if (context.mounted) {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('単語帳に追加しました'),
-<<<<<<< HEAD
-                              backgroundColor: AppTheme.success,
-=======
                               backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -520,18 +406,11 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       },
                       icon: Icon(Icons.book, size: 20),
                       label: Text('単語帳に追加'),
-<<<<<<< HEAD
-                      style: AppButtonStyles.primaryButton.copyWith(
-                        backgroundColor: MaterialStateProperty.all(AppTheme.success),
-                      ),
-                    ),
-=======
                       style: AppButtonStyles.primaryButton(context).copyWith(
                         backgroundColor: MaterialStateProperty.all((Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success)),
                       ),
                     ),
                     Theme.of(context).primaryColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   ),
                 ],
               ),
@@ -541,17 +420,10 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               // 閉じるボタン
               OutlinedButton(
                 onPressed: () => Navigator.pop(context),
-<<<<<<< HEAD
-                style: AppButtonStyles.secondaryButton.copyWith(
-                  foregroundColor: MaterialStateProperty.all(AppTheme.textSecondary),
-                  side: MaterialStateProperty.all(
-                    BorderSide(color: AppTheme.borderColor, width: 1),
-=======
                 style: AppButtonStyles.secondaryButton(context).copyWith(
                   foregroundColor: MaterialStateProperty.all(Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
                   side: MaterialStateProperty.all(
                     BorderSide(color: Theme.of(context).dividerColor, width: 1),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   ),
                 ),
                 child: const Text('閉じる'),
@@ -625,17 +497,10 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
     
     return Container(
       decoration: BoxDecoration(
-<<<<<<< HEAD
-        color: AppTheme.backgroundPrimary,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppTheme.primaryColor.withOpacity(0.2),
-=======
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: Theme.of(context).primaryColor.withOpacity(0.2),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
           width: 1,
         ),
       ),
@@ -648,13 +513,8 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-<<<<<<< HEAD
-                  AppTheme.primaryColor.withOpacity(0.1),
-                  AppTheme.primaryColor.withOpacity(0.05),
-=======
                   Theme.of(context).primaryColor.withOpacity(0.1),
                   Theme.of(context).primaryColor.withOpacity(0.05),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -672,28 +532,19 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-<<<<<<< HEAD
-                        const Color(0xFFF5F5F5),
-                        const Color(0xFFE8E8E8),
-=======
                         Theme.of(context).brightness == Brightness.dark
                           ? AppTheme.darkColors.surface
                           : AppTheme.lightColors.surface,
                         Theme.of(context).brightness == Brightness.dark
                           ? AppTheme.darkColors.surfaceVariant
                           : AppTheme.lightColors.surfaceVariant,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     shape: BoxShape.circle,
                     border: Border.all(
-<<<<<<< HEAD
-                      color: AppTheme.primaryColor.withOpacity(0.3),
-=======
                       color: Theme.of(context).primaryColor.withOpacity(0.3),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       width: 1.5,
                     ),
                   ),
@@ -709,11 +560,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                   'Acoとの会話まとめ',
                   style: AppTheme.body1.copyWith(
                     fontWeight: FontWeight.w600,
-<<<<<<< HEAD
-                    color: AppTheme.primaryColor,
-=======
                     color: Theme.of(context).primaryColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   ),
                 ),
               ],
@@ -771,11 +618,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                         summaryTranslation.isNotEmpty ? summaryTranslation : _getJapaneseTranslation(summary),
                         style: AppTheme.caption.copyWith(
                           height: 1.4,
-<<<<<<< HEAD
-                          color: AppTheme.textSecondary,
-=======
                           color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                         ),
                       ),
                     ],
@@ -788,11 +631,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                     '使用した単語・熟語',
                     style: AppTheme.caption.copyWith(
                       fontWeight: FontWeight.w600,
-<<<<<<< HEAD
-                      color: AppTheme.textSecondary,
-=======
                       color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -828,28 +667,17 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-<<<<<<< HEAD
-                            color: AppTheme.success.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: AppTheme.success.withOpacity(0.3),
-=======
                             color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.1),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
                               color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.3),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                               width: 1,
                             ),
                           ),
                           child: Text(
                             word,
                             style: AppTheme.caption.copyWith(
-<<<<<<< HEAD
-                              color: AppTheme.success,
-=======
                               color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -886,11 +714,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
             onPressed: () => Navigator.pop(context, true),
             child: Text(
               '破棄',
-<<<<<<< HEAD
-              style: AppTheme.body2.copyWith(color: AppTheme.error),
-=======
               style: AppTheme.body2.copyWith(color: Theme.of(context).colorScheme.error),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             ),
           ),
         ],
@@ -913,26 +737,16 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
         }
       },
       child: Scaffold(
-<<<<<<< HEAD
-        backgroundColor: AppTheme.backgroundPrimary,
-        appBar: AppBar(
-          backgroundColor: AppTheme.backgroundPrimary,
-=======
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         appBar: AppBar(
           backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
           elevation: 0,
           title: Text(
             widget.existingEntry != null ? '日記を編集' : '新しい日記',
             style: AppTheme.headline3,
           ),
           leading: IconButton(
-<<<<<<< HEAD
-            icon: Icon(Icons.arrow_back_ios, color: AppTheme.textPrimary),
-=======
             icon: Icon(Icons.arrow_back_ios, color: Theme.of(context).textTheme.bodyLarge?.color),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             onPressed: () async {
               if (await _onWillPop()) {
                 Navigator.pop(context);
@@ -941,11 +755,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
           ),
           actions: [
             IconButton(
-<<<<<<< HEAD
-              icon: Icon(Icons.flag_outlined, color: AppTheme.primaryColor),
-=======
               icon: Icon(Icons.flag_outlined, color: Theme.of(context).primaryColor),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
               onPressed: _showMissionsModal,
               tooltip: '今日のミッション',
             ),
@@ -963,14 +773,6 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       // タイトル入力
                       Container(
                         decoration: BoxDecoration(
-<<<<<<< HEAD
-                          color: AppTheme.backgroundSecondary,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: _titleFocusNode.hasFocus 
-                              ? AppTheme.primaryBlue.withOpacity(0.3)
-                              : AppTheme.borderColor.withOpacity(0.1),
-=======
                           color: Theme.of(context).brightness == Brightness.dark 
                             ? AppTheme.darkColors.surface
                             : Theme.of(context).cardColor,
@@ -979,7 +781,6 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                             color: _titleFocusNode.hasFocus 
                               ? Theme.of(context).colorScheme.secondary.withOpacity(0.3)
                               : Theme.of(context).dividerColor.withOpacity(0.1),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                           ),
                         ),
                         child: TextField(
@@ -988,11 +789,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                           decoration: InputDecoration(
                             hintText: '日記のタイトルを入力',
                             hintStyle: AppTheme.body2.copyWith(
-<<<<<<< HEAD
-                              color: AppTheme.textTertiary,
-=======
                               color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                             ),
                             border: InputBorder.none,
                             contentPadding: const EdgeInsets.symmetric(
@@ -1000,13 +797,9 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                               vertical: 16,
                             ),
                           ),
-<<<<<<< HEAD
-                          style: AppTheme.headline3,
-=======
                           style: AppTheme.headline3.copyWith(
                             color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                           ),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                           textInputAction: TextInputAction.next,
                           onSubmitted: (_) => _contentFocusNode.requestFocus(),
                         ),
@@ -1050,14 +843,6 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       // 内容入力
                       Container(
                         decoration: BoxDecoration(
-<<<<<<< HEAD
-                          color: AppTheme.backgroundSecondary,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: _contentFocusNode.hasFocus 
-                              ? AppTheme.primaryBlue.withOpacity(0.3)
-                              : AppTheme.borderColor.withOpacity(0.1),
-=======
                           color: Theme.of(context).brightness == Brightness.dark 
                             ? AppTheme.darkColors.surface
                             : Theme.of(context).cardColor,
@@ -1066,7 +851,6 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                             color: _contentFocusNode.hasFocus 
                               ? Theme.of(context).colorScheme.secondary.withOpacity(0.3)
                               : Theme.of(context).dividerColor.withOpacity(0.1),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                           ),
                         ),
                         child: TextField(
@@ -1077,11 +861,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                               ? '今日の出来事や感想を書いてみましょう'
                               : 'Write about your day and thoughts',
                             hintStyle: AppTheme.body2.copyWith(
-<<<<<<< HEAD
-                              color: AppTheme.textTertiary,
-=======
                               color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                             ),
                             border: InputBorder.none,
                             contentPadding: const EdgeInsets.symmetric(
@@ -1089,13 +869,9 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                               vertical: 16,
                             ),
                           ),
-<<<<<<< HEAD
-                          style: AppTheme.body1,
-=======
                           style: AppTheme.body1.copyWith(
                             color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                           ),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                           maxLines: 10,
                           textInputAction: TextInputAction.newline,
                         ),
@@ -1122,24 +898,15 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-<<<<<<< HEAD
-                                  AppTheme.primaryColor.withOpacity(0.1),
-                                  AppTheme.primaryColor.withOpacity(0.05),
-=======
                                   Theme.of(context).primaryColor.withOpacity(0.1),
                                   Theme.of(context).primaryColor.withOpacity(0.05),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-<<<<<<< HEAD
-                                color: AppTheme.primaryColor.withOpacity(0.3),
-=======
                                 color: Theme.of(context).primaryColor.withOpacity(0.3),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                 width: 1,
                               ),
                             ),
@@ -1151,28 +918,19 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-<<<<<<< HEAD
-                                        const Color(0xFFF5F5F5),
-                                        const Color(0xFFE8E8E8),
-=======
                                         Theme.of(context).brightness == Brightness.dark
                                           ? AppTheme.darkColors.surface
                                           : AppTheme.lightColors.surface,
                                         Theme.of(context).brightness == Brightness.dark
                                           ? AppTheme.darkColors.surfaceVariant
                                           : AppTheme.lightColors.surfaceVariant,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                       ],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
                                     ),
                                     shape: BoxShape.circle,
                                     border: Border.all(
-<<<<<<< HEAD
-                                      color: AppTheme.primaryColor.withOpacity(0.3),
-=======
                                       color: Theme.of(context).primaryColor.withOpacity(0.3),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                       width: 1.5,
                                     ),
                                   ),
@@ -1192,22 +950,14 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                                         '日記のネタを見つける',
                                         style: AppTheme.body1.copyWith(
                                           fontWeight: FontWeight.w600,
-<<<<<<< HEAD
-                                          color: AppTheme.primaryColor,
-=======
                                           color: Theme.of(context).primaryColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                         ),
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
                                         'Acoとの会話から今日の出来事を振り返りましょう',
                                         style: AppTheme.body2.copyWith(
-<<<<<<< HEAD
-                                          color: AppTheme.textSecondary,
-=======
                                           color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                         ),
                                       ),
                                     ],
@@ -1215,11 +965,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                                 ),
                                 Icon(
                                   Icons.arrow_forward_ios,
-<<<<<<< HEAD
-                                  color: AppTheme.primaryColor.withOpacity(0.6),
-=======
                                   color: Theme.of(context).primaryColor.withOpacity(0.6),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                   size: 16,
                                 ),
                               ],
@@ -1231,11 +977,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       /*if (_translatedContent.isNotEmpty) ...[
                         const SizedBox(height: 16),
                         AppCard(
-<<<<<<< HEAD
-                          backgroundColor: AppTheme.backgroundTertiary,
-=======
                           backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.surfaceVariant : AppTheme.darkColors.surfaceVariant),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -1244,11 +986,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                                   Icon(
                                     Icons.translate,
                                     size: 18,
-<<<<<<< HEAD
-                                    color: AppTheme.textSecondary,
-=======
                                     color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
@@ -1265,21 +1003,13 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                                         vertical: 4,
                                       ),
                                       decoration: BoxDecoration(
-<<<<<<< HEAD
-                                        color: AppTheme.primaryBlue.withOpacity(0.1),
-=======
                                         color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
                                         _detectedLanguage == 'ja' ? '日本語 → 英語' : 'English → 日本語',
                                         style: AppTheme.caption.copyWith(
-<<<<<<< HEAD
-                                          color: AppTheme.primaryBlue,
-=======
                                           color: Theme.of(context).colorScheme.secondary,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                         ),
                                       ),
                                     ),
@@ -1295,11 +1025,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       if (_selectedWords.isNotEmpty) ...[
                         const SizedBox(height: 16),
                         AppCard(
-<<<<<<< HEAD
-                          backgroundColor: AppTheme.success.withOpacity(0.1),
-=======
                           backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.1),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -1308,22 +1034,14 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                                   Icon(
                                     Icons.bookmark,
                                     size: 18,
-<<<<<<< HEAD
-                                    color: AppTheme.success,
-=======
                                     color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
                                     '登録した単語 (${_selectedWords.length})',
                                     style: AppTheme.body2.copyWith(
                                       fontWeight: FontWeight.w600,
-<<<<<<< HEAD
-                                      color: AppTheme.success,
-=======
                                       color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                     ),
                                   ),
                                 ],
@@ -1360,15 +1078,9 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-<<<<<<< HEAD
-                  color: AppTheme.backgroundPrimary,
-                  border: Border(
-                    top: BorderSide(color: AppTheme.borderColor),
-=======
                   color: Theme.of(context).cardColor,
                   border: Border(
                     top: BorderSide(color: Theme.of(context).dividerColor),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   ),
                 ),
                 child: PrimaryButton(
@@ -1412,11 +1124,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                 border: hasTranslation
                     ? Border(
                         bottom: BorderSide(
-<<<<<<< HEAD
-                          color: AppTheme.primaryBlue.withOpacity(0.3),
-=======
                           color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                           width: 1,
                         ),
                       )
@@ -1425,11 +1133,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
               child: Text(
                 word,
                 style: AppTheme.body1.copyWith(
-<<<<<<< HEAD
-                  color: hasTranslation ? AppTheme.primaryBlue : AppTheme.textPrimary,
-=======
                   color: hasTranslation ? Theme.of(context).colorScheme.secondary : Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 ),
               ),
             ),
@@ -1460,11 +1164,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
         builder: (context, setModalState) => Container(
           margin: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-<<<<<<< HEAD
-            color: AppTheme.backgroundPrimary,
-=======
             color: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -1486,11 +1186,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-<<<<<<< HEAD
-                      color: AppTheme.textTertiary.withOpacity(0.3),
-=======
                       color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey.withOpacity(0.3),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -1501,11 +1197,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                 Text(
                   english,
                   style: AppTheme.headline2.copyWith(
-<<<<<<< HEAD
-                    color: AppTheme.primaryColor,
-=======
                     color: Theme.of(context).primaryColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -1514,11 +1206,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-<<<<<<< HEAD
-                    color: AppTheme.backgroundSecondary,
-=======
                     color: Theme.of(context).colorScheme.surface,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -1527,11 +1215,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                       Text(
                         '意味',
                         style: AppTheme.caption.copyWith(
-<<<<<<< HEAD
-                          color: AppTheme.textSecondary,
-=======
                           color: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -1548,46 +1232,13 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                 // アクションボタン（縦並び）
                 Column(
                   children: [
-<<<<<<< HEAD
-                    // 学習カードに追加
-=======
                     // 学習カードに追加機能は削除
                     /*
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
                         onPressed: isAddedToFlashcard ? null : () async {
-<<<<<<< HEAD
-                          final now = DateTime.now();
-                          final flashcard = Flashcard(
-                            id: const Uuid().v4(),
-                            word: english,
-                            meaning: japanese,
-                            createdAt: now,
-                            lastReviewed: now,
-                            nextReviewDate: now.add(const Duration(days: 1)),
-                          );
-                          
-                          await StorageService.saveFlashcard(flashcard);
-                          
-                          setModalState(() {
-                            isAddedToFlashcard = true;
-                          });
-                          
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('学習カードに追加しました'),
-                              backgroundColor: AppTheme.success,
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          );
-=======
                           // Flashcard機能は削除されました
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                         },
                         icon: Icon(
                           isAddedToFlashcard 
@@ -1595,11 +1246,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                             : Icons.collections_bookmark, 
                           size: 20,
                           color: isAddedToFlashcard 
-<<<<<<< HEAD
-                            ? AppTheme.success 
-=======
                             ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success) 
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                             : null,
                         ),
                         label: Text(
@@ -1609,19 +1256,11 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                         ),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: isAddedToFlashcard 
-<<<<<<< HEAD
-                            ? AppTheme.success 
-                            : AppTheme.info,
-                          side: BorderSide(
-                            color: isAddedToFlashcard 
-                              ? AppTheme.success 
-=======
                             ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success) 
                             : AppTheme.info,
                           side: BorderSide(
                             color: isAddedToFlashcard 
                               ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success) 
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                               : AppTheme.info,
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -1631,41 +1270,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                         ),
                       ),
                     ),
-<<<<<<< HEAD
-=======
-                    */
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-                    const SizedBox(height: 12),
-                    // 単語帳に追加
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: isAddedToVocabulary ? null : () {
-                          final word = Word(
-                            id: const Uuid().v4(),
-                            english: english,
-                            japanese: japanese,
-                            createdAt: DateTime.now(),
-                          );
-                          
-                          setState(() {
-                            _selectedWords.add(word);
-                          });
-                          
-                          setModalState(() {
-                            isAddedToVocabulary = true;
-                          });
-                          
-                          Navigator.pop(context);
-                          
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('単語帳に追加しました'),
-<<<<<<< HEAD
-                              backgroundColor: AppTheme.success,
-=======
                               backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -1686,13 +1291,8 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: isAddedToVocabulary 
-<<<<<<< HEAD
-                            ? AppTheme.success.withOpacity(0.8) 
-                            : AppTheme.success,
-=======
                             ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success).withOpacity(0.8) 
                             : (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -1713,11 +1313,7 @@ class _DiaryCreationScreenState extends State<DiaryCreationScreen> {
                     onPressed: () => Navigator.pop(context),
                     child: Text('閉じる'),
                     style: TextButton.styleFrom(
-<<<<<<< HEAD
-                      foregroundColor: AppTheme.textSecondary,
-=======
                       foregroundColor: Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     ),
                   ),
                 ),
@@ -1742,19 +1338,11 @@ class _MissionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool completed = mission.isCompleted;
     final IconData icon = _getIconFromType(mission.type);
-<<<<<<< HEAD
-    final Color color = _getColorFromType(mission.type);
-    
-    return AppCard(
-      onTap: null, // タップ不可
-      backgroundColor: completed ? AppTheme.backgroundTertiary : AppTheme.backgroundPrimary,
-=======
     final Color color = _getColorFromType(mission.type, context);
     
     return AppCard(
       onTap: null, // タップ不可
       backgroundColor: completed ? (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.surfaceVariant : AppTheme.darkColors.surfaceVariant) : Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       child: Row(
         children: [
           Container(
@@ -1762,21 +1350,13 @@ class _MissionCard extends StatelessWidget {
             height: 48,
             decoration: BoxDecoration(
               color: completed
-<<<<<<< HEAD
-                ? AppTheme.textTertiary.withOpacity(0.1)
-=======
                 ? Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey.withOpacity(0.1)
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 : color.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               completed ? Icons.check : icon,
-<<<<<<< HEAD
-              color: completed ? AppTheme.textTertiary : color,
-=======
               color: completed ? Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey : color,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
               size: 24,
             ),
           ),
@@ -1790,22 +1370,14 @@ class _MissionCard extends StatelessWidget {
                   style: AppTheme.body1.copyWith(
                     fontWeight: FontWeight.w600,
                     decoration: completed ? TextDecoration.lineThrough : null,
-<<<<<<< HEAD
-                    color: completed ? AppTheme.textTertiary : AppTheme.textPrimary,
-=======
                     color: completed ? Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey : Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   mission.description,
                   style: AppTheme.caption.copyWith(
-<<<<<<< HEAD
-                    color: completed ? AppTheme.textTertiary : AppTheme.textSecondary,
-=======
                     color: completed ? Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey : Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -1813,15 +1385,9 @@ class _MissionCard extends StatelessWidget {
                   value: mission.targetValue > 0
                     ? (mission.currentValue / mission.targetValue).clamp(0.0, 1.0)
                     : 0.0,
-<<<<<<< HEAD
-                  backgroundColor: AppTheme.backgroundTertiary,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    completed ? AppTheme.textTertiary : color,
-=======
                   backgroundColor: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.surfaceVariant : AppTheme.darkColors.surfaceVariant),
                   valueColor: AlwaysStoppedAnimation<Color>(
                     completed ? Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey : color,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   ),
                   minHeight: 4,
                 ),
@@ -1832,22 +1398,14 @@ class _MissionCard extends StatelessWidget {
                     Text(
                       '${mission.currentValue}/${mission.targetValue}',
                       style: AppTheme.caption.copyWith(
-<<<<<<< HEAD
-                        color: AppTheme.textTertiary,
-=======
                         color: Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       ),
                     ),
                     if (completed)
                       Icon(
                         Icons.star,
                         size: 16,
-<<<<<<< HEAD
-                        color: AppTheme.warning,
-=======
                         color: (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       ),
                   ],
                 ),
@@ -1874,20 +1432,6 @@ class _MissionCard extends StatelessWidget {
     }
   }
 
-<<<<<<< HEAD
-  Color _getColorFromType(MissionType type) {
-    switch (type) {
-      case MissionType.dailyDiary:
-        return AppTheme.primaryBlue;
-      case MissionType.wordLearning:
-        return AppTheme.success;
-      case MissionType.conversation:
-        return AppTheme.secondaryColor;
-      case MissionType.streak:
-        return AppTheme.warning;
-      case MissionType.review:
-        return AppTheme.success;
-=======
   Color _getColorFromType(MissionType type, BuildContext context) {
     switch (type) {
       case MissionType.dailyDiary:
@@ -1900,7 +1444,6 @@ class _MissionCard extends StatelessWidget {
         return (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.warning : AppTheme.darkColors.warning);
       case MissionType.review:
         return (Theme.of(context).brightness == Brightness.light ? AppTheme.lightColors.success : AppTheme.darkColors.success);
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
     }
   }
 }

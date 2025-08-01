@@ -13,11 +13,7 @@ class AnalyticsScreen extends StatefulWidget {
 
 class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-<<<<<<< HEAD
-  Map<String, int> _analyticsData = {};
-=======
   Map<String, dynamic> _analyticsData = {};
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
   bool _isLoading = true;
 
   @override
@@ -80,43 +76,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
   }
   
   List<FlSpot> _getSpots() {
-<<<<<<< HEAD
-    if (_tabController.index == 0) {
-      // 週間データ
-      return const [
-        FlSpot(0, 2),
-        FlSpot(1, 3),
-        FlSpot(2, 1),
-        FlSpot(3, 4),
-        FlSpot(4, 3),
-        FlSpot(5, 2),
-        FlSpot(6, 3),
-      ];
-    } else if (_tabController.index == 1) {
-      // 月間データ
-      return const [
-        FlSpot(0, 15),
-        FlSpot(1, 18),
-        FlSpot(2, 12),
-        FlSpot(3, 20),
-      ];
-    } else {
-      // 年間データ
-      return const [
-        FlSpot(0, 45),
-        FlSpot(1, 52),
-        FlSpot(2, 48),
-        FlSpot(3, 55),
-        FlSpot(4, 60),
-        FlSpot(5, 58),
-        FlSpot(6, 62),
-        FlSpot(7, 65),
-        FlSpot(8, 63),
-        FlSpot(9, 68),
-        FlSpot(10, 70),
-        FlSpot(11, 72),
-      ];
-=======
     if (_analyticsData.isEmpty) {
       if (_tabController.index == 0) {
         return List.generate(7, (index) => FlSpot(index.toDouble(), 0));
@@ -145,24 +104,16 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
       return yearlyData.asMap().entries.map((entry) {
         return FlSpot(entry.key.toDouble(), entry.value.toDouble());
       }).toList();
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
     }
   }
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.backgroundSecondary,
-      appBar: AppBar(
-        title: Text('分析', style: AppTheme.headline3),
-        backgroundColor: AppTheme.backgroundPrimary,
-=======
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('分析', style: AppTheme.headline3),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         elevation: 0,
       ),
       body: _isLoading
@@ -281,13 +232,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
               child: AppCard(
                 padding: const EdgeInsets.all(16),
                 child: LineChart(
-<<<<<<< HEAD
-                LineChartData(
-                  gridData: FlGridData(
-                    show: true,
-                    drawVerticalLine: false,
-                    getDrawingHorizontalLine: (value) {
-=======
                   LineChartData(
                     clipData: FlClipData.all(),
                   gridData: FlGridData(
@@ -296,7 +240,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                     horizontalInterval: _tabController.index == 0 ? 1 : (_tabController.index == 1 ? 5 : 20),
                     getDrawingHorizontalLine: (value) {
                       if (value < 0) return FlLine(color: Colors.transparent);
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       return FlLine(
                         color: AppTheme.borderColor,
                         strokeWidth: 1,
@@ -313,11 +256,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                           return LineTooltipItem(
                             '${barSpot.y.toInt()}件',
                             AppTheme.body2.copyWith(
-<<<<<<< HEAD
-                              color: AppTheme.backgroundPrimary,
-=======
                               color: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                               fontWeight: FontWeight.w600,
                             ),
                           );
@@ -390,11 +329,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                     LineChartBarData(
                       spots: _getSpots(),
                       isCurved: true,
-<<<<<<< HEAD
-=======
                       curveSmoothness: 0.3,
                       preventCurveOverShooting: true,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       gradient: LinearGradient(
                         colors: [AppTheme.primaryColor, AppTheme.primaryColor.withOpacity(0.7)],
                       ),
@@ -405,11 +341,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                         getDotPainter: (spot, percent, barData, index) {
                           return FlDotCirclePainter(
                             radius: 4,
-<<<<<<< HEAD
-                            color: AppTheme.backgroundPrimary,
-=======
                             color: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                             strokeWidth: 2,
                             strokeColor: AppTheme.primaryColor,
                           );
@@ -425,25 +357,18 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
-<<<<<<< HEAD
-=======
                         cutOffY: 0,
                         applyCutOffY: true,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-<<<<<<< HEAD
-            ).animate().fadeIn(delay: 500.ms),
-=======
             ).animate()
               .fadeIn(delay: 500.ms)
               .then()
               .shimmer(duration: 600.ms, color: AppTheme.primaryColor.withOpacity(0.1)),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             
             const SizedBox(height: 32),
             
@@ -461,16 +386,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
   }
   
   Widget _buildWordRanking() {
-<<<<<<< HEAD
-    final words = [
-      {'rank': 1, 'word': 'happy', 'count': 15},
-      {'rank': 2, 'word': 'experience', 'count': 12},
-      {'rank': 3, 'word': 'learning', 'count': 10},
-    ];
-    
-    return Column(
-      children: words.map((word) {
-=======
     final frequentWords = _analyticsData['frequentWords'] as List<Map<String, dynamic>>? ?? [];
     
     if (frequentWords.isEmpty) {
@@ -501,7 +416,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
       children: frequentWords.asMap().entries.map((entry) {
         final index = entry.key;
         final word = entry.value;
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           child: AppCard(
@@ -512,33 +426,19 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-<<<<<<< HEAD
-                    color: _getRankColor(word['rank'] as int).withOpacity(0.3),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: _getRankColor(word['rank'] as int).withOpacity(0.5),
-=======
                     color: _getRankColor(index + 1).withOpacity(0.3),
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: _getRankColor(index + 1).withOpacity(0.5),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       width: 1,
                     ),
                   ),
                   child: Center(
                     child: Text(
-<<<<<<< HEAD
-                      '#${word['rank']}',
-                      style: AppTheme.body2.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: _getRankColor(word['rank'] as int),
-=======
                       '#${index + 1}',
                       style: AppTheme.body2.copyWith(
                         fontWeight: FontWeight.w600,
                         color: _getRankColor(index + 1),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       ),
                     ),
                   ),
@@ -560,11 +460,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
             ),
           ),
         ).animate().fadeIn(
-<<<<<<< HEAD
-          delay: Duration(milliseconds: 600 + ((word['rank'] as int) - 1) * 100),
-=======
           delay: Duration(milliseconds: 600 + index * 100),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         ).slideX(begin: 0.2, end: 0);
       }).toList(),
     );

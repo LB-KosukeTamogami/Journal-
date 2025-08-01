@@ -1,7 +1,7 @@
 {
-  "buildCommand": "npm run build:vercel",
-  "outputDirectory": "journal_learning_app/build/web",
-  "installCommand": "npm install",
+  "buildCommand": "echo 'Using pre-built files'",
+  "outputDirectory": "build/web",
+  "installCommand": "echo 'No install needed'",
   "github": {
     "silent": true
   }

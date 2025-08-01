@@ -9,24 +9,10 @@ class TTSService {
   bool _isInitialized = false;
   bool _isSpeaking = false;
   Function(double)? _progressHandler;
-<<<<<<< HEAD
-=======
-  Function(double)? _durationHandler;
-  Function(String, int, double)? _wordBoundaryHandler;
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-  DateTime? _speakStartTime;
-  int _totalCharacters = 0;
-  double _speechRate = 0.9;
-  double _pitch = 1.0;
-  String? _language;
-  bool _userInteractionDone = false;
-<<<<<<< HEAD
-=======
   double _totalDuration = 0;
   String _currentText = '';
   List<String> _words = [];
   int _currentWordIndex = 0;
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 
   // 初期化
   Future<void> initialize() async {
@@ -99,56 +85,6 @@ class TTSService {
       print('[TTS] Empty text, skipping');
       return;
     }
-<<<<<<< HEAD
-=======
-    
-    // 単語分割の準備
-    _currentText = text;
-    _words = _splitTextIntoWords(text);
-    _currentWordIndex = 0;
-    print('[TTS] Text split into ${_words.length} words');
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-
-    try {
-      // 言語を自動検出
-      String language = _detectLanguage(text);
-      print('[TTS] Detected language: $language');
-      
-      // 既存の発話を確実に停止
-      html.window.speechSynthesis!.cancel();
-      await Future.delayed(const Duration(milliseconds: 100));
-      
-      // SpeechSynthesisUtterance を作成
-      final utterance = html.SpeechSynthesisUtterance(text);
-      
-      // 基本設定
-      utterance.lang = language;
-      utterance.rate = _speechRate;
-      utterance.pitch = _pitch;
-      utterance.volume = 1.0;
-      
-      print('[TTS] Created utterance with settings: lang=$language, rate=$_speechRate, pitch=$_pitch');
-      
-      // 適切な音声を選択
-      final voices = html.window.speechSynthesis!.getVoices();
-      for (var voice in voices) {
-        if (voice.lang?.startsWith(language.substring(0, 2)) == true) {
-          utterance.voice = voice;
-          print('[TTS] Selected voice: ${voice.name} (${voice.lang})');
-          break;
-        }
-      }
-      
-      // イベントハンドラーを設定
-      utterance.onStart.listen((_) {
-        print('[TTS] Speech started: "$text"');
-        _isSpeaking = true;
-        _speakStartTime = DateTime.now();
-<<<<<<< HEAD
-      });
-      
-      utterance.onEnd.listen((_) {
-=======
         _totalDuration = 0;
       });
       
@@ -203,7 +139,6 @@ class TTSService {
           print('[TTS] Error getting elapsed time: $e');
         }
         
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         print('[TTS] Speech ended: "$text"');
         _isSpeaking = false;
         _speakStartTime = null;
@@ -329,9 +264,6 @@ class TTSService {
     _isInitialized = false;
     _isSpeaking = false;
     _progressHandler = null;
-<<<<<<< HEAD
-    _userInteractionDone = false;
-=======
     _durationHandler = null;
     _wordBoundaryHandler = null;
     _userInteractionDone = false;
@@ -339,7 +271,6 @@ class TTSService {
     _currentText = '';
     _words = [];
     _currentWordIndex = 0;
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
   }
 
   // プログレスハンドラーを設定
@@ -353,8 +284,6 @@ class TTSService {
     _progressHandler = null;
     print('[TTS] Progress handler removed');
   }
-<<<<<<< HEAD
-=======
   
   // 再生時間ハンドラーの設定
   void setDurationHandler(Function(double) handler) {
@@ -429,7 +358,6 @@ class TTSService {
       return -1;
     }
   }
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 
   // デバッグ用: TTS状態を取得
   Map<String, dynamic> getStatus() {

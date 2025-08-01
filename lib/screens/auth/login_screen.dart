@@ -3,10 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../theme/app_theme.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/acorn_icon.dart';
-<<<<<<< HEAD
-=======
 import '../../utils/no_swipe_page_route.dart';
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 import 'signup_screen.dart';
 import 'forgot_password_screen.dart';
 import '../main_navigation_screen.dart';
@@ -50,18 +47,11 @@ class _LoginScreenState extends State<LoginScreen> {
       print('[LoginScreen] Login response received');
 
       if (response.user != null && mounted) {
-<<<<<<< HEAD
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const MainNavigationScreen(),
-          ),
-=======
         Navigator.of(context).pushAndRemoveUntil(
           NoSwipePageRoute(
             builder: (context) => const MainNavigationScreen(),
           ),
           (route) => false, // すべての履歴を削除
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         );
       }
     } catch (e) {
@@ -97,11 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.backgroundSecondary,
-=======
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -155,11 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         labelText: 'メールアドレス',
                         prefixIcon: const Icon(Icons.email_outlined),
                         filled: true,
-<<<<<<< HEAD
-                        fillColor: Colors.white,
-=======
                         fillColor: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -206,11 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                         filled: true,
-<<<<<<< HEAD
-                        fillColor: Colors.white,
-=======
                         fillColor: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -268,22 +246,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-<<<<<<< HEAD
-                    color: Colors.red.shade50,
-=======
                     color: Theme.of(context).colorScheme.error.withOpacity(0.1),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
                       Icon(
                         Icons.error_outline,
-<<<<<<< HEAD
-                        color: Colors.red.shade700,
-=======
                         color: Theme.of(context).colorScheme.error,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                         size: 20,
                       ),
                       const SizedBox(width: 8),
@@ -291,11 +261,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Text(
                           _errorMessage!,
                           style: TextStyle(
-<<<<<<< HEAD
-                            color: Colors.red.shade700,
-=======
                             color: Theme.of(context).colorScheme.error,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                             fontSize: 14,
                           ),
                         ),
@@ -308,15 +274,9 @@ class _LoginScreenState extends State<LoginScreen> {
               AppButtonStyles.withShadow(
                 ElevatedButton(
                   onPressed: _isLoading ? null : _signIn,
-<<<<<<< HEAD
-                  style: AppButtonStyles.primaryButton,
-                  child: _isLoading
-                      ? const SizedBox(
-=======
                   style: AppButtonStyles.primaryButton(context),
                   child: _isLoading
-                      ? SizedBox(
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
+                      ? const SizedBox(
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
@@ -326,10 +286,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         )
                       : const Text('ログイン'),
                 ),
-<<<<<<< HEAD
-=======
                 Theme.of(context).primaryColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
               ).animate().scale(delay: 400.ms),
               const SizedBox(height: 24),
               // Sign up link

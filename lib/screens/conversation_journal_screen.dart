@@ -190,21 +190,12 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.backgroundSecondary,
-      appBar: AppBar(
-        title: Text('会話ジャーナル', style: AppTheme.headline3),
-        backgroundColor: AppTheme.backgroundPrimary,
-        elevation: 0,
-        iconTheme: IconThemeData(color: AppTheme.textPrimary),
-=======
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('Aco', style: AppTheme.headline3),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: AppTheme.lightColors.onPrimary),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         actions: [
           // 会話を終了ボタン（初期メッセージ以外がある場合、または5ラリー完了時）
           if (_messages.length > 2 || _messageCount >= 5) // 初期メッセージ以外がある場合のみ表示
@@ -214,11 +205,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                 icon: Icon(Icons.check_circle_outline, size: 20),
                 label: Text('会話を終了'),
                 onPressed: _endConversation,
-<<<<<<< HEAD
-                style: AppButtonStyles.smallButton.copyWith(
-=======
                 style: AppButtonStyles.smallButton(context).copyWith(
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   backgroundColor: MaterialStateProperty.all(Colors.transparent),
                   foregroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
                   side: MaterialStateProperty.all(
@@ -270,37 +257,22 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
       child: Column(
         crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-<<<<<<< HEAD
-          // LINE風のレイアウト実装
-          Row(
-            mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Acoの場合、左側にアイコン
-              if (!isUser) ...[
-=======
           // Acoの場合、アイコンのみを表示（LINE風）
           if (!isUser) ...[
             Row(
               children: [
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 Container(
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-<<<<<<< HEAD
-                        const Color(0xFFF5F5F5),
-                        const Color(0xFFE8E8E8),
-=======
                         Theme.of(context).brightness == Brightness.dark
                           ? AppTheme.darkColors.surface
                           : AppTheme.lightColors.surface,
                         Theme.of(context).brightness == Brightness.dark
                           ? AppTheme.darkColors.surfaceVariant
                           : AppTheme.lightColors.surfaceVariant,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -318,38 +290,6 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                     ),
                   ),
                 ),
-<<<<<<< HEAD
-                const SizedBox(width: 8),
-              ],
-              // メッセージバブル
-              Flexible(
-                child: Column(
-                  crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                  children: [
-                    // Acoの名前表示
-                    if (!isUser) ...[  
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8, bottom: 4),
-                        child: Text(
-                          'Aco',
-                          style: AppTheme.body2.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: AppTheme.textSecondary,
-                          ),
-                        ),
-                      ),
-                    ],
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isUser ? AppTheme.primaryColor : AppTheme.backgroundPrimary,
-                        borderRadius: BorderRadius.circular(16).copyWith(
-                          topLeft: !isUser ? const Radius.circular(4) : const Radius.circular(16),
-                          topRight: !isUser ? const Radius.circular(16) : const Radius.circular(4),
-                        ),
-                        boxShadow: AppTheme.cardShadow,
-                      ),
-=======
               ],
             ),
             const SizedBox(height: 8),
@@ -364,7 +304,6 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
               ),
               boxShadow: AppTheme.cardShadow,
             ),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -395,11 +334,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                                         child: Text(
                                           _getEnglishPart(message.text),
                                           style: AppTheme.body1.copyWith(
-<<<<<<< HEAD
-                                            color: AppTheme.textPrimary,
-=======
                                             color: Theme.of(context).textTheme.bodyLarge?.color ?? AppTheme.textPrimary,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                           ),
                                         ),
                                       ),
@@ -420,11 +355,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                                       margin: const EdgeInsets.only(top: 8),
                                       padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
-<<<<<<< HEAD
-                                        color: AppTheme.backgroundSecondary,
-=======
                                         color: Theme.of(context).colorScheme.surface,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                         borderRadius: BorderRadius.circular(8),
                                         border: Border.all(
                                           color: AppTheme.borderColor,
@@ -464,11 +395,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                             Text(
                               message.text,
                               style: AppTheme.body1.copyWith(
-<<<<<<< HEAD
-                                color: isUser ? Colors.white : AppTheme.textPrimary,
-=======
                                 color: isUser ? Colors.white : (Theme.of(context).textTheme.bodyLarge?.color ?? AppTheme.textPrimary),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                               ),
                             ),
                           ],
@@ -523,22 +450,9 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                 ],
               ],
             ),
-<<<<<<< HEAD
-                    ).animate().fadeIn(duration: 300.ms).slideX(
-                      begin: isUser ? 0.1 : -0.1,
-                      end: 0,
-                    ),
-                  ],
-                ),
-              ),
-              // ユーザーの場合、右側に余白
-              if (isUser) const SizedBox(width: 40),
-            ],
-=======
           ).animate().fadeIn(duration: 300.ms).slideX(
             begin: isUser ? 0.1 : -0.1,
             end: 0,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
           ),
           
           // 提案ボタン
@@ -555,11 +469,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-<<<<<<< HEAD
-                      color: AppTheme.backgroundPrimary,
-=======
                       color: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: AppTheme.primaryColor.withOpacity(0.3)),
                     ),
@@ -587,11 +497,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-<<<<<<< HEAD
-              color: AppTheme.backgroundPrimary,
-=======
               color: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
               borderRadius: BorderRadius.circular(16).copyWith(
                 bottomLeft: const Radius.circular(4),
               ),
@@ -625,11 +531,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-<<<<<<< HEAD
-        color: AppTheme.backgroundPrimary,
-=======
         color: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -653,11 +555,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
                   hintText: 'Type your message...',
                   hintStyle: AppTheme.body1.copyWith(color: AppTheme.textTertiary),
                   filled: true,
-<<<<<<< HEAD
-                  fillColor: AppTheme.backgroundSecondary,
-=======
                   fillColor: Theme.of(context).colorScheme.surface,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(24),
                     borderSide: BorderSide.none,
@@ -674,11 +572,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
               decoration: BoxDecoration(
                 color: AppTheme.primaryColor,
                 shape: BoxShape.circle,
-<<<<<<< HEAD
-                boxShadow: AppTheme.buttonShadow,
-=======
                 boxShadow: AppTheme.buttonShadow(Theme.of(context).primaryColor),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
               ),
               child: IconButton(
                 onPressed: () => _sendMessage(_messageController.text),
@@ -699,11 +593,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-<<<<<<< HEAD
-        color: AppTheme.backgroundPrimary,
-=======
         color: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -783,8 +673,4 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
     final japanesePattern = RegExp(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]');
     return japanesePattern.hasMatch(text);
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe

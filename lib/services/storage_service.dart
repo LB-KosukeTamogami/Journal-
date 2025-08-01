@@ -3,10 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/diary_entry.dart';
 import '../models/user_profile.dart';
 import '../models/mission.dart';
-<<<<<<< HEAD
-import '../models/flashcard.dart';
-=======
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 import '../models/word.dart';
 import 'supabase_service.dart';
 
@@ -14,10 +10,6 @@ class StorageService {
   static const String _diaryEntriesKey = 'diary_entries';
   static const String _userProfileKey = 'user_profile';
   static const String _missionsKey = 'missions';
-<<<<<<< HEAD
-  static const String _flashcardsKey = 'flashcards';
-=======
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
   static const String _wordsKey = 'words';
   static const String _sampleDataKey = 'sample_data_initialized';
 
@@ -87,23 +79,9 @@ class StorageService {
       print('[Storage] Cached ${supabaseEntries.length} entries from Supabase to local');
       print('[Storage] ========== Returning Supabase data ==========');
       
-<<<<<<< HEAD
-=======
-      // 作成日時の降順でソート（新しい順）
-      supabaseEntries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-      return supabaseEntries;
-    }
-    
-    // Supabaseに接続できなかった場合はローカルデータを使用
-    print('[Storage] Using local cached data (${localEntries.length} diaries)');
-    print('[Storage] ========== Returning local data ==========');
-<<<<<<< HEAD
-=======
     
     // 作成日時の降順でソート（新しい順）
     localEntries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
     return localEntries;
   }
 
@@ -204,41 +182,6 @@ class StorageService {
     await prefs.setString(_missionsKey, jsonString);
   }
 
-<<<<<<< HEAD
-  static Future<List<Flashcard>> getFlashcards() async {
-    final jsonString = prefs.getString(_flashcardsKey);
-    if (jsonString == null) return [];
-
-    final List<dynamic> jsonList = json.decode(jsonString);
-    return jsonList.map((json) => Flashcard.fromJson(json)).toList();
-  }
-
-  static Future<void> saveFlashcard(Flashcard flashcard) async {
-    final flashcards = await getFlashcards();
-    
-    final existingIndex = flashcards.indexWhere((f) => f.id == flashcard.id);
-    if (existingIndex != -1) {
-      flashcards[existingIndex] = flashcard;
-    } else {
-      flashcards.add(flashcard);
-    }
-    
-    final jsonString = json.encode(flashcards.map((f) => f.toJson()).toList());
-    await prefs.setString(_flashcardsKey, jsonString);
-  }
-
-  static Future<void> saveFlashcards(List<Flashcard> flashcards) async {
-    final jsonString = json.encode(flashcards.map((f) => f.toJson()).toList());
-    await prefs.setString(_flashcardsKey, jsonString);
-  }
-
-  static Future<void> deleteFlashcard(String id) async {
-    final flashcards = await getFlashcards();
-    final filteredFlashcards = flashcards.where((f) => f.id != id).toList();
-    await saveFlashcards(filteredFlashcards);
-  }
-=======
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 
   static Future<void> clearAll() async {
     await prefs.clear();
@@ -284,7 +227,6 @@ class StorageService {
     return streak;
   }
 
-<<<<<<< HEAD
   static Future<Map<String, int>> getAnalyticsData() async {
     final entries = await getDiaryEntries();
     final missions = await getMissions();
@@ -303,7 +245,6 @@ class StorageService {
       'currentStreak': streak,
     };
   }
-=======
   static Future<Map<String, dynamic>> getAnalyticsData() async {
     final entries = await getDiaryEntries();
     final missions = await getMissions();
@@ -447,7 +388,6 @@ class StorageService {
             })
         .toList();
   }
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 
   // 単語関連のメソッド
   static Future<List<Word>> getWords() async {
@@ -495,127 +435,6 @@ class StorageService {
     print('[Storage] Saving word: ${word.english}');
     print('[Storage] SupabaseService.isAvailable: ${SupabaseService.isAvailable}');
     
-<<<<<<< HEAD
-=======
-    // まず既存の単語をチェックして重複を防ぐ
-    final existingWords = await getWords();
-    final existingWord = existingWords.firstWhere(
-      (w) => w.english.toLowerCase() == word.english.toLowerCase(),
-      orElse: () => Word(
-        id: '', 
-        english: '', 
-        japanese: '', 
-        createdAt: DateTime.now()
-      ),
-    );
-    
-    if (existingWord.id.isNotEmpty) {
-      print('[Storage] Word already exists: ${word.english}');
-      // 既存の単語がある場合は、IDを使用して更新
-      word = Word(
-        id: existingWord.id,
-        english: word.english,
-        japanese: word.japanese,
-        example: word.example,
-        diaryEntryId: word.diaryEntryId,
-        createdAt: word.createdAt,
-        reviewCount: word.reviewCount,
-        lastReviewedAt: word.lastReviewedAt,
-        isMastered: word.isMastered,
-        masteryLevel: word.masteryLevel,
-        category: word.category,
-      );
-    }
-    
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-    // Supabaseに保存（必須）
-    if (SupabaseService.isAvailable) {
-      try {
-        print('[Storage] Attempting to save word to Supabase...');
-        await SupabaseService.saveWord(word);
-        print('[Storage] Successfully saved word to Supabase');
-        
-        // Supabaseに保存成功した場合のみローカルにもキャッシュとして保存
-        print('[Storage] Caching word to local storage...');
-        final words = await _getLocalWords();
-        
-        final existingIndex = words.indexWhere((w) => w.id == word.id);
-        if (existingIndex != -1) {
-          words[existingIndex] = word;
-          print('[Storage] Updated existing word in local cache');
-        } else {
-          words.add(word);
-          print('[Storage] Added new word to local cache');
-        }
-        
-        final jsonString = json.encode(words.map((w) => w.toJson()).toList());
-        await prefs.setString(_wordsKey, jsonString);
-        print('[Storage] Successfully cached word to local storage. Total: ${words.length}');
-        
-      } catch (e) {
-        print('[Storage] Error saving word to Supabase: $e');
-        // Supabaseへの保存に失敗した場合は例外を再スロー
-        throw Exception('単語の保存に失敗しました。ネットワーク接続を確認してください。\nエラー詳細: $e');
-      }
-    } else {
-      print('[Storage] Supabase not available');
-      throw Exception('データベースに接続できません。ネットワーク接続を確認してください。');
-    }
-  }
-
-  static Future<void> saveWords(List<Word> words) async {
-    // Supabaseに保存
-    if (SupabaseService.isAvailable) {
-      try {
-        await SupabaseService.saveWords(words);
-      } catch (e) {
-        print('[Storage] Error saving words to Supabase: $e');
-      }
-    }
-
-    // ローカルストレージにも保存
-    final jsonString = json.encode(words.map((w) => w.toJson()).toList());
-    await prefs.setString(_wordsKey, jsonString);
-  }
-
-  static Future<void> deleteWord(String id) async {
-    // Supabaseから削除
-    if (SupabaseService.isAvailable) {
-      try {
-        await SupabaseService.deleteWord(id);
-      } catch (e) {
-        print('[Storage] Error deleting word from Supabase: $e');
-      }
-    }
-
-    // ローカルストレージからも削除
-    final words = await _getLocalWords();
-    words.removeWhere((w) => w.id == id);
-    
-    final jsonString = json.encode(words.map((w) => w.toJson()).toList());
-    await prefs.setString(_wordsKey, jsonString);
-  }
-  
-  static Future<void> deleteJapaneseWords() async {
-    final words = await getWords();
-    // 日本語の文字（ひらがな、カタカナ、漢字）を含む単語を削除
-    final japanesePattern = RegExp(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]');
-    words.removeWhere((w) => japanesePattern.hasMatch(w.english));
-    
-    final jsonString = json.encode(words.map((w) => w.toJson()).toList());
-    await prefs.setString(_wordsKey, jsonString);
-  }
-  
-  static Future<void> deletePhrases() async {
-    final words = await getWords();
-    // スペースを含む（複数語の）熟語を削除
-    words.removeWhere((w) => w.english.trim().contains(' '));
-    
-    // 更新されたリストを保存
-    await saveWords(words);
-  }
-<<<<<<< HEAD
-=======
   
   static Future<void> removeDuplicateWords() async {
     print('[Storage] Removing duplicate words...');
@@ -651,7 +470,6 @@ class StorageService {
     
     print('[Storage] Duplicate removal completed');
   }
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 
   static Future<List<Word>> getWordsByDiaryEntry(String diaryEntryId) async {
     final words = await getWords();
@@ -711,25 +529,7 @@ class StorageService {
         reviewCount: 2,
         isMastered: false,
         masteryLevel: 1, // △
-<<<<<<< HEAD
-=======
-        category: WordCategory.adjective, // 形容詞
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-      ),
-      Word(
-        id: 'sample_2',
-        english: 'journey',
-        japanese: '旅',
-        example: 'Life is a journey, not a destination.',
-        diaryEntryId: 'sample_diary_1',
-        createdAt: DateTime.now().subtract(const Duration(days: 3)),
-        reviewCount: 1,
-        isMastered: false,
-        masteryLevel: 0, // ×
-<<<<<<< HEAD
-=======
         category: WordCategory.noun, // 名詞
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       ),
       // フレーズ
       Word(
@@ -742,24 +542,7 @@ class StorageService {
         reviewCount: 3,
         isMastered: true,
         masteryLevel: 2, // ○
-<<<<<<< HEAD
-=======
-        category: WordCategory.other, // その他（フレーズ）
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-      ),
-      Word(
-        id: 'sample_4',
-        english: 'peaceful',
-        japanese: '穏やかな',
-        diaryEntryId: 'sample_diary_2',
-        createdAt: DateTime.now().subtract(const Duration(days: 2)),
-        reviewCount: 0,
-        isMastered: false,
-        masteryLevel: 0, // ×
-<<<<<<< HEAD
-=======
         category: WordCategory.adjective, // 形容詞
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       ),
       // 慣用句
       Word(
@@ -772,24 +555,7 @@ class StorageService {
         reviewCount: 5,
         isMastered: true,
         masteryLevel: 2, // ○
-<<<<<<< HEAD
-=======
-        category: WordCategory.other, // その他（慣用句）
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-      ),
-      Word(
-        id: 'sample_6',
-        english: 'appreciate',
-        japanese: '感謝する',
-        diaryEntryId: 'sample_diary_3',
-        createdAt: DateTime.now().subtract(const Duration(days: 1)),
-        reviewCount: 1,
-        isMastered: false,
-        masteryLevel: 1, // △
-<<<<<<< HEAD
-=======
         category: WordCategory.verb, // 動詞
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       ),
       // フレーズ
       Word(
@@ -802,24 +568,7 @@ class StorageService {
         reviewCount: 4,
         isMastered: true,
         masteryLevel: 2, // ○
-<<<<<<< HEAD
-=======
-        category: WordCategory.other, // その他（フレーズ）
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-      ),
-      Word(
-        id: 'sample_8',
-        english: 'accomplish',
-        japanese: '達成する',
-        diaryEntryId: 'sample_diary_4',
-        createdAt: DateTime.now(),
-        reviewCount: 0,
-        isMastered: false,
-        masteryLevel: 0, // ×
-<<<<<<< HEAD
-=======
         category: WordCategory.verb, // 動詞
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       ),
       // 追加のフレーズと慣用句
       Word(
@@ -832,25 +581,7 @@ class StorageService {
         reviewCount: 2,
         isMastered: false,
         masteryLevel: 1, // △
-<<<<<<< HEAD
-=======
-        category: WordCategory.other, // その他（慣用句）
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-      ),
-      Word(
-        id: 'sample_10',
-        english: 'take it easy',
-        japanese: 'のんびりする、無理をしない',
-        example: 'You should take it easy this weekend.',
-        diaryEntryId: 'sample_diary_2',
-        createdAt: DateTime.now().subtract(const Duration(days: 2)),
-        reviewCount: 6,
-        isMastered: true,
-        masteryLevel: 2, // ○
-<<<<<<< HEAD
-=======
         category: WordCategory.other, // その他（フレーズ）
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       ),
     ];
 

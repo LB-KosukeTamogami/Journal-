@@ -6,10 +6,6 @@ import 'dart:convert';
 import '../theme/app_theme.dart';
 import '../models/conversation_message.dart';
 import '../models/word.dart';
-<<<<<<< HEAD
-import '../models/flashcard.dart';
-=======
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 import '../services/gemini_service.dart';
 import '../services/storage_service.dart';
 import '../services/translation_service.dart';
@@ -96,11 +92,8 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
       builder: (context) => Container(
         margin: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-<<<<<<< HEAD
           color: AppTheme.backgroundPrimary,
-=======
           color: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -142,11 +135,7 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-<<<<<<< HEAD
-                  color: AppTheme.backgroundSecondary,
-=======
                   color: Theme.of(context).colorScheme.surface,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -172,49 +161,13 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
               // アクションボタン（縦並び）
               Column(
                 children: [
-<<<<<<< HEAD
-                  // 学習カードに追加
-=======
                   // 学習カードに追加機能は削除
                   /*
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
                       onPressed: _addedToStudyCards[wordOrPhrase] == true ? null : () async {
-<<<<<<< HEAD
-                        // 学習カードに追加
-                        final now = DateTime.now();
-                        final flashcard = Flashcard(
-                          id: const Uuid().v4(),
-                          word: wordOrPhrase,
-                          meaning: translation,
-                          createdAt: now,
-                          lastReviewed: now,
-                          nextReviewDate: now.add(const Duration(days: 1)),
-                        );
-                        
-                        await StorageService.saveFlashcard(flashcard);
-                        
-                        if (context.mounted) {
-                          setState(() {
-                            _addedToStudyCards[wordOrPhrase] = true;
-                          });
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('学習カードに追加しました'),
-                              backgroundColor: AppTheme.success,
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          );
-                        }
-=======
                         // Flashcard機能は削除されました
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       },
                       icon: Icon(
                         _addedToStudyCards[wordOrPhrase] == true 
@@ -246,103 +199,10 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
                       ),
                     ),
                   ),
-<<<<<<< HEAD
-=======
-                  */
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-                  const SizedBox(height: 12),
-                  // 単語帳に追加
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: _addedToVocabulary[wordOrPhrase] == true ? null : () async {
-                        // 単語帳に追加
-                        final word = Word(
-                          id: const Uuid().v4(),
-                          english: wordOrPhrase,
-                          japanese: translation,
-                          createdAt: DateTime.now(),
-                        );
-                        
-                        await StorageService.saveWord(word);
-                        
-                        if (context.mounted) {
-                          setState(() {
-                            _addedToVocabulary[wordOrPhrase] = true;
-                          });
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('単語帳に追加しました'),
-                              backgroundColor: AppTheme.success,
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                      icon: Icon(
-                        _addedToVocabulary[wordOrPhrase] == true 
-                          ? Icons.check_circle 
-                          : Icons.book, 
-                        size: 20,
-                      ),
-                      label: Text(
-                        _addedToVocabulary[wordOrPhrase] == true 
-                          ? '単語帳に追加済み' 
-                          : '単語帳に追加',
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _addedToVocabulary[wordOrPhrase] == true 
-                          ? AppTheme.success.withOpacity(0.8) 
-                          : AppTheme.success,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // 閉じるボタン
-              SizedBox(
-                width: double.infinity,
-                child: TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text('閉じる'),
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppTheme.textSecondary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.backgroundSecondary,
-      appBar: AppBar(
-        title: Text('会話の振り返り', style: AppTheme.headline3),
-        backgroundColor: AppTheme.backgroundPrimary,
-=======
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('会話の振り返り', style: AppTheme.headline3),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         elevation: 0,
       ),
       body: _isAnalyzing
@@ -447,11 +307,7 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-<<<<<<< HEAD
-                color: AppTheme.backgroundSecondary,
-=======
                 color: Theme.of(context).colorScheme.surface,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -911,11 +767,7 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-<<<<<<< HEAD
-      color: backgroundColor ?? AppTheme.backgroundPrimary,
-=======
       color: backgroundColor ?? Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,

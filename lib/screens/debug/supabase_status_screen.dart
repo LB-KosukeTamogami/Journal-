@@ -314,17 +314,10 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.backgroundSecondary,
-      appBar: AppBar(
-        title: const Text('Supabase接続状態'),
-        backgroundColor: AppTheme.backgroundPrimary,
-=======
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Supabase接続状態'),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         elevation: 0,
       ),
       body: _isLoading
@@ -513,11 +506,7 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-<<<<<<< HEAD
-        color: AppTheme.backgroundPrimary,
-=======
         color: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(

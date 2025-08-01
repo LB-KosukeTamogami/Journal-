@@ -8,11 +8,7 @@ class TermsOfServiceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.backgroundSecondary,
-=======
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       appBar: AppBar(
         title: const Text('利用規約'),
         backgroundColor: AppTheme.primaryColor,

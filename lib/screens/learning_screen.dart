@@ -1,24 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-<<<<<<< HEAD
-import '../theme/app_theme.dart';
-import '../models/word.dart';
-import '../models/flashcard.dart';
-=======
 import 'package:table_calendar/table_calendar.dart';
 import '../theme/app_theme.dart';
 import '../models/word.dart';
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 import '../services/storage_service.dart';
 import '../services/gemini_service.dart';
 import '../widgets/text_to_speech_button.dart';
 import '../widgets/japanese_dictionary_dialog.dart';
-<<<<<<< HEAD
-import 'flashcard_session_screen.dart' hide AppCard;
-
-class LearningScreen extends StatefulWidget {
-  const LearningScreen({super.key});
-=======
 import 'word_study_session_screen.dart' hide AppCard;
 
 // 並べ替えの種類
@@ -31,7 +19,6 @@ class LearningScreen extends StatefulWidget {
     super.key,
     this.initialCategory,
   });
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 
   @override
   State<LearningScreen> createState() => _LearningScreenState();
@@ -50,19 +37,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
   DateTime? _startDate;
   DateTime? _endDate;
   bool _showFilters = false;
-<<<<<<< HEAD
-=======
-  
-  // 並べ替え関連の状態
-  SortOrder _sortOrder = SortOrder.dateDesc; // デフォルトは追加日の降順
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-<<<<<<< HEAD
-=======
     
     // 初期カテゴリが指定されている場合はそれだけを選択、なければ全て選択
     if (widget.initialCategory != null) {
@@ -71,7 +45,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
       _selectedCategories = WordCategory.values.toSet();
     }
     
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
     _loadWords();
   }
 
@@ -88,65 +61,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
       });
     }
   }
-<<<<<<< HEAD
-=======
-  
-  Future<void> _removeDuplicates() async {
-    try {
-      // ローディング表示
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-      
-      await StorageService.removeDuplicateWords();
-      await _loadWords();
-      
-      if (mounted) {
-        Navigator.pop(context); // ローディングを閉じる
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('重複した単語を削除しました'),
-            backgroundColor: AppTheme.success,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        Navigator.pop(context); // ローディングを閉じる
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('エラーが発生しました: $e'),
-            backgroundColor: AppTheme.error,
-          ),
-        );
-      }
-    }
-  }
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-<<<<<<< HEAD
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundSecondary,
-      appBar: AppBar(
-        title: Text('学習', style: AppTheme.headline3),
-        backgroundColor: AppTheme.backgroundPrimary,
-        elevation: 0,
-        actions: [
-=======
   String _getHeaderTitle() {
     if (widget.initialCategory != null) {
       return widget.initialCategory!.displayName;
@@ -209,7 +123,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
               ),
             ],
           ),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
           IconButton(
             icon: Stack(
               children: [
@@ -245,15 +158,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           : Column(
               children: [
                 Container(
-<<<<<<< HEAD
-                  color: AppTheme.backgroundPrimary,
-                  child: Container(
-                    margin: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppTheme.backgroundPrimary,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppTheme.borderColor),
-=======
                   color: Theme.of(context).cardColor,
                   child: Container(
                     margin: const EdgeInsets.all(16),
@@ -261,7 +165,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: Theme.of(context).dividerColor),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     ),
                     padding: const EdgeInsets.all(4),
                     child: TabBar(
@@ -279,25 +182,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                       ),
                       unselectedLabelStyle: AppTheme.body2,
                       dividerColor: Colors.transparent,
-<<<<<<< HEAD
-                      tabs: [
-                        Tab(
-                          child: Container(
-                            width: double.infinity,
-                            child: const Center(child: Text('すべて')),
-                          ),
-                        ),
-                        Tab(
-                          child: Container(
-                            width: double.infinity,
-                            child: const Center(child: Text('学習中')),
-                          ),
-                        ),
-                        Tab(
-                          child: Container(
-                            width: double.infinity,
-                            child: const Center(child: Text('習得済み')),
-=======
                       labelPadding: const EdgeInsets.symmetric(vertical: 4),
                       tabs: [
                         Tab(
@@ -319,7 +203,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                             '習得済み',
                             '${_getFilteredWords(_allWords).where((word) => word.masteryLevel == 2).length}個',
                             2,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                           ),
                         ),
                       ],
@@ -340,142 +223,22 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
             ),
       floatingActionButton: Container(
         decoration: BoxDecoration(
-<<<<<<< HEAD
-          boxShadow: AppTheme.buttonShadow,
-=======
           boxShadow: AppTheme.buttonShadow(Theme.of(context).primaryColor),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
           borderRadius: BorderRadius.circular(16),
         ),
         child: FloatingActionButton.extended(
           onPressed: () {
-<<<<<<< HEAD
-            _startFlashcardSession();
-          },
-          backgroundColor: AppTheme.primaryColor,
-          icon: const Icon(Icons.play_arrow, color: Colors.white),
-          label: Text('学習を開始', style: AppTheme.button),
-=======
             _startWordStudySession();
           },
           backgroundColor: AppTheme.primaryColor,
           icon: Icon(Icons.play_arrow, color: Colors.white),
           label: Text('学習を開始', style: AppTheme.button.copyWith(color: Colors.white)),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         ),
       ),
     );
   }
 
-<<<<<<< HEAD
-=======
-  Widget _buildTabContent(String title, String count, int index) {
-    return AnimatedBuilder(
-      animation: _tabController,
-      builder: (context, child) {
-        final isSelected = _tabController.index == index;
-        return Container(
-          width: double.infinity,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  color: isSelected ? Colors.white : AppTheme.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                count,
-                style: AppTheme.caption.copyWith(
-                  fontSize: 10,
-                  color: isSelected ? Colors.white : AppTheme.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-  Widget _buildLearningTab() {
-    final learningWords = _getFilteredWords(_allWords).where((word) => word.masteryLevel < 2).toList();
-    
-    // 新しいフィルタリングロジック
-    final filteredWords = learningWords.where((word) {
-      if (word.masteryLevel == 0) {
-        // NEWステータス（reviewCount = 0 かつ lastReviewedAt = null）と×ステータスを区別
-        final isNewStatus = word.reviewCount == 0 && word.lastReviewedAt == null;
-        if (isNewStatus) {
-          return _showNew; // NEWフィルターでのみ表示
-        } else {
-          return _showFailed; // ×フィルターでのみ表示
-        }
-      } else {
-        // masteryLevel 1の場合、△のフラグをチェック
-        return _selectedMasteryLevels.contains(word.masteryLevel);
-      }
-    }).toList();
-
-    return Column(
-      children: [
-        Container(
-          height: 60,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            children: [
-              Text(
-                '絞り込み:',
-                style: AppTheme.body2.copyWith(color: AppTheme.textSecondary),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Row(
-                  children: [
-                    _buildNewFilterChip(),
-                    const SizedBox(width: 8),
-                    _buildFailedFilterChip(),
-                    const SizedBox(width: 8),
-                    _buildFilterChip(
-                      label: '△',
-                      value: 1,
-                      color: AppTheme.warning,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: _buildCardList(filteredWords),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNewFilterChip() {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _showNew = !_showNew;
-        });
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: _showNew ? AppTheme.primaryBlue.withOpacity(0.15) : AppTheme.backgroundTertiary,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-<<<<<<< HEAD
-            color: _showNew ? AppTheme.primaryBlue : AppTheme.borderColor,
-=======
             color: _showNew ? AppTheme.primaryBlue : Theme.of(context).dividerColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             width: _showNew ? 2 : 1,
           ),
         ),
@@ -516,11 +279,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           color: _showFailed ? AppTheme.error.withOpacity(0.15) : AppTheme.backgroundTertiary,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-<<<<<<< HEAD
-            color: _showFailed ? AppTheme.error : AppTheme.borderColor,
-=======
             color: _showFailed ? AppTheme.error : Theme.of(context).dividerColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             width: _showFailed ? 2 : 1,
           ),
         ),
@@ -561,11 +320,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           color: isSelected ? color.withOpacity(0.15) : AppTheme.backgroundTertiary,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-<<<<<<< HEAD
-            color: isSelected ? color : AppTheme.borderColor,
-=======
             color: isSelected ? color : Theme.of(context).dividerColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -616,11 +371,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
           color: isSelected ? color.withOpacity(0.15) : AppTheme.backgroundTertiary,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-<<<<<<< HEAD
-            color: isSelected ? color : AppTheme.borderColor,
-=======
             color: isSelected ? color : Theme.of(context).dividerColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -667,11 +418,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
       itemCount: words.length,
       itemBuilder: (context, index) {
         final word = words[index];
-<<<<<<< HEAD
-        return _FlashcardItem(
-=======
         return _WordCardItem(
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
           word: word,
           onTap: () => _showCardDetail(word),
           onToggleLearned: () async {
@@ -722,11 +469,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
             color: isSelected ? color : AppTheme.backgroundTertiary,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-<<<<<<< HEAD
-              color: isSelected ? color : AppTheme.borderColor,
-=======
               color: isSelected ? color : Theme.of(context).dividerColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
               width: isSelected ? 2 : 1,
             ),
           ),
@@ -761,11 +504,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-<<<<<<< HEAD
-        backgroundColor: AppTheme.backgroundPrimary,
-=======
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -811,26 +550,18 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
   }
 
   bool _hasActiveFilters() {
-<<<<<<< HEAD
-    // カテゴリフィルターがすべて選択されていない、または日付フィルターが設定されている場合
-=======
     // 初期カテゴリが指定されている場合は、日付フィルターのみをチェック
     if (widget.initialCategory != null) {
       return _startDate != null || _endDate != null;
     }
     // 初期カテゴリが指定されていない場合は、従来通りの判定
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
     return _selectedCategories.length != WordCategory.values.length ||
            _startDate != null ||
            _endDate != null;
   }
 
   List<Word> _getFilteredWords(List<Word> words) {
-<<<<<<< HEAD
-    return words.where((word) {
-=======
     final filtered = words.where((word) {
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       // カテゴリフィルター
       if (!_selectedCategories.contains(word.category)) {
         return false;
@@ -846,11 +577,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
       
       return true;
     }).toList();
-<<<<<<< HEAD
-  }
-
-  void _showFilterBottomSheet() {
-=======
     
     // 並べ替え
     switch (_sortOrder) {
@@ -878,7 +604,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     DateTime? tempEndDate = _endDate;
     SortOrder tempSortOrder = _sortOrder;
     
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -886,11 +611,7 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
       builder: (context) => StatefulBuilder(
         builder: (context, setModalState) => Container(
           decoration: BoxDecoration(
-<<<<<<< HEAD
-            color: AppTheme.backgroundPrimary,
-=======
             color: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
           padding: EdgeInsets.only(
@@ -919,65 +640,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                     ),
                     const SizedBox(height: 24),
                     
-<<<<<<< HEAD
-                    // カテゴリフィルター
-                    Text(
-                      'カテゴリ',
-                      style: AppTheme.body1.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: WordCategory.values.map((category) {
-                        final isSelected = _selectedCategories.contains(category);
-                        return GestureDetector(
-                          onTap: () {
-                            setModalState(() {
-                              if (isSelected) {
-                                _selectedCategories.remove(category);
-                              } else {
-                                _selectedCategories.add(category);
-                              }
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? AppTheme.primaryColor.withOpacity(0.1)
-                                  : AppTheme.backgroundSecondary,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: isSelected
-                                    ? AppTheme.primaryColor
-                                    : AppTheme.borderColor,
-                                width: isSelected ? 2 : 1,
-                              ),
-                            ),
-                            child: Text(
-                              category.displayName,
-                              style: AppTheme.body2.copyWith(
-                                color: isSelected
-                                    ? AppTheme.primaryColor
-                                    : AppTheme.textSecondary,
-                                fontWeight: isSelected
-                                    ? FontWeight.w600
-                                    : FontWeight.normal,
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    
-                    const SizedBox(height: 24),
-=======
                     // カテゴリフィルター（初期カテゴリが指定されていない場合のみ表示）
                     if (widget.initialCategory == null) ...[
                       Row(
@@ -1072,7 +734,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                     
                     const SizedBox(height: 16),
                     ],
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     
                     // 日付範囲フィルター
                     Text(
@@ -1087,48 +748,20 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                         Expanded(
                           child: GestureDetector(
                             onTap: () async {
-<<<<<<< HEAD
-                              final date = await showDatePicker(
-                                context: context,
-                                initialDate: _startDate ?? DateTime.now(),
-                                firstDate: DateTime(2020),
-                                lastDate: DateTime.now(),
-                                builder: (context, child) {
-                                  return Theme(
-                                    data: Theme.of(context).copyWith(
-                                      colorScheme: ColorScheme.light(
-                                        primary: AppTheme.primaryColor,
-                                      ),
-                                    ),
-                                    child: child!,
-                                  );
-                                },
-                              );
-                              if (date != null) {
-                                setModalState(() {
-                                  _startDate = date;
-=======
                               final selectedRange = await _showDateRangePicker(context, tempStartDate, tempEndDate);
                               if (selectedRange != null) {
                                 setModalState(() {
                                   tempStartDate = selectedRange['start'];
                                   tempEndDate = selectedRange['end'];
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                 });
                               }
                             },
                             child: Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-<<<<<<< HEAD
-                                color: AppTheme.backgroundSecondary,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: AppTheme.borderColor),
-=======
                                 color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(color: Theme.of(context).dividerColor),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                               ),
                               child: Row(
                                 children: [
@@ -1139,19 +772,11 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-<<<<<<< HEAD
-                                    _startDate != null
-                                        ? '${_startDate!.year}/${_startDate!.month}/${_startDate!.day}'
-                                        : '開始日',
-                                    style: AppTheme.body2.copyWith(
-                                      color: _startDate != null
-=======
                                     tempStartDate != null
                                         ? '${tempStartDate!.year}/${tempStartDate!.month}/${tempStartDate!.day}'
                                         : '開始日',
                                     style: AppTheme.body2.copyWith(
                                       color: tempStartDate != null
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                           ? AppTheme.textPrimary
                                           : AppTheme.textSecondary,
                                     ),
@@ -1167,48 +792,20 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                         Expanded(
                           child: GestureDetector(
                             onTap: () async {
-<<<<<<< HEAD
-                              final date = await showDatePicker(
-                                context: context,
-                                initialDate: _endDate ?? DateTime.now(),
-                                firstDate: _startDate ?? DateTime(2020),
-                                lastDate: DateTime.now(),
-                                builder: (context, child) {
-                                  return Theme(
-                                    data: Theme.of(context).copyWith(
-                                      colorScheme: ColorScheme.light(
-                                        primary: AppTheme.primaryColor,
-                                      ),
-                                    ),
-                                    child: child!,
-                                  );
-                                },
-                              );
-                              if (date != null) {
-                                setModalState(() {
-                                  _endDate = date;
-=======
                               final selectedRange = await _showDateRangePicker(context, tempStartDate, tempEndDate);
                               if (selectedRange != null) {
                                 setModalState(() {
                                   tempStartDate = selectedRange['start'];
                                   tempEndDate = selectedRange['end'];
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                 });
                               }
                             },
                             child: Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-<<<<<<< HEAD
-                                color: AppTheme.backgroundSecondary,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: AppTheme.borderColor),
-=======
                                 color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(color: Theme.of(context).dividerColor),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                               ),
                               child: Row(
                                 children: [
@@ -1219,19 +816,11 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-<<<<<<< HEAD
-                                    _endDate != null
-                                        ? '${_endDate!.year}/${_endDate!.month}/${_endDate!.day}'
-                                        : '終了日',
-                                    style: AppTheme.body2.copyWith(
-                                      color: _endDate != null
-=======
                                     tempEndDate != null
                                         ? '${tempEndDate!.year}/${tempEndDate!.month}/${tempEndDate!.day}'
                                         : '終了日',
                                     style: AppTheme.body2.copyWith(
                                       color: tempEndDate != null
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                           ? AppTheme.textPrimary
                                           : AppTheme.textSecondary,
                                     ),
@@ -1244,9 +833,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                       ],
                     ),
                     
-<<<<<<< HEAD
-                    const SizedBox(height: 24),
-=======
                     const SizedBox(height: 16),
                     
                     // 並べ替え
@@ -1372,7 +958,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                     ),
                     
                     const SizedBox(height: 20),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     
                     // ボタン
                     Row(
@@ -1381,17 +966,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                           child: OutlinedButton(
                             onPressed: () {
                               setModalState(() {
-<<<<<<< HEAD
-                                _selectedCategories = WordCategory.values.toSet();
-                                _startDate = null;
-                                _endDate = null;
-                              });
-                            },
-                            style: AppButtonStyles.secondaryButton.copyWith(
-                              foregroundColor: MaterialStateProperty.all(AppTheme.textSecondary),
-                              side: MaterialStateProperty.all(
-                                BorderSide(color: AppTheme.borderColor, width: 1),
-=======
                                 tempSelectedCategories = WordCategory.values.toSet();
                                 tempStartDate = null;
                                 tempEndDate = null;
@@ -1402,7 +976,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                               foregroundColor: MaterialStateProperty.all(AppTheme.textSecondary),
                               side: MaterialStateProperty.all(
                                 BorderSide(color: Theme.of(context).dividerColor, width: 1),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                               ),
                             ),
                             child: const Text('リセット'),
@@ -1412,12 +985,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
-<<<<<<< HEAD
-                              setState(() {});
-                              Navigator.pop(context);
-                            },
-                            style: AppButtonStyles.primaryButton,
-=======
                               setState(() {
                                 _selectedCategories = tempSelectedCategories;
                                 _startDate = tempStartDate;
@@ -1427,7 +994,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
                               Navigator.pop(context);
                             },
                             style: AppButtonStyles.primaryButton(context),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                             child: const Text('適用'),
                           ),
                         ),
@@ -1443,9 +1009,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
     );
   }
 
-<<<<<<< HEAD
-  void _startFlashcardSession() {
-=======
   Future<void> _updateWordCategories() async {
     try {
       // ローディング表示
@@ -2217,7 +1780,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
   }
 
   void _startWordStudySession() {
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
     // Get words based on current tab and filters
     List<Word> sessionWords;
     
@@ -2254,12 +1816,6 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
       return;
     }
     
-<<<<<<< HEAD
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => FlashcardSessionScreen(words: sessionWords),
-=======
     // 単語リストをシャッフル
     final shuffledWords = List<Word>.from(sessionWords)..shuffle();
     
@@ -2267,26 +1823,17 @@ class _LearningScreenState extends State<LearningScreen> with SingleTickerProvid
       context,
       MaterialPageRoute(
         builder: (context) => WordStudySessionScreen(words: shuffledWords),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       ),
     ).then((_) => _loadWords());
   }
 }
 
-<<<<<<< HEAD
-class _FlashcardItem extends StatelessWidget {
-=======
 class _WordCardItem extends StatelessWidget {
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
   final Word word;
   final VoidCallback onTap;
   final VoidCallback onToggleLearned;
 
-<<<<<<< HEAD
-  const _FlashcardItem({
-=======
   const _WordCardItem({
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
     required this.word,
     required this.onTap,
     required this.onToggleLearned,
@@ -2414,11 +1961,6 @@ class _WordCardItem extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 4),
-<<<<<<< HEAD
-                  Text(
-                    word.japanese,
-                    style: AppTheme.body2,
-=======
                   Row(
                     children: [
                       Expanded(
@@ -2448,7 +1990,6 @@ class _WordCardItem extends StatelessWidget {
                         ),
                       ),
                     ],
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   ),
                 ],
               ),
@@ -2490,19 +2031,11 @@ class _WordDetailModalState extends State<_WordDetailModal> {
     
     return Container(
       decoration: BoxDecoration(
-<<<<<<< HEAD
-        color: AppTheme.backgroundPrimary,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-=======
         color: Theme.of(context).cardColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         boxShadow: [
           BoxShadow(
             color: (Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black).withOpacity(0.1),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             blurRadius: 20,
             offset: const Offset(0, -5),
           ),
@@ -2529,16 +2062,6 @@ class _WordDetailModalState extends State<_WordDetailModal> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-<<<<<<< HEAD
-                  child: Text(
-                    widget.word.english,
-                    style: AppTheme.headline2,
-                    softWrap: true,
-                    overflow: TextOverflow.visible,
-                  ),
-                ),
-                const SizedBox(width: 12),
-=======
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -2578,23 +2101,11 @@ class _WordDetailModalState extends State<_WordDetailModal> {
                   ),
                 ),
                 const SizedBox(width: 8),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 TextToSpeechButton(
                   text: widget.word.english,
                 ),
               ],
             ),
-<<<<<<< HEAD
-            const SizedBox(height: 8),
-            Text(
-              widget.word.japanese,
-              style: AppTheme.body1.copyWith(fontSize: 18),
-              softWrap: true,
-              overflow: TextOverflow.visible,
-            ),
-            
-            
-=======
             
             
             const SizedBox(height: 16),
@@ -2617,7 +2128,6 @@ class _WordDetailModalState extends State<_WordDetailModal> {
               ],
             ),
             
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             const SizedBox(height: 20),
             // ステータス変更セクション
             Column(
@@ -2675,46 +2185,6 @@ class _WordDetailModalState extends State<_WordDetailModal> {
                 ),
               ],
             ),
-<<<<<<< HEAD
-            const SizedBox(height: 20),
-            // 単語帳に登録ボタン
-            AppButtonStyles.withShadow(
-              ElevatedButton.icon(
-                onPressed: () async {
-                  // フラッシュカードに登録
-                  final flashcard = Flashcard(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    word: widget.word.english,
-                    meaning: widget.word.japanese,
-                    exampleSentence: '', // 例文は削除
-                    createdAt: DateTime.now(),
-                    lastReviewed: DateTime.now(),
-                    nextReviewDate: DateTime.now().add(Duration(days: 1)),
-                    reviewCount: 0,
-                  );
-                  await StorageService.saveFlashcard(flashcard);
-                  Navigator.pop(context);
-                  
-                  // 成功メッセージを表示
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('単語帳に登録しました'),
-                      backgroundColor: AppTheme.success,
-                      behavior: SnackBarBehavior.floating,
-                      margin: const EdgeInsets.all(16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  );
-                },
-                style: AppButtonStyles.modalPrimaryButton,
-                icon: const Icon(Icons.bookmark_add, size: 20),
-                label: const Text('単語帳に登録'),
-              ),
-            ),
-=======
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             const SizedBox(height: 12),
             // 削除ボタン
             AppButtonStyles.withShadow(
@@ -2723,54 +2193,14 @@ class _WordDetailModalState extends State<_WordDetailModal> {
                   Navigator.pop(context);
                   _deleteWord(widget.word);
                 },
-<<<<<<< HEAD
-                style: AppButtonStyles.modalErrorButton,
-=======
                 style: AppButtonStyles.modalErrorButton(context),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 icon: Icon(Icons.delete_outline, size: 20, color: AppTheme.error),
                 label: Text(
                   '削除',
                   style: AppTheme.body2.copyWith(color: AppTheme.error),
                 ),
               ),
-<<<<<<< HEAD
-=======
-              Theme.of(context).primaryColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatusButton({
-    required int currentLevel,
-    required int targetLevel,
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    final isSelected = currentLevel == targetLevel;
-    
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: isSelected ? color : AppTheme.backgroundTertiary,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-<<<<<<< HEAD
-              color: isSelected ? color : AppTheme.borderColor,
-=======
               color: isSelected ? color : Theme.of(context).dividerColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
               width: isSelected ? 2 : 1,
             ),
           ),
@@ -2805,11 +2235,7 @@ class _WordDetailModalState extends State<_WordDetailModal> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-<<<<<<< HEAD
-        backgroundColor: AppTheme.backgroundPrimary,
-=======
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -2853,8 +2279,6 @@ class _WordDetailModalState extends State<_WordDetailModal> {
       ),
     );
   }
-<<<<<<< HEAD
-=======
   
   // 品詞を判定する
   String _getPartOfSpeech(String word) {
@@ -2895,5 +2319,4 @@ class _WordDetailModalState extends State<_WordDetailModal> {
     }
   }
   
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 }

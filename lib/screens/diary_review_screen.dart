@@ -3,18 +3,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:uuid/uuid.dart';
 import '../models/diary_entry.dart';
 import '../models/word.dart';
-<<<<<<< HEAD
-import '../models/flashcard.dart';
-=======
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 import '../theme/app_theme.dart';
 import '../services/translation_service.dart';
 import '../services/gemini_service.dart';
 import '../services/storage_service.dart';
-<<<<<<< HEAD
-=======
 import '../services/dictionary_service.dart';
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 import '../widgets/text_to_speech_button.dart';
 
 class DiaryReviewScreen extends StatefulWidget {
@@ -34,19 +27,6 @@ class DiaryReviewScreen extends StatefulWidget {
 class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   String _judgment = '';
   String _outputText = '';
-<<<<<<< HEAD
-=======
-  String _translatedText = ''; // 翻訳文を保存
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-  List<String> _corrections = [];
-  List<String> _improvements = [];
-  List<Map<String, String>> _learnedWords = [];
-  bool _isLoading = true;
-  String _detectedLanguage = '';
-  bool _isAllAddedToCards = false;
-  Set<String> _addedWords = {}; // 追加された単語を管理
-<<<<<<< HEAD
-=======
   final TextEditingController _transcriptionController = TextEditingController(); // 写経用のコントローラー
   Map<String, String> _wordDefinitions = {}; // 事前取得した単語の意味を保存
   
@@ -69,78 +49,12 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     // その他の一般的な単語
     'not', 'no', 'yes', 's', 't', 're', 've', 'll', 'd', 'm', 'don', 'won',
   };
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 
   @override
   void initState() {
     super.initState();
     _processContent();
   }
-<<<<<<< HEAD
-=======
-  
-  @override
-  void dispose() {
-    _transcriptionController.dispose();
-    super.dispose();
-  }
-  
-  // 単語の意味を事前に取得
-  Future<void> _prefetchWordDefinitions() async {
-    final futures = <Future>[];
-    
-    for (final wordData in _learnedWords) {
-      final english = wordData['english'] ?? '';
-      final japanese = wordData['japanese'] ?? '';
-      
-      // 意味が空または不十分な場合のみ取得
-      if (english.isNotEmpty && 
-          (japanese.isEmpty || japanese == '意味不明' || japanese.length < 2)) {
-        futures.add(
-          DictionaryService.lookupWord(english).then((result) {
-            if (result.success && result.definitions.isNotEmpty) {
-              final definition = result.definitions.first;
-              setState(() {
-                _wordDefinitions[english] = definition.japaneseDefinition ?? 
-                                           definition.definition;
-              });
-            }
-          }).catchError((error) {
-            print('Failed to fetch definition for $english: $error');
-          })
-        );
-      }
-    }
-    
-    // 並列で実行（最大5つまで同時実行）
-    const int batchSize = 5;
-    for (int i = 0; i < futures.length; i += batchSize) {
-      final end = (i + batchSize < futures.length) ? i + batchSize : futures.length;
-      await Future.wait(futures.sublist(i, end));
-    }
-  }
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-
-  Future<void> _processContent() async {
-    try {
-      // Gemini APIで添削と翻訳を実行
-      final result = await GeminiService.correctAndTranslate(
-        widget.entry.content,
-        targetLanguage: widget.detectedLanguage == 'ja' ? 'en' : 'ja',
-      );
-
-      setState(() {
-        _judgment = result['judgment'] ?? '';
-        _detectedLanguage = result['detected_language'] ?? widget.detectedLanguage;
-        _outputText = result['corrected'] ?? widget.entry.content;
-<<<<<<< HEAD
-        _corrections = List<String>.from(result['corrections'] ?? []);
-        _improvements = List<String>.from(result['improvements'] ?? []);
-        
-        // learned_wordsを処理
-        if (result['learned_words'] != null) {
-          _learnedWords = List<Map<String, String>>.from(result['learned_words']);
-=======
         _translatedText = result['translation'] ?? ''; // 翻訳文を保存
         _corrections = List<String>.from(result['corrections'] ?? []);
         _improvements = List<String>.from(result['improvements'] ?? []);
@@ -157,7 +71,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
           
           // 単語の意味を事前に取得
           _prefetchWordDefinitions();
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         }
         
         _isLoading = false;
@@ -180,28 +93,15 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     print('[DiaryReviewScreen] Detected language: ${widget.detectedLanguage}');
     
     return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.backgroundSecondary,
-      appBar: AppBar(
-        backgroundColor: AppTheme.backgroundPrimary,
-=======
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         elevation: 0,
         title: Text(
           'レビュー結果',
           style: AppTheme.headline3,
         ),
-<<<<<<< HEAD
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: AppTheme.textPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
-=======
         automaticallyImplyLeading: false,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
@@ -250,9 +150,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                   if (_shouldShowTranslationOrCorrection())
                     const SizedBox(height: 20),
                   
-<<<<<<< HEAD
-                  // 3. 添削の解説（添削時のみ）
-=======
                   // 3. 写経セクション（翻訳・添削が成功した場合のみ、正しい英文の場合は除く）
                   if (_shouldShowTranslationOrCorrection() && !_isLoading && _judgment != '英文（正しい）')
                     _buildTranscriptionSection(),
@@ -261,27 +158,18 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                     const SizedBox(height: 20),
                   
                   // 4. 添削の解説（添削時のみ）
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   if (_shouldShowCorrectionExplanation())
                     _isLoading ? _buildSkeletonCorrections() : _buildCorrectionExplanationSection(),
                   
                   if (_shouldShowCorrectionExplanation())
                     const SizedBox(height: 20),
                   
-<<<<<<< HEAD
-                  // 4. アドバイス
-=======
                   // 5. アドバイス
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   _isLoading ? _buildSkeletonCorrections() : _buildAdviceSection(),
                   
                   const SizedBox(height: 20),
                   
-<<<<<<< HEAD
-                  // 5. 重要単語（ある場合）
-=======
                   // 6. 重要単語（ある場合）
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   if (_isLoading)
                     _buildSkeletonWords()
                   else if (_learnedWords.isNotEmpty)
@@ -346,11 +234,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   
   Widget _buildSkeletonResult() {
     return AppCard(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.backgroundSecondary,
-=======
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -420,11 +304,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   
   Widget _buildSkeletonCorrections() {
     return AppCard(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.backgroundSecondary,
-=======
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -485,11 +365,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   
   Widget _buildSkeletonWords() {
     return AppCard(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.backgroundSecondary,
-=======
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -537,11 +413,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   Widget _buildAddToCardsButton() {
     return Container(
       decoration: BoxDecoration(
-<<<<<<< HEAD
-        boxShadow: AppTheme.buttonShadow,
-=======
         boxShadow: AppTheme.buttonShadow(Theme.of(context).primaryColor),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         borderRadius: BorderRadius.circular(16),
       ),
       child: SizedBox(
@@ -556,11 +428,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-<<<<<<< HEAD
-                    color: AppTheme.backgroundPrimary,
-=======
                     color: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -592,11 +460,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                     masteryLevel: 0,
                     reviewCount: 0,
                     isMastered: false,
-<<<<<<< HEAD
-                    category: WordCategory.other,
-=======
                     category: _getWordCategory(english),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   );
                   
                   // StorageServiceを通じてSupabaseに保存
@@ -637,21 +501,13 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             }
           },
           style: _isAllAddedToCards 
-<<<<<<< HEAD
-            ? AppButtonStyles.primaryButton.copyWith(
-=======
             ? AppButtonStyles.primaryButton(context).copyWith(
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 backgroundColor: MaterialStateProperty.all(Colors.white),
                 foregroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
                 side: MaterialStateProperty.all(BorderSide(color: AppTheme.primaryColor, width: 2)),
                 minimumSize: MaterialStateProperty.all(Size(double.infinity, 56)),
               )
-<<<<<<< HEAD
-            : AppButtonStyles.primaryButton.copyWith(
-=======
             : AppButtonStyles.primaryButton(context).copyWith(
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 minimumSize: MaterialStateProperty.all(Size(double.infinity, 56)),
               ),
           icon: Icon(
@@ -672,47 +528,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   Widget _buildOriginalSection() {
     // 英語（正しい）の場合は元の文章に音声読み上げボタンを表示
     final showTTS = _judgment == '英文（正しい）';
-<<<<<<< HEAD
-=======
-    // 英語の場合は日本語翻訳を表示
-    final isEnglish = _detectedLanguage == 'en' || _detectedLanguage == 'mixed';
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-    
-    return AppCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.edit_note,
-                color: AppTheme.primaryBlue,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '元の文章',
-                style: AppTheme.body1.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.primaryBlue,
-                ),
-              ),
-              if (showTTS) ...[
-                const Spacer(),
-                TextToSpeechButton(
-                  text: widget.entry.content,
-                  size: 20,
-                ),
-              ],
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            widget.entry.content,
-            style: AppTheme.body1.copyWith(height: 1.6),
-          ),
-<<<<<<< HEAD
-=======
           // 英語の場合、日本語訳を透明背景のコンテナで表示
           if (isEnglish && _translatedText.isNotEmpty) ...[
             const SizedBox(height: 12),
@@ -749,7 +564,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               ),
             ),
           ],
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         ],
       ),
     ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0);
@@ -891,31 +705,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             ],
           ),
           const SizedBox(height: 12),
-<<<<<<< HEAD
-          ...allCorrections.map((correction) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 6,
-                  height: 6,
-                  margin: const EdgeInsets.only(top: 8, right: 12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.warning,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    correction,
-                    style: AppTheme.body2.copyWith(height: 1.5),
-                  ),
-                ),
-              ],
-            ),
-          )),
-=======
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
@@ -950,7 +739,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               )).toList(),
             ),
           ),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         ],
       ),
     ).animate().fadeIn(delay: 500.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
@@ -994,9 +782,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                   // モーダルを下から表示（日記詳細画面と同じデザインに統一）
                   // 既存の追加済み状態を初期値として設定
                   bool isAddedToFlashcard = isAdded;
-<<<<<<< HEAD
-                  bool isAddedToVocabulary = false;
-=======
                   
                   // 事前取得した意味があればそれを使用、なければ元の意味を使用
                   String displayJapanese = _wordDefinitions[english] ?? japanese;
@@ -1006,7 +791,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                                displayJapanese == '意味不明' || 
                                                displayJapanese.length < 2) && 
                                               english.isNotEmpty;
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   
                   showModalBottomSheet(
                     context: context,
@@ -1014,12 +798,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                     backgroundColor: Colors.transparent,
                     builder: (context) => StatefulBuilder(
                       builder: (context, setModalState) {
-<<<<<<< HEAD
-                        
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: AppTheme.backgroundPrimary,
-=======
                         // 事前取得でも意味が取得できていない場合のみ、リアルタイムで取得
                         if (isLoadingTranslation) {
                           DictionaryService.lookupWord(english).then((result) {
@@ -1044,7 +822,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                         return Container(
                           decoration: BoxDecoration(
                             color: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                             boxShadow: [
                               BoxShadow(
@@ -1087,12 +864,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                         ),
                                         const SizedBox(height: 8),
                                         // 日本語の意味
-<<<<<<< HEAD
-                                        Text(
-                                          japanese,
-                                          style: AppTheme.body1.copyWith(fontSize: 18),
-                                        ),
-=======
                                         isLoadingTranslation 
                                           ? Row(
                                               children: [
@@ -1117,7 +888,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                               displayJapanese,
                                               style: AppTheme.body1.copyWith(fontSize: 18),
                                             ),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                       ],
                                     ),
                                   ),
@@ -1141,27 +911,9 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                   ),
                                   const SizedBox(width: 8),
                                   // 音声読み上げボタン
-<<<<<<< HEAD
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: AppTheme.primaryBlue.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: IconButton(
-                                      onPressed: () {
-                                        // TODO: 音声読み上げ機能を実装
-                                      },
-                                      icon: Icon(
-                                        Icons.volume_up,
-                                        color: AppTheme.primaryBlue,
-                                        size: 20,
-                                      ),
-                                    ),
-=======
                                   TextToSpeechButton(
                                     text: english,
                                     size: 20,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                   ),
                                 ],
                               ),
@@ -1173,44 +925,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                 children: [
                                   AppButtonStyles.withShadow(
                                     OutlinedButton.icon(
-<<<<<<< HEAD
-                                        onPressed: isAddedToFlashcard ? null : () async {
-                                          // 学習カードに追加
-                                          try {
-                                            final word = Word(
-                                              id: const Uuid().v4(),
-                                              english: english,
-                                              japanese: japanese,
-                                              diaryEntryId: widget.entry.id,
-                                              createdAt: DateTime.now(),
-                                              masteryLevel: 0,
-                                              reviewCount: 0,
-                                              isMastered: false,
-                                              category: WordCategory.other,
-                                            );
-                                            
-                                            await StorageService.saveWord(word);
-                                            
-                                            // メインの状態も更新
-                                            setState(() {
-                                              _addedWords.add(english.toLowerCase());
-                                            });
-                                            
-                                            setModalState(() {
-                                              isAddedToFlashcard = true;
-                                            });
-                                            
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(
-                                                content: Text('学習カードに追加しました'),
-                                                backgroundColor: AppTheme.success,
-                                                behavior: SnackBarBehavior.floating,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(8),
-                                                ),
-                                              ),
-                                            );
-=======
                                         onPressed: () async {
                                           // 学習カードに追加/削除のトグル
                                           try {
@@ -1285,7 +999,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                                 ),
                                               );
                                             }
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                           } catch (e) {
                                             ScaffoldMessenger.of(context).showSnackBar(
                                               SnackBar(
@@ -1296,20 +1009,8 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                           }
                                         },
                                         style: isAddedToFlashcard
-<<<<<<< HEAD
-                                          ? AppButtonStyles.modalSecondaryButton.copyWith(
-                                              backgroundColor: MaterialStateProperty.all(Colors.white),
-                                              foregroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
-                                              side: MaterialStateProperty.all(BorderSide(color: AppTheme.primaryColor, width: 2)),
-                                            )
-                                          : AppButtonStyles.modalSecondaryButton.copyWith(
-                                              backgroundColor: MaterialStateProperty.all(AppTheme.primaryColor),
-                                              foregroundColor: MaterialStateProperty.all(Colors.white),
-                                            ),
-=======
                                           ? AppButtonStyles.modalSecondaryButton(context)
                                           : AppButtonStyles.modalPrimaryButton(context),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                         icon: Icon(
                                           isAddedToFlashcard ? Icons.check_circle : Icons.add_card,
                                           size: 20,
@@ -1322,72 +1023,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                           ),
                                         ),
                                       ),
-<<<<<<< HEAD
-                                  ),
-                                  const SizedBox(height: 12),
-                                  AppButtonStyles.withShadow(
-                                    ElevatedButton.icon(
-                                        onPressed: isAddedToVocabulary ? null : () async {
-                                          // 単語帳に追加
-                                          try {
-                                            final flashcard = Flashcard(
-                                              id: DateTime.now().millisecondsSinceEpoch.toString(),
-                                              word: english,
-                                              meaning: japanese,
-                                              exampleSentence: '',
-                                              createdAt: DateTime.now(),
-                                              lastReviewed: DateTime.now(),
-                                              nextReviewDate: DateTime.now().add(Duration(days: 1)),
-                                              reviewCount: 0,
-                                            );
-                                            
-                                            await StorageService.saveFlashcard(flashcard);
-                                            
-                                            setModalState(() {
-                                              isAddedToVocabulary = true;
-                                            });
-                                            
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(
-                                                content: Text('単語帳に追加しました'),
-                                                backgroundColor: AppTheme.primaryBlue,
-                                                behavior: SnackBarBehavior.floating,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(8),
-                                                ),
-                                              ),
-                                            );
-                                          } catch (e) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(
-                                                content: Text('エラーが発生しました'),
-                                                backgroundColor: AppTheme.error,
-                                              ),
-                                            );
-                                          }
-                                        },
-                                        style: isAddedToVocabulary
-                                          ? AppButtonStyles.modalSuccessButton.copyWith(
-                                              backgroundColor: MaterialStateProperty.all(Colors.white),
-                                              foregroundColor: MaterialStateProperty.all(AppTheme.success),
-                                              side: MaterialStateProperty.all(BorderSide(color: AppTheme.success, width: 2)),
-                                            )
-                                          : AppButtonStyles.modalSuccessButton,
-                                        icon: Icon(
-                                          isAddedToVocabulary ? Icons.check_circle : Icons.book,
-                                          size: 20,
-                                          color: isAddedToVocabulary ? AppTheme.success : Colors.white,
-                                        ),
-                                        label: Text(
-                                          isAddedToVocabulary ? '単語帳に追加済み' : '単語帳に追加',
-                                          style: TextStyle(
-                                            color: isAddedToVocabulary ? AppTheme.success : Colors.white,
-                                          ),
-                                        ),
-                                      ),
-=======
                                     Theme.of(context).primaryColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                                   ),
                                 ],
                               ),
@@ -1451,15 +1087,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     IconData sectionIcon;
     
     if (_judgment == '日本語翻訳') {
-<<<<<<< HEAD
-      sectionTitle = '翻訳';
-      sectionColor = AppTheme.primaryBlue;
-      sectionIcon = Icons.translate;
-    } else {
-      sectionTitle = '添削';
-      sectionColor = AppTheme.warning;
-      sectionIcon = Icons.edit_note;
-=======
       sectionTitle = '英語翻訳';
       sectionColor = AppTheme.primaryBlue;
       sectionIcon = Icons.translate;
@@ -1467,7 +1094,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
       sectionTitle = '添削後';
       sectionColor = AppTheme.success;
       sectionIcon = Icons.check_circle;
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
     }
     
     return AppCard(
@@ -1491,11 +1117,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                 ),
               ),
               const Spacer(),
-<<<<<<< HEAD
-              // 音声読み上げボタン（翻訳・添削時は常に表示）
-=======
               // 音声読み上げボタン（常に表示）
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
               TextToSpeechButton(
                 text: _outputText,
                 size: 20,
@@ -1503,16 +1125,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             ],
           ),
           const SizedBox(height: 12),
-<<<<<<< HEAD
-          SelectableText(
-            _outputText,
-            style: AppTheme.body1.copyWith(
-              height: 1.6,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-=======
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
@@ -1568,7 +1180,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               ),
             ),
           ],
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         ],
       ),
     ).animate().fadeIn(delay: 400.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
@@ -1579,93 +1190,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     final allCorrections = [..._corrections, ..._improvements];
     
     return AppCard(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.warning.withOpacity(0.05),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.info_outline,
-                color: AppTheme.warning,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '添削の解説',
-                style: AppTheme.body1.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.warning,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ...allCorrections.map((correction) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 6,
-                  height: 6,
-                  margin: const EdgeInsets.only(top: 8, right: 12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.warning,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    correction,
-                    style: AppTheme.body2.copyWith(height: 1.5),
-                  ),
-                ),
-              ],
-            ),
-          )),
-        ],
-      ),
-    ).animate().fadeIn(delay: 500.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
-  }
-  
-  // 4. アドバイスセクション
-  Widget _buildAdviceSection() {
-    List<String> adviceList;
-    
-    switch (_judgment) {
-      case '日本語翻訳':
-        adviceList = [
-          '自然な英語表現を学習しましょう',
-          '文法や語順に注意して英語で考える練習をしましょう',
-          '日常的に英語で表現することを心がけましょう'
-        ];
-        break;
-      case '英文（正しい）':
-        adviceList = [
-          '素晴らしい英文です！この調子で続けましょう',
-          'より複雑な表現にも挑戦してみましょう',
-          '語彙力を増やして表現の幅を広げましょう'
-        ];
-        break;
-      case '英文（添削必要）':
-        adviceList = [
-          '基本的な文法をしっかり身につけましょう',
-          '添削内容を参考にして同じ間違いを避けましょう',
-          '繰り返し練習することで自然な英語が身につきます'
-        ];
-        break;
-      default:
-        adviceList = [
-          '日記を続けることで英語力が向上します',
-          '間違いを恐れずに表現することが大切です'
-        ];
-    }
-    
-    return AppCard(
-=======
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       backgroundColor: AppTheme.info.withOpacity(0.05),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1673,21 +1197,14 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
           Row(
             children: [
               Icon(
-<<<<<<< HEAD
                 Icons.lightbulb_outline,
-=======
                 Icons.info_outline,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 color: AppTheme.info,
                 size: 20,
               ),
               const SizedBox(width: 8),
               Text(
-<<<<<<< HEAD
-                'アドバイス',
-=======
                 '添削の解説',
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 style: AppTheme.body1.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppTheme.info,
@@ -1696,31 +1213,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             ],
           ),
           const SizedBox(height: 12),
-<<<<<<< HEAD
-          ...adviceList.map((advice) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 6,
-                  height: 6,
-                  margin: const EdgeInsets.only(top: 8, right: 12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.info,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    advice,
-                    style: AppTheme.body2.copyWith(height: 1.5),
-                  ),
-                ),
-              ],
-            ),
-          )),
-=======
           // 白背景コンテナを追加して統一感を向上
           Container(
             width: double.infinity,
@@ -1902,199 +1394,10 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               )).toList(),
             ),
           ),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         ],
       ),
     ).animate().fadeIn(delay: 600.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
-<<<<<<< HEAD
-=======
-  
-  // 写経セクション
-  Widget _buildTranscriptionSection() {
-    return AppCard(
-      backgroundColor: AppTheme.primaryBlue.withOpacity(0.05),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.edit_note,
-                color: AppTheme.primaryBlue,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '写経',
-                style: AppTheme.body1.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.primaryBlue,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _transcriptionController,
-            maxLines: 5,
-            style: AppTheme.body1,
-            decoration: InputDecoration(
-              hintText: '正しい英文を書き写してみましょう。',
-              hintStyle: AppTheme.body2.copyWith(color: AppTheme.textTertiary),
-              filled: true,
-              fillColor: Theme.of(context).cardColor,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: AppTheme.borderColor),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: AppTheme.borderColor),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: AppTheme.primaryBlue, width: 2),
-              ),
-              contentPadding: const EdgeInsets.all(16),
-            ),
-          ),
-        ],
-      ),
-    ).animate().fadeIn(delay: 500.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
-  }
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-
-  Widget _buildLearningPointsSection() {
-    // デフォルトの学習ポイントを表示
-    final points = _learnedWords.isNotEmpty 
-        ? ['単語の意味を確認しながら学習しましょう', '繰り返し復習することで定着します', '文脈から単語の使い方を理解しましょう']
-        : widget.detectedLanguage == 'ja' 
-            ? [
-                '自然な英語表現を学びました',
-                '日記を続けることで語彙力が向上します',
-                '翻訳結果を参考に英語で考える練習をしましょう',
-              ]
-            : [
-                '文法の基本をしっかり身につけましょう',
-                '過去形と現在形の使い分けを意識しましょう',
-                '前置詞の使い方に注意して練習しましょう',
-              ];
-
-    return AppCard(
-      backgroundColor: AppTheme.info.withOpacity(0.1),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.school,
-                color: AppTheme.info,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '学習ポイント',
-                style: AppTheme.body1.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.info,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ...points.map((point) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 6,
-                  height: 6,
-                  margin: const EdgeInsets.only(top: 8, right: 12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.info,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    point,
-                    style: AppTheme.body2.copyWith(height: 1.5),
-                  ),
-                ),
-              ],
-            ),
-          )),
-        ],
-      ),
-    ).animate().fadeIn(delay: 600.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
-  }
-
-  // 品詞を判定する
-  String _getPartOfSpeech(String word) {
-    final lowerWord = word.toLowerCase();
-    
-    // 動詞の判定
-    if (lowerWord.endsWith('ing') || lowerWord.endsWith('ed') || 
-        lowerWord.endsWith('es') || lowerWord.endsWith('s') ||
-        ['go', 'went', 'come', 'came', 'take', 'took', 'make', 'made', 
-         'get', 'got', 'see', 'saw', 'know', 'knew', 'think', 'thought',
-         'feel', 'felt', 'work', 'run', 'walk', 'talk', 'play', 'study',
-         'learn', 'teach', 'read', 'write', 'listen', 'speak', 'watch',
-         'look', 'find', 'help', 'try', 'start', 'stop', 'open', 'close',
-         'clean', 'realize', 'forget'].contains(lowerWord)) {
-      return '動詞';
-    }
-    
-    // 形容詞の判定
-    if (lowerWord.endsWith('ful') || lowerWord.endsWith('less') || 
-        lowerWord.endsWith('ing') || lowerWord.endsWith('ed') ||
-        lowerWord.endsWith('ous') || lowerWord.endsWith('ive') ||
-        lowerWord.endsWith('ly') ||
-        ['good', 'bad', 'big', 'small', 'new', 'old', 'young', 'long',
-         'short', 'high', 'low', 'fast', 'slow', 'easy', 'hard', 'hot',
-         'cold', 'warm', 'cool', 'great', 'wonderful', 'terrible', 'worst',
-         'best', 'better', 'worse', 'happy', 'sad', 'angry', 'excited',
-         'tired', 'beautiful', 'ugly', 'important', 'interesting', 'boring'].contains(lowerWord)) {
-      return '形容詞';
-    }
-    
-    // 副詞の判定
-    if (lowerWord.endsWith('ly') ||
-        ['today', 'yesterday', 'tomorrow', 'now', 'then', 'here', 'there',
-         'always', 'never', 'sometimes', 'often', 'usually', 'very', 'quite',
-         'really', 'actually', 'finally', 'suddenly', 'carefully', 'quickly'].contains(lowerWord)) {
-      return '副詞';
-    }
-    
-    // 前置詞の判定
-    if (['in', 'on', 'at', 'to', 'for', 'with', 'by', 'from', 'of', 'about',
-         'after', 'before', 'during', 'under', 'over', 'between', 'among',
-         'through', 'into', 'onto', 'upon', 'within', 'without'].contains(lowerWord)) {
-      return '前置詞';
-    }
-    
-    // 接続詞の判定
-    if (['and', 'or', 'but', 'so', 'because', 'although', 'while', 'when',
-         'if', 'unless', 'since', 'until', 'though', 'whereas'].contains(lowerWord)) {
-      return '接続詞';
-    }
-    
-    // 代名詞の判定
-    if (['i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her',
-         'us', 'them', 'my', 'your', 'his', 'her', 'its', 'our', 'their',
-         'mine', 'yours', 'hers', 'ours', 'theirs', 'this', 'that', 'these',
-         'those', 'who', 'what', 'which', 'where', 'when', 'why', 'how'].contains(lowerWord)) {
-      return '代名詞';
-    }
-    
-    // デフォルトは名詞
-    return '名詞';
-  }
-<<<<<<< HEAD
-=======
   
   // 品詞文字列をWordCategoryに変換
   WordCategory _getWordCategory(String word) {
@@ -2120,5 +1423,4 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
         return WordCategory.other;
     }
   }
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 }

@@ -66,11 +66,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.backgroundSecondary,
-=======
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -131,11 +127,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       labelText: 'メールアドレス',
                       prefixIcon: const Icon(Icons.email_outlined),
                       filled: true,
-<<<<<<< HEAD
-                      fillColor: Colors.white,
-=======
                       fillColor: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -169,22 +161,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-<<<<<<< HEAD
-                      color: Colors.red.shade50,
-=======
                       color: Theme.of(context).colorScheme.error.withOpacity(0.1),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
                       children: [
                         Icon(
                           Icons.error_outline,
-<<<<<<< HEAD
-                          color: Colors.red.shade700,
-=======
                           color: Theme.of(context).colorScheme.error,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                           size: 20,
                         ),
                         const SizedBox(width: 8),
@@ -192,11 +176,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           child: Text(
                             _errorMessage!,
                             style: TextStyle(
-<<<<<<< HEAD
-                              color: Colors.red.shade700,
-=======
                               color: Theme.of(context).colorScheme.error,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                               fontSize: 14,
                             ),
                           ),
@@ -218,11 +198,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     elevation: 2,
                   ),
                   child: _isLoading
-<<<<<<< HEAD
                       ? const SizedBox(
-=======
-                      ? SizedBox(
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
@@ -301,11 +277,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-<<<<<<< HEAD
-                  color: Colors.white,
-=======
                   color: Theme.of(context).cardColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(

@@ -2,23 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'home_screen.dart';
 import 'journal_screen.dart';
-<<<<<<< HEAD
-import 'learning_screen.dart';
-=======
 import 'learning_category_screen.dart';
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 import 'analytics_screen.dart';
 import 'my_page_screen.dart';
 import '../theme/app_theme.dart';
 
 class MainNavigationScreen extends StatefulWidget {
-<<<<<<< HEAD
-  const MainNavigationScreen({super.key});
-=======
   static final GlobalKey<_MainNavigationScreenState> navigatorKey = GlobalKey<_MainNavigationScreenState>();
   
   const MainNavigationScreen({Key? key}) : super(key: key);
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
@@ -26,13 +18,6 @@ class MainNavigationScreen extends StatefulWidget {
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _selectedIndex = 0;
-<<<<<<< HEAD
-
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const JournalScreen(),
-    const LearningScreen(),
-=======
   
   void navigateToTab(int index) {
     setState(() {
@@ -49,7 +34,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     const HomeScreen(),
     const JournalScreen(),
     const LearningCategoryScreen(),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
     const AnalyticsScreen(),
     const MyPageScreen(),
   ];
@@ -64,19 +48,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundSecondary,
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: AppTheme.backgroundPrimary,
-          border: Border(
-            top: BorderSide(color: AppTheme.borderColor),
-=======
     return WillPopScope(
       onWillPop: () async => false, // スワイプバックを無効化
       child: Scaffold(
@@ -95,7 +66,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 : const Color(0xFF5C4A3A), // ダークモード用の茶色
               width: 1.0,
             ),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
           ),
           boxShadow: [
             BoxShadow(
@@ -129,74 +99,26 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ],
         ),
       ),
-<<<<<<< HEAD
-=======
-      ),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-    );
-  }
-
-  Widget _buildNavItem(int index, NavigationItem item) {
-    final isSelected = _selectedIndex == index;
-    
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          HapticFeedback.selectionClick();
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        behavior: HitTestBehavior.opaque,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isSelected
-<<<<<<< HEAD
-                      ? AppTheme.primaryColor.withOpacity(0.1)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(24),
-=======
                       ? Theme.of(context).primaryColor.withOpacity(0.12)
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(20),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 ),
                 child: Icon(
                   item.icon,
                   color: isSelected
-<<<<<<< HEAD
-                      ? AppTheme.primaryColor
-                      : AppTheme.textTertiary,
-=======
                       ? Theme.of(context).primaryColor
                       : Theme.of(context).textTheme.bodySmall?.color,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   size: 24,
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 item.label,
-<<<<<<< HEAD
-                style: AppTheme.caption.copyWith(
-                  color: isSelected
-                      ? AppTheme.primaryColor
-                      : AppTheme.textTertiary,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-=======
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: isSelected
                       ? Theme.of(context).primaryColor
                       : Theme.of(context).textTheme.bodySmall?.color,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   fontSize: 11,
                 ),
                 maxLines: 1,

@@ -15,25 +15,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   final _userNameController = TextEditingController();
   bool _isLoading = false;
   String? _errorMessage;
-<<<<<<< HEAD
-=======
-  String _selectedAvatar = 'person';
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUserData();
-  }
-
-  void _loadUserData() {
-    final user = AuthService.currentUser;
-    if (user != null) {
-      _userNameController.text = user.userMetadata?['username'] ?? '';
-<<<<<<< HEAD
-=======
       _selectedAvatar = user.userMetadata?['avatar'] ?? 'person';
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
     }
   }
 
@@ -54,53 +36,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     try {
       await AuthService.updateProfile(
         username: _userNameController.text.trim(),
-<<<<<<< HEAD
-=======
-        avatar: _selectedAvatar,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-      );
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('プロフィールを更新しました'),
-            backgroundColor: AppTheme.success,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        );
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      setState(() {
-        _errorMessage = e.toString().replaceAll('Exception: ', '');
-      });
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.backgroundSecondary,
-      appBar: AppBar(
-        title: Text('プロフィール編集', style: AppTheme.headline3),
-        backgroundColor: AppTheme.backgroundPrimary,
-=======
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('プロフィール編集', style: AppTheme.headline3),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: AppTheme.textPrimary),
@@ -127,38 +66,6 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             children: [
               // プロフィール画像
               Center(
-<<<<<<< HEAD
-                child: Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
-                      child: Icon(
-                        Icons.person,
-                        size: 60,
-                        color: AppTheme.primaryColor,
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryColor,
-                          shape: BoxShape.circle,
-                          boxShadow: AppTheme.buttonShadow,
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          size: 20,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ).animate().scale(duration: 300.ms),
-=======
                 child: GestureDetector(
                   onTap: () => _showAvatarSelectionSheet(),
                   child: Stack(
@@ -192,7 +99,6 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                     ],
                   ).animate().scale(duration: 300.ms),
                 ),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
               ),
               
               const SizedBox(height: 32),
@@ -302,67 +208,6 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               
               const SizedBox(height: 48),
               
-<<<<<<< HEAD
-              // パスワード変更セクション
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppTheme.backgroundTertiary,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.security,
-                          color: AppTheme.textSecondary,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'セキュリティ',
-                          style: AppTheme.body1.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    InkWell(
-                      onTap: () {
-                        // パスワード変更画面への遷移
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const PasswordChangeScreen(),
-                          ),
-                        );
-                      },
-                      borderRadius: BorderRadius.circular(8),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'パスワードを変更',
-                              style: AppTheme.body2.copyWith(
-                                color: AppTheme.primaryColor,
-                              ),
-                            ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              size: 16,
-                              color: AppTheme.textTertiary,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-=======
               // パスワード変更ボタン
               Material(
                 color: Colors.transparent,
@@ -426,7 +271,6 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                       ],
                     ),
                   ),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 ),
               ).animate().fadeIn(delay: 300.ms).slideX(begin: -0.1, end: 0),
             ],
@@ -435,193 +279,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       ),
     );
   }
-<<<<<<< HEAD
-=======
-
-  IconData _getAvatarIcon(String avatar) {
-    switch (avatar) {
-      case 'person':
-        return Icons.person;
-      case 'face':
-        return Icons.face;
-      case 'mood':
-        return Icons.mood;
-      case 'star':
-        return Icons.star;
-      case 'favorite':
-        return Icons.favorite;
-      case 'pets':
-        return Icons.pets;
-      case 'school':
-        return Icons.school;
-      case 'work':
-        return Icons.work;
-      default:
-        return Icons.person;
-    }
-  }
-
-  void _showAvatarSelectionSheet() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppTheme.textTertiary,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'アイコンを選択',
-              style: AppTheme.headline3,
-            ),
-            const SizedBox(height: 20),
-            GridView.count(
-              shrinkWrap: true,
-              crossAxisCount: 4,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              children: [
-                _buildAvatarOption('person', Icons.person),
-                _buildAvatarOption('face', Icons.face),
-                _buildAvatarOption('mood', Icons.mood),
-                _buildAvatarOption('star', Icons.star),
-                _buildAvatarOption('favorite', Icons.favorite),
-                _buildAvatarOption('pets', Icons.pets),
-                _buildAvatarOption('school', Icons.school),
-                _buildAvatarOption('work', Icons.work),
-              ],
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAvatarOption(String value, IconData icon) {
-    final isSelected = _selectedAvatar == value;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedAvatar = value;
-        });
-        Navigator.pop(context);
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppTheme.primaryColor.withOpacity(0.1)
-              : AppTheme.backgroundTertiary,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected
-                ? AppTheme.primaryColor
-                : AppTheme.borderColor,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Icon(
-          icon,
-          size: 40,
-          color: isSelected
-              ? AppTheme.primaryColor
-              : AppTheme.textSecondary,
-        ),
-      ),
-    );
-  }
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-}
-
-// パスワード変更画面
-class PasswordChangeScreen extends StatefulWidget {
-  const PasswordChangeScreen({super.key});
-
-  @override
-  State<PasswordChangeScreen> createState() => _PasswordChangeScreenState();
-}
-
-class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _newPasswordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  bool _isLoading = false;
-  bool _isNewPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
-  String? _errorMessage;
-
-  @override
-  void dispose() {
-    _newPasswordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _handleChangePassword() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-
-    try {
-      await AuthService.updatePassword(_newPasswordController.text);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('パスワードを変更しました'),
-            backgroundColor: AppTheme.success,
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.all(16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        );
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      setState(() {
-        _errorMessage = e.toString().replaceAll('Exception: ', '');
-      });
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: AppTheme.backgroundSecondary,
-      appBar: AppBar(
-        title: Text('パスワード変更', style: AppTheme.headline3),
-        backgroundColor: AppTheme.backgroundPrimary,
-=======
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('パスワード変更', style: AppTheme.headline3),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: AppTheme.textPrimary),

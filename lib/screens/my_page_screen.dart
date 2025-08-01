@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
-<<<<<<< HEAD
-import '../services/auth_service.dart';
-import '../services/storage_service.dart';
-=======
 import '../providers/theme_provider.dart';
 import '../services/auth_service.dart';
 import '../services/storage_service.dart';
 import '../utils/no_swipe_page_route.dart';
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 import 'auth/login_screen.dart';
 import 'profile_edit_screen.dart';
 import 'debug/supabase_status_screen.dart';
@@ -26,46 +21,6 @@ class _MyPageScreenState extends State<MyPageScreen> {
   bool _notificationEnabled = true;
   String _notificationTime = '21:00';
   
-<<<<<<< HEAD
-=======
-  @override
-  void initState() {
-    super.initState();
-    ThemeProvider.instance.addListener(_onThemeChanged);
-  }
-  
-  @override
-  void dispose() {
-    ThemeProvider.instance.removeListener(_onThemeChanged);
-    super.dispose();
-  }
-  
-  void _onThemeChanged() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
-  
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-  String get _userName {
-    final user = AuthService.currentUser;
-    return user?.userMetadata?['username'] ?? 'ゲスト';
-  }
-  
-  String get _userEmail {
-    final user = AuthService.currentUser;
-    return user?.email ?? 'guest@example.com';
-  }
-  
-<<<<<<< HEAD
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundSecondary,
-      appBar: AppBar(
-        title: Text('マイページ', style: AppTheme.headline3),
-        backgroundColor: AppTheme.backgroundPrimary,
-=======
   String get _userAvatar {
     final user = AuthService.currentUser;
     return user?.userMetadata?['avatar'] ?? 'person';
@@ -101,7 +56,6 @@ class _MyPageScreenState extends State<MyPageScreen> {
       appBar: AppBar(
         title: Text('マイページ', style: AppTheme.headline3),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -120,11 +74,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                       radius: 40,
                       backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
                       child: Icon(
-<<<<<<< HEAD
-                        Icons.person,
-=======
                         _getAvatarIcon(_userAvatar),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                         size: 40,
                         color: AppTheme.primaryBlue,
                       ),
@@ -176,11 +126,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                       },
                       icon: const Icon(Icons.edit_outlined, size: 20),
                       label: const Text('プロフィールを編集'),
-<<<<<<< HEAD
-                      style: AppButtonStyles.secondaryButton,
-=======
                       style: AppButtonStyles.secondaryButton(context),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     ),
                   ],
                 ),
@@ -191,13 +137,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
             
             // プラン情報
             Container(
-<<<<<<< HEAD
-              color: Colors.white,
-=======
               color: Theme.of(context).brightness == Brightness.dark 
                 ? AppTheme.darkColors.surface 
                 : AppTheme.lightColors.surface,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
               child: Column(
                 children: [
                   ListTile(
@@ -205,13 +147,8 @@ class _MyPageScreenState extends State<MyPageScreen> {
                       Icons.star,
                       color: Colors.amber[700],
                     ),
-<<<<<<< HEAD
-                    title: const Text('現在のプラン'),
-                    subtitle: Text(_currentPlan),
-=======
                     title: Text('現在のプラン', style: AppTheme.body1),
                     subtitle: Text(_currentPlan, style: AppTheme.body2.copyWith(color: AppTheme.textSecondary)),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
                       _showPlanDialog();
@@ -223,11 +160,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                       Icons.book,
                       color: Colors.green,
                     ),
-<<<<<<< HEAD
-                    title: const Text('製本申込履歴'),
-=======
                     title: Text('製本申込履歴', style: AppTheme.body1),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
                       // TODO: 製本申込履歴画面への遷移
@@ -241,20 +174,6 @@ class _MyPageScreenState extends State<MyPageScreen> {
             
             // 設定セクション
             Container(
-<<<<<<< HEAD
-              color: Colors.white,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-                    child: Text(
-                      '通知設定',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black54,
-=======
               color: Theme.of(context).brightness == Brightness.dark 
                 ? AppTheme.darkColors.surface 
                 : AppTheme.lightColors.surface,
@@ -295,16 +214,11 @@ class _MyPageScreenState extends State<MyPageScreen> {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: AppTheme.textSecondary,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       ),
                     ),
                   ),
                   SwitchListTile(
-<<<<<<< HEAD
-                    title: const Text('通知を有効にする'),
-=======
                     title: Text('通知を有効にする', style: AppTheme.body1),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     value: _notificationEnabled,
                     onChanged: (value) {
                       setState(() {
@@ -313,13 +227,8 @@ class _MyPageScreenState extends State<MyPageScreen> {
                     },
                   ),
                   ListTile(
-<<<<<<< HEAD
-                    title: const Text('通知時刻'),
-                    subtitle: Text(_notificationTime),
-=======
                     title: Text('通知時刻', style: AppTheme.body1),
                     subtitle: Text(_notificationTime, style: AppTheme.body2.copyWith(color: AppTheme.textSecondary)),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     trailing: const Icon(Icons.chevron_right),
                     enabled: _notificationEnabled,
                     onTap: _notificationEnabled ? () {
@@ -334,61 +243,38 @@ class _MyPageScreenState extends State<MyPageScreen> {
             
             // その他
             Container(
-<<<<<<< HEAD
-              color: Colors.white,
-=======
               color: Theme.of(context).brightness == Brightness.dark 
                 ? AppTheme.darkColors.surface 
                 : AppTheme.lightColors.surface,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
               child: Column(
                 children: [
                   ListTile(
                     leading: const Icon(Icons.help_outline),
-<<<<<<< HEAD
-                    title: const Text('ヘルプ'),
-=======
                     title: Text('ヘルプ', style: AppTheme.body1),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {},
                   ),
                   const Divider(height: 1),
                   ListTile(
                     leading: const Icon(Icons.privacy_tip_outlined),
-<<<<<<< HEAD
-                    title: const Text('プライバシーポリシー'),
-=======
                     title: Text('プライバシーポリシー', style: AppTheme.body1),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {},
                   ),
                   const Divider(height: 1),
                   ListTile(
                     leading: const Icon(Icons.description_outlined),
-<<<<<<< HEAD
-                    title: const Text('利用規約'),
-=======
                     title: Text('利用規約', style: AppTheme.body1),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {},
                   ),
                   const Divider(height: 1),
                   ListTile(
                     leading: const Icon(Icons.bug_report, color: Colors.deepPurple),
-<<<<<<< HEAD
-                    title: const Text('Supabase接続状態'),
-                    subtitle: const Text(
-                      'デバッグ用：データ同期の確認',
-                      style: TextStyle(fontSize: 12),
-=======
                     title: Text('Supabase接続状態', style: AppTheme.body1),
                     subtitle: Text(
                       'デバッグ用：データ同期の確認',
                       style: AppTheme.caption.copyWith(color: AppTheme.textSecondary),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     ),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
@@ -403,15 +289,6 @@ class _MyPageScreenState extends State<MyPageScreen> {
                   const Divider(height: 1),
                   ListTile(
                     leading: const Icon(Icons.delete_sweep, color: Colors.orange),
-<<<<<<< HEAD
-                    title: const Text(
-                      'サンプルデータを削除',
-                      style: TextStyle(color: Colors.orange),
-                    ),
-                    subtitle: const Text(
-                      'デモ用のサンプルデータを削除します',
-                      style: TextStyle(fontSize: 12),
-=======
                     title: Text(
                       'サンプルデータを削除',
                       style: AppTheme.body1.copyWith(color: Colors.orange),
@@ -419,7 +296,6 @@ class _MyPageScreenState extends State<MyPageScreen> {
                     subtitle: Text(
                       'デモ用のサンプルデータを削除します',
                       style: AppTheme.caption.copyWith(color: AppTheme.textSecondary),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     ),
                     onTap: () {
                       _showClearSampleDataDialog();
@@ -428,15 +304,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
                   const Divider(height: 1),
                   ListTile(
                     leading: const Icon(Icons.logout, color: Colors.red),
-<<<<<<< HEAD
-                    title: const Text(
-                      'ログアウト',
-                      style: TextStyle(color: Colors.red),
-=======
                     title: Text(
                       'ログアウト',
                       style: AppTheme.body1.copyWith(color: Colors.red),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     ),
                     onTap: () {
                       _showLogoutDialog();
@@ -451,15 +321,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
             // バージョン情報
             Text(
               'Version 1.0.0',
-<<<<<<< HEAD
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-=======
               style: AppTheme.caption.copyWith(
                 fontSize: 12,
                 color: AppTheme.textTertiary,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
               ),
             ),
             
@@ -476,17 +340,11 @@ class _MyPageScreenState extends State<MyPageScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-<<<<<<< HEAD
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-=======
         decoration: BoxDecoration(
           color: Theme.of(context).brightness == Brightness.dark 
             ? AppTheme.darkColors.surface 
             : AppTheme.lightColors.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         ),
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -501,18 +359,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
               ),
             ),
             const SizedBox(height: 20),
-<<<<<<< HEAD
-            const Text(
-              'プランを選択',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-=======
             Text(
               'プランを選択',
               style: AppTheme.headline3,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             ),
             const SizedBox(height: 20),
             _PlanOption(
@@ -576,111 +425,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
     }
   }
   
-<<<<<<< HEAD
-=======
-  void _showThemeSelectionDialog() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppTheme.textTertiary,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'テーマを選択',
-              style: AppTheme.headline3,
-            ),
-            const SizedBox(height: 20),
-            _buildThemeOption(
-              'システム設定に従う',
-              Icons.brightness_auto,
-              ThemeMode.system,
-            ),
-            _buildThemeOption(
-              'ライトモード',
-              Icons.light_mode,
-              ThemeMode.light,
-            ),
-            _buildThemeOption(
-              'ダークモード',
-              Icons.dark_mode,
-              ThemeMode.dark,
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
-  }
-  
-  Widget _buildThemeOption(String title, IconData icon, ThemeMode mode) {
-    final isSelected = ThemeProvider.instance.themeMode == mode;
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: isSelected ? AppTheme.primaryColor : AppTheme.textSecondary,
-      ),
-      title: Text(
-        title,
-        style: AppTheme.body1.copyWith(
-          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-        ),
-      ),
-      trailing: isSelected
-          ? Icon(
-              Icons.check,
-              color: AppTheme.primaryColor,
-            )
-          : null,
-      onTap: () {
-        ThemeProvider.instance.setThemeMode(mode);
-        Navigator.pop(context);
-        // ThemeProviderの変更を反映するために再描画
-        setState(() {});
-      },
-    );
-  }
-  
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
-  void _showClearSampleDataDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('サンプルデータを削除'),
-        content: const Text('デモ用のサンプルデータ（sample_で始まる日記と単語）を削除します。実際に作成したデータは削除されません。'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('キャンセル'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              
-              try {
-                await StorageService.clearSampleData();
-                
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-<<<<<<< HEAD
-                    const SnackBar(
-=======
                     SnackBar(
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                       content: Text('サンプルデータを削除しました'),
                       backgroundColor: AppTheme.success,
                     ),
@@ -728,11 +473,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                 if (mounted) {
                   Navigator.pushAndRemoveUntil(
                     context,
-<<<<<<< HEAD
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
-=======
                     NoSwipePageRoute(builder: (context) => const LoginScreen()),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     (route) => false,
                   );
                 }
@@ -786,23 +527,15 @@ class _PlanOption extends StatelessWidget {
           border: Border.all(
             color: isSelected 
               ? Theme.of(context).primaryColor 
-<<<<<<< HEAD
-              : Colors.grey[300]!,
-=======
               : AppTheme.borderColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             width: isSelected ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(16),
           color: isSelected 
             ? Theme.of(context).primaryColor.withOpacity(0.05)
-<<<<<<< HEAD
-            : Colors.white,
-=======
             : Theme.of(context).brightness == Brightness.dark 
               ? AppTheme.darkColors.surface 
               : AppTheme.lightColors.surface,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -812,11 +545,7 @@ class _PlanOption extends StatelessWidget {
               children: [
                 Text(
                   title,
-<<<<<<< HEAD
-                  style: const TextStyle(
-=======
                   style: AppTheme.body1.copyWith(
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -842,13 +571,7 @@ class _PlanOption extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               price,
-<<<<<<< HEAD
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-=======
               style: AppTheme.headline3.copyWith(
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                 color: Theme.of(context).primaryColor,
               ),
             ),
@@ -860,20 +583,12 @@ class _PlanOption extends StatelessWidget {
                   Icon(
                     Icons.check,
                     size: 16,
-<<<<<<< HEAD
-                    color: Colors.green[600],
-=======
                     color: AppTheme.success,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   ),
                   const SizedBox(width: 8),
                   Text(
                     feature,
-<<<<<<< HEAD
-                    style: const TextStyle(fontSize: 14),
-=======
                     style: AppTheme.body2,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   ),
                 ],
               ),
@@ -903,13 +618,6 @@ class AppCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-<<<<<<< HEAD
-        color: backgroundColor ?? AppTheme.backgroundPrimary,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-=======
         color: backgroundColor ?? Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
@@ -917,7 +625,6 @@ class AppCard extends StatelessWidget {
             color: Theme.of(context).brightness == Brightness.dark 
               ? AppTheme.darkColors.textPrimary.withOpacity(0.05)
               : AppTheme.lightColors.textPrimary.withOpacity(0.05),
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),

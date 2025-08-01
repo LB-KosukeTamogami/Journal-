@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
-<<<<<<< HEAD
-=======
 import '../../utils/no_swipe_page_route.dart';
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
 import 'login_screen.dart';
 import 'signup_screen.dart';
 import '../debug/env_check_screen.dart';
@@ -14,11 +11,7 @@ class AuthLandingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: Colors.white,
-=======
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -103,30 +96,19 @@ class AuthLandingScreen extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-<<<<<<< HEAD
-                          MaterialPageRoute(
-=======
                           NoSwipePageRoute(
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                             builder: (context) => const SignupScreen(),
                           ),
                         );
                       },
-<<<<<<< HEAD
-                      style: AppButtonStyles.primaryButton.copyWith(
-=======
                       style: AppButtonStyles.primaryButton(context).copyWith(
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                         textStyle: MaterialStateProperty.all(
                           AppTheme.button.copyWith(fontSize: 18),
                         ),
                       ),
                       child: const Text('新規登録'),
                     ),
-<<<<<<< HEAD
-=======
                     Theme.of(context).primaryColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   ),
                   const SizedBox(height: 16),
                   // ログインボタン
@@ -135,20 +117,12 @@ class AuthLandingScreen extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-<<<<<<< HEAD
-                          MaterialPageRoute(
-=======
                           NoSwipePageRoute(
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                             builder: (context) => const LoginScreen(),
                           ),
                         );
                       },
-<<<<<<< HEAD
-                      style: AppButtonStyles.secondaryButton.copyWith(
-=======
                       style: AppButtonStyles.secondaryButton(context).copyWith(
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                         textStyle: MaterialStateProperty.all(
                           AppTheme.button.copyWith(
                             fontSize: 18,
@@ -158,10 +132,7 @@ class AuthLandingScreen extends StatelessWidget {
                       ),
                       child: const Text('ログイン'),
                     ),
-<<<<<<< HEAD
-=======
                     Theme.of(context).primaryColor,
->>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
                   ),
                 ],
               ),
