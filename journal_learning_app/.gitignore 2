@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Miscellaneous
 *.class
 *.log
@@ -105,15 +106,7 @@ flutter.tar.xz
 .env.*.local
 journal_learning_app/build/
 .vercel
-node_modules/
-build/
-dist/
-.dart_tool/
-
-# Backup and broken directories
-.git_backup/
-.git_broken_*/
-
-# Duplicate files (with "2" suffix)
-* 2.*
-* 2/
+# Auto-deploy trigger #午後
+=======
+.vercel
+>>>>>>> 34d9f1ef3b42adc5bf7751b9cab7c34f309f7afe
