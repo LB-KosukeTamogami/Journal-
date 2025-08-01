@@ -1,6 +1,6 @@
 {
-  "buildCommand": "sh vercel-build-simple.sh",
-  "outputDirectory": "build/web",
+  "buildCommand": "npm run build:vercel",
+  "outputDirectory": "journal_learning_app/build/web",
   "installCommand": "npm install",
   "github": {
     "silent": true
