@@ -1,7 +1,9 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "build/web",
+  "installCommand": "echo 'Dependencies already handled'",
   "github": {
     "silent": true
-  }
+  },
+  "framework": null
 }

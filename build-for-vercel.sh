@@ -50,4 +50,14 @@ flutter build web --release \
   --dart-define=GEMINI_API_KEY=$GEMINI_API_KEY
 
 echo "Build completed!"
+echo "Contents of build/web:"
 ls -la build/web/
+
+# Ensure build/web directory exists and has content
+if [ -d "build/web" ] && [ "$(ls -A build/web)" ]; then
+  echo "✅ build/web directory exists and contains files"
+  echo "Total files: $(find build/web -type f | wc -l)"
+else
+  echo "❌ build/web directory is missing or empty"
+  exit 1
+fi
