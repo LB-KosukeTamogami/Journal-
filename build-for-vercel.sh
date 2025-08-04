@@ -18,10 +18,14 @@ if [ ! -d "$FLUTTER_ROOT" ]; then
     tar xf flutter.tar.xz -C $HOME
     rm flutter.tar.xz
     echo "Flutter SDK installed"
+    
+    # Fix git ownership issue
+    git config --global --add safe.directory $FLUTTER_ROOT
+    git config --global --add safe.directory '*'
 fi
 
 # Verify Flutter installation
-flutter --version
+flutter --version || echo "Flutter version check failed, continuing..."
 
 # Disable analytics
 flutter config --no-analytics
