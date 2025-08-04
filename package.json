@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "bash vercel-build-simple.sh",
-    "build:vercel": "cd journal_learning_app && if [ ! -d \"$HOME/flutter\" ]; then curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.32.5-stable.tar.xz -o flutter.tar.xz && tar xf flutter.tar.xz -C $HOME && rm flutter.tar.xz; fi && export PATH=$HOME/flutter/bin:$PATH && flutter config --no-analytics && flutter pub get && flutter build web --release --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY --dart-define=GEMINI_API_KEY=$GEMINI_API_KEY"
+    "build": "sh build-for-vercel.sh"
   }
 }
