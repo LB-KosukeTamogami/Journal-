@@ -1,5 +1,5 @@
 {
-  "buildCommand": "bash vercel-build-simple.sh",
+  "buildCommand": "echo 'Using pre-built files from build/web'",
   "outputDirectory": "build/web",
   "installCommand": "echo 'No install needed'",
   "github": {
