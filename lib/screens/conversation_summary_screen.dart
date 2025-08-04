@@ -92,7 +92,6 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
       builder: (context) => Container(
         margin: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppTheme.backgroundPrimary,
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
@@ -162,43 +161,18 @@ class _ConversationSummaryScreenState extends State<ConversationSummaryScreen> {
               Column(
                 children: [
                   // 学習カードに追加機能は削除
-                  /*
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: _addedToStudyCards[wordOrPhrase] == true ? null : () async {
-                        // Flashcard機能は削除されました
-                      },
-                      icon: Icon(
-                        _addedToStudyCards[wordOrPhrase] == true 
-                          ? Icons.check_circle 
-                          : Icons.collections_bookmark, 
-                        size: 20,
-                        color: _addedToStudyCards[wordOrPhrase] == true 
-                          ? AppTheme.success 
-                          : null,
-                      ),
-                      label: Text(
-                        _addedToStudyCards[wordOrPhrase] == true 
-                          ? '学習カードに追加済み' 
-                          : '学習カードに追加',
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: _addedToStudyCards[wordOrPhrase] == true 
-                          ? AppTheme.success 
-                          : AppTheme.info,
-                        side: BorderSide(
-                          color: _addedToStudyCards[wordOrPhrase] == true 
-                            ? AppTheme.success 
-                            : AppTheme.info,
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('会話の振り返り', style: AppTheme.headline3),

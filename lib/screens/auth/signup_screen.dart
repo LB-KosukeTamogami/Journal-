@@ -8,6 +8,7 @@ import '../../utils/no_swipe_page_route.dart';
 import 'login_screen.dart';
 import '../legal/terms_of_service_screen.dart';
 import '../legal/privacy_policy_screen.dart';
+import '../main_navigation_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -73,13 +74,13 @@ class _SignupScreenState extends State<SignupScreen> {
       }
 
       print('[SignupScreen] Calling AuthService.signUp...');
-      final response = await AuthService.signUp(
+      final success = await AuthService.signUp(
         email: _emailController.text.trim(),
         password: _passwordController.text,
-        username: _usernameController.text.trim(),
+        name: _usernameController.text.trim(),
       );
 
-      if (response.user != null && mounted) {
+      if (success && mounted) {
         // Show success dialog
         showDialog(
           context: context,
@@ -493,7 +494,6 @@ class _SignupScreenState extends State<SignupScreen> {
                         )
                       : const Text('新規登録'),
                 ),
-                Theme.of(context).primaryColor,
               ).animate().scale(delay: 400.ms),
               const SizedBox(height: 24),
               // Login link

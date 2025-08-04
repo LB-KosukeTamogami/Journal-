@@ -40,13 +40,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       print('[LoginScreen] Starting login process...');
-      final response = await AuthService.signIn(
+      final success = await AuthService.signIn(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
       print('[LoginScreen] Login response received');
 
-      if (response.user != null && mounted) {
+      if (success && mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           NoSwipePageRoute(
             builder: (context) => const MainNavigationScreen(),
@@ -286,7 +286,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         )
                       : const Text('ログイン'),
                 ),
-                Theme.of(context).primaryColor,
               ).animate().scale(delay: 400.ms),
               const SizedBox(height: 24),
               // Sign up link

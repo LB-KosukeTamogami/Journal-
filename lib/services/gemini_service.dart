@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../models/diary_entry.dart';
 import '../models/conversation_message.dart';
@@ -730,5 +731,104 @@ $content
     // 簡易的な言語検出
     final japanesePattern = RegExp(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]');
     return japanesePattern.hasMatch(text) ? 'ja' : 'en';
+  }
+  
+  // 日記を添削する
+  static Future<Map<String, dynamic>?> reviewDiary(String content) async {
+    try {
+      final envFile = File('.env');
+      if (!await envFile.exists()) {
+        print('Gemini API: .env file not found');
+        return null;
+      }
+
+      final apiKey = await ApiConfig.getGeminiApiKey();
+      
+      if (apiKey == null || apiKey.isEmpty) {
+        print('Gemini API: API key not found');
+        return null;
+      }
+
+      // 言語を検出
+      final isJapanese = _detectLanguage(content) == 'ja';
+      
+      final prompt = '''
+日記の内容を確認し、英語学習に役立つフィードバックを提供してください。
+
+日記の内容:
+$content
+
+${isJapanese ? '''
+この日記を：
+1. 自然な英語に翻訳してください
+2. 日本語の文法的な問題があれば指摘してください
+3. より良い日本語表現を提案してください
+''' : '''
+この英語日記を：
+1. 文法的な誤りを修正してください
+2. より自然な英語表現に改善してください
+3. 改善点を説明してください
+'''}
+
+以下のJSON形式で回答してください：
+{
+  "translated": "${isJapanese ? '英語翻訳' : '日本語翻訳'}",
+  "corrected": "添削後の文章",
+  "improvements": ["改善点1", "改善点2", "改善点3"],
+  "judgment": "${isJapanese ? '日本語' : '英文（正しい）' 'または' '英文（要改善）'}",
+  "learned_phrases": ["学習すべきフレーズ1", "学習すべきフレーズ2"]
+}
+''';
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl?key=$apiKey'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'contents': [{
+            'parts': [{'text': prompt}]
+          }],
+          'generationConfig': {
+            'temperature': 0.7,
+            'topK': 40,
+            'topP': 0.95,
+            'maxOutputTokens': 1024,
+            'responseMimeType': 'application/json',
+          }
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['candidates'] != null && 
+            data['candidates'].isNotEmpty &&
+            data['candidates'][0]['content'] != null &&
+            data['candidates'][0]['content']['parts'] != null &&
+            data['candidates'][0]['content']['parts'].isNotEmpty) {
+          
+          final textContent = data['candidates'][0]['content']['parts'][0]['text'];
+          return jsonDecode(textContent);
+        }
+      } else if (response.statusCode == 429) {
+        // Rate limit exceeded
+        return {
+          'translated': isJapanese ? 'Translation not available due to rate limit' : content,
+          'corrected': content,
+          'improvements': ['本日のAI利用枠を使い切りました。明日また利用可能になります。'],
+          'judgment': isJapanese ? '日本語' : '英文（正しい）',
+          'learned_phrases': []
+        };
+      }
+    } catch (e) {
+      print('Diary review error: $e');
+    }
+    
+    // Fallback response
+    return {
+      'translated': content,
+      'corrected': content,
+      'improvements': [],
+      'judgment': _detectLanguage(content) == 'ja' ? '日本語' : '英文（正しい）',
+      'learned_phrases': []
+    };
   }
 }

@@ -76,7 +76,7 @@ class _SupabaseStatusScreenState extends State<SupabaseStatusScreen> {
         setState(() {
           _supabaseWords = supabaseWords;
           _supabaseDiaries = supabaseDiaries;
-          _allUserIds = userIds;
+          _allUserIds = userIds.toSet();
         });
       }
 

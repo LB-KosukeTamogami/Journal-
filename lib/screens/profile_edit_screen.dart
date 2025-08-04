@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme/app_theme.dart';
 import '../services/auth_service.dart';
+import '../widgets/custom_widgets.dart';
+import '../widgets/primary_button.dart';
 
 class ProfileEditScreen extends StatefulWidget {
   const ProfileEditScreen({super.key});
@@ -12,16 +14,31 @@ class ProfileEditScreen extends StatefulWidget {
 
 class _ProfileEditScreenState extends State<ProfileEditScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _userNameController = TextEditingController();
+  final _nameController = TextEditingController();
+  
+  String _selectedAvatar = '👤';
   bool _isLoading = false;
   String? _errorMessage;
-      _selectedAvatar = user.userMetadata?['avatar'] ?? 'person';
-    }
+  
+  final List<String> _avatarOptions = ['👤', '😊', '🎯', '📚', '🌟', '🚀', '💪', '🎨'];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    // TODO: Load user data from AuthService
+    _nameController.text = AuthService.userName ?? '';
+    setState(() {
+      _selectedAvatar = AuthService.userAvatar ?? '👤';
+    });
   }
 
   @override
   void dispose() {
-    _userNameController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
@@ -35,7 +52,36 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
     try {
       await AuthService.updateProfile(
-        username: _userNameController.text.trim(),
+        name: _nameController.text.trim(),
+        avatar: _selectedAvatar,
+      );
+      
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('プロフィールを更新しました'),
+          backgroundColor: AppTheme.success,
+        ),
+      );
+      
+      Navigator.pop(context, true);
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'プロフィールの更新に失敗しました';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('プロフィール編集', style: AppTheme.headline3),
@@ -50,8 +96,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             onPressed: _isLoading ? null : _handleSave,
             child: Text(
               '保存',
-              style: AppTheme.button.copyWith(
-                color: AppTheme.primaryColor,
+              style: AppTheme.body1.copyWith(
+                color: Theme.of(context).primaryColor,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -64,114 +111,94 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // プロフィール画像
+              // アバター選択
               Center(
-                child: GestureDetector(
-                  onTap: () => _showAvatarSelectionSheet(),
-                  child: Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 60,
-                        backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
-                        child: Icon(
-                          _getAvatarIcon(_selectedAvatar),
-                          size: 60,
-                          color: AppTheme.primaryColor,
-                        ),
+                child: Column(
+                  children: [
+                    Text(
+                      'アバターを選択',
+                      style: AppTheme.body1.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryColor,
-                            shape: BoxShape.circle,
-                            boxShadow: AppTheme.buttonShadow(Theme.of(context).primaryColor),
-                          ),
-                          child: const Icon(
-                            Icons.edit,
-                            size: 20,
-                            color: Colors.white,
-                          ),
-                        ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppTheme.surfaceColor,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppTheme.borderColor),
                       ),
-                    ],
-                  ).animate().scale(duration: 300.ms),
+                      child: Wrap(
+                        spacing: 16,
+                        runSpacing: 16,
+                        children: _avatarOptions.map((avatar) {
+                          final isSelected = _selectedAvatar == avatar;
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedAvatar = avatar;
+                              });
+                            },
+                            child: Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? Theme.of(context).primaryColor.withOpacity(0.1)
+                                    : AppTheme.cardColor,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? Theme.of(context).primaryColor
+                                      : AppTheme.borderColor,
+                                  width: isSelected ? 2 : 1,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  avatar,
+                                  style: const TextStyle(fontSize: 28),
+                                ),
+                              ),
+                            ).animate().scale(
+                              duration: 200.ms,
+                              begin: isSelected ? const Offset(0.95, 0.95) : const Offset(1, 1),
+                              end: const Offset(1, 1),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+              ).animate().fadeIn().slideY(begin: 0.1, end: 0),
               
               const SizedBox(height: 32),
               
-              // ユーザー名入力
+              // 名前入力
               Text(
-                'ユーザー名',
+                '名前',
                 style: AppTheme.body1.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 8),
               TextFormField(
-                controller: _userNameController,
+                controller: _nameController,
                 decoration: const InputDecoration(
-                  hintText: 'お好きな名前を入力',
+                  hintText: 'お名前を入力',
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'ユーザー名を入力してください';
+                  if (value == null || value.trim().isEmpty) {
+                    return '名前を入力してください';
+                  }
+                  if (value.trim().length > 20) {
+                    return '名前は20文字以内で入力してください';
                   }
                   return null;
                 },
               ).animate().fadeIn(delay: 100.ms).slideX(begin: -0.1, end: 0),
-              
-              const SizedBox(height: 24),
-              
-              // メールアドレス（読み取り専用）
-              Text(
-                'メールアドレス',
-                style: AppTheme.body1.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppTheme.backgroundTertiary,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.borderColor),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.email_outlined,
-                      color: AppTheme.textTertiary,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        AuthService.currentUser?.email ?? '',
-                        style: AppTheme.body2.copyWith(
-                          color: AppTheme.textSecondary,
-                        ),
-                      ),
-                    ),
-                    Icon(
-                      Icons.lock_outline,
-                      color: AppTheme.textTertiary,
-                      size: 16,
-                    ),
-                  ],
-                ),
-              ).animate().fadeIn(delay: 200.ms).slideX(begin: -0.1, end: 0),
-              
-              const SizedBox(height: 8),
-              Text(
-                'メールアドレスは変更できません',
-                style: AppTheme.caption,
-              ),
               
               const SizedBox(height: 32),
               
@@ -279,6 +306,74 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       ),
     );
   }
+}
+
+// パスワード変更画面
+class PasswordChangeScreen extends StatefulWidget {
+  const PasswordChangeScreen({super.key});
+
+  @override
+  State<PasswordChangeScreen> createState() => _PasswordChangeScreenState();
+}
+
+class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _currentPasswordController = TextEditingController();
+  final _newPasswordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  
+  bool _showCurrentPassword = false;
+  bool _showNewPassword = false;
+  bool _showConfirmPassword = false;
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  @override
+  void dispose() {
+    _currentPasswordController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleChangePassword() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      // TODO: Implement password change logic
+      await Future.delayed(const Duration(seconds: 2)); // Simulate API call
+      
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('パスワードを変更しました'),
+          backgroundColor: AppTheme.success,
+        ),
+      );
+      
+      Navigator.pop(context);
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'パスワードの変更に失敗しました';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('パスワード変更', style: AppTheme.headline3),
@@ -296,60 +391,76 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 説明文
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppTheme.info.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppTheme.info.withOpacity(0.3),
-                  ),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: AppTheme.info,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'パスワードは6文字以上で設定してください。英数字と記号を組み合わせることをお勧めします。',
-                        style: AppTheme.body2.copyWith(
-                          color: AppTheme.textSecondary,
-                        ),
-                      ),
-                    ),
-                  ],
+              Text(
+                'パスワードを変更',
+                style: AppTheme.headline1,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'セキュリティのため、定期的なパスワード変更をお勧めします',
+                style: AppTheme.body2.copyWith(
+                  color: AppTheme.textSecondary,
                 ),
               ),
               
               const SizedBox(height: 32),
               
-              // 新しいパスワード
+              // 現在のパスワード
+              Text(
+                '現在のパスワード',
+                style: AppTheme.body1.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
               TextFormField(
-                controller: _newPasswordController,
-                obscureText: !_isNewPasswordVisible,
+                controller: _currentPasswordController,
+                obscureText: !_showCurrentPassword,
                 decoration: InputDecoration(
-                  labelText: '新しいパスワード',
-                  hintText: '6文字以上',
-                  prefixIcon: Icon(
-                    Icons.lock_outline,
-                    color: AppTheme.textTertiary,
-                  ),
+                  hintText: '現在のパスワードを入力',
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _isNewPasswordVisible
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
+                      _showCurrentPassword ? Icons.visibility_off : Icons.visibility,
                       color: AppTheme.textTertiary,
                     ),
                     onPressed: () {
                       setState(() {
-                        _isNewPasswordVisible = !_isNewPasswordVisible;
+                        _showCurrentPassword = !_showCurrentPassword;
+                      });
+                    },
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '現在のパスワードを入力してください';
+                  }
+                  return null;
+                },
+              ),
+              
+              const SizedBox(height: 24),
+              
+              // 新しいパスワード
+              Text(
+                '新しいパスワード',
+                style: AppTheme.body1.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _newPasswordController,
+                obscureText: !_showNewPassword,
+                decoration: InputDecoration(
+                  hintText: '新しいパスワードを入力',
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _showNewPassword ? Icons.visibility_off : Icons.visibility,
+                      color: AppTheme.textTertiary,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _showNewPassword = !_showNewPassword;
                       });
                     },
                   ),
@@ -365,36 +476,36 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 },
               ),
               
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
               
-              // パスワード確認
+              // 新しいパスワード（確認）
+              Text(
+                '新しいパスワード（確認）',
+                style: AppTheme.body1.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
               TextFormField(
                 controller: _confirmPasswordController,
-                obscureText: !_isConfirmPasswordVisible,
+                obscureText: !_showConfirmPassword,
                 decoration: InputDecoration(
-                  labelText: 'パスワード（確認）',
-                  hintText: 'もう一度入力',
-                  prefixIcon: Icon(
-                    Icons.lock_outline,
-                    color: AppTheme.textTertiary,
-                  ),
+                  hintText: '新しいパスワードを再入力',
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _isConfirmPasswordVisible
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
+                      _showConfirmPassword ? Icons.visibility_off : Icons.visibility,
                       color: AppTheme.textTertiary,
                     ),
                     onPressed: () {
                       setState(() {
-                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                        _showConfirmPassword = !_showConfirmPassword;
                       });
                     },
                   ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'パスワードを再度入力してください';
+                    return 'パスワードを再入力してください';
                   }
                   if (value != _newPasswordController.text) {
                     return 'パスワードが一致しません';

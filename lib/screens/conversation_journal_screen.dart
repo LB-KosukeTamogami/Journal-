@@ -36,7 +36,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
       ConversationMessage(
         text: "Hello! I'm Aco! Let's have a short conversation (5 exchanges) to find topics for your journal! Don't worry about making mistakes - just relax and chat with me. If you're not sure how to say something in English, feel free to write in Japanese!\n\nこんにちは！Acoです！短い会話（5ラリー）で日記の話題を見つけましょう！間違いを気にせず、リラックスして話してくださいね。英語でなんと言えばいいかわからない時は、日本語で書いてもOKです！",
         isUser: false,
-        timestamp: DateTime.now(),
+        createdAt: DateTime.now(),
       ),
     );
     
@@ -45,7 +45,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
       ConversationMessage(
         text: "What shall we talk about today?\n\nFor example:\n• Daily activities\n• Hobbies\n• Food and cooking\n• Travel and experiences\n• Work or study\n\nFeel free to talk about anything you'd like!\n\n今日は何について話しましょうか？\n\n例）\n• 日常の活動\n• 趣味\n• 食べ物と料理\n• 旅行と経験\n• 仕事や勉強\n\nあなたが話したいことをなんでも話してください！",
         isUser: false,
-        timestamp: DateTime.now(),
+        createdAt: DateTime.now(),
         suggestions: [
           "Let's talk about hobbies",
           "I want to discuss food",
@@ -87,7 +87,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
         ConversationMessage(
           text: text,
           isUser: true,
-          timestamp: DateTime.now(),
+          createdAt: DateTime.now(),
         ),
       );
       _isLoading = true;
@@ -114,7 +114,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
               ConversationMessage(
                 text: combinedText,
                 isUser: false,
-                timestamp: DateTime.now(),
+                createdAt: DateTime.now(),
                 corrections: response.corrections,
                 suggestions: response.suggestions,
               ),
@@ -125,7 +125,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
               ConversationMessage(
                 text: response.reply,
                 isUser: false,
-                timestamp: DateTime.now(),
+                createdAt: DateTime.now(),
                 corrections: response.corrections,
                 suggestions: response.suggestions,
               ),
@@ -147,7 +147,7 @@ class _ConversationJournalScreenState extends State<ConversationJournalScreen> {
             ConversationMessage(
               text: "Sorry, I couldn't process your message. Please try again.\n申し訳ありません。メッセージを処理できませんでした。もう一度お試しください。",
               isUser: false,
-              timestamp: DateTime.now(),
+              createdAt: DateTime.now(),
               isError: true,
             ),
           );

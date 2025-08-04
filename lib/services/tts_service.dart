@@ -9,10 +9,18 @@ class TTSService {
   bool _isInitialized = false;
   bool _isSpeaking = false;
   Function(double)? _progressHandler;
+  Function(double)? _durationHandler;
+  Function(String, int, double)? _wordBoundaryHandler;
   double _totalDuration = 0;
   String _currentText = '';
   List<String> _words = [];
   int _currentWordIndex = 0;
+  DateTime? _speakStartTime;
+  bool _userInteractionDone = false;
+  double _speechRate = 1.0;
+  double _pitch = 1.0;
+  double _volume = 1.0;
+  String _language = 'en-US';
 
   // 初期化
   Future<void> initialize() async {
@@ -85,8 +93,19 @@ class TTSService {
       print('[TTS] Empty text, skipping');
       return;
     }
-        _totalDuration = 0;
-      });
+    
+    try {
+      // Web Speech APIを使用
+      final utterance = html.SpeechSynthesisUtterance(text);
+      utterance.lang = _detectLanguage(text);
+      utterance.rate = _speechRate;
+      utterance.pitch = _pitch;
+      utterance.volume = _volume;
+      
+      _isSpeaking = true;
+      _speakStartTime = DateTime.now();
+      _progressHandler?.call(0.0);
+      _totalDuration = 0;
       
       // boundary イベントで進行状況を追跡
       utterance.on['boundary'].listen((event) {

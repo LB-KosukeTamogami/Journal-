@@ -57,75 +57,94 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           children: _screens,
         ),
         bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).bottomNavigationBarTheme.backgroundColor ?? Theme.of(context).cardColor,
-          border: Border(
-            top: BorderSide(
-              color: Theme.of(context).brightness == Brightness.light 
-                ? const Color(0xFFD4C4B0)  // 薄茶色
-                : const Color(0xFF5C4A3A), // ダークモード用の茶色
-              width: 1.0,
+          decoration: BoxDecoration(
+            color: Theme.of(context).bottomNavigationBarTheme.backgroundColor ?? Theme.of(context).cardColor,
+            border: Border(
+              top: BorderSide(
+                color: Theme.of(context).brightness == Brightness.light 
+                  ? const Color(0xFFD4C4B0)  // 薄茶色
+                  : const Color(0xFF5C4A3A), // ダークモード用の茶色
+                width: 1.0,
+              ),
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 10,
+                offset: const Offset(0, -5),
+              ),
+            ],
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 10,
-              offset: const Offset(0, -5),
-            ),
-          ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 12,
+                  bottom: 12,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: _navItems.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final item = entry.value;
+                    return _buildNavItem(index, item);
+                  }).toList(),
+                ),
+              ),
+              // ホームインジケーター用の余白
+              SizedBox(height: MediaQuery.of(context).padding.bottom > 0 ? 34 : 0),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+  
+  Widget _buildNavItem(int index, NavigationItem item) {
+    final isSelected = _selectedIndex == index;
+    
+    return GestureDetector(
+      onTap: () => navigateToTab(index),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 12,
-                bottom: 12,
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? Theme.of(context).primaryColor.withOpacity(0.12)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(20),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: _navItems.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final item = entry.value;
-                  return _buildNavItem(index, item);
-                }).toList(),
+              child: Icon(
+                item.icon,
+                color: isSelected
+                    ? Theme.of(context).primaryColor
+                    : Theme.of(context).textTheme.bodySmall?.color,
+                size: 24,
               ),
             ),
-            // ホームインジケーター用の余白
-            SizedBox(height: MediaQuery.of(context).padding.bottom > 0 ? 34 : 0),
+            const SizedBox(height: 6),
+            Text(
+              item.label,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: isSelected
+                    ? Theme.of(context).primaryColor
+                    : Theme.of(context).textTheme.bodySmall?.color,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                fontSize: 11,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ],
-        ),
-      ),
-                      ? Theme.of(context).primaryColor.withOpacity(0.12)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Icon(
-                  item.icon,
-                  color: isSelected
-                      ? Theme.of(context).primaryColor
-                      : Theme.of(context).textTheme.bodySmall?.color,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                item.label,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: isSelected
-                      ? Theme.of(context).primaryColor
-                      : Theme.of(context).textTheme.bodySmall?.color,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  fontSize: 11,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
         ),
       ),
     );

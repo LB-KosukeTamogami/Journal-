@@ -79,8 +79,12 @@ class StorageService {
       print('[Storage] Cached ${supabaseEntries.length} entries from Supabase to local');
       print('[Storage] ========== Returning Supabase data ==========');
       
+      // Supabaseのデータを返す
+      supabaseEntries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return supabaseEntries;
+    }
     
-    // 作成日時の降順でソート（新しい順）
+    // Supabaseが利用できない場合はローカルデータを返す
     localEntries.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return localEntries;
   }
@@ -227,24 +231,6 @@ class StorageService {
     return streak;
   }
 
-  static Future<Map<String, int>> getAnalyticsData() async {
-    final entries = await getDiaryEntries();
-    final missions = await getMissions();
-    final flashcards = await getFlashcards();
-    
-    final totalWords = entries.fold<int>(0, (sum, entry) => sum + entry.wordCount);
-    final completedMissions = missions.where((m) => m.isCompleted).length;
-    final learnedWords = flashcards.where((f) => f.isLearned).length;
-    final streak = await getDiaryStreak();
-    
-    return {
-      'totalEntries': entries.length,
-      'totalWords': totalWords,
-      'completedMissions': completedMissions,
-      'learnedWords': learnedWords,
-      'currentStreak': streak,
-    };
-  }
   static Future<Map<String, dynamic>> getAnalyticsData() async {
     final entries = await getDiaryEntries();
     final missions = await getMissions();
@@ -435,7 +421,56 @@ class StorageService {
     print('[Storage] Saving word: ${word.english}');
     print('[Storage] SupabaseService.isAvailable: ${SupabaseService.isAvailable}');
     
-  
+    // Supabaseに保存
+    if (SupabaseService.isAvailable) {
+      try {
+        print('[Storage] Attempting to save word to Supabase...');
+        await SupabaseService.saveWord(word);
+        print('[Storage] Successfully saved word to Supabase');
+      } catch (e) {
+        print('[Storage] Error saving word to Supabase: $e');
+      }
+    }
+
+    // ローカルにも保存
+    final words = await _getLocalWords();
+    
+    final existingIndex = words.indexWhere((w) => w.id == word.id);
+    if (existingIndex != -1) {
+      words[existingIndex] = word;
+    } else {
+      words.add(word);
+    }
+    
+    final jsonString = json.encode(words.map((w) => w.toJson()).toList());
+    await prefs.setString(_wordsKey, jsonString);
+    print('[Storage] Successfully saved word to local storage');
+  }
+
+  static Future<void> deleteWord(String id) async {
+    // Supabaseから削除
+    if (SupabaseService.isAvailable) {
+      try {
+        await SupabaseService.deleteWord(id);
+      } catch (e) {
+        print('[Storage] Error deleting word from Supabase: $e');
+      }
+    }
+
+    // ローカルストレージからも削除
+    final words = await _getLocalWords();
+    words.removeWhere((w) => w.id == id);
+    
+    final jsonString = json.encode(words.map((w) => w.toJson()).toList());
+    await prefs.setString(_wordsKey, jsonString);
+  }
+
+  static Future<void> saveWords(List<Word> words) async {
+    // バッチ保存
+    for (final word in words) {
+      await saveWord(word);
+    }
+  }
   static Future<void> removeDuplicateWords() async {
     print('[Storage] Removing duplicate words...');
     final words = await getWords();

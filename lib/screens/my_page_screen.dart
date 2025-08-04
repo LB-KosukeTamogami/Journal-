@@ -20,10 +20,18 @@ class _MyPageScreenState extends State<MyPageScreen> {
   String _currentPlan = 'ライトプラン';
   bool _notificationEnabled = true;
   String _notificationTime = '21:00';
+  String _userName = '';
+  String _userEmail = '';
   
   String get _userAvatar {
     final user = AuthService.currentUser;
-    return user?.userMetadata?['avatar'] ?? 'person';
+    if (user != null && user is Map<String, dynamic>) {
+      final metadata = user['user_metadata'];
+      if (metadata != null && metadata is Map<String, dynamic>) {
+        return metadata['avatar'] ?? 'person';
+      }
+    }
+    return 'person';
   }
   
   IconData _getAvatarIcon(String avatar) {
@@ -50,11 +58,92 @@ class _MyPageScreenState extends State<MyPageScreen> {
   }
   
   @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+  
+  void _loadUserData() {
+    final user = AuthService.currentUser;
+    if (user != null && user is Map<String, dynamic>) {
+      setState(() {
+        _userName = user['name'] ?? user['email']?.split('@')[0] ?? 'ユーザー';
+        _userEmail = user['email'] ?? '';
+      });
+    }
+  }
+  
+  void _showThemeSelectionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('テーマを選択'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('ライト'),
+              leading: const Icon(Icons.light_mode),
+              onTap: () {
+                // TODO: Implement theme change
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('ダーク'),
+              leading: const Icon(Icons.dark_mode),
+              onTap: () {
+                // TODO: Implement theme change
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('システム設定に従う'),
+              leading: const Icon(Icons.settings_brightness),
+              onTap: () {
+                // TODO: Implement theme change
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  void _showClearSampleDataDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('サンプルデータを削除'),
+        content: const Text('すべてのサンプルデータを削除しますか？この操作は取り消せません。'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('キャンセル'),
+          ),
+          TextButton(
+            onPressed: () {
+              // TODO: Implement clear sample data
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('サンプルデータを削除しました')),
+              );
+            },
+            style: TextButton.styleFrom(foregroundColor: AppTheme.error),
+            child: const Text('削除'),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text('マイページ', style: AppTheme.headline3),
+        title: Text('マイページ', style: AppTheme.heading1),
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
       ),
@@ -361,7 +450,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
             const SizedBox(height: 20),
             Text(
               'プランを選択',
-              style: AppTheme.headline3,
+              style: AppTheme.heading1,
             ),
             const SizedBox(height: 20),
             _PlanOption(
@@ -424,10 +513,28 @@ class _MyPageScreenState extends State<MyPageScreen> {
       });
     }
   }
-  
-                    SnackBar(
+
+  void _showDeleteSampleDataDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('サンプルデータの削除'),
+        content: const Text('サンプルデータを削除しますか？\nこの操作は取り消せません。'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('キャンセル'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              try {
+                await StorageService.clearSampleData();
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
                       content: Text('サンプルデータを削除しました'),
-                      backgroundColor: AppTheme.success,
+                      backgroundColor: Colors.green,
                     ),
                   );
                 }
@@ -436,7 +543,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('削除に失敗しました: ${e.toString()}'),
-                      backgroundColor: AppTheme.error,
+                      backgroundColor: Colors.red,
                     ),
                   );
                 }
@@ -482,7 +589,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('ログアウトに失敗しました: ${e.toString()}'),
-                      backgroundColor: AppTheme.error,
+                      backgroundColor: AppTheme.errorColor,
                     ),
                   );
                 }
@@ -527,7 +634,7 @@ class _PlanOption extends StatelessWidget {
           border: Border.all(
             color: isSelected 
               ? Theme.of(context).primaryColor 
-              : AppTheme.borderColor,
+              : Theme.of(context).dividerColor,
             width: isSelected ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(16),
@@ -571,7 +678,7 @@ class _PlanOption extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               price,
-              style: AppTheme.headline3.copyWith(
+              style: AppTheme.heading1.copyWith(
                 color: Theme.of(context).primaryColor,
               ),
             ),
@@ -583,7 +690,7 @@ class _PlanOption extends StatelessWidget {
                   Icon(
                     Icons.check,
                     size: 16,
-                    color: AppTheme.success,
+                    color: AppTheme.successColor,
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -600,51 +707,3 @@ class _PlanOption extends StatelessWidget {
   }
 }
 
-class AppCard extends StatelessWidget {
-  final Widget child;
-  final EdgeInsets? padding;
-  final Color? backgroundColor;
-  final VoidCallback? onTap;
-
-  const AppCard({
-    super.key,
-    required this.child,
-    this.padding,
-    this.backgroundColor,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: backgroundColor ?? Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).brightness == Brightness.dark 
-              ? AppTheme.darkColors.textPrimary.withOpacity(0.05)
-              : AppTheme.lightColors.textPrimary.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-        border: Border.all(
-          color: AppTheme.borderColor,
-          width: 1,
-        ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: padding ?? const EdgeInsets.all(16),
-            child: child,
-          ),
-        ),
-      ),
-    );
-  }
-}

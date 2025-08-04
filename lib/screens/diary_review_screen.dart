@@ -25,10 +25,18 @@ class DiaryReviewScreen extends StatefulWidget {
 }
 
 class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
+  bool _isLoading = true;
   String _judgment = '';
   String _outputText = '';
+  String _translatedText = '';
+  List<String> _corrections = [];
+  List<String> _improvements = [];
+  List<Map<String, String>> _learnedWords = [];
+  Set<String> _addedWords = {}; // 追加済み単語を追跡
   final TextEditingController _transcriptionController = TextEditingController(); // 写経用のコントローラー
   Map<String, String> _wordDefinitions = {}; // 事前取得した単語の意味を保存
+  String _detectedLanguage = '';
+  bool _isAllAddedToCards = false;
   
   // ストップワード（一般的すぎる単語）のリスト
   static const Set<String> _stopWords = {
@@ -55,26 +63,34 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     super.initState();
     _processContent();
   }
-        _translatedText = result['translation'] ?? ''; // 翻訳文を保存
-        _corrections = List<String>.from(result['corrections'] ?? []);
-        _improvements = List<String>.from(result['improvements'] ?? []);
-        
-        // learned_wordsを処理（フィルタリングを適用）
-        if (result['learned_words'] != null) {
-          final allWords = List<Map<String, String>>.from(result['learned_words']);
-          _learnedWords = allWords.where((wordData) {
-            final english = (wordData['english'] ?? '').toLowerCase();
-            return english.length >= 3 && // 3文字以上
-                   !_stopWords.contains(english) && // ストップワードを除外
-                   RegExp(r'^[a-zA-Z]+$').hasMatch(english); // 英字のみ
-          }).toList();
+  
+  Future<void> _processContent() async {
+    try {
+      final result = await GeminiService.reviewDiary(widget.entry.content);
+      
+      if (result != null) {
+        setState(() {
+          _translatedText = result['translation'] ?? ''; // 翻訳文を保存
+          _corrections = List<String>.from(result['corrections'] ?? []);
+          _improvements = List<String>.from(result['improvements'] ?? []);
           
-          // 単語の意味を事前に取得
-          _prefetchWordDefinitions();
-        }
-        
-        _isLoading = false;
-      });
+          // learned_wordsを処理（フィルタリングを適用）
+          if (result['learned_words'] != null) {
+            final allWords = List<Map<String, String>>.from(result['learned_words']);
+            _learnedWords = allWords.where((wordData) {
+              final english = (wordData['english'] ?? '').toLowerCase();
+              return english.length >= 3 && // 3文字以上
+                     !_stopWords.contains(english) && // ストップワードを除外
+                     RegExp(r'^[a-zA-Z]+$').hasMatch(english); // 英字のみ
+            }).toList();
+            
+            // 単語の意味を事前に取得
+            _prefetchWordDefinitions();
+          }
+          
+          _isLoading = false;
+        });
+      }
     } catch (e) {
       print('[DiaryReviewScreen] Error processing content: $e');
       // エラー時はフォールバック
@@ -528,8 +544,12 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
   Widget _buildOriginalSection() {
     // 英語（正しい）の場合は元の文章に音声読み上げボタンを表示
     final showTTS = _judgment == '英文（正しい）';
-          // 英語の場合、日本語訳を透明背景のコンテナで表示
-          if (isEnglish && _translatedText.isNotEmpty) ...[
+    final isEnglish = widget.detectedLanguage == 'en';
+    
+    return Column(
+      children: [
+        // 英語の場合、日本語訳を透明背景のコンテナで表示
+        if (isEnglish && _translatedText.isNotEmpty) ...[
             const SizedBox(height: 12),
             Container(
               width: double.infinity,
@@ -538,7 +558,7 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                 color: Colors.transparent,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: AppTheme.dividerColor.withOpacity(0.5),
+                  color: AppTheme.borderColor.withOpacity(0.5),
                   width: 1,
                 ),
               ),
@@ -564,9 +584,8 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
               ),
             ),
           ],
-        ],
-      ),
-    ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0);
+      ],
+    );
   }
 
 
@@ -1023,7 +1042,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
                                           ),
                                         ),
                                       ),
-                                    Theme.of(context).primaryColor,
                                   ),
                                 ],
                               ),
@@ -1198,7 +1216,6 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
             children: [
               Icon(
                 Icons.lightbulb_outline,
-                Icons.info_outline,
                 color: AppTheme.info,
                 size: 20,
               ),
@@ -1399,6 +1416,33 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
     ).animate().fadeIn(delay: 600.ms, duration: 400.ms).slideY(begin: 0.1, end: 0);
   }
   
+  // 品詞を判定（簡易的な実装）
+  String _getPartOfSpeech(String word) {
+    final lowerWord = word.toLowerCase();
+    
+    // 動詞の判定
+    if (lowerWord.endsWith('ing') || lowerWord.endsWith('ed')) {
+      return '動詞';
+    }
+    // 副詞の判定
+    else if (lowerWord.endsWith('ly')) {
+      return '副詞';
+    }
+    // 形容詞の判定
+    else if (lowerWord.endsWith('ful') || lowerWord.endsWith('less') || 
+             lowerWord.endsWith('ous') || lowerWord.endsWith('ive')) {
+      return '形容詞';
+    }
+    // 名詞の判定（複数形）
+    else if (lowerWord.endsWith('s') || lowerWord.endsWith('es')) {
+      return '名詞';
+    }
+    // その他
+    else {
+      return '名詞'; // デフォルトは名詞
+    }
+  }
+  
   // 品詞文字列をWordCategoryに変換
   WordCategory _getWordCategory(String word) {
     final partOfSpeech = _getPartOfSpeech(word);
@@ -1422,5 +1466,114 @@ class _DiaryReviewScreenState extends State<DiaryReviewScreen> {
       default:
         return WordCategory.other;
     }
+  }
+
+  // 単語の意味を事前取得
+  Future<void> _prefetchWordDefinitions() async {
+    for (final wordData in _learnedWords) {
+      final english = wordData['english'] ?? '';
+      if (english.isNotEmpty) {
+        final definition = await GeminiService.getWordMeaning(english);
+        if (definition != null) {
+          setState(() {
+            _wordDefinitions[english] = definition;
+          });
+        }
+      }
+    }
+  }
+
+  // 写経セクションを構築
+  Widget _buildTranscriptionSection() {
+    final correctedContent = _judgment == '日本語翻訳' ? _outputText : 
+                            (_judgment == '英文（要改善）' || _judgment == '英文（添削必要）') ? _outputText : '';
+    
+    if (correctedContent.isEmpty || correctedContent == widget.entry.content) {
+      return const SizedBox.shrink();
+    }
+    
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.info.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppTheme.info.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.edit_note, color: AppTheme.info, size: 24),
+              const SizedBox(width: 8),
+              Text(
+                '写経練習',
+                style: AppTheme.heading2.copyWith(
+                  color: AppTheme.info,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '下記の英文を書き写して練習しましょう',
+            style: AppTheme.body2.copyWith(
+              color: AppTheme.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppTheme.info.withOpacity(0.2),
+              ),
+            ),
+            child: Text(
+              correctedContent,
+              style: AppTheme.body1.copyWith(
+                fontSize: 16,
+                height: 1.8,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _transcriptionController,
+            maxLines: 5,
+            decoration: InputDecoration(
+              hintText: 'ここに書き写してください...',
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: AppTheme.info.withOpacity(0.3),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: AppTheme.info.withOpacity(0.3),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: AppTheme.info,
+                  width: 2,
+                ),
+              ),
+            ),
+            style: AppTheme.body1.copyWith(fontSize: 16),
+          ),
+        ],
+      ),
+    );
   }
 }
