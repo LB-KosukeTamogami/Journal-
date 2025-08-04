@@ -57,6 +57,14 @@ ls -la build/web/
 if [ -d "build/web" ] && [ "$(ls -A build/web)" ]; then
   echo "✅ build/web directory exists and contains files"
   echo "Total files: $(find build/web -type f | wc -l)"
+  
+  # Copy files to the location Vercel expects
+  echo "Copying files to web directory for Vercel..."
+  rm -rf web
+  cp -r build/web web
+  echo "✅ Files copied to web directory"
+  echo "Contents of web directory:"
+  ls -la web/
 else
   echo "❌ build/web directory is missing or empty"
   exit 1
